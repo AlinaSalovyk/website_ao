@@ -56,12 +56,12 @@ export const MainScreen = (): JSX.Element => {
                         МЕНЮ
                     </button>
 
-                    {/* Stylized ІТБ Logo */}
-                    <div className="text-white text-xl font-bold tracking-[0.3em] font-['Atyp_Display-Medium',Helvetica]">
-                        <span className="inline-block">І</span>
-                        <span className="inline-block border-t border-b border-white/60 px-0.5 mx-0.5">Т</span>
-                        <span className="inline-block">Б</span>
-                    </div>
+                    {/* Logo */}
+                    <img
+                        src="/images/logo.png"
+                        alt="ІТБ Logo"
+                        className="h-10 w-auto object-contain"
+                    />
 
                     <button className="rounded-[20px] border border-white/80 bg-transparent text-white px-5 py-2 uppercase text-[11px] tracking-[0.15em] font-medium hover:bg-white/10 transition-colors">
                         КОНТАКТИ
