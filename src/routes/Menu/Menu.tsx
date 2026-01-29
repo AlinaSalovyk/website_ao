@@ -9,19 +9,19 @@ const educationalPrograms = [
         title: "Бакалаврат",
         description: "І рівень вищої освіти",
         image:
-            "https://c.animaapp.com/mkvq20m7cEGy6O/img/66c631346702d8b649090e56-webdesign-webp.png",
+            "/images/EducationalPrograms/BachelorsDegree.png",
     },
     {
         title: "Магістратура",
         description: "ІІ рівень вищої освіти",
         image:
-            "https://c.animaapp.com/mkvq20m7cEGy6O/img/66c631338d70527dff861502-webflow-webp.png",
+            "/images/EducationalPrograms/Magistracy.png",
     },
     {
         title: "Аспірантура",
         description: "ІІІ освітньо-науковий рівень",
         image:
-            "https://c.animaapp.com/mkvq20m7cEGy6O/img/66c63134da67222f1c5e9a9d-creativedev-webp.png",
+            "/images/EducationalPrograms/PostgraduateStudies.png",
     },
 ];
 

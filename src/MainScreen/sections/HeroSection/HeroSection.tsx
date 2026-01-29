@@ -12,6 +12,7 @@ const departments = [
             "ПІДПРИЄМНИЦТВО ТА ТОРГІВЛЯ",
         ],
         backgroundImage:
+            // фотки не стають нормально шлях до них \public\images\Departments в подальшому треба буде замінити можливо 
             "https://c.animaapp.com/mkvpx7lhh8vezq/img/container-3.svg",
         animationDelay: "0ms",
     },
@@ -49,7 +50,7 @@ export const HeroSection = (): JSX.Element => {
                     {departments.map((department, index) => (
                         <article
                             key={index}
-                            className="relative w-full h-[899.73px] bg-cover bg-center translate-y-[-1rem] animate-fade-in opacity-0"
+                            className="relative w-[1350px] h-[900px] bg-cover bg-centrе translate-y-[2rem] animate-fade-in opacity-0"
                             style={
                                 {
                                     backgroundImage: `url(${department.backgroundImage})`,
@@ -57,7 +58,7 @@ export const HeroSection = (): JSX.Element => {
                                 } as React.CSSProperties
                             }
                         >
-                            <div className="flex w-full items-center justify-between px-0 py-2 relative top-[60px] bg-iitwoodsmoke border-t border-[#42474c]">
+                            <div className="flex w-full items-center justify-between px-0 py-3 relative top-[35px] bg-iitwoodsmoke border-t border-[#42474c]">
                                 <div className="flex flex-col items-start">
                                     <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-white text-2xl leading-[30px] max-w-[450px]">
                                         {department.title}

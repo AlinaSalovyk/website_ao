@@ -15,7 +15,7 @@ const educationalPrograms = [
 • F3 «Комп'ютерні науки» (ОПП «Комп'ютерні науки»)
 • F3 «Комп'ютерні науки» (ОПП «Робототехніка та машинне навчання»)
 • F3 «Комп'ютерні науки» (ОПП «Штучний інтелект та аналітика даних»)`,
-        image: "https://c.animaapp.com/mkvpx7lhh8vezq/img/photo.png",
+        image: "/images/EducationalPrograms/BachelorsDegree.png",
     },
     {
         title: "Магістратура",
@@ -25,14 +25,14 @@ const educationalPrograms = [
 • D3 «Менеджмент» (ОПП «Менеджмент продажів та логістика»)
 • D3 «Менеджмент» (ОПП «HR-менеджмент»)
 • F3 «Комп'ютерні науки» (ОПП «Управління проєктами»)`,
-        image: "https://c.animaapp.com/mkvpx7lhh8vezq/img/photo-1.png",
+        image: "/images/EducationalPrograms/Magistracy.png",
     },
     {
         title: "Аспірантура",
         description: `Перелік спеціальностей
 • D3 «Менеджмент» (ОНП «Менеджмент»)
 • F1 «Прикладна математика» (ОНП «Прикладна математика»)`,
-        image: "https://c.animaapp.com/mkvpx7lhh8vezq/img/photo-2.png",
+        image: "/images/EducationalPrograms/PostgraduateStudies.png",
     },
 
 ];
