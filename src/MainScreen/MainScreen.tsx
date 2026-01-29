@@ -19,7 +19,7 @@ export const MainScreen = (): JSX.Element => {
 
     return (
         <div
-            className="bg-black overflow-hidden w-full min-w-[1440px] flex justify-center"
+            className="bg-[#0f1215] overflow-hidden w-full min-w-[1440px] flex justify-center"
             data-model-id="530:5377"
         >
             {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
