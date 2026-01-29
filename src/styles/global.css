@@ -42,7 +42,6 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-
   /* Custom Animations */
   --animate-fade-in: fade-in 0.5s ease-out forwards;
 
@@ -70,16 +69,16 @@
     }
   }
 
-  /* Marquee animation - нескінченний рух справа наліво */
-  --animate-marquee: marquee 20s linear infinite;
+  /* Marquee animation - безперервний рух зліва направо */
+  --animate-marquee-seamless: marquee-seamless 40s linear infinite;
 
-  @keyframes marquee {
+  @keyframes marquee-seamless {
     0% {
-      transform: translateX(0%);
+      transform: translateX(-33.333%);
     }
 
     100% {
-      transform: translateX(-50%);
+      transform: translateX(0);
     }
   }
 }
@@ -163,19 +162,22 @@
   }
 }
 
-/* Marquee Animation - Нескінченний рух справа наліво */
-@keyframes marquee {
+/* Marquee Animation - Безперервний рух зліва направо */
+@keyframes marquee-seamless {
+
   0% {
-    transform: translateX(0);
+    transform: translateX(-33.333%);
   }
 
   100% {
-    transform: translateX(-50%);
+    transform: translateX(0);
   }
 }
 
-.animate-marquee {
-  animation: marquee 20s linear infinite;
+
+
+.animate-marquee-seamless {
+  animation: marquee-seamless 40s linear infinite;
   width: max-content;
   will-change: transform;
 }
