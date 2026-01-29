@@ -81,7 +81,7 @@ export const InstituteLeadershipSection = (): JSX.Element => {
   };
 
   return (
-    <section className="flex flex-col w-full items-start relative bg-white">
+    <section className="flex flex-col w-full items-start relative bg-white flex-1">
       <header className="items-start gap-10 px-0 py-20 w-full bg-white flex flex-col relative translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
         <Separator className="w-full bg-[#0f1215]" />
 
@@ -130,7 +130,7 @@ export const InstituteLeadershipSection = (): JSX.Element => {
         </div>
       </header>
 
-      <div className="flex flex-col w-full items-center justify-center px-0 py-8 bg-[#0f1215] relative">
+      <div className="flex flex-col w-full items-center justify-center px-0 py-8 bg-[#0f1215] relative flex-1">
         <img
           className="absolute top-0 left-0 w-full h-full object-cover"
           alt="Background"

@@ -23,7 +23,7 @@ export const MainScreen = (): JSX.Element => {
             data-model-id="530:5377"
         >
             {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
-            <div className="flex w-full relative flex-col items-start">
+            <div className="flex w-full relative flex-col items-start min-h-screen">
                 <div
                     className="absolute top-0 left-0 w-full h-[1800px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms]"
                     style={{
@@ -84,7 +84,7 @@ export const MainScreen = (): JSX.Element => {
                     <EducationalProgramsSection />
                 </section>
 
-                <section className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:1000ms]">
+                <section className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:1000ms] flex-1 flex flex-col">
                     <InstituteLeadershipSection />
                 </section>
             </div>
