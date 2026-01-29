@@ -164,7 +164,7 @@ export const InnovationStatsSection = (): JSX.Element => {
             {/* Marquee Animation Section */}
             <div className="w-full overflow-hidden py-12 bg-white" style={{ backgroundColor: '#ffffff' }}>
                 <div className="flex items-center gap-16 animate-marquee-seamless">
-                    {[...Array(9)].map((_, setIndex) => (
+                    {[...Array(18)].map((_, setIndex) => (
                         <React.Fragment key={setIndex}>
                             {partnerLogos}
                         </React.Fragment>
