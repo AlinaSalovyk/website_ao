@@ -116,14 +116,11 @@ const navigationItems = [
 ];
 
 export const NewsAndEvents = (): JSX.Element => {
-    const handleMenuClick = () => {
-        window.location.href = "/menu";
-    };
-
     return (
-        <section className="w-full flex items-center justify-center px-0 py-20 bg-white">
-            <div className="flex flex-col max-w-[1440px] w-full items-start gap-12 px-9 py-0">
-                <div className="flex flex-col items-end w-full">
+        <section className="w-full bg-white">
+            {/* News Section */}
+            <div className="w-full flex items-center justify-center px-0 py-20">
+                <div className="flex flex-col max-w-[1440px] w-full items-start px-9">
                     <header className="flex flex-col items-start w-full mb-10 translate-y-[-1rem] animate-fade-in opacity-0">
                         <h2 className="w-full text-center [font-family:'Atyp_Display-Medium',Helvetica] font-medium text-black text-[80px] tracking-[0] leading-[80px]">
                             Новини та події
@@ -131,10 +128,10 @@ export const NewsAndEvents = (): JSX.Element => {
                     </header>
 
                     <div className="flex flex-col w-full items-end pt-10 pb-0 px-0 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-                        <div className="w-full bg-[#727a83] h-px" />
+                        <Separator className="w-full bg-[#727a83]" />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-20 w-full">
+                    <div className="grid grid-cols-4 gap-5 pt-20 w-full">
                         {newsItems.map((item, index) => (
                             <Card
                                 key={item.id}
@@ -188,7 +185,7 @@ export const NewsAndEvents = (): JSX.Element => {
                                                 <ArrowRightIcon className="w-[19px] h-3" />
                                             </div>
 
-                                            <div className="w-full h-px bg-black rounded-sm" />
+                                            <Separator className="w-full bg-black" />
                                         </div>
                                     </div>
                                 </CardContent>
@@ -199,53 +196,52 @@ export const NewsAndEvents = (): JSX.Element => {
             </div>
 
             {/* Navigation Footer */}
-            <header className="items-start gap-10 px-0 py-20 w-full bg-white flex flex-col relative translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-                <Separator className="w-full bg-[#0f1215]" />
+            <div className="w-full bg-white">
+                <div className="flex flex-col items-start gap-10 px-0 py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
+                    <Separator className="w-full bg-[#0f1215]" />
 
-                <div className="flex flex-col max-w-[1440px] mx-auto w-full items-start px-9 py-0">
-                    <nav className="flex items-start gap-[114px] w-full">
-                        <div className="flex items-start gap-6">
-                            {socialIcons.map((item, index) => (
-                                <Button
-                                    key={index}
-                                    variant="outline"
-                                    size="icon"
-                                    className="w-15 h-15 rounded-full border-[#0f1215] hover:bg-[#0f1215] hover:border-[#0f1215] transition-colors [&>svg]:w-full [&>svg]:h-full"
-                                >
-                                    {item.icon}
-                                </Button>
-                            ))}
-                        </div>
+                    <div className="flex flex-col max-w-[1440px] mx-auto w-full items-start px-9">
+                        <nav className="flex items-start justify-between w-full">
+                            <div className="flex items-start gap-6">
+                                {socialIcons.map((item, index) => (
+                                    <Button
+                                        key={index}
+                                        variant="outline"
+                                        size="icon"
+                                        className="w-15 h-15 rounded-full border-[#0f1215] hover:bg-[#0f1215] hover:border-[#0f1215] transition-colors [&>svg]:w-full [&>svg]:h-full"
+                                    >
+                                        {item.icon}
+                                    </Button>
+                                ))}
+                            </div>
 
-                        <div className="flex-1" />
-
-                        <div className="flex flex-col w-[300px] items-start gap-4">
-                            {navigationItems.map((item, index) => (
-                                <button
-                                    key={index}
-                                    className="flex max-w-[310px] items-center w-full group cursor-pointer"
-                                    onClick={handleMenuClick}
-                                >
-                                    <div className="flex flex-col items-start flex-1">
-                                        <div className="flex items-start w-full">
-                                            <span
-                                                className={`[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-[8px] tracking-[0] leading-[14px] whitespace-nowrap ${item.isActive ? "text-[#0e52ff]" : "text-black"
-                                                    } group-hover:text-[#0e52ff] transition-colors`}
-                                            >
-                                                {item.label}
-                                            </span>
-                                            <div className="w-[9.69px] h-2.5 ml-auto mr-[-0.69px] overflow-hidden">
-                                                <div className="relative top-0.5 left-2.5 w-[5px] h-[5px] bg-[#0e52ff]" />
+                            <div className="flex flex-col w-[300px] items-start gap-4">
+                                {navigationItems.map((item, index) => (
+                                    <button
+                                        key={index}
+                                        className="flex max-w-[310px] items-center w-full group cursor-pointer"
+                                    >
+                                        <div className="flex flex-col items-start flex-1">
+                                            <div className="flex items-start w-full">
+                                                <span
+                                                    className={`[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-[8px] tracking-[0] leading-[14px] whitespace-nowrap ${item.isActive ? "text-[#0e52ff]" : "text-black"
+                                                        } group-hover:text-[#0e52ff] transition-colors`}
+                                                >
+                                                    {item.label}
+                                                </span>
+                                                <div className="w-[9.69px] h-2.5 ml-auto mr-[-0.69px] overflow-hidden">
+                                                    <div className="relative top-0.5 left-2.5 w-[5px] h-[5px] bg-[#0e52ff]" />
+                                                </div>
                                             </div>
+                                            <Separator className="w-full bg-black" />
                                         </div>
-                                        <Separator className="w-full bg-black" />
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    </nav>
+                                    </button>
+                                ))}
+                            </div>
+                        </nav>
+                    </div>
                 </div>
-            </header>
+            </div>
         </section>
     );
 };

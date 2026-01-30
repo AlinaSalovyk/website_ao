@@ -18,7 +18,7 @@ const statsData = [
 
 export const InnovativeEducation = (): JSX.Element => {
     return (
-        <section className="w-full bg-white flex flex-col relative">
+        <section className="w-full bg-white flex flex-col relative overflow-hidden">
             <div
                 className="relative w-full"
                 style={{ height: '1400px' }}
