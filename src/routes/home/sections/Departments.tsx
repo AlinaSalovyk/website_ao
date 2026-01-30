@@ -12,7 +12,6 @@ const departments = [
             "ПІДПРИЄМНИЦТВО ТА ТОРГІВЛЯ",
         ],
         backgroundImage:
-            // фотки не стають нормально шлях до них \public\images\Departments в подальшому треба буде замінити можливо 
             "https://c.animaapp.com/mkvpx7lhh8vezq/img/container-3.svg",
         animationDelay: "0ms",
     },
@@ -42,7 +41,7 @@ const departments = [
     },
 ];
 
-export const HeroSection = (): JSX.Element => {
+export const Departments = (): JSX.Element => {
     return (
         <section className="w-full bg-iitwoodsmoke flex flex-col items-center justify-center">
             <div className="flex flex-col w-full max-w-[1440px] px-9">
@@ -50,7 +49,7 @@ export const HeroSection = (): JSX.Element => {
                     {departments.map((department, index) => (
                         <article
                             key={index}
-                            className="relative w-[1350px] h-[900px] bg-cover bg-centrе translate-y-[2rem] animate-fade-in opacity-0"
+                            className="relative w-[1350px] h-[900px] bg-cover bg-centre translate-y-[2rem] animate-fade-in opacity-0"
                             style={
                                 {
                                     backgroundImage: `url(${department.backgroundImage})`,

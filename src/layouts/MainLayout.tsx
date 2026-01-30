@@ -19,21 +19,6 @@ export const MainLayout = ({ children }: MainLayoutProps): JSX.Element => {
     >
       {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
       <div className="flex w-full relative flex-col items-start min-h-screen">
-        {/* Background Gradients & Images */}
-        <div
-          className="absolute top-0 left-0 w-full h-[1800px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms]"
-          style={{
-            background:
-              "linear-gradient(180deg, #01133C00 0%, #011C58 50%, #0332A2 100%)",
-          }}
-        />
-
-        <img
-          className="absolute top left-1/2 -translate-x-1/4 w-[1250px] h-[780px] object-contain pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
-          alt="Element black chrome"
-          src="/images/3d-black-chrome-shape.png"
-        />
-
         {/* Header */}
         <header className="relative w-full flex justify-between items-center px-9 py-5 z-50 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:0ms]">
           <button
