@@ -14,7 +14,7 @@ export const MainLayout = ({ children }: MainLayoutProps): JSX.Element => {
 
   return (
     <div
-      className="bg-[#0f1215] overflow-hidden w-full min-w-[1440px] flex justify-center"
+      className="bg-layout-bg overflow-hidden w-full min-w-[1440px] flex justify-center"
       data-model-id="530:5377"
     >
       {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}

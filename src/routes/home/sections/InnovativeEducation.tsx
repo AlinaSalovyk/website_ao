@@ -18,31 +18,23 @@ const statsData = [
 
 export const InnovativeEducation = (): JSX.Element => {
     return (
-        <section className="w-full bg-white flex flex-col relative overflow-hidden">
+        <section className="w-full bg-pure-white flex flex-col relative overflow-hidden">
             <div
-                className="relative w-full"
-                style={{ height: '1400px' }}
+                className="relative w-full h-[1400px]"
             >
                 <div
-                    className="absolute left-10 right-10 pointer-events-none"
-                    style={{
-                        bottom: '-300px',
-                        height: '100%',
-                        backgroundImage: 'url(/images/InnovativeEducationBackground.jpg)',
-                        backgroundSize: '100% auto',
-                    }}
+                    className="absolute left-10 right-10 pointer-events-none bg-innovative-education -bottom-[300px] h-full"
                 />
 
                 <div
-                    className="flex flex-col mx-auto w-full h-full items-start px-9 pt-20 relative z-[1]"
-                    style={{ maxWidth: '1440px' }}
+                    className="flex flex-col mx-auto w-full h-full items-start px-9 pt-20 relative z-[1] max-w-[1440px]"
                 >
                     <header className="flex flex-col items-start relative w-full gap-8 translate-y-[-1rem] animate-fade-in opacity-0">
-                        <h1 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-black text-[120px] tracking-[0] leading-[144px] whitespace-nowrap">
+                        <h1 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-[120px] tracking-[0] leading-[144px] whitespace-nowrap">
                             ІННОВАЦІЙНА ОСВІТА
                         </h1>
-                        <Separator className="w-full bg-[#8F8F95] h-px" />
-                        <p className="max-w-[400px] [font-family:'Atyp_Text-Regular',Helvetica] font-normal text-black text-2xl tracking-[0] leading-8">
+                        <Separator className="w-full bg-separator-gray h-px" />
+                        <p className="max-w-[400px] [font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-2xl tracking-[0] leading-8">
                             Створюємо майбутнє разом: технології, бізнес та аналітика в єдиному
                             просторі.
                         </p>
@@ -56,11 +48,11 @@ export const InnovativeEducation = (): JSX.Element => {
                             >
                                 <CardContent className="flex flex-col items-start gap-4 p-0">
                                     <div className="flex items-start w-full">
-                                        <h2 className="[font-family:'Atyp_Text-Semibold',Helvetica] font-normal text-black text-[140px] tracking-[-4.80px] leading-[120px] whitespace-nowrap">
+                                        <h2 className="[font-family:'Atyp_Text-Semibold',Helvetica] font-normal text-pure-black text-[140px] tracking-[-4.80px] leading-[120px] whitespace-nowrap">
                                             {stat.number}
                                         </h2>
                                     </div>
-                                    <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-black text-lg tracking-[0] leading-[24px] whitespace-pre-line">
+                                    <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-lg tracking-[0] leading-[24px] whitespace-pre-line">
                                         {stat.description}
                                     </p>
                                     {stat.imageSrc && (

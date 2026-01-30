@@ -93,10 +93,10 @@ const partnerLogos = [
 
 export const EducationalPrograms = (): JSX.Element => {
     return (
-        <section className="w-full items-center justify-center px-0 py-20 bg-white flex flex-col" style={{ backgroundColor: '#ffffff' }}>
+        <section className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
             <div className="w-full max-w-[1440px] px-9">
                 <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0">
-                    <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-[#000000] text-[80px] text-right tracking-[0] leading-[80px] whitespace-nowrap">
+                    <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-[80px] text-right tracking-[0] leading-[80px] whitespace-nowrap">
                         Освітні програми
                     </h2>
                 </header>
@@ -104,23 +104,22 @@ export const EducationalPrograms = (): JSX.Element => {
                     {educationalPrograms.map((program, index) => (
                         <div key={index}>
                             {/* Top separator line for each program */}
-                            <Separator className="w-full h-px bg-[#000000]" />
+                            <Separator className="w-full h-px bg-pure-black" />
                             <Card
-                                className="border-0 shadow-none rounded-none bg-white"
-                                style={{ backgroundColor: '#ffffff' }}
+                                className="border-0 shadow-none rounded-none bg-pure-white"
                             >
-                                <CardContent className="p-0 bg-white" style={{ backgroundColor: '#ffffff' }}>
+                                <CardContent className="p-0 bg-pure-white">
                                     <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr_340px] gap-8 py-8">
                                         {/* Title column */}
                                         <div className="flex flex-col items-start">
-                                            <h3 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-[#000000] text-[28px] tracking-[0] leading-[34px] whitespace-nowrap">
+                                            <h3 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-[28px] tracking-[0] leading-[34px] whitespace-nowrap">
                                                 {program.title}
                                             </h3>
                                         </div>
                                         {/* Description and button column */}
                                         <div className="flex flex-col items-start justify-between pr-10">
                                             <div className="flex flex-col items-start w-full">
-                                                <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-[#000000] text-sm tracking-[0] leading-6 whitespace-pre-line">
+                                                <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-sm tracking-[0] leading-6 whitespace-pre-line">
                                                     {program.description}
                                                 </p>
                                             </div>
@@ -130,12 +129,12 @@ export const EducationalPrograms = (): JSX.Element => {
                                             >
                                                 <div className="flex flex-col items-start gap-[3px] w-[180px]">
                                                     <div className="flex items-center justify-between w-full">
-                                                        <span className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-[#000000] text-xs tracking-[0] leading-4 group-hover:font-medium transition-all">
+                                                        <span className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-xs tracking-[0] leading-4 group-hover:font-medium transition-all">
                                                             Дізнатися більше
                                                         </span>
-                                                        <ArrowRightIcon className="w-4 h-3 text-[#000000]" />
+                                                        <ArrowRightIcon className="w-4 h-3 text-pure-black" />
                                                     </div>
-                                                    <Separator className="w-full h-px bg-[#000000]" />
+                                                    <Separator className="w-full h-px bg-pure-black" />
                                                 </div>
                                             </Button>
                                         </div>
@@ -153,11 +152,11 @@ export const EducationalPrograms = (): JSX.Element => {
                         </div>
                     ))}
                     {/* Bottom separator line */}
-                    <Separator className="w-full h-px bg-[#000000]" />
+                    <Separator className="w-full h-px bg-pure-black" />
                 </div>
             </div>
             {/* Marquee Animation Section */}
-            <div className="w-full overflow-hidden py-12 bg-white" style={{ backgroundColor: '#ffffff' }}>
+            <div className="w-full overflow-hidden py-12 bg-pure-white">
                 <div className="flex items-center gap-16 animate-marquee-seamless">
                     {[...Array(18)].map((_, setIndex) => (
                         <React.Fragment key={setIndex}>

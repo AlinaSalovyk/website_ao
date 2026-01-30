@@ -1,9 +1,46 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/*
+@font-face {
+  font-family: 'Atyp Display';
+  src: url('/fonts/AtypDisplay-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Atyp Display';
+  src: url('/fonts/AtypDisplay-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Atyp Text';
+  src: url('/fonts/AtypText-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Atyp Text';
+  src: url('/fonts/AtypText-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+*/
+
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /*--font-display: "Atyp Display", Helvetica, sans-serif;
+  --font-body: "Atyp Text", Helvetica, sans-serif;*/
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -42,6 +79,24 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Custom Palette */
+  --color-layout-bg: #0f1215;
+  --color-pure-white: #ffffff;
+  --color-pure-black: #000000;
+  --color-hero-text: #8b9dc3;
+  --color-separator-gray: #8F8F95;
+  --color-leadership-dot: #323237;
+  --color-leadership-link: #0e52ff;
+  --color-news-gray: #727a83;
+  --color-departments-border: #42474c;
+  --color-departments-badge: #6e7781;
+  --color-menu-border: #ffffff4c;
+  --color-menu-separator: #ffffff33;
+  --color-footer-card-deep: #1628f3;
+  --color-footer-card-bright: #0e52ff;
+
   /* Custom Animations */
   --animate-fade-in: fade-in 0.5s ease-out forwards;
 
@@ -180,4 +235,13 @@
   animation: marquee-seamless 40s linear infinite;
   width: max-content;
   will-change: transform;
+}
+
+@utility bg-hero-gradient {
+  background: linear-gradient(180deg, #01133C00 0%, #011C58 50%, #0332A2 100%);
+}
+
+@utility bg-innovative-education {
+  background-image: url('/images/InnovativeEducationBackground.jpg');
+  background-size: 100% auto;
 }

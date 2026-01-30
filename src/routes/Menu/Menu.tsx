@@ -58,15 +58,15 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                 onClick={handleClose}
             />
             {/* Menu Panel */}
-            <div className="flex flex-col h-screen items-start p-6 bg-[#0f1215] border-r border-solid border-[#ffffff4c] fixed left-0 top-0 bottom-0 z-[100] overflow-y-auto w-full max-w-[480px] animate-slide-in-left">
+            <div className="flex flex-col h-screen items-start p-6 bg-layout-bg border-r border-solid border-menu-border fixed left-0 top-0 bottom-0 z-[100] overflow-y-auto w-full max-w-[480px] animate-slide-in-left">
                 <div className="inline-flex pb-4 flex-col items-start">
                     <Button
                         variant="outline"
                         size="icon"
-                        className="w-8 h-8 rounded-full border-white bg-transparent hover:bg-white/10 flex items-center justify-center"
+                        className="w-8 h-8 rounded-full border-pure-white bg-transparent hover:bg-pure-white/10 flex items-center justify-center"
                         onClick={handleClose}
                     >
-                        <XIcon className="w-4 h-4 text-white" />
+                        <XIcon className="w-4 h-4 text-pure-white" />
                     </Button>
                 </div>
 
@@ -101,13 +101,13 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             variant="ghost"
                                             className="h-auto p-0 hover:bg-transparent justify-between w-full"
                                         >
-                                            <span className="[font-family:'Atyp_Display-Regular',Helvetica] text-white text-2xl leading-8 font-normal">
+                                            <span className="[font-family:'Atyp_Display-Regular',Helvetica] text-pure-white text-2xl leading-8 font-normal">
                                                 Освітні програми
                                             </span>
-                                            <MinusIcon className="w-5 h-5 text-white" />
+                                            <MinusIcon className="w-5 h-5 text-pure-white" />
                                         </Button>
                                     </Collapsible.Trigger>
-                                    <Separator className="w-full h-px bg-[#ffffff33]" />
+                                    <Separator className="w-full h-px bg-menu-separator" />
                                 </div>
 
                                 <Collapsible.Content className="flex flex-col items-start w-full">
@@ -116,7 +116,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             <Button
                                                 key={`program-${index}`}
                                                 variant="ghost"
-                                                className="h-auto max-w-[470.67px] w-full items-center gap-3 px-0 py-2 hover:bg-white/5 justify-start"
+                                                className="h-auto max-w-[470.67px] w-full items-center gap-3 px-0 py-2 hover:bg-pure-white/5 justify-start"
                                             >
                                                 <div className="flex flex-col w-10 h-10 items-start justify-center rounded overflow-hidden flex-shrink-0">
                                                     <div
@@ -127,13 +127,13 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
 
                                                 <div className="inline-flex flex-col items-start justify-center">
                                                     <div className="inline-flex flex-col items-start">
-                                                        <span className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-white text-sm leading-[18px]">
+                                                        <span className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-white text-sm leading-[18px]">
                                                             {program.title}
                                                         </span>
                                                     </div>
 
                                                     <div className="inline-flex flex-col items-start">
-                                                        <span className="[font-family:'Inter',Helvetica] font-normal text-[#727a83] text-xs leading-[18.3px]">
+                                                        <span className="[font-family:'Inter',Helvetica] font-normal text-news-gray text-xs leading-[18.3px]">
                                                             {program.description}
                                                         </span>
                                                     </div>
@@ -151,13 +151,13 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             variant="ghost"
                                             className="h-auto p-0 hover:bg-transparent justify-between w-full"
                                         >
-                                            <span className="[font-family:'Atyp_Display-Regular',Helvetica] text-white text-2xl leading-8 font-normal">
+                                            <span className="[font-family:'Atyp_Display-Regular',Helvetica] text-pure-white text-2xl leading-8 font-normal">
                                                 Кафедри інституту
                                             </span>
-                                            <PlusIcon className="w-5 h-5 text-white" />
+                                            <PlusIcon className="w-5 h-5 text-pure-white" />
                                         </Button>
                                     </Collapsible.Trigger>
-                                    <Separator className="w-full h-px bg-[#ffffff33]" />
+                                    <Separator className="w-full h-px bg-menu-separator" />
                                 </div>
                             </Collapsible.Root>
 
@@ -190,7 +190,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start"
                                     >
-                                        <span className="[font-family:'Inter',Helvetica] font-normal text-[#727a83] text-sm leading-4">
+                                        <span className="[font-family:'Inter',Helvetica] font-normal text-news-gray text-sm leading-4">
                                             {link}
                                         </span>
                                     </Button>
@@ -204,7 +204,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start"
                                     >
-                                        <span className="[font-family:'Inter',Helvetica] font-normal text-[#727a83] text-sm leading-4">
+                                        <span className="[font-family:'Inter',Helvetica] font-normal text-news-gray text-sm leading-4">
                                             {link}
                                         </span>
                                     </Button>
