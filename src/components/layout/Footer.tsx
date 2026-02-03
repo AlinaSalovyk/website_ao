@@ -4,18 +4,28 @@ import type { JSX } from "react";
 
 export const Footer = (): JSX.Element => {
     return (
-        <section className="flex flex-col w-full items-start relative bg-pure-white flex-1">
-            <div className="flex flex-col w-full items-center justify-center px-0 py-8 bg-layout-bg relative flex-1">
-                <img
-                    className="absolute top-0 left-0 w-full h-full object-cover"
-                    alt="Background"
-                    src="/images/Backgroundfooter.png"
+    <section className="flex flex-col w-full items-start relative bg-pure-white flex-1">
+    <div className="flex flex-col w-full items-center justify-center px-0 py-8 bg-layout-bg relative flex-1">
+        <img
+            className="absolute top-0 left-0 w-full h-full object-cover object-top"
+            alt="Background"
+            src="/images/Backgroundfooter.png"
                 />
 
-                <div className="flex flex-col max-w-[1440px] w-full items-start justify-center px-9 py-0 relative flex-1">
+                <div className="flex flex-col max-w-[1440px] w-full items-start justify-center px-4 py-0 relative flex-1">
                     <div className="flex flex-col items-start justify-between flex-1 w-full">
-                        <div className="flex items-start justify-between flex-1 w-full gap-6 mb-9 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-                            <Card className="w-[413px] bg-footer-card-deep border-none rounded-lg hover:scale-105 transition-transform">
+                        <div className="flex flex-row items-center justify-start w-full gap-8 mb-6 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
+                            <button className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-nowrap hover:opacity-80 transition-opacity cursor-pointer">
+                                Cookie Preference
+                            </button>
+
+                            <span className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-nowrap">
+                                Національний університет &quot;Острозька академія&quot;
+                            </span>
+                        </div>
+
+                        <div className="flex items-start justify-between flex-1 w-full gap-4 mt-4 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
+                            <Card className="w-[413px] bg-footer-card-deep border-none rounded-lg hover:scale-105 transition-transform duration-300">
                                 <CardContent className="flex flex-col items-start gap-[247.48px] p-6">
                                     <div className="flex flex-col items-start gap-6 w-full">
                                         <div className="flex items-center justify-between w-full">
@@ -42,7 +52,7 @@ export const Footer = (): JSX.Element => {
                                 </CardContent>
                             </Card>
 
-                            <Card className="flex-1 bg-footer-card-bright border-none rounded-lg overflow-hidden hover:scale-105 transition-transform">
+                            <Card className="flex-1 bg-footer-card-deep border-none rounded-lg overflow-hidden hover:scale-105 transition-transform duration-300">
                                 <CardContent className="flex flex-col items-start gap-[220px] p-6">
                                     <div className="flex flex-col items-start gap-6 w-full">
                                         <div className="flex items-center justify-between w-full">
@@ -86,18 +96,6 @@ export const Footer = (): JSX.Element => {
                                 </CardContent>
                             </Card>
                         </div>
-
-                        <footer className="flex flex-col items-start pt-9 w-full bg-transparent translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-                            <div className="flex items-center gap-8 w-full flex-wrap">
-                                <button className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-nowrap hover:opacity-80 transition-opacity">
-                                    Cookie Preference
-                                </button>
-
-                                <span className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-nowrap">
-                                    Національний університет &quot;Острозька академія&quot;
-                                </span>
-                            </div>
-                        </footer>
                     </div>
                 </div>
             </div>
