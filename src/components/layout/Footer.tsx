@@ -4,15 +4,15 @@ import type { JSX } from "react";
 
 export const Footer = (): JSX.Element => {
     return (
-    <section className="flex flex-col w-full items-start relative bg-pure-white flex-1">
-    <div className="flex flex-col w-full items-center justify-center px-0 py-8 bg-layout-bg relative flex-1">
-        <img
-            className="absolute top-0 left-0 w-full h-full object-cover object-top"
-            alt="Background"
-            src="/images/Backgroundfooter.png"
+        <section className="flex flex-col w-full items-start relative bg-pure-white flex-1">
+            <div className="flex flex-col w-full items-center justify-center px-0 py-8 bg-layout-bg relative flex-1">
+                <img
+                    className="absolute top-0 left-0 w-full h-full object-cover object-top"
+                    alt="Background"
+                    src="/images/Backgroundfooter.png"
                 />
 
-                <div className="flex flex-col max-w-[1440px] w-full items-start justify-center px-4 py-0 relative flex-1">
+                <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start justify-center px-4 py-0 relative flex-1">
                     <div className="flex flex-col items-start justify-between flex-1 w-full">
                         <div className="flex flex-row items-center justify-start w-full gap-8 mb-6 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
                             <button className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-nowrap hover:opacity-80 transition-opacity cursor-pointer">

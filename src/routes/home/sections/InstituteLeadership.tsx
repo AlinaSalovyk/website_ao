@@ -4,14 +4,14 @@ import type { JSX } from "react";
 export const InstituteLeadership = (): JSX.Element => {
     return (
         <section className="w-full bg-pure-white flex flex-col relative">
-            <div className="flex flex-col max-w-[1440px] mx-auto w-full px-9 py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-                <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-[72px] tracking-[0] leading-[86px] mb-10 self-end text-right">
+            <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-9 py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
+                <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-4xl lg:text-5xl xl:text-6xl 2xl:text-[72px] tracking-[0] leading-tight xl:leading-[86px] mb-10 self-end text-right">
                     Керівництво інституту
                 </h2>
                 <Separator className="w-full bg-pure-black h-px mb-16" />
 
-                <div className="flex items-start w-full gap-[200px]">
-                    <div className="flex flex-col items-start w-[260px] flex-shrink-0">
+                <div className="flex items-start w-full gap-16 xl:gap-32 2xl:gap-[200px]">
+                    <div className="flex flex-col items-start w-48 xl:w-56 2xl:w-[260px] flex-shrink-0">
                         <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-sm tracking-[0] leading-6 italic mb-4">
                             У світі, що стрімко змінюється, знання – це не просто сила, а ключ до можливостей. Наш інститут навчає не лише адаптуватися до майбутнього, а й створювати його.
                         </p>
@@ -26,17 +26,17 @@ export const InstituteLeadership = (): JSX.Element => {
                         </div>
                     </div>
 
-                    <div className="flex flex-col items-center gap-[5px] self-center h-[109px]">
-                        <div className="w-[2px] h-[40px] rounded-[2px] bg-separator-gray" />
-                        <div className="w-[2px] h-[18px] rounded-[2px] bg-leadership-dot" />
-                        <div className="w-[2px] h-[18px] rounded-[2px] bg-leadership-dot" />
-                        <div className="w-[2px] h-[18px] rounded-[2px] bg-leadership-dot" />
+                    <div className="flex flex-col items-center gap-1 xl:gap-1.5 2xl:gap-[5px] self-center h-20 xl:h-24 2xl:h-[109px]">
+                        <div className="w-0.5 h-8 xl:h-10 2xl:h-[40px] rounded-sm bg-separator-gray" />
+                        <div className="w-0.5 h-4 xl:h-[18px] rounded-sm bg-leadership-dot" />
+                        <div className="w-0.5 h-4 xl:h-[18px] rounded-sm bg-leadership-dot" />
+                        <div className="w-0.5 h-4 xl:h-[18px] rounded-sm bg-leadership-dot" />
                     </div>
 
                     <div className="flex items-start gap-8 flex-1">
-                        <div className="w-[200px] h-[240px] overflow-hidden flex-shrink-0 rounded-sm">
+                        <div className="w-40 xl:w-48 2xl:w-[200px] h-48 xl:h-56 2xl:h-[240px] overflow-hidden flex-shrink-0 rounded-sm">
                             <img
-                                src="/images/novoseletskyy.jpg"
+                                src="/images/Home/novoseletskyy.jpg"
                                 alt="Новоселецький Олександр Миколайович"
                                 className="w-full h-full object-cover"
                             />
