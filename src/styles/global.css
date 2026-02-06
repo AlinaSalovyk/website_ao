@@ -1,46 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-/*
-@font-face {
-  font-family: 'Atyp Display';
-  src: url('/fonts/AtypDisplay-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Atyp Display';
-  src: url('/fonts/AtypDisplay-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Atyp Text';
-  src: url('/fonts/AtypText-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Atyp Text';
-  src: url('/fonts/AtypText-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-*/
-
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /*--font-display: "Atyp Display", Helvetica, sans-serif;
-  --font-body: "Atyp Text", Helvetica, sans-serif;*/
+  --font-roboto: "Roboto", Helvetica, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -94,6 +58,7 @@
   --color-departments-badge: #6e7781;
   --color-menu-border: #ffffff4c;
   --color-menu-separator: #ffffff33;
+  --color-footer-bg: #00113B;
   --color-footer-card-deep: #1628f3;
   --color-footer-card-bright: #0e52ff;
 
@@ -214,6 +179,7 @@
 
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-roboto);
   }
 }
 

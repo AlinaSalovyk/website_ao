@@ -96,7 +96,7 @@ export const EducationalPrograms = (): JSX.Element => {
         <section className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
             <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-9">
                 <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0">
-                    <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] whitespace-nowrap">
+                    <h2 className="font-medium text-pure-black text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] whitespace-nowrap">
                         Освітні програми
                     </h2>
                 </header>
@@ -112,14 +112,14 @@ export const EducationalPrograms = (): JSX.Element => {
                                     <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr_340px] gap-8 py-8">
                                         {/* Title column */}
                                         <div className="flex flex-col items-start">
-                                            <h3 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-xl xl:text-2xl 2xl:text-[28px] tracking-[0] leading-snug xl:leading-[34px] whitespace-nowrap">
+                                            <h3 className="font-medium text-pure-black text-xl xl:text-2xl 2xl:text-[28px] tracking-[0] leading-snug xl:leading-[34px] whitespace-nowrap">
                                                 {program.title}
                                             </h3>
                                         </div>
                                         {/* Description and button column */}
                                         <div className="flex flex-col items-start justify-between pr-10">
                                             <div className="flex flex-col items-start w-full">
-                                                <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-sm tracking-[0] leading-6 whitespace-pre-line">
+                                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-6 whitespace-pre-line">
                                                     {program.description}
                                                 </p>
                                             </div>
@@ -129,7 +129,7 @@ export const EducationalPrograms = (): JSX.Element => {
                                             >
                                                 <div className="flex flex-col items-start gap-1 w-36 xl:w-40 2xl:w-[180px]">
                                                     <div className="flex items-center justify-between w-full">
-                                                        <span className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-xs tracking-[0] leading-4 group-hover:font-medium transition-all">
+                                                        <span className="font-normal text-pure-black text-xs tracking-[0] leading-4 group-hover:font-medium transition-all">
                                                             Дізнатися більше
                                                         </span>
                                                         <ArrowRightIcon className="w-4 h-3 text-pure-black" />
