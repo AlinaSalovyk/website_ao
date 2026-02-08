@@ -208,7 +208,7 @@ export const NewsAndEvents = (): JSX.Element => {
                                         key={index}
                                         variant="outline"
                                         size="icon"
-                                        className="w-12 h-12 md:w-15 md:h-15 rounded-full border-layout-bg hover:bg-layout-bg hover:border-layout-bg transition-colors [&>svg]:w-6 [&>svg]:h-6 md:[&>svg]:w-full md:[&>svg]:h-full"
+                                        className="w-12 h-12 md:w-[60px] md:h-[60px] rounded-full border-layout-bg hover:bg-layout-bg hover:border-layout-bg transition-colors [&>svg]:w-6 [&>svg]:h-6 md:[&>svg]:w-full md:[&>svg]:h-full"
                                     >
                                         {item.icon}
                                     </Button>
