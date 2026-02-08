@@ -272,7 +272,7 @@ export const ScrollableCardStack: React.FC<ScrollableCardStackProps> = ({
                 ref={containerRef}
                 role="application"
                 style={{
-                    minHeight: `${cardHeight + CARD_PADDING}px`,
+                    minHeight: `calc(var(--card-height, ${cardHeight}px) + ${CARD_PADDING}px)`,
                     perspective: `${perspective}px`,
                     perspectiveOrigin: "center 60%",
                     touchAction: "none",
@@ -305,7 +305,7 @@ export const ScrollableCardStack: React.FC<ScrollableCardStackProps> = ({
                             onMouseEnter={() => isActive && setHoveredIndex(i)}
                             onMouseLeave={() => setHoveredIndex(null)}
                             style={{
-                                height: `${cardHeight}px`,
+                                height: `var(--card-height, ${cardHeight}px)`,
                                 zIndex: transform.zIndex,
                                 pointerEvents: isActive ? "auto" : "none",
                                 transformOrigin: "center center",
@@ -335,18 +335,18 @@ export const ScrollableCardStack: React.FC<ScrollableCardStackProps> = ({
                                         duration: 0.25,
                                     }
                             }
-                            //whileHover={{}}
+                        //whileHover={{}}
                         >
                             {/* Department Card Content */}
-                            <div className="flex w-full items-center justify-between px-0 py-3 relative top-6 xl:top-8 2xl:top-[35px] bg-layout-bg border-t border-departments-border">
-                                <div className="flex flex-col items-start">
-                                    <h2 className="font-medium text-pure-white text-xl xl:text-2xl leading-snug xl:leading-[30px] max-w-xs xl:max-w-sm 2xl:max-w-[450px]">
+                            <div className="flex flex-col md:flex-row w-full items-start md:items-center justify-between px-4 md:px-0 py-3 relative top-6 xl:top-8 2xl:top-[35px] bg-layout-bg border-t border-departments-border gap-4 md:gap-0">
+                                <div className="flex flex-col items-start w-full md:w-auto">
+                                    <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-white text-lg md:text-xl xl:text-2xl leading-snug xl:leading-[30px] max-w-full md:max-w-xs xl:max-w-sm 2xl:max-w-[450px]">
                                         {item.title}
                                     </h2>
                                 </div>
 
-                                <nav className="flex items-center justify-center">
-                                    <ul className="flex items-center gap-6">
+                                <nav className="flex items-center justify-start md:justify-center w-full md:w-auto overflow-x-auto md:overflow-visible">
+                                    <ul className="flex items-center gap-2 md:gap-6 flex-wrap md:flex-nowrap">
                                         {item.categories.map((category, catIndex) => (
                                             <li key={catIndex}>
                                                 <Badge
@@ -364,7 +364,7 @@ export const ScrollableCardStack: React.FC<ScrollableCardStackProps> = ({
 
                                 <Button
                                     variant="outline"
-                                    className="h-auto rounded-full border-pure-white bg-transparent hover:bg-pure-white/10 pt-1.5 pb-1 px-2 xl:px-3 2xl:px-[11px] transition-colors"
+                                    className="hidden md:inline-flex h-auto rounded-full border-pure-white bg-transparent hover:bg-pure-white/10 pt-1.5 pb-1 px-2 xl:px-3 2xl:px-[11px] transition-colors"
                                 >
                                     <span className="font-medium text-pure-white text-xs leading-[14px] whitespace-nowrap">
                                         ПЕРЕГЛЯНУТИ ІНФОРМАЦІЮ
