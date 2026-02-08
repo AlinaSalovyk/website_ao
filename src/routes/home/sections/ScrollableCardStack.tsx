@@ -15,7 +15,7 @@ const SCALE_FACTOR = 0.08;
 const MIN_SCALE = 0.08;
 const MAX_SCALE = 2;
 const HOVER_SCALE_MULTIPLIER = 1.02;
-const CARD_PADDING = 100;
+const CARD_PADDING = 50;
 
 export interface DepartmentItem {
     id: string;
@@ -335,20 +335,7 @@ export const ScrollableCardStack: React.FC<ScrollableCardStackProps> = ({
                                         duration: 0.25,
                                     }
                             }
-                            whileHover={
-                                shouldReduceMotion || !isActive
-                                    ? {}
-                                    : {
-                                        scale: transform.scale * HOVER_SCALE_MULTIPLIER,
-                                        transition: {
-                                            type: "spring",
-                                            stiffness: 250,
-                                            damping: 20,
-                                            mass: 0.5,
-                                            duration: 0.25,
-                                        },
-                                    }
-                            }
+                        //whileHover={{}}
                         >
                             {/* Department Card Content */}
                             <div className="flex flex-col md:flex-row w-full items-start md:items-center justify-between px-4 md:px-0 py-3 relative top-6 xl:top-8 2xl:top-[35px] bg-layout-bg border-t border-departments-border gap-4 md:gap-0">
@@ -366,7 +353,7 @@ export const ScrollableCardStack: React.FC<ScrollableCardStackProps> = ({
                                                     variant="outline"
                                                     className="h-auto bg-transparent hover:bg-transparent border-none px-0 py-0 cursor-pointer transition-colors hover:text-white"
                                                 >
-                                                    <span className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-departments-badge text-[9px] xl:text-[10px] 2xl:text-[11.2px] tracking-wide xl:tracking-[0.36px] leading-tight xl:leading-[14.4px] whitespace-nowrap">
+                                                    <span className="font-medium text-departments-badge text-[9px] xl:text-[10px] 2xl:text-[11.2px] tracking-wide xl:tracking-[0.36px] leading-tight xl:leading-[14.4px] whitespace-nowrap">
                                                         {category}
                                                     </span>
                                                 </Badge>
@@ -379,7 +366,7 @@ export const ScrollableCardStack: React.FC<ScrollableCardStackProps> = ({
                                     variant="outline"
                                     className="hidden md:inline-flex h-auto rounded-full border-pure-white bg-transparent hover:bg-pure-white/10 pt-1.5 pb-1 px-2 xl:px-3 2xl:px-[11px] transition-colors"
                                 >
-                                    <span className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-white text-xs leading-[14px] whitespace-nowrap">
+                                    <span className="font-medium text-pure-white text-xs leading-[14px] whitespace-nowrap">
                                         ПЕРЕГЛЯНУТИ ІНФОРМАЦІЮ
                                     </span>
                                 </Button>
@@ -391,7 +378,7 @@ export const ScrollableCardStack: React.FC<ScrollableCardStackProps> = ({
                 {/* Navigation indicators */}
                 <div
                     aria-label="Card navigation"
-                    className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2"
+                    className="absolute bottom-0 left-1/2 flex -translate-x-1/2 transform space-x-2"
                     role="tablist"
                 >
                     {Array.from({ length: items.length }, (_, i) => (

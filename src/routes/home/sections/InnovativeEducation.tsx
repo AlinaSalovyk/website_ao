@@ -34,7 +34,7 @@ export const InnovativeEducation = (): JSX.Element => {
                             ІННОВАЦІЙНА ОСВІТА
                         </h1>
                         <Separator className="w-full bg-separator-gray h-px" />
-                        <p className="max-w-xs xl:max-w-sm 2xl:max-w-[400px] [font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-lg xl:text-xl 2xl:text-2xl tracking-[0] leading-7 xl:leading-8">
+                        <p className="max-w-xs xl:max-w-sm 2xl:max-w-[400px] font-normal text-pure-black text-lg xl:text-xl 2xl:text-2xl tracking-[0] leading-7 xl:leading-8">
                             Створюємо майбутнє разом: технології, бізнес та аналітика в єдиному
                             просторі.
                         </p>
@@ -52,7 +52,7 @@ export const InnovativeEducation = (): JSX.Element => {
                                             {stat.number}
                                         </h2>
                                     </div>
-                                    <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-lg tracking-[0] leading-[24px] whitespace-pre-line">
+                                    <p className="font-normal text-pure-black text-lg tracking-[0] leading-[24px] whitespace-pre-line">
                                         {stat.description}
                                     </p>
                                     {stat.imageSrc && (

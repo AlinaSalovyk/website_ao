@@ -47,7 +47,7 @@ export const Departments = (): JSX.Element => {
             <div className="flex flex-col w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9 [--card-height:500px] md:[--card-height:900px]">
                 <ScrollableCardStack
                     items={departments}
-                    cardHeight={900}
+                    cardHeight={750}
                     perspective={1200}
                     transitionDuration={200}
                 />

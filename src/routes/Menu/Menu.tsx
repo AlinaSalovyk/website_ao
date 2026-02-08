@@ -83,7 +83,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                         className="h-auto p-0 hover:bg-transparent justify-start w-full"
                                         onClick={() => handleNavigation(item)}
                                     >
-                                        <span className="[font-family:'Atyp_Display-Regular',Helvetica] text-white text-2xl leading-8 font-normal">
+                                        <span className="text-white text-2xl leading-8 font-normal">
                                             {item}
                                         </span>
                                     </Button>
@@ -101,7 +101,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             variant="ghost"
                                             className="h-auto p-0 hover:bg-transparent justify-between w-full"
                                         >
-                                            <span className="[font-family:'Atyp_Display-Regular',Helvetica] text-pure-white text-2xl leading-8 font-normal">
+                                            <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Освітні програми
                                             </span>
                                             <MinusIcon className="w-5 h-5 text-pure-white" />
@@ -127,13 +127,13 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
 
                                                 <div className="inline-flex flex-col items-start justify-center">
                                                     <div className="inline-flex flex-col items-start">
-                                                        <span className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-white text-sm leading-[18px]">
+                                                        <span className="font-medium text-pure-white text-sm leading-[18px]">
                                                             {program.title}
                                                         </span>
                                                     </div>
 
                                                     <div className="inline-flex flex-col items-start">
-                                                        <span className="[font-family:'Inter',Helvetica] font-normal text-news-gray text-xs leading-[18.3px]">
+                                                        <span className="font-normal text-news-gray text-xs leading-[18.3px]">
                                                             {program.description}
                                                         </span>
                                                     </div>
@@ -151,7 +151,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             variant="ghost"
                                             className="h-auto p-0 hover:bg-transparent justify-between w-full"
                                         >
-                                            <span className="[font-family:'Atyp_Display-Regular',Helvetica] text-pure-white text-2xl leading-8 font-normal">
+                                            <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Кафедри інституту
                                             </span>
                                             <PlusIcon className="w-5 h-5 text-pure-white" />
@@ -171,7 +171,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                         className="h-auto p-0 hover:bg-transparent justify-start w-full"
                                         onClick={() => handleNavigation(item)}
                                     >
-                                        <span className="[font-family:'Atyp_Display-Regular',Helvetica] text-white text-2xl leading-8 font-normal">
+                                        <span className="text-white text-2xl leading-8 font-normal">
                                             {item}
                                         </span>
                                     </Button>
@@ -190,7 +190,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start"
                                     >
-                                        <span className="[font-family:'Inter',Helvetica] font-normal text-news-gray text-sm leading-4">
+                                        <span className="font-normal text-news-gray text-sm leading-4">
                                             {link}
                                         </span>
                                     </Button>
@@ -204,7 +204,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start"
                                     >
-                                        <span className="[font-family:'Inter',Helvetica] font-normal text-news-gray text-sm leading-4">
+                                        <span className="font-normal text-news-gray text-sm leading-4">
                                             {link}
                                         </span>
                                     </Button>

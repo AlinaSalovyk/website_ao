@@ -18,7 +18,7 @@ export const InstituteLeadership = (): JSX.Element => {
                         <div className="flex flex-col w-full">
                             <a
                                 href="#"
-                                className="flex items-center justify-between w-full [font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-black text-sm tracking-[0] leading-5 hover:opacity-70 transition-opacity group pb-2 border-b border-pure-black"
+                                className="flex items-center justify-between w-full font-medium text-pure-black text-sm tracking-[0] leading-5 hover:opacity-70 transition-opacity group pb-2 border-b border-pure-black"
                             >
                                 <span>Дізнатися більше</span>
                                 <span className="transition-transform group-hover:translate-x-1">→</span>
@@ -42,34 +42,34 @@ export const InstituteLeadership = (): JSX.Element => {
                             />
                         </div>
 
-                        <div className="flex flex-col items-start">
+                        <div className="flex flex-col items-start text-left">
                             <div className="mb-8">
-                                <h3 className="[font-family:'Atyp_Display-Semibold',Helvetica] font-semibold text-pure-black text-xl tracking-[0] leading-7 mb-2">
+                                <h3 className="font-semibold text-pure-black text-xl tracking-[0] leading-7 mb-2">
                                     Новоселецький Олександр Миколайович
                                 </h3>
-                                <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-sm tracking-[0] leading-5">
+                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-5">
                                     Директор Інституту ІТ та бізнесу, кандидат економічних наук, доцент<br />
                                     кафедри інформаційних технологій та аналітики даних
                                 </p>
                             </div>
 
                             <div className="mb-4">
-                                <p className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-black text-sm tracking-[0] leading-5 mb-0">
+                                <p className="font-medium text-pure-black text-sm tracking-[0] leading-5 mb-0">
                                     Контактна інформація:
                                 </p>
                                 <a
                                     href="mailto:oleksandr.novoseletskyi@oa.edu.ua"
-                                    className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-sm tracking-[0] leading-5 underline hover:text-leadership-link transition-colors"
+                                    className="font-normal text-pure-black text-sm tracking-[0] leading-5 underline hover:text-leadership-link transition-colors"
                                 >
                                     e-mail: oleksandr.novoseletskyi@oa.edu.ua
                                 </a>
                             </div>
 
                             <div>
-                                <p className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-black text-sm tracking-[0] leading-5 mb-0">
+                                <p className="font-medium text-pure-black text-sm tracking-[0] leading-5 mb-0">
                                     Офісні години:
                                 </p>
-                                <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-sm tracking-[0] leading-5">
+                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-5">
                                     понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30
                                 </p>
                             </div>
