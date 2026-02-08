@@ -119,10 +119,10 @@ export const NewsAndEvents = (): JSX.Element => {
     return (
         <section className="w-full bg-pure-white">
             {/* News Section */}
-            <div className="w-full flex items-center justify-center px-0 py-20">
-                <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start px-9">
+            <div className="w-full flex items-center justify-center px-0 py-10 md:py-20">
+                <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start px-4 md:px-9">
                     <header className="flex flex-col items-start w-full mb-10 translate-y-[-1rem] animate-fade-in opacity-0">
-                        <h2 className="w-full text-center [font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-5xl xl:text-7xl 2xl:text-[80px] tracking-[0] leading-tight xl:leading-[80px]">
+                        <h2 className="w-full text-center [font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-4xl md:text-5xl xl:text-7xl 2xl:text-[80px] tracking-[0] leading-tight xl:leading-[80px]">
                             Новини та події
                         </h2>
                     </header>
@@ -131,7 +131,7 @@ export const NewsAndEvents = (): JSX.Element => {
                         <Separator className="w-full bg-news-gray" />
                     </div>
 
-                    <div className="grid grid-cols-4 gap-5 pt-20 w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-10 md:pt-20 w-full">
                         {newsItems.map((item, index) => (
                             <Card
                                 key={item.id}
@@ -144,7 +144,7 @@ export const NewsAndEvents = (): JSX.Element => {
                             >
                                 <CardContent className="p-0 flex flex-col h-full">
                                     <div
-                                        className="w-full h-36 xl:h-44 2xl:h-[198px] rounded-lg bg-cover bg-center bg-no-repeat"
+                                        className="w-full h-48 sm:h-64 md:h-36 xl:h-44 2xl:h-[198px] rounded-lg bg-cover bg-center bg-no-repeat"
                                         style={{ backgroundImage: `url(${item.backgroundImage})` }}
                                     />
 
@@ -197,25 +197,25 @@ export const NewsAndEvents = (): JSX.Element => {
 
             {/* Navigation Footer */}
             <div className="w-full bg-pure-white">
-                <div className="flex flex-col items-start gap-10 px-0 py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
+                <div className="flex flex-col items-start gap-10 px-0 py-10 md:py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
                     <Separator className="w-full bg-layout-bg" />
 
-                    <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full items-start px-9">
-                        <nav className="flex items-start justify-between w-full">
-                            <div className="flex items-start gap-6">
+                    <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full items-start px-4 md:px-9">
+                        <nav className="flex flex-col md:flex-row items-center md:items-start justify-between w-full">
+                            <div className="flex items-start gap-6 mb-10 md:mb-0">
                                 {socialIcons.map((item, index) => (
                                     <Button
                                         key={index}
                                         variant="outline"
                                         size="icon"
-                                        className="w-15 h-15 rounded-full border-layout-bg hover:bg-layout-bg hover:border-layout-bg transition-colors [&>svg]:w-full [&>svg]:h-full"
+                                        className="w-12 h-12 md:w-15 md:h-15 rounded-full border-layout-bg hover:bg-layout-bg hover:border-layout-bg transition-colors [&>svg]:w-6 [&>svg]:h-6 md:[&>svg]:w-full md:[&>svg]:h-full"
                                     >
                                         {item.icon}
                                     </Button>
                                 ))}
                             </div>
 
-                            <div className="flex flex-col w-48 xl:w-64 2xl:w-[300px] items-start gap-4">
+                            <div className="flex flex-col w-full md:w-48 xl:w-64 2xl:w-[300px] items-center md:items-start gap-4">
                                 {navigationItems.map((item, index) => (
                                     <button
                                         key={index}

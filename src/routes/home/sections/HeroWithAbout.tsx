@@ -4,10 +4,10 @@ const tags = ["ІТ", "БІЗНЕС", "МЕНЕДЖМЕНТ", "ФІНАНСИ", 
 
 export const HeroWithAbout = (): JSX.Element => {
   return (
-    <section className="relative w-full">
+    <section className="relative w-full overflow-hidden">
       {/* Background Gradients & Images */}
       <div
-        className="absolute top-0 left-0 w-full h-[900px] xl:h-[1200px] 2xl:h-[1800px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient"
+        className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient"
       />
 
       <img
@@ -17,30 +17,30 @@ export const HeroWithAbout = (): JSX.Element => {
       />
 
       {/* Hero Title */}
-      <div className="relative min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-9 flex flex-col justify-end pb-20 z-10 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-        <div className="relative z-10">
-          <div className="flex justify-between items-baseline w-full">
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl xl:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+      <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-10 lg:pb-20 z-10 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
+        <div className="relative z-10 pt-32 lg:pt-0">
+          <div className="flex justify-between items-baseline w-full flex-wrap gap-2">
+            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
               Обирай
             </span>
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl xl:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
               навчання,
             </span>
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl xl:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
               яке
             </span>
           </div>
-          <div className="flex justify-between items-baseline w-full">
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl xl:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+          <div className="flex justify-between items-baseline w-full flex-wrap gap-2">
+            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
               відповідає
             </span>
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl xl:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
               викликам
             </span>
           </div>
 
           <div className="flex justify-start">
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl xl:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
               майбутнього!
             </span>
           </div>
@@ -49,14 +49,14 @@ export const HeroWithAbout = (): JSX.Element => {
 
       {/* About Section */}
       <div className="relative w-full py-16 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-        <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-9">
+        <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9">
           {/* Blue Line + Tags */}
           <div className="mb-12">
             {/* Blue horizontal line */}
             <div className="w-full h-[1px] bg-pure-white/60 mb-6"></div>
 
             {/* Tags */}
-            <div className="flex items-center">
+            <div className="flex items-center flex-wrap gap-y-2">
               {tags.map((tag, index) => (
                 <div key={index} className="flex items-center">
                   <span className="inline-flex items-center gap-2">
@@ -72,9 +72,9 @@ export const HeroWithAbout = (): JSX.Element => {
           </div>
 
           {/* Description Section with Image */}
-          <div className="grid grid-cols-2 gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             {/* Left Column - Text */}
-            <div className="flex flex-col gap-10 max-w-md xl:max-w-lg 2xl:max-w-[580px]">
+            <div className="flex flex-col gap-8 lg:gap-10 max-w-full lg:max-w-lg 2xl:max-w-[580px]">
               <p className="font-['Atyp_Text-Regular',Helvetica] text-hero-text text-base xl:text-lg 2xl:text-[18px] leading-[1.7]">
                 Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Ми поєднуємо технології, бізнес та інновації, щоб готувати фахівців, які не просто адаптуються до змін, а й створюють їх.
               </p>
@@ -84,11 +84,11 @@ export const HeroWithAbout = (): JSX.Element => {
             </div>
 
             {/* Right Column - Blue Sphere Image */}
-            <div className="flex justify-end">
+            <div className="hidden lg:flex justify-end">
               <img
                 src="/images/Home/sphere.jpg"
                 alt="Abstract 3D sphere"
-                className="w-64 xl:w-80 2xl:w-[420px] h-auto object-contain mix-blend-lighten"
+                className="w-full xl:w-80 2xl:w-[420px] h-auto object-contain mix-blend-lighten"
               />
             </div>
           </div>
