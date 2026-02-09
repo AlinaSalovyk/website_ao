@@ -42,9 +42,9 @@ const educationalPrograms = [
 export const EducationalPrograms = (): JSX.Element => {
     return (
         <section className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
-            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-9">
+            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9">
                 <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0">
-                    <h2 className="font-medium text-pure-black text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] whitespace-nowrap">
+                    <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] whitespace-normal md:whitespace-nowrap">
                         Освітні програми
                     </h2>
                 </header>
@@ -65,7 +65,7 @@ export const EducationalPrograms = (): JSX.Element => {
                                             </h3>
                                         </div>
                                         {/* Description and button column */}
-                                        <div className="flex flex-col items-start justify-between pr-10">
+                                        <div className="flex flex-col items-start justify-between pr-0 lg:pr-10">
                                             <div className="flex flex-col items-start w-full">
                                                 <p className="font-normal text-pure-black text-sm tracking-[0] leading-6 whitespace-pre-line">
                                                     {program.description}
@@ -87,7 +87,7 @@ export const EducationalPrograms = (): JSX.Element => {
                                             </Button>
                                         </div>
                                         {/* Image column */}
-                                        <div className="flex items-start justify-end">
+                                        <div className="hidden lg:flex items-start justify-end">
                                             <img
                                                 className="w-64 xl:w-72 2xl:w-[340px] h-72 xl:h-80 2xl:h-[400px] rounded-lg object-cover"
                                                 alt={program.title}

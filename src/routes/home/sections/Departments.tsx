@@ -43,8 +43,8 @@ const departments: DepartmentItem[] = [
 
 export const Departments = (): JSX.Element => {
     return (
-        <section className="w-full bg-layout-bg flex flex-col items-center justify-center  pb-4">
-            <div className="flex flex-col w-full max-w-7xl 2xl:max-w-screen-2xl px-9">
+        <section className="w-full bg-layout-bg flex flex-col items-center justify-center py-20">
+            <div className="flex flex-col w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9 [--card-height:500px] md:[--card-height:900px]">
                 <ScrollableCardStack
                     items={departments}
                     cardHeight={750}

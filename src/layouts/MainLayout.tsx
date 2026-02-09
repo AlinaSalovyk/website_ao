@@ -14,13 +14,13 @@ export const MainLayout = ({ children }: MainLayoutProps): JSX.Element => {
 
   return (
     <div
-      className="bg-layout-bg overflow-hidden w-full min-w-[1440px] flex justify-center"
+      className="bg-layout-bg overflow-hidden w-full min-h-screen flex justify-center"
       data-model-id="530:5377"
     >
       {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
       <div className="flex w-full relative flex-col items-start min-h-screen">
         {/* Header */}
-        <header className="relative w-full flex justify-between items-center px-9 py-5 z-50 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:0ms]">
+        <header className="relative w-full flex justify-between items-center px-4 md:px-9 py-5 z-50 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:0ms]">
           <button
             onClick={handleMenuClick}
             className="rounded-[20px] border border-white/80 bg-transparent text-white px-5 py-2 uppercase text-[11px] tracking-[0.15em] font-medium hover:bg-white/10 transition-colors"
