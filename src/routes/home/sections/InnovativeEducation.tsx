@@ -57,7 +57,7 @@ export const InnovativeEducation = (): JSX.Element => {
                                     </p>
                                     {stat.imageSrc && (
                                         <img
-                                            className="w-full max-w-48 xl:max-w-64 xl:max-w-[300px]"
+                                            className="hidden lg:block w-full max-w-48 xl:max-w-64 xl:max-w-[300px]"
                                             alt="Decorative container"
                                             src={stat.imageSrc}
                                         />
