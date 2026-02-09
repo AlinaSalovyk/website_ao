@@ -63,6 +63,6 @@ export const MainLayout = ({ children }: MainLayoutProps): JSX.Element => {
         {/* Page Content */}
         {children}
       </div>
-    </div>
+    </div >
   );
 };
