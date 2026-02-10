@@ -6,7 +6,7 @@ export const InstituteLeadership = (): JSX.Element => {
         <section className="w-full bg-pure-white flex flex-col relative">
             <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9 py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
                 <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[72px] tracking-[0] leading-tight xl:leading-[86px] mb-10 self-start md:self-end text-left md:text-right">
-                    Керівництво інституту
+                    Директор інституту
                 </h2>
                 <Separator className="w-full bg-pure-black h-px mb-16" />
 
@@ -26,14 +26,9 @@ export const InstituteLeadership = (): JSX.Element => {
                         </div>
                     </div>
 
-                    <div className="hidden lg:flex flex-col items-center gap-1 xl:gap-1.5 2xl:gap-[5px] self-center h-20 xl:h-24 2xl:h-[109px]">
-                        <div className="w-0.5 h-8 xl:h-10 2xl:h-[40px] rounded-sm bg-separator-gray" />
-                        <div className="w-0.5 h-4 xl:h-[18px] rounded-sm bg-leadership-dot" />
-                        <div className="w-0.5 h-4 xl:h-[18px] rounded-sm bg-leadership-dot" />
-                        <div className="w-0.5 h-4 xl:h-[18px] rounded-sm bg-leadership-dot" />
-                    </div>
 
-                    <div className="flex flex-col md:flex-row items-start gap-8 flex-1 w-full">
+
+                    <div className="flex flex-col md:flex-row items-start gap-8 flex-1 w-full lg:ml-10 2xl:ml-50">
                         <div className="w-full md:w-40 xl:w-48 2xl:w-[200px] h-64 md:h-48 xl:h-56 2xl:h-[240px] overflow-hidden flex-shrink-0 rounded-sm">
                             <img
                                 src="/images/Home/novoseletskyy.jpg"
