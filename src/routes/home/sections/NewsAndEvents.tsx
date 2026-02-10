@@ -70,6 +70,22 @@ export const NewsAndEvents = (): JSX.Element => {
                     </header>
 
                     <div className="flex flex-col w-full items-end pt-10 pb-0 px-0 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
+                        <a 
+                            href="#" 
+                            className="flex flex-col items-end gap-1 mb-2 group cursor-pointer hover:opacity-70 transition-opacity"
+                        >
+                            <div className="flex items-center gap-6">
+                                <span className="[font-family:'Roboto',Helvetica] font-normal text-pure-black text-sm xl:text-lg 2xl:text-[22px] tracking-[0]">
+                                    Більше новин
+                                </span>
+                                <div className="group-hover:translate-x-1 transition-transform duration-300">
+                                    <svg width="42" height="14" viewBox="0 0 42 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[30px] xl:w-[36px] 2xl:w-[42px] h-auto">
+                                        <path d="M0 7H40M40 7L34 1M40 7L34 13" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div className="w-full h-[1px] bg-pure-black mt-1" />
+                        </a>
                         <Separator className="w-full bg-news-gray" />
                     </div>
 
@@ -137,53 +153,7 @@ export const NewsAndEvents = (): JSX.Element => {
                 </div>
             </div>
 
-            {/* Navigation Footer */}
-            <div className="w-full bg-pure-white">
-                <div className="flex flex-col items-start gap-10 px-0 py-10 md:py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
-                    <Separator className="w-full bg-layout-bg" />
 
-                    <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full items-start px-4 md:px-9">
-                        <nav className="flex flex-col md:flex-row items-center md:items-start justify-between w-full">
-                            <div className="flex items-start gap-6 mb-10 md:mb-0">
-                                {socialIcons.map((item, index) => (
-                                    <Button
-                                        key={index}
-                                        variant="outline"
-                                        size="icon"
-                                        className="w-12 h-12 md:w-15 md:h-15 rounded-full border-layout-bg hover:bg-layout-bg hover:border-layout-bg transition-colors [&>svg]:w-6 [&>svg]:h-6 md:[&>svg]:w-full md:[&>svg]:h-full"
-                                    >
-                                        {item.icon}
-                                    </Button>
-                                ))}
-                            </div>
-
-                            <div className="flex flex-col w-full md:w-48 xl:w-64 2xl:w-[300px] items-center md:items-start gap-4">
-                                {navigationItems.map((item, index) => (
-                                    <button
-                                        key={index}
-                                        className="flex max-w-48 xl:max-w-64 2xl:max-w-[310px] items-center w-full group cursor-pointer"
-                                    >
-                                        <div className="flex flex-col items-start flex-1">
-                                            <div className="flex items-start w-full">
-                                                <span
-                                                    className={`[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-[6px] xl:text-[7px] 2xl:text-[8px] tracking-[0] leading-[14px] whitespace-nowrap ${item.isActive ? "text-leadership-link" : "text-pure-black"
-                                                        } group-hover:text-leadership-link transition-colors`}
-                                                >
-                                                    {item.label}
-                                                </span>
-                                                <div className="w-2 xl:w-[9.69px] h-2.5 ml-auto mr-[-0.69px] overflow-hidden">
-                                                    <div className="relative top-0.5 left-2.5 w-1 xl:w-[5px] h-1 xl:h-[5px] bg-leadership-link" />
-                                                </div>
-                                            </div>
-                                            <Separator className="w-full bg-pure-black" />
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </nav>
-                    </div>
-                </div>
-            </div>
         </section>
     );
 };

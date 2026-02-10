@@ -26,30 +26,30 @@ export const HeroWithAbout = (): JSX.Element => {
       </div>
 
       {/* Hero Title */}
-      <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-10 lg:pb-20 z-10 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
+      <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-6 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms]">
         <div className="relative z-10 pt-32 lg:pt-0">
-          <div className="flex justify-between items-baseline w-full flex-wrap gap-2">
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+          <div className="flex justify-start items-baseline w-full flex-wrap gap-x-3 gap-y-2">
+            <span className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
               Обирай
             </span>
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+            <span className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
               навчання,
             </span>
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+            <span className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
               яке
             </span>
           </div>
-          <div className="flex justify-between items-baseline w-full flex-wrap gap-2">
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+          <div className="flex justify-start items-baseline w-full flex-wrap gap-x-4 gap-y-2">
+            <span className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
               відповідає
             </span>
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+            <span className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
               викликам
             </span>
           </div>
 
           <div className="flex justify-start">
-            <span className="font-['Atyp_Display-Regular',Helvetica] text-pure-white text-4xl md:text-5xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.01em] italic">
+            <span className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
               майбутнього!
             </span>
           </div>
@@ -84,10 +84,10 @@ export const HeroWithAbout = (): JSX.Element => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             {/* Left Column - Text */}
             <div className="flex flex-col gap-8 lg:gap-10 max-w-full lg:max-w-lg 2xl:max-w-[580px]">
-              <p className="font-['Atyp_Text-Regular',Helvetica] text-hero-text text-base xl:text-lg 2xl:text-[18px] leading-[1.7]">
+              <p className="font-['Roboto',sans-serif] text-pure-white text-base xl:text-lg 2xl:text-[18px] leading-[1.7]">
                 Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Ми поєднуємо технології, бізнес та інновації, щоб готувати фахівців, які не просто адаптуються до змін, а й створюють їх.
               </p>
-              <p className="text-hero-text text-base xl:text-lg 2xl:text-[18px] leading-[1.7]">
+              <p className="font-['Roboto',sans-serif] text-pure-white text-base xl:text-lg 2xl:text-[18px] leading-[1.7]">
                 Наші студенти отримують актуальні знання та практичний досвід у IT, аналітиці, управлінні й підприємництві. Співпраця з провідними компаніями дає їм конкурентні переваги у світі технологій та бізнесу.
               </p>
             </div>

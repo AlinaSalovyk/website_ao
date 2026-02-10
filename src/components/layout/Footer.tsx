@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { socialIcons } from "@/components/icons/SocialIcons";
+import { getSocialIcons } from "@/components/icons/SocialIcons";
 import type { JSX } from "react";
 
 const navigationItems = [
@@ -11,6 +11,8 @@ const navigationItems = [
 ];
 
 export const Footer = (): JSX.Element => {
+    const footerSocials = getSocialIcons("fill-pure-black", "fill-transparent", "size-full");
+
     return (
         <section className="flex flex-col w-full items-start relative bg-pure-white flex-1">
             <div className="flex flex-col w-full items-center justify-center py-8 bg-layout-bg relative flex-1">
@@ -22,16 +24,6 @@ export const Footer = (): JSX.Element => {
 
                 <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start justify-center px-4 md:px-9 py-0 relative flex-1">
                     <div className="flex flex-col items-start justify-between flex-1 w-full">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-start w-full gap-4 sm:gap-8 mb-6 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-                            <button className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-nowrap hover:opacity-80 transition-opacity cursor-pointer">
-                                Cookie Preference
-                            </button>
-
-                            <span className="[font-family:'Atyp_Text-Medium',Helvetica] font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-normal sm:whitespace-nowrap">
-                                Національний університет &quot;Острозька академія&quot;
-                            </span>
-                        </div>
-
                         <div className="flex flex-col lg:flex-row items-stretch justify-between flex-1 w-full gap-4 mt-4 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
                             <Card className="w-full lg:w-[413px] bg-footer-card-deep border-none rounded-lg hover:scale-[1.02] transition-transform duration-300">
                                 <CardContent className="flex flex-col items-start justify-between h-full gap-16 sm:gap-[247.48px] p-6">
@@ -104,34 +96,78 @@ export const Footer = (): JSX.Element => {
                                 </CardContent>
                             </Card>
                         </div>
-
-                        <div className="flex flex-row items-center justify-between w-full mt-6 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:800ms]">
-                            <div className="flex flex-row items-center gap-8">
-                                <button className="font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-nowrap transition-opacity cursor-pointer">
-                                    Cookie Preference
-                                </button>
-
-                                <span className="font-medium text-pure-white text-xs tracking-[0] leading-[18px] whitespace-nowrap">
-                                    Національний університет &quot;Острозька академія&quot;
-                                </span>
-                            </div>
-
-                            <div className="flex flex-row items-center gap-4">
-                                {socialIcons.map((icon, index) => (
-                                    <a
-                                        key={index}
-                                        href="#"
-                                        className="transition-opacity hover:opacity-80"
-                                        aria-label={icon.alt}
-                                    >
-                                        {icon.icon}
-                                    </a>
-                                ))}
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </div >
+            </div>
+
+            <div className="w-full bg-pure-white py-8 md:py-10 border-t border-layout-bg/10">
+                <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
+                    {/* Left Column - Contacts */}
+                    <div className="flex flex-col gap-0.5 [font-family:'Roboto',sans-serif] text-pure-black text-sm lg:text-base leading-[1.3]">
+                        <a
+                            href="https://www.google.com/maps/place/%D0%B2%D1%83%D0%BB.+%D0%A1%D0%B5%D0%BC%D1%96%D0%BD%D0%B0%D1%80%D1%81%D1%8C%D0%BA%D0%B0,+2,+%D0%9E%D1%81%D1%82%D1%80%D0%BE%D0%B3,+%D0%A0%D1%96%D0%B2%D0%BD%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B0+%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C,+35800/@50.3228186,26.5054707,17z/data=!3m1!4b1!4m6!3m5!1s0x472dada058296a2f:0x6b1660ca4f5d22f6!8m2!3d50.3228152!4d26.5080456!16s%2Fg%2F12hn9506l?entry=ttu"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline"
+                        >
+                            <p>35800, м. Острог</p>
+                            <p>вул. Семінарська, 2</p>
+                        </a>
+                        <a href="https://www.oa.edu.ua" className="hover:underline">www.oa.edu.ua</a>
+                        <a href="mailto:press@oa.edu.ua" className="hover:underline">press@oa.edu.ua</a>
+                        <p>+38 067 879 2526</p>
+                    </div>
+
+                    {/* Middle Column - Socials */}
+                    <div className="flex items-center gap-4 lg:gap-6">
+                        {footerSocials.map((icon, index) => (
+                            <a
+                                key={index}
+                                href="#"
+                                className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
+                                aria-label={icon.alt}
+                            >
+                                <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover:invert group-hover:brightness-0 group-hover:filter transition-all flex items-center justify-center translate-y-[1px]">
+                                    {icon.icon}
+                                </div>
+                            </a>
+                        ))}
+                    </div>
+
+                    <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
+                        {navigationItems.map((item, index) => (
+                            <button
+                                key={index}
+                                className="flex flex-col w-full group cursor-pointer"
+                            >
+                                <div className="flex items-center justify-between w-full pb-1">
+                                    <span
+                                        className={`[font-family:'Roboto',sans-serif] font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${item.isActive ? "text-leadership-link" : "text-pure-black"
+                                            } group-hover:text-leadership-link`}
+                                    >
+                                        {item.label}
+                                    </span>
+                                    {item.isActive && (
+                                        <div className="w-1.5 h-1.5 bg-leadership-link rounded-sm" />
+                                    )}
+                                </div>
+                                <Separator className="w-full bg-pure-black/20 group-hover:bg-pure-black transition-colors" />
+                            </button>
+                        ))}
+                    </nav>
+                </div>
+            </div>
+
+            <div className="w-full bg-pure-black py-4">
+                <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-row items-center gap-8">
+                    <button className="[font-family:'Roboto',sans-serif] font-medium text-pure-white text-[10px] lg:text-xs tracking-wide hover:opacity-70 transition-opacity">
+                        Cookie Preference
+                    </button>
+                    <span className="[font-family:'Roboto',sans-serif] font-medium text-pure-white text-[10px] lg:text-xs tracking-wide">
+                        Національний університет &quot;Острозька академія&quot;
+                    </span>
+                </div>
+            </div>
         </section >
     );
 };

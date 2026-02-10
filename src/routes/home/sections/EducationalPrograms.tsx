@@ -44,7 +44,7 @@ export const EducationalPrograms = (): JSX.Element => {
         <section className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
             <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9">
                 <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0">
-                    <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] whitespace-normal md:whitespace-nowrap">
+                    <h2 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] whitespace-normal md:whitespace-nowrap">
                         Освітні програми
                     </h2>
                 </header>
