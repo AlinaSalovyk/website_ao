@@ -1,4 +1,6 @@
-import { MinusIcon, PlusIcon, XIcon } from "lucide-react";
+import { XIcon } from "lucide-react";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { Separator } from "@/components/ui/separator";
@@ -43,11 +45,14 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
         onClose();
     };
 
+    const [isProgramsOpen, setIsProgramsOpen] = useState(true);
+    const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(false);
+
     const handleNavigation = (item: string) => {
         if (item === "Головна") {
-            onClose();
+            window.location.href = "/";
         }
-        // Add more navigation logic here as needed
+        onClose();
     };
 
     return (
@@ -92,7 +97,8 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                             ))}
 
                             <Collapsible.Root
-                                defaultOpen
+                                open={isProgramsOpen}
+                                onOpenChange={setIsProgramsOpen}
                                 className="flex flex-col items-start w-full"
                             >
                                 <div className="inline-flex flex-col items-start gap-1 w-full">
@@ -104,10 +110,18 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Освітні програми
                                             </span>
-                                            <MinusIcon className="w-5 h-5 text-pure-white" />
+                                            <div className="relative flex items-center justify-center w-5 h-5">
+                                                <div className="absolute w-5 h-[1px] bg-white transition-transform duration-300" />
+                                                <div
+                                                    className={cn(
+                                                        "absolute w-5 h-[1px] bg-white transition-transform duration-300",
+                                                        isProgramsOpen ? "rotate-0" : "-rotate-90"
+                                                    )}
+                                                />
+                                            </div>
                                         </Button>
                                     </Collapsible.Trigger>
-                                    <Separator className="w-full h-px bg-menu-separator" />
+                                    <Separator className="w-full h-px bg-[#ffffff33]" />
                                 </div>
 
                                 <Collapsible.Content className="flex flex-col items-start w-full">
@@ -144,7 +158,11 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                 </Collapsible.Content>
                             </Collapsible.Root>
 
-                            <Collapsible.Root className="flex flex-col items-start w-full">
+                            <Collapsible.Root
+                                open={isDepartmentsOpen}
+                                onOpenChange={setIsDepartmentsOpen}
+                                className="flex flex-col items-start w-full"
+                            >
                                 <div className="inline-flex flex-col items-start gap-1 w-full">
                                     <Collapsible.Trigger asChild>
                                         <Button
@@ -154,11 +172,30 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Кафедри інституту
                                             </span>
-                                            <PlusIcon className="w-5 h-5 text-pure-white" />
+                                            <div className="relative flex items-center justify-center w-5 h-5">
+                                                <div className="absolute w-5 h-[1px] bg-white transition-transform duration-300" />
+                                                <div
+                                                    className={cn(
+                                                        "absolute w-5 h-[1px] bg-white transition-transform duration-300",
+                                                        isDepartmentsOpen ? "rotate-0" : "-rotate-90"
+                                                    )}
+                                                />
+                                            </div>
                                         </Button>
                                     </Collapsible.Trigger>
-                                    <Separator className="w-full h-px bg-menu-separator" />
+                                    <Separator className="w-full h-px bg-[#ffffff33]" />
                                 </div>
+                                <Collapsible.Content className="flex flex-col items-start w-full pl-4">
+                                    <Button
+                                        variant="ghost"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2"
+                                        asChild
+                                    >
+                                        <a href="/information-technologies-and-data-analytics" className="text-pure-white text-lg leading-6 font-normal">
+                                            Кафедра інформаційних технологій та аналітики даних
+                                        </a>
+                                    </Button>
+                                </Collapsible.Content>
                             </Collapsible.Root>
 
                             {bottomSimpleMenuItems.map((item, index) => (

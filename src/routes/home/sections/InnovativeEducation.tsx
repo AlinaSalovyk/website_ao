@@ -40,7 +40,7 @@ export const InnovativeEducation = (): JSX.Element => {
                         </p>
                     </header>
 
-                    <div className="flex flex-col lg:flex-row items-center lg:items-start justify-end gap-10 lg:gap-16 xl:gap-32 2xl:gap-[200px] w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] mt-16 flex-1 pb-20">
+                    <div className="flex flex-col lg:flex-row items-center lg:items-start justify-end gap-10 lg:gap-16 xl:gap-32 2xl:gap-[200px] w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] mt-16 flex-1 pb-0">
                         {statsData.map((stat, index) => (
                             <Card
                                 key={index}
