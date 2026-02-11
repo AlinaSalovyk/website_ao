@@ -72,7 +72,7 @@ export const Footer = (): JSX.Element => {
 
                                     <div className="flex flex-col md:flex-row items-start md:items-end gap-8 md:gap-4 lg:gap-[172px] w-full justify-between">
                                         <div className="inline-flex flex-col items-start justify-end">
-                                            <h3 className="[font-family:'Atyp_Display-Semibold',Helvetica] font-normal text-pure-white text-5xl sm:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
+                                            <h3 className="[font-family:'Atyp_Display-Semibold',Helvetica] font-normal text-pure-white text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
                                                 Start Studying
                                             </h3>
                                         </div>
