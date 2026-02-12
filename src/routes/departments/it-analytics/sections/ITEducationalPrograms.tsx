@@ -19,7 +19,7 @@ export const ITEducationalPrograms = (): JSX.Element => {
                     {/* Left Column - Image */}
                     <div className="w-full md:w-2/3 lg:w-full mx-auto lg:mx-0 h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden">
                         <img
-                            src="/images/information.jpg"
+                            src="/images/IT/information.jpg"
                             alt="Abstract blue graphic"
                             className="w-full h-full object-cover"
                         />

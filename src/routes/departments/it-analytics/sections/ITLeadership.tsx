@@ -32,7 +32,7 @@ export const ITLeadership = (): JSX.Element => {
                     <div className="flex flex-col md:flex-row items-start gap-8 flex-1 w-full lg:ml-10 2xl:ml-50">
                         <div className="w-full md:w-40 xl:w-48 2xl:w-[200px] h-64 md:h-48 xl:h-56 2xl:h-[240px] overflow-hidden flex-shrink-0 rounded-sm">
                             <img
-                                src="/images/Home/kryvytska.jpg"
+                                src="/images/IT/kryvytska.jpg"
                                 alt="Кривицька Ольга Романівна"
                                 className="w-full h-full object-cover object-top"
                             />

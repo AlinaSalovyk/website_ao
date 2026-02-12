@@ -18,7 +18,7 @@ export const ITHeroWithAbout = (): JSX.Element => {
         <img
           className="w-full h-full object-contain"
           alt="Element black chrome"
-          src="/images/3D Black Chrome Shape1.png"
+          src="/images/IT/3D Black Chrome Shape1.png"
           style={{ filter: 'hue-rotate(-50deg) brightness(1.0) saturate(9.0)' }}
         />
       </div>
@@ -81,7 +81,7 @@ export const ITHeroWithAbout = (): JSX.Element => {
             {/* Right Column - Image */}
             <div className="hidden lg:flex justify-end -mt-5">
               <img
-                src="/images/sphere1.jpg"
+                src="/images/IT/sphere1.jpg"
                 alt="Abstract blue lines"
                 className="w-full xl:w-20 2xl:w-[280px] h-auto object-cover rounded-lg"
               />
