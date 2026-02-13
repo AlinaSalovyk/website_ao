@@ -1,75 +1,161 @@
 import { Separator } from "@/components/ui/separator";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+interface LeadershipMember {
+    id: number;
+    name: string;
+    role: string;
+    email: string;
+    officeHours: string;
+    image: string;
+}
+
+const leadershipData: LeadershipMember[] = [
+    {
+        id: 1,
+        name: "Новоселецький Олександр Миколайович",
+        role: "Директор Інституту ІТ та бізнесу, кандидат економічних наук, доцент кафедри інформаційних технологій та аналітики даних",
+        email: "oleksandr.novoseletskyi@oa.edu.ua",
+        officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
+        image: "/images/InstituteManagement/novoseletskyy.jpg"
+    },
+    {
+        id: 2,
+        name: "Шулик Юлія Віталіївна",
+        role: "Заступник директора з навчально-наукової роботи, кандидат економічних наук, доцент, завідувач кафедри фінансів та бізнесу",
+        email: "yulia.shulyk@oa.edu.ua",
+        officeHours: "понеділок-п'ятниця: 8.30-17.30, обідня перерва 12.30-13.30",
+        image: "/images/InstituteManagement/shulyk.jpg"
+    },
+    {
+        id: 3,
+        name: "Чернявський Андрій Володимирович",
+        role: "Заступник директора з навчально-виховної роботи, викладач кафедри інформаційних технологій та аналітики даних",
+        email: "andrii.cherniavskyi@oa.edu.ua",
+        officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
+        image: "/images/InstituteManagement/cherniavskyi.jpg"
+    },
+    {
+        id: 4,
+        name: "Козак Людмила Василівна",
+        role: "Заступник директора з питань якості освіти, доктор економічних наук, доцент кафедри менеджменту та маркетингу",
+        email: "lyudmyla.kozak@oa.edu.ua",
+        officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
+        image: "/images/InstituteManagement/Kozak.jpg"
+    },
+    {
+        id: 5,
+        name: "Новак Анна Федорівна",
+        role: "Заступник директора з профорієнтаційної роботи, викладач кафедри фінансів та бізнесу",
+        email: "anna.novak@oa.edu.ua",
+        officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
+        image: "/images/InstituteManagement/novak.jpg"
+    },
+    {
+        id: 6,
+        name: "Галецька Тамара Володимирівна",
+        role: "Старший лаборант",
+        email: "dekanat.ekonomichnyi@oa.edu.ua",
+        officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
+        image: "/images/InstituteManagement/haletska.jpg"
+    }
+];
 
 export const InstituteLeadership = (): JSX.Element => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    const handleNext = () => {
+        setCurrentIndex((prev) => (prev + 1) % leadershipData.length);
+    };
+
+    const handlePrev = () => {
+        setCurrentIndex((prev) => (prev - 1 + leadershipData.length) % leadershipData.length);
+    };
+
+    const currentMember = leadershipData[currentIndex];
+
     return (
-        <section className="w-full bg-pure-white flex flex-col relative">
-            <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9 py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-                <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[72px] tracking-[0] leading-tight xl:leading-[86px] mb-10 self-start md:self-end text-left md:text-right">
-                    Директор інституту
+        // Using a grey background similar to the screenshot
+        <section className="w-full bg-white flex flex-col relative py-20 transition-colors duration-300">
+            <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9">
+
+                {/* Header - Right Aligned as per grey screenshot */}
+                <h2 className="font-['Roboto',sans-serif] font-bold text-4xl md:text-5xl lg:text-6xl text-black text-right mb-10">
+                    Керівництво інституту
                 </h2>
-                <Separator className="w-full bg-pure-black h-px mb-16" />
+                <Separator className="w-full bg-black/40 h-px mb-16" />
 
-                <div className="flex flex-col lg:flex-row items-start w-full gap-10 lg:gap-16 xl:gap-32 2xl:gap-[200px]">
-                    <div className="flex flex-col items-start w-full lg:w-48 xl:w-56 2xl:w-[260px] flex-shrink-0">
-                        <p className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-sm tracking-[0] leading-6 italic mb-4">
-                            У світі, що стрімко змінюється, знання – це не просто сила, а ключ до можливостей. Наш інститут навчає не лише адаптуватися до майбутнього, а й створювати його.
-                        </p>
-                        <div className="flex flex-col w-full">
-                            <a
-                                href="#"
-                                className="flex items-center justify-between w-full font-medium text-pure-black text-sm tracking-[0] leading-5 hover:opacity-70 transition-opacity group pb-2 border-b border-pure-black"
-                            >
-                                <span>Дізнатися більше</span>
-                                <span className="transition-transform group-hover:translate-x-1">→</span>
-                            </a>
-                        </div>
-                    </div>
+                {/* Content Container */}
+                <div className="flex flex-col items-center w-full max-w-5xl mx-auto">
 
+                    <div className="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-16 w-full animate-fade-in">
 
-
-                    <div className="flex flex-col md:flex-row items-start gap-8 flex-1 w-full lg:ml-10 2xl:ml-50">
-                        <div className="w-full md:w-40 xl:w-48 2xl:w-[200px] h-64 md:h-48 xl:h-56 2xl:h-[240px] overflow-hidden flex-shrink-0 rounded-sm">
+                        {/* Image */}
+                        <div className="w-full md:w-[350px] aspect-square md:aspect-[4/5] overflow-hidden rounded-xl flex-shrink-0 bg-gray-300 shadow-lg">
                             <img
-                                src="/images/Home/novoseletskyy.jpg"
-                                alt="Новоселецький Олександр Миколайович"
-                                className="w-full h-full object-cover object-top"
+                                src={currentMember.image}
+                                alt={currentMember.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=No+Image';
+                                }}
                             />
                         </div>
 
-                        <div className="flex flex-col items-start text-left">
-                            <div className="mb-8">
-                                <h3 className="font-semibold text-pure-black text-xl tracking-[0] leading-7 mb-2">
-                                    Новоселецький Олександр Миколайович
-                                </h3>
-                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-5">
-                                    Директор Інституту ІТ та бізнесу, кандидат економічних наук, доцент<br />
-                                    кафедри інформаційних технологій та аналітики даних
-                                </p>
-                            </div>
+                        {/* Text Info */}
+                        <div className="flex flex-col text-left py-4 flex-1">
+                            {/* Name */}
+                            <h3 className="font-['Roboto',sans-serif] font-bold text-2xl md:text-3xl text-black mb-1">
+                                {currentMember.name}
+                            </h3>
 
-                            <div className="mb-4">
-                                <p className="font-medium text-pure-black text-sm tracking-[0] leading-5 mb-0">
-                                    Контактна інформація:
-                                </p>
-                                <a
-                                    href="mailto:oleksandr.novoseletskyi@oa.edu.ua"
-                                    className="font-normal text-pure-black text-sm tracking-[0] leading-5 underline hover:text-leadership-link transition-colors"
-                                >
-                                    e-mail: oleksandr.novoseletskyi@oa.edu.ua
-                                </a>
-                            </div>
+                            {/* Role */}
+                            <p className="font-['Roboto',sans-serif] text-sm md:text-base text-black/80 mb-10 leading-relaxed max-w-lg">
+                                {currentMember.role}
+                            </p>
 
-                            <div>
-                                <p className="font-medium text-pure-black text-sm tracking-[0] leading-5 mb-0">
-                                    Офісні години:
-                                </p>
-                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-5">
-                                    понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30
-                                </p>
+                            {/* Contact Info */}
+                            <div className="flex flex-col gap-6">
+                                <div>
+                                    <p className="font-['Roboto',sans-serif] font-bold text-sm text-black mb-1">
+                                        Контактна інформація:
+                                    </p>
+                                    <a href={`mailto:${currentMember.email}`} className="font-['Roboto',sans-serif] text-sm text-black hover:underline">
+                                        e-mail: {currentMember.email}
+                                    </a>
+                                </div>
+
+                                <div>
+                                    <p className="font-['Roboto',sans-serif] font-bold text-sm text-black mb-1">
+                                        Офісні години:
+                                    </p>
+                                    <p className="font-['Roboto',sans-serif] text-sm text-black">
+                                        {currentMember.officeHours}
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    {/* Navigation Arrows */}
+                    <div className="flex items-center gap-8 mt-16 md:mt-20">
+                        <button
+                            onClick={handlePrev}
+                            className="p-3 hover:bg-black/10 rounded-full transition-colors group"
+                            aria-label="Previous member"
+                        >
+                            <ArrowLeft className="w-8 h-8 text-black group-hover:scale-110 transition-transform" />
+                        </button>
+                        <button
+                            onClick={handleNext}
+                            className="p-3 hover:bg-black/10 rounded-full transition-colors group"
+                            aria-label="Next member"
+                        >
+                            <ArrowRight className="w-8 h-8 text-black group-hover:scale-110 transition-transform" />
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </section>

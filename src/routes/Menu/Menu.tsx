@@ -47,10 +47,13 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
 
     const [isProgramsOpen, setIsProgramsOpen] = useState(true);
     const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(false);
+    const [isLaboratoriesOpen, setIsLaboratoriesOpen] = useState(false);
 
     const handleNavigation = (item: string) => {
         if (item === "Головна") {
             window.location.href = "/";
+        } else if (item === "Про інститут") {
+            window.location.href = "/institute";
         }
         onClose();
     };
@@ -195,6 +198,38 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             Кафедра інформаційних технологій та аналітики даних
                                         </a>
                                     </Button>
+                                </Collapsible.Content>
+                            </Collapsible.Root>
+
+                            <Collapsible.Root
+                                open={isLaboratoriesOpen}
+                                onOpenChange={setIsLaboratoriesOpen}
+                                className="flex flex-col items-start w-full"
+                            >
+                                <div className="inline-flex flex-col items-start gap-1 w-full">
+                                    <Collapsible.Trigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            className="h-auto p-0 hover:bg-transparent justify-between w-full"
+                                        >
+                                            <span className="text-pure-white text-2xl leading-8 font-normal">
+                                                Лабораторії інституту
+                                            </span>
+                                            <div className="relative flex items-center justify-center w-5 h-5">
+                                                <div className="absolute w-5 h-[1px] bg-white transition-transform duration-300" />
+                                                <div
+                                                    className={cn(
+                                                        "absolute w-5 h-[1px] bg-white transition-transform duration-300",
+                                                        isLaboratoriesOpen ? "rotate-0" : "-rotate-90"
+                                                    )}
+                                                />
+                                            </div>
+                                        </Button>
+                                    </Collapsible.Trigger>
+                                    <Separator className="w-full h-px bg-[#ffffff33]" />
+                                </div>
+                                <Collapsible.Content className="flex flex-col items-start w-full pl-4">
+                                    {/* Content will go here */}
                                 </Collapsible.Content>
                             </Collapsible.Root>
 
