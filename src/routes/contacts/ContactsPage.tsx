@@ -70,7 +70,7 @@ export const ContactsPage = (): JSX.Element => {
 
                             <div className="w-full md:w-auto flex-shrink-0">
                                 <div className="w-full md:w-[200px] h-[300px] md:h-[200px] bg-gray-200 rounded-lg overflow-hidden">
-                                    <img src="/images/Home/novoseletskyy.jpg" alt="Новоселецький Олександр Миколайович" className="w-full h-full object-cover object-top" />
+                                    <img src="/images/InstituteManagement/novoseletskyy.jpg" alt="Новоселецький Олександр Миколайович" className="w-full h-full object-cover object-top" />
                                 </div>
                             </div>
 
