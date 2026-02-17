@@ -229,7 +229,15 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                     <Separator className="w-full h-px bg-[#ffffff33]" />
                                 </div>
                                 <Collapsible.Content className="flex flex-col items-start w-full pl-4">
-                                    {/* Content will go here */}
+                                    <Button
+                                        variant="ghost"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2"
+                                        asChild
+                                    >
+                                        <a href="/laboratory" className="text-pure-white text-lg leading-6 font-normal">
+                                            Лабораторія робототехніки та вбудованих систем
+                                        </a>
+                                    </Button>
                                 </Collapsible.Content>
                             </Collapsible.Root>
 

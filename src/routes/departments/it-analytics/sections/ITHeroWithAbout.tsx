@@ -9,7 +9,7 @@ export const ITHeroWithAbout = (): JSX.Element => {
       />
 
       <div
-        className="absolute -top-0 left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
+        className="absolute -top- left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
         style={{
           maskImage: 'linear-gradient(to bottom, black 60%, transparent 90%)',
           WebkitMaskImage: 'linear-gradient(to bottom, black 10%, transparent 90%)'

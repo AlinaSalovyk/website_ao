@@ -10,7 +10,7 @@ import { Footer } from "@/components/layout/Footer";
 
 export const ITDepartmentPage = (): JSX.Element => {
     return (
-        <MainLayout>
+        <MainLayout headerPosition="absolute">
             {/* Section 1: Hero with About */}
             <ITHeroWithAbout />
 
