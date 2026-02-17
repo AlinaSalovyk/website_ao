@@ -5,9 +5,10 @@ interface MainLayoutProps {
   children: ReactNode;
   variant?: "default" | "light"; // default is dark bg, light is white bg
   customLogo?: ReactNode;
+  headerPosition?: "relative" | "absolute";
 }
 
-export const MainLayout = ({ children, variant = "default", customLogo }: MainLayoutProps): JSX.Element => {
+export const MainLayout = ({ children, variant = "default", customLogo, headerPosition = "relative" }: MainLayoutProps): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleMenuClick = () => {
@@ -22,7 +23,7 @@ export const MainLayout = ({ children, variant = "default", customLogo }: MainLa
       {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
       <div className="flex w-full relative flex-col items-start min-h-screen">
         {/* Header */}
-        <header className="relative w-full flex justify-between items-center px-4 md:px-9 py-5 z-50 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:0ms]">
+        <header className={`${headerPosition} w-full flex justify-between items-center px-4 md:px-9 py-5 z-50 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:0ms]`}>
           <button
             onClick={handleMenuClick}
             className={`rounded-[20px] border px-5 py-2 uppercase text-[11px] tracking-[0.15em] font-medium transition-colors ${variant === "light" ? "border-pure-black/80 text-pure-black hover:bg-pure-black/10" : "border-white/80 bg-transparent text-white hover:bg-white/10"}`}
