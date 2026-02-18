@@ -81,23 +81,23 @@ export const HeroWithAbout = (): JSX.Element => {
           </div>
 
           {/* Description Section with Image */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-10 lg:gap-16 items-center">
             {/* Left Column - Text */}
-            <div className="flex flex-col gap-8 lg:gap-10 max-w-full lg:max-w-lg 2xl:max-w-[580px]">
-              <p className="font-['Roboto',sans-serif] text-pure-white text-base xl:text-lg 2xl:text-[18px] leading-[1.7]">
+            <div className="flex flex-col gap-8 lg:gap-10 w-full">
+              <p className="font-['Roboto',sans-serif] text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
                 Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Ми поєднуємо технології, бізнес та інновації, щоб готувати фахівців, які не просто адаптуються до змін, а й створюють їх.
               </p>
-              <p className="font-['Roboto',sans-serif] text-pure-white text-base xl:text-lg 2xl:text-[18px] leading-[1.7]">
+              <p className="font-['Roboto',sans-serif] text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
                 Наші студенти отримують актуальні знання та практичний досвід у IT, аналітиці, управлінні й підприємництві. Співпраця з провідними компаніями дає їм конкурентні переваги у світі технологій та бізнесу.
               </p>
             </div>
 
-            {/* Right Column - Blue Sphere Image */}
+            {/* Right Column - Image */}
             <div className="hidden lg:flex justify-end">
               <img
-                src="/images/Home/sphere.jpg"
-                alt="Abstract 3D sphere"
-                className="w-full xl:w-80 2xl:w-[420px] h-auto object-contain mix-blend-lighten"
+                src="/images/Home/pexels-mikae.jpg"
+                alt="Students working"
+                className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover rounded-2xl shadow-lg"
               />
             </div>
           </div>

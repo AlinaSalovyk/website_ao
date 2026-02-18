@@ -81,7 +81,7 @@ export const NewsAndEvents = (): JSX.Element => {
                                 </span>
                                 <div className="group-hover:translate-x-1 transition-transform duration-300">
                                     <svg width="42" height="14" viewBox="0 0 42 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[30px] xl:w-[36px] 2xl:w-[42px] h-auto">
-                                        <path d="M0 7H40M40 7L34 1M40 7L34 13" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                        <path d="M0 7H40M40 7L34 1M40 7L34 13" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                 </div>
                             </div>
@@ -111,7 +111,7 @@ export const NewsAndEvents = (): JSX.Element => {
                                             <div className="flex items-center justify-between w-full">
                                                 <Badge
                                                     variant="outline"
-                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link [font-family:'Atyp_Display-Regular',Helvetica] font-normal text-xs tracking-[0] leading-[10px]"
+                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link [font-family:'Atyp_Display-Regular',Helvetica] font-normal text-xs tracking-[0] leading-[10px] hover:bg-pure-black hover:text-white transition-colors duration-300 cursor-pointer"
                                                 >
                                                     {item.badge}
                                                 </Badge>
@@ -135,12 +135,12 @@ export const NewsAndEvents = (): JSX.Element => {
 
                                     <div className="flex flex-col w-full items-start pt-10 pb-0 px-0">
                                         <div className="flex flex-col w-full items-start gap-1 2xl:gap-[3px]">
-                                            <div className="flex items-center justify-between w-full group-hover:translate-x-1 transition-transform duration-300">
+                                            <div className="flex items-center justify-between w-full hover:translate-x-1 transition-transform duration-300 cursor-pointer">
                                                 <span className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-xs tracking-[0] leading-4">
                                                     {item.link}
                                                 </span>
 
-                                                <ArrowRightIcon className="w-4 xl:w-[19px] h-3" />
+                                                <ArrowRightIcon className="w-4 h-4 text-pure-black" />
                                             </div>
 
                                             <Separator className="w-full bg-pure-black" />
@@ -152,8 +152,6 @@ export const NewsAndEvents = (): JSX.Element => {
                     </div>
                 </div>
             </div>
-
-
         </section>
     );
 };
