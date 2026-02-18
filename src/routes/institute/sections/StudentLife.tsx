@@ -34,7 +34,7 @@ export const StudentLife = (): JSX.Element => {
                         <div className="order-1 w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
                             {/* Placeholder generic laptop image */}
                             <img
-                                src="/images/TheInstitute/StudentLife.jpg"
+                                src="/images/TheInstitute/Pexels.jpg"
                                 alt="Student working on laptop"
                                 className="w-full h-full object-cover"
                             />
