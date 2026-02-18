@@ -7,33 +7,46 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { partnerLogos } from "@/components/icons/PartnerLogos";
 
-const educationalPrograms = [
+interface Specialty {
+    name: string;
+    link?: string;
+}
+
+interface EducationalProgram {
+    title: string;
+    specialties: Specialty[];
+    image: string;
+}
+
+const educationalPrograms: EducationalProgram[] = [
     {
         title: "Бакалаврат",
-        description: `Перелік спеціальностей
-- D2 «Фінанси, банківська справа, страхування та фондовий ринок» (ОПП «Фінанси та бізнес-аналітика»)
-- D5 «Маркетинг» (ОПП «DATA-маркетинг та аналітика»)
-- D7 «Торгівля» (ОПП «Підприємництво та торгівля»)
-- F3 «Комп'ютерні науки» (ОПП «Комп'ютерні науки»)
-- F3 «Комп'ютерні науки» (ОПП «Робототехніка та машинне навчання»)
-- F3 «Комп'ютерні науки» (ОПП «Штучний інтелект та аналітика даних»)`,
+        specialties: [
+            { name: "D2 «Фінанси, банківська справа, страхування та фондовий ринок» (ОПП «Фінанси та бізнес-аналітика»)", link: "https://vstup.oa.edu.ua/specialnosti/finansi-bankivska-sprava-ta-strahuvannya" },
+            { name: "F3 «Комп'ютерні науки» (ОПП «Комп'ютерні науки»)", link: "https://vstup.oa.edu.ua/specialnosti/kompyuterni-nauki" },
+            { name: "D3 «Менеджмент» (ОПП «Підприємництво та управління бізнесом»)", link: "https://vstup.oa.edu.ua/specialnosti/business_and_trade" },
+            { name: "F3 «Комп'ютерні науки» (ОПП «Програмування роботизованих систем» (Робототехніка))", link: "https://vstup.oa.edu.ua/specialnosti/robotics_and_machine_learning" },
+            { name: "D5 «Маркетинг» (ОПП «DATA-маркетинг та аналітика»)", link: "https://vstup.oa.edu.ua/specialnosti/data-marketing-ta-analitika" },
+        ],
         image: "/images/EducationalPrograms/BachelorsDegree.png",
     },
     {
         title: "Магістратура",
-        description: `Перелік спеціальностей
-- D1 «Облік і оподаткування» (ОПП «Облік і оподаткування»)
-- D2 «Фінанси, банківська справа та страхування» (ОПП «Фінанси та бізнес-аналітика»)
-- D3 «Менеджмент» (ОПП «Менеджмент продажів та логістика»)
-- D3 «Менеджмент» (ОПП «HR-менеджмент»)
-- F3 «Комп'ютерні науки» (ОПП «Управління проєктами»)`,
+        specialties: [
+            { name: "D2 «Фінанси, банківська справа та страхування» (ОПП «Фінанси та бізнес-аналітика»)", link: "https://vstup.oa.edu.ua/specialnosti/finansi-bankivska-sprava-ta-strahuvannya" },
+            { name: "D3 «Менеджмент» (ОПП «Менеджмент продажів та логістика»)", link: "https://vstup.oa.edu.ua/specialnosti/menedzhment-prodazhiv-ta-logistika" },
+            { name: "F3 «Комп'ютерні науки» (ОПП «Управління IT-проєктами»)", link: "https://vstup.oa.edu.ua/specialnosti/upravlinnya-proektami" },
+            { name: "D3 «Менеджмент» (ОПП «HR-менеджмент»)", link: "https://vstup.oa.edu.ua/specialnosti/hr-menedzhment" },
+            { name: "D1 «Облік і оподаткування» (ОПП «Облік і оподаткування»)", link: "https://vstup.oa.edu.ua/specialnosti/oblik-i-opodatkuvannya" },
+        ],
         image: "/images/EducationalPrograms/Magistracy.png",
     },
     {
         title: "Аспірантура",
-        description: `Перелік спеціальностей
-- D3 «Менеджмент» (ОНП «Менеджмент»)
-- F1 «Прикладна математика» (ОНП «Прикладна математика»)`,
+        specialties: [
+            { name: "D3 «Менеджмент» (ОНП «Менеджмент»)", link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/d3_menedzhment/" },
+            { name: "F1 «Прикладна математика» (ОНП «Прикладна математика»)", link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/f1_prykladna_matematyka/" },
+        ],
         image: "/images/EducationalPrograms/PostgraduateStudies.png",
     },
 ];
@@ -43,9 +56,9 @@ export const EducationalPrograms = (): JSX.Element => {
     return (
         <section className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
             <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9">
-                <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0">
-                    <h2 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] whitespace-normal md:whitespace-nowrap">
-                        Освітні програми
+                <header className="flex flex-col items-start mb-16 translate-y-[-1rem] animate-fade-in opacity-0 w-full">
+                    <h2 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-left tracking-[0] leading-tight xl:leading-[80px] w-full">
+                        Спеціальності та освітні програми
                     </h2>
                 </header>
                 <div className="flex flex-col gap-0">
@@ -65,26 +78,30 @@ export const EducationalPrograms = (): JSX.Element => {
                                             </h3>
                                         </div>
                                         {/* Description and button column */}
-                                        <div className="flex flex-col items-start justify-between pr-0 lg:pr-10">
-                                            <div className="flex flex-col items-start w-full">
-                                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-6 whitespace-pre-line">
-                                                    {program.description}
+                                        <div className="flex flex-col items-end justify-between pr-0 lg:pr-10">
+                                            <div className="flex flex-col items-start w-full max-w-md ml-auto lg:mr-12">
+                                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-6 mb-2">
+                                                    Перелік спеціальностей
                                                 </p>
+                                                <ul className="list-disc pl-5 space-y-1">
+                                                    {program.specialties.map((specialty, idx) => (
+                                                        <li key={idx} className="font-normal text-pure-black text-sm tracking-[0] leading-6">
+                                                            {specialty.link ? (
+                                                                <a
+                                                                    href={specialty.link}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="hover:underline hover:text-blue-600 transition-colors"
+                                                                >
+                                                                    {specialty.name}
+                                                                </a>
+                                                            ) : (
+                                                                <span>{specialty.name}</span>
+                                                            )}
+                                                        </li>
+                                                    ))}
+                                                </ul>
                                             </div>
-                                            <Button
-                                                variant="ghost"
-                                                className="h-auto p-0 hover:bg-transparent group mt-8"
-                                            >
-                                                <div className="flex flex-col items-start gap-1 w-36 xl:w-40 2xl:w-[180px]">
-                                                    <div className="flex items-center justify-between w-full">
-                                                        <span className="font-normal text-pure-black text-xs tracking-[0] leading-4 group-hover:font-medium transition-all">
-                                                            Дізнатися більше
-                                                        </span>
-                                                        <ArrowRightIcon className="w-4 h-3 text-pure-black" />
-                                                    </div>
-                                                    <Separator className="w-full h-px bg-pure-black" />
-                                                </div>
-                                            </Button>
                                         </div>
                                         {/* Image column */}
                                         <div className="hidden lg:flex items-start justify-end">

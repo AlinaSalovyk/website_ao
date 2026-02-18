@@ -20,10 +20,10 @@ export const InnovativeEducation = (): JSX.Element => {
     return (
         <section className="w-full bg-pure-white flex flex-col relative overflow-hidden">
             <div
-                className="relative w-full h-auto min-h-[700px] xl:h-[1000px] 2xl:h-[1400px]"
+                className="relative w-full h-auto min-h-[640px] xl:h-[940px] 2xl:h-[1310px]"
             >
                 <div
-                    className="absolute left-0 right-0 pointer-events-none bg-innovative-education -bottom-[275px] h-full"
+                    className="absolute left-0 right-0 pointer-events-none bg-innovative-education -bottom-[200px] h-full"
                 />
 
                 <div
