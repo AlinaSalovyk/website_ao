@@ -16,9 +16,9 @@ export const ITScientificActivity = (): JSX.Element => {
                 <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-20 mt-16">
                     <div className="w-full sm:w-2/3 md:w-1/2 lg:w-1/3">
                         <img
-                            src="/images/IT/ScientificActivity.jpg"
+                            src="/images/IT/sphere1.jpg"
                             alt="Abstract sphere"
-                            className="w-full h-auto rounded-lg object-cover aspect-square"
+                            className="w-full h-auto rounded-lg object-cover aspect-[480/580]"
                         />
                     </div>
                     <div className="w-full lg:w-3/5 lg:-mt-50">

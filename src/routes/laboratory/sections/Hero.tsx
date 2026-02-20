@@ -99,7 +99,7 @@ export const Hero = (): JSX.Element => {
                         <div className="hidden lg:flex justify-end w-full">
                             <div className="w-full max-w-[400px] 2xl:max-w-[460px] h-auto aspect-[480/678] relative overflow-hidden rounded-[20px]">
                                 <img
-                                    src="/images/Home/sphere.jpg"
+                                    src="/images/laboratory.jpg"
                                     alt="Abstract 3D sphere"
                                     className="w-full h-full object-cover mix-blend-lighten opacity-90"
                                 />

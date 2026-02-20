@@ -8,10 +8,10 @@ export const InstituteHero = (): JSX.Element => {
                 className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient"
             />
 
-            <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 md:px-8 flex flex-col pt-70 pb-20">
+            <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col pt-70 lg:pt-90 pb-10 lg:pb-16">
 
                 {/* Title Section */}
-                <div className="flex flex-col w-full mb-10 font-['Roboto',sans-serif] font-bold text-4xl md:text-4xl lg:text-7xl xl:text-8xl leading-[1.1] tracking-[-0.02em] uppercase text-left">
+                <div className="flex flex-col w-full mb-8 font-['Roboto',sans-serif] font-bold text-4xl md:text-4xl lg:text-7xl xl:text-8xl leading-[1.1] tracking-[-0.02em] uppercase text-left">
                     <span>Про інститут</span>
                     <span className="text-gray-200">Інформаційних технологій та Бізнесу</span>
                 </div>
@@ -23,7 +23,7 @@ export const InstituteHero = (): JSX.Element => {
                     досліджень, що формують фахівців нового покоління для цифрової економіки.
                 </p>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-[1.9fr_1fr] gap-10 lg:gap-32 items-start">
 
                     <div className="flex flex-col gap-10">
                         <button
@@ -44,7 +44,7 @@ export const InstituteHero = (): JSX.Element => {
                         </div>
                     </div>
 
-                    <div className="relative w-full max-w-[300px] lg:max-w-[500px] aspect-[500/647] rounded-xl overflow-hidden mt-10 lg:-mt-20 mx-auto lg:ml-auto">
+                    <div className="hidden lg:block relative w-full xl:w-[320px] 2xl:w-[400px] aspect-[3/4] rounded-xl overflow-hidden lg:-mt-20 mx-auto animate-fade-in opacity-0 [--animation-delay:400ms]">
                         <img
                             src="/images/IT/ScientificActivity.jpg"
                             alt="Digital Innovation"

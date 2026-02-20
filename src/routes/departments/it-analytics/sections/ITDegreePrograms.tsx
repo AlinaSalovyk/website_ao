@@ -36,10 +36,14 @@ const programsData: ProgramLevel[] = [
 ];
 
 export const ITDegreePrograms = (): JSX.Element => {
-    const [openItem, setOpenItem] = useState<string | null>("01");
+    const [openItems, setOpenItems] = useState<string[]>(["01"]);
 
     const toggleItem = (id: string) => {
-        setOpenItem(openItem === id ? null : id);
+        setOpenItems(prev =>
+            prev.includes(id)
+                ? prev.filter(item => item !== id)
+                : [...prev, id]
+        );
     };
 
     return (
@@ -82,7 +86,7 @@ export const ITDegreePrograms = (): JSX.Element => {
                                         <div
                                             className={cn(
                                                 "absolute w-6 h-[1px] bg-white transition-transform duration-300",
-                                                openItem === level.id ? "rotate-0" : "-rotate-90"
+                                                openItems.includes(level.id) ? "rotate-0" : "-rotate-90"
                                             )}
                                         />
                                     </div>
@@ -91,7 +95,7 @@ export const ITDegreePrograms = (): JSX.Element => {
                                 <div
                                     className={cn(
                                         "overflow-hidden transition-all duration-300 ease-in-out",
-                                        openItem === level.id ? "max-h-[500px] opacity-100 pb-8" : "max-h-0 opacity-0"
+                                        openItems.includes(level.id) ? "max-h-[500px] opacity-100 pb-8" : "max-h-0 opacity-0"
                                     )}
                                 >
                                     <ul className="pl-12 md:pl-14 space-y-3">

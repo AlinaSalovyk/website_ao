@@ -37,14 +37,26 @@ export const Gallery = (): JSX.Element => {
         if (!containerRef.current) return;
 
         const container = containerRef.current;
-        const itemWidth = 327;
+        const itemWidth = container.firstElementChild?.clientWidth || 327;
         const gap = window.innerWidth >= 768 ? 24 : 16;
         const scrollAmount = itemWidth + gap;
 
+        const maxScrollLeft = container.scrollWidth - container.clientWidth;
+
         if (direction === 'left') {
-            container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            // Check if at the start
+            if (container.scrollLeft <= 5) {
+                container.scrollTo({ left: maxScrollLeft, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+            }
         } else {
-            container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            // Check if at the end
+            if (container.scrollLeft >= maxScrollLeft - 5) {
+                container.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
         }
     };
 
@@ -88,7 +100,7 @@ export const Gallery = (): JSX.Element => {
 
                 <div
                     ref={containerRef}
-                    className="flex overflow-x-auto gap-4 md:gap-6 snap-x snap-mandatory scrollbar-hide pb-4 mx-auto"
+                    className="flex overflow-x-auto gap-4 md:gap-6 snap-x snap-mandatory scrollbar-hide pb-4 w-full max-w-full"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {galleryImages.map((image, index) => (

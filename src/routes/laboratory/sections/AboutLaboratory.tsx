@@ -24,7 +24,7 @@ export const AboutLaboratory = (): JSX.Element => {
                         </p>
                     </div>
                     <div className="hidden lg:block lg:col-span-3">
-                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                             <img
                                 src="/images/EducationalPrograms/BachelorsDegree.png"
                                 alt="Abstract 3D Shape"
@@ -40,7 +40,7 @@ export const AboutLaboratory = (): JSX.Element => {
                         <h3 className="text-2xl md:text-3xl font-bold font-['Roboto',sans-serif]">Архітектура лабораторії</h3>
                     </div>
                     <div className="lg:col-span-5">
-                        <ul className="space-y-6 text-base md:text-lg font-['Roboto',sans-serif] leading-relaxed">
+                        <ul className="list-disc pl-5 space-y-6 text-base md:text-lg font-['Roboto',sans-serif] leading-relaxed">
                             <li>
                                 <strong>Комп'ютерна зона (17–24 робочих місця)</strong>
                                 <br /> Простір для CAD-проєктування, симуляцій, аналітики та роботи з даними.
@@ -64,7 +64,7 @@ export const AboutLaboratory = (): JSX.Element => {
                         </ul>
                     </div>
                     <div className="hidden lg:block lg:col-span-3">
-                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                             <img
                                 src="/images/EducationalPrograms/Magistracy.png"
                                 alt="Abstract Rings"
@@ -92,7 +92,7 @@ export const AboutLaboratory = (): JSX.Element => {
                         </div>
                     </div>
                     <div className="hidden lg:block lg:col-span-3">
-                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                        <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                             <img
                                 src="/images/EducationalPrograms/PostgraduateStudies.png"
                                 alt="Abstract Digital Block"
