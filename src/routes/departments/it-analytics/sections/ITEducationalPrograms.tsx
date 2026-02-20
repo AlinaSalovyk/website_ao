@@ -5,7 +5,7 @@ import React from "react";
 
 export const ITEducationalPrograms = (): JSX.Element => {
     return (
-        <section className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
+        <section id="general-info" className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
             <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9">
                 <header className="flex flex-col items-start mb-8 animate-fade-in opacity-0">
                     <h2 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-left tracking-[0] leading-tight xl:leading-[80px] whitespace-normal md:whitespace-nowrap">
@@ -28,7 +28,7 @@ export const ITEducationalPrograms = (): JSX.Element => {
                     {/* Right Column - Text Content */}
                     <div className="flex flex-col gap-12">
                         {/* Main Intro Text */}
-                        <p className="font-['Roboto',sans-serif] text-pure-black -400 text-lg md:text-xl lg:text-2xl leading-relaxed">
+                        <p className="font-['Roboto',sans-serif] text-pure-black/50 text-lg md:text-xl lg:text-2xl leading-relaxed">
                             Ми готуємо висококваліфікованих фахівців у сфері штучного інтелекту, робототехніки, аналітики даних та машинного навчання. Наші студенти не просто засвоюють теорію, а й отримують реальний досвід, працюючи над актуальними проєктами та співпрацюючи з провідними компаніями.
                         </p>
 

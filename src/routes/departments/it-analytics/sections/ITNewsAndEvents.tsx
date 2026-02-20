@@ -2,9 +2,9 @@ import { ArrowRightIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { getSocialIcons } from "@/components/icons/SocialIcons";
 import type { JSX } from "react";
-import React from "react";
 
 const newsItems = [
     {
@@ -48,20 +48,29 @@ const newsItems = [
     },
 ];
 
+const socialIcons = getSocialIcons("fill-pure-black", "fill-layout-bg", "size-8");
+
+const navigationItems = [
+    { label: "ГОЛОВНА", isActive: true },
+    { label: "ПРО ІНСТИТУТ", isActive: false },
+    { label: "ОСВІТНІ ПРОГРАМИ", isActive: false },
+    { label: "НОВИНИ ТА ПОДІЇ", isActive: false },
+];
+
 export const ITNewsAndEvents = (): JSX.Element => {
     return (
         <section className="w-full bg-pure-white">
             {/* News Section */}
-            <div className="w-full flex items-center justify-center px-0 py-10 md:py-20">
+            <div className="w-full flex items-center justify-center px-0 pt-16 md:pt-24 pb-10 md:pb-16">
                 <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start px-4 md:px-9">
-                    <header className="flex flex-col items-start w-full mb- translate-y-[-1rem] animate-fade-in opacity-0">
+                    <header className="flex flex-col items-start w-full mb-5 translate-y-[-0.1rem] animate-fade-in opacity-0">
                         <h2 className="w-full text-center [font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-4xl md:text-5xl xl:text-7xl 2xl:text-[80px] tracking-[0] leading-tight xl:leading-[80px]">
                             Новини та події
                         </h2>
                     </header>
                     <Separator className="w-full bg-news-gray" />
 
-                    <div className="flex flex-col w-full items-end pt-4 pb-0 px-0 translate-y-[-0,1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
+                    <div className="flex flex-col w-full items-end pt-4 pb-0 px-0 translate-y-[-0.1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
                         <a
                             href="#"
                             className="flex flex-col items-end gap-1 mb-2 group cursor-pointer hover:opacity-70 transition-opacity"
@@ -71,7 +80,7 @@ export const ITNewsAndEvents = (): JSX.Element => {
                                     Більше новин
                                 </span>
                                 <div className="group-hover:translate-x-1 transition-transform duration-300">
-                                    <svg width="42" height="11" viewBox="0 0 42 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[30px] xl:w-[36px] 2xl:w-[42px] h-auto">
+                                    <svg width="42" height="14" viewBox="0 0 42 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[30px] xl:w-[36px] 2xl:w-[42px] h-auto">
                                         <path d="M0 7H40M40 7L34 1M40 7L34 13" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                     </svg>
                                 </div>
@@ -80,7 +89,7 @@ export const ITNewsAndEvents = (): JSX.Element => {
                         </a>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-8 md:pt-10 w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-10 md:pt-20 w-full">
                         {newsItems.map((item, index) => (
                             <Card
                                 key={item.id}
@@ -102,7 +111,7 @@ export const ITNewsAndEvents = (): JSX.Element => {
                                             <div className="flex items-center justify-between w-full">
                                                 <Badge
                                                     variant="outline"
-                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link [font-family:'Atyp_Display-Regular',Helvetica] font-normal text-xs tracking-[0] leading-[10px]"
+                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link [font-family:'Atyp_Display-Regular',Helvetica] font-normal text-xs tracking-[0] leading-[10px] hover:bg-pure-black hover:text-white transition-colors duration-300 cursor-pointer"
                                                 >
                                                     {item.badge}
                                                 </Badge>
@@ -126,12 +135,12 @@ export const ITNewsAndEvents = (): JSX.Element => {
 
                                     <div className="flex flex-col w-full items-start pt-10 pb-0 px-0">
                                         <div className="flex flex-col w-full items-start gap-1 2xl:gap-[3px]">
-                                            <div className="flex items-center justify-between w-full group-hover:translate-x-1 transition-transform duration-300">
+                                            <div className="flex items-center justify-between w-full hover:translate-x-1 transition-transform duration-300 cursor-pointer">
                                                 <span className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-xs tracking-[0] leading-4">
                                                     {item.link}
                                                 </span>
 
-                                                <ArrowRightIcon className="w-4 xl:w-[19px] h-3" />
+                                                <ArrowRightIcon className="w-4 h-4 text-pure-black" />
                                             </div>
 
                                             <Separator className="w-full bg-pure-black" />
