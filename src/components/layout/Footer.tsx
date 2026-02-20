@@ -4,10 +4,10 @@ import { getSocialIcons } from "@/components/icons/SocialIcons";
 import type { JSX } from "react";
 
 const navigationItems = [
-    { label: "ГОЛОВНА", isActive: true },
-    { label: "ПРО ІНСТИТУТ", isActive: false },
-    { label: "ОСВІТНІ ПРОГРАМИ", isActive: false },
-    { label: "НОВИНИ ТА ПОДІЇ", isActive: false },
+    { label: "ГОЛОВНА", href: "/", isActive: true },
+    { label: "ПРО ІНСТИТУТ", href: "/institute", isActive: false },
+    { label: "ОСВІТНІ ПРОГРАМИ", href: "/#educational-programs", isActive: false },
+    { label: "НОВИНИ ТА ПОДІЇ", href: "/#news", isActive: false },
 ];
 
 interface FooterProps {
@@ -84,7 +84,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                                             <div className="inline-flex flex-col w-full md:w-auto md:min-w-[180px] items-start">
                                                 <div className="flex flex-col w-full md:w-[229px] items-start gap-[3px]">
-                                                    <button className="flex items-center justify-between w-full group cursor-pointer">
+                                                    <a href="/contacts" className="flex items-center justify-between w-full group cursor-pointer">
                                                         <div className="relative w-full md:w-[181px] h-4">
                                                             <span className="h-4 flex items-center justify-start md:justify-center text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs leading-4 whitespace-nowrap [font-family:'Atyp_Text-Regular',Helvetica] font-normal tracking-[0] group-hover:opacity-80 transition-opacity">
                                                                 Контактуй з нами
@@ -93,7 +93,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                         <svg width="13" height="16" viewBox="0 0 13 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                             <path d="M12.3536 10.3539C12.5488 10.1586 12.5488 9.84205 12.3536 9.64679L9.17157 6.46481C8.97631 6.26954 8.65973 6.26954 8.46447 6.46481C8.2692 6.66007 8.2692 6.97665 8.46447 7.17191L11.2929 10.0003L8.46447 12.8288C8.2692 13.024 8.2692 13.3406 8.46447 13.5359C8.65973 13.7311 8.97631 13.7311 9.17157 13.5359L12.3536 10.3539ZM0 10.5003H12V9.50034H0V10.5003Z" className="fill-pure-white group-hover/card:fill-pure-black transition-colors duration-300" />
                                                         </svg>
-                                                    </button>
+                                                    </a>
                                                     <Separator className="w-full bg-pure-white group-hover/card:bg-pure-black transition-colors duration-300" />
                                                 </div>
                                             </div>
@@ -142,8 +142,9 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                     <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
                         {navigationItems.map((item, index) => (
-                            <button
+                            <a
                                 key={index}
+                                href={item.href}
                                 className="flex flex-col w-full group cursor-pointer"
                             >
                                 <div className="flex items-center justify-between w-full pb-1">
@@ -158,7 +159,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                     )}
                                 </div>
                                 <Separator className="w-full bg-pure-black/20 group-hover:bg-pure-black transition-colors" />
-                            </button>
+                            </a>
                         ))}
                     </nav>
                 </div>

@@ -89,7 +89,7 @@ export const ITNewsAndEvents = (): JSX.Element => {
                         </a>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-10 md:pt-20 w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-10 md:pt-12 w-full">
                         {newsItems.map((item, index) => (
                             <Card
                                 key={item.id}
@@ -106,7 +106,7 @@ export const ITNewsAndEvents = (): JSX.Element => {
                                         style={{ backgroundImage: `url(${item.backgroundImage})` }}
                                     />
 
-                                    <div className="flex flex-col items-start justify-center pt-4 xl:pt-5 2xl:pt-[22px] pb-0 px-0 flex-1">
+                                    <div className="flex flex-col items-start justify-center pt-4 xl:pt-5 2xl:pt-[22px] pb-0 px-4 flex-1">
                                         <div className="flex flex-col items-start gap-6 w-full">
                                             <div className="flex items-center justify-between w-full">
                                                 <Badge
@@ -133,7 +133,7 @@ export const ITNewsAndEvents = (): JSX.Element => {
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col w-full items-start pt-10 pb-0 px-0">
+                                    <div className="flex flex-col w-full items-start pt-20 pb-0 px-4">
                                         <div className="flex flex-col w-full items-start gap-1 2xl:gap-[3px]">
                                             <div className="flex items-center justify-between w-full hover:translate-x-1 transition-transform duration-300 cursor-pointer">
                                                 <span className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-xs tracking-[0] leading-4">

@@ -88,7 +88,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                 >
                                     <Button
                                         variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start w-full"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full cursor-pointer"
                                         onClick={() => handleNavigation(item)}
                                     >
                                         <span className="text-white text-2xl leading-8 font-normal">
@@ -108,7 +108,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                     <Collapsible.Trigger asChild>
                                         <Button
                                             variant="ghost"
-                                            className="h-auto p-0 hover:bg-transparent justify-between w-full"
+                                            className="h-auto p-0 hover:bg-transparent justify-between w-full cursor-pointer"
                                         >
                                             <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Освітні програми
@@ -130,10 +130,11 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                 <Collapsible.Content className="flex flex-col items-start w-full">
                                     <div className="flex flex-col items-start w-full">
                                         {educationalPrograms.map((program, index) => (
-                                            <Button
+                                            <a
                                                 key={`program-${index}`}
-                                                variant="ghost"
-                                                className="h-auto max-w-[470.67px] w-full items-center gap-3 px-0 py-2 hover:bg-pure-white/5 justify-start"
+                                                href={`/#${program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}`}
+                                                onClick={onClose}
+                                                className="h-auto max-w-[470.67px] w-full flex items-center gap-3 px-0 py-2 hover:bg-pure-white/5 justify-start cursor-pointer rounded-sm transition-colors"
                                             >
                                                 <div className="flex flex-col w-10 h-10 items-start justify-center rounded overflow-hidden flex-shrink-0">
                                                     <div
@@ -155,7 +156,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                                         </span>
                                                     </div>
                                                 </div>
-                                            </Button>
+                                            </a>
                                         ))}
                                     </div>
                                 </Collapsible.Content>
@@ -170,7 +171,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                     <Collapsible.Trigger asChild>
                                         <Button
                                             variant="ghost"
-                                            className="h-auto p-0 hover:bg-transparent justify-between w-full"
+                                            className="h-auto p-0 hover:bg-transparent justify-between w-full cursor-pointer"
                                         >
                                             <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Кафедри інституту
@@ -191,7 +192,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                 <Collapsible.Content className="flex flex-col items-start w-full pl-4">
                                     <Button
                                         variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
                                         asChild
                                     >
                                         <a href="/information-technologies-and-data-analytics" className="text-pure-white text-lg leading-6 font-normal">
@@ -210,7 +211,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                     <Collapsible.Trigger asChild>
                                         <Button
                                             variant="ghost"
-                                            className="h-auto p-0 hover:bg-transparent justify-between w-full"
+                                            className="h-auto p-0 hover:bg-transparent justify-between w-full cursor-pointer"
                                         >
                                             <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Лабораторії інституту
@@ -231,7 +232,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                 <Collapsible.Content className="flex flex-col items-start w-full pl-4">
                                     <Button
                                         variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
                                         asChild
                                     >
                                         <a href="/laboratory" className="text-pure-white text-lg leading-6 font-normal">
@@ -248,7 +249,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                 >
                                     <Button
                                         variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start w-full"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full cursor-pointer"
                                         onClick={() => handleNavigation(item)}
                                     >
                                         <span className="text-white text-2xl leading-8 font-normal">
@@ -268,7 +269,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                     <Button
                                         key={`footer-left-${index}`}
                                         variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start"
+                                        className="h-auto p-0 hover:bg-transparent justify-start cursor-pointer"
                                     >
                                         <span className="font-normal text-news-gray text-sm leading-4">
                                             {link}
@@ -282,7 +283,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                     <Button
                                         key={`footer-right-${index}`}
                                         variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start"
+                                        className="h-auto p-0 hover:bg-transparent justify-start cursor-pointer"
                                     >
                                         <span className="font-normal text-news-gray text-sm leading-4">
                                             {link}

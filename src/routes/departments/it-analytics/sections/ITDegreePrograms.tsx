@@ -69,7 +69,7 @@ export const ITDegreePrograms = (): JSX.Element => {
                             <div key={level.id} className="border-b border-white/20 last:border-0">
                                 <button
                                     onClick={() => toggleItem(level.id)}
-                                    className="w-full flex items-center justify-between py-8 group text-left"
+                                    className="w-full flex items-center justify-between py-8 group text-left cursor-pointer"
                                 >
                                     <div className="flex items-center gap-6">
                                         <span className="text-blue-600 font-mono text-sm md:text-base tracking-widest">

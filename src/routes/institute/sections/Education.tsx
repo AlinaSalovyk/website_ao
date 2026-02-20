@@ -96,10 +96,10 @@ export const Education = (): JSX.Element => {
                             <div key={item.id} className="border-b border-white/20 last:border-0">
                                 <button
                                     onClick={() => toggleItem(item.id)}
-                                    className="w-full flex items-center justify-between py-8 group text-left"
+                                    className="w-full flex items-center justify-between py-8 group text-left cursor-pointer"
                                 >
                                     <div className="flex items-start gap-1 md:gap-2">
-                                        <span className="font-['Roboto',sans-serif] text-sm md:text-base font-medium text-blue-500/20 mt-1">
+                                        <span className="font-['Roboto',sans-serif] text-sm md:text-base font-medium text-[#0E53FF] mt-1">
                                             {item.id}
                                         </span>
                                         <span className="text-xl md:text-2xl font-['Roboto',sans-serif] font-medium transition-colors group-hover:text-blue-400 text-left">

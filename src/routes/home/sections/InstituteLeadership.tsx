@@ -142,14 +142,14 @@ export const InstituteLeadership = (): JSX.Element => {
                     <div className="flex items-center gap-8 mt-16 md:mt-20">
                         <button
                             onClick={handlePrev}
-                            className="p-3 hover:bg-black/10 rounded-full transition-colors group"
+                            className="p-3 hover:bg-black/10 rounded-full transition-colors group cursor-pointer"
                             aria-label="Previous member"
                         >
                             <ArrowLeft className="w-8 h-8 text-black group-hover:scale-110 transition-transform" />
                         </button>
                         <button
                             onClick={handleNext}
-                            className="p-3 hover:bg-black/10 rounded-full transition-colors group"
+                            className="p-3 hover:bg-black/10 rounded-full transition-colors group cursor-pointer"
                             aria-label="Next member"
                         >
                             <ArrowRight className="w-8 h-8 text-black group-hover:scale-110 transition-transform" />
