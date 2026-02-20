@@ -59,12 +59,12 @@ const navigationItems = [
 
 export const NewsAndEvents = (): JSX.Element => {
     return (
-        <section className="w-full bg-pure-white">
+        <section id="news" className="w-full bg-pure-white">
             {/* News Section */}
             <div className="w-full flex items-center justify-center px-0 pt-0.1 pb-10 md:pb-16">
                 <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start px-4 md:px-9">
                     <header className="flex flex-col items-start w-full mb-5 translate-y-[-0.1rem] animate-fade-in opacity-0">
-                        <h2 className="w-full text-center [font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-4xl md:text-5xl xl:text-7xl 2xl:text-[80px] tracking-[0] leading-tight xl:leading-[80px]">
+                        <h2 className="w-full text-center [font-family:'Roboto',Helvetica] font-medium text-pure-black text-4xl md:text-5xl xl:text-7xl 2xl:text-[80px] tracking-[0] leading-tight xl:leading-[80px]">
                             Новини та події
                         </h2>
                     </header>
@@ -89,7 +89,7 @@ export const NewsAndEvents = (): JSX.Element => {
                         </a>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-10 md:pt-20 w-full">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-10 md:pt-12 w-full">
                         {newsItems.map((item, index) => (
                             <Card
                                 key={item.id}
@@ -106,7 +106,7 @@ export const NewsAndEvents = (): JSX.Element => {
                                         style={{ backgroundImage: `url(${item.backgroundImage})` }}
                                     />
 
-                                    <div className="flex flex-col items-start justify-center pt-4 xl:pt-5 2xl:pt-[22px] pb-0 px-0 flex-1">
+                                    <div className="flex flex-col items-start justify-center pt-4 xl:pt-5 2xl:pt-[22px] pb-0 px-4 flex-1">
                                         <div className="flex flex-col items-start gap-6 w-full">
                                             <div className="flex items-center justify-between w-full">
                                                 <Badge
@@ -122,21 +122,21 @@ export const NewsAndEvents = (): JSX.Element => {
                                             </div>
 
                                             <div className="flex flex-col items-start gap-3 xl:gap-4 2xl:gap-[15px] w-full">
-                                                <h3 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-xl tracking-[0] leading-7 whitespace-pre-line">
+                                                <h3 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-xl tracking-[0] leading-7 whitespace-pre-line">
                                                     {item.title}
                                                 </h3>
 
-                                                <p className="[font-family:'Atyp_Display-Regular',Helvetica] font-normal text-news-gray text-xs tracking-[0] leading-[10px]">
+                                                <p className="[font-family:'Roboto',Helvetica] font-normal text-news-gray text-xs tracking-[0] leading-[10px]">
                                                     {item.readTime}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col w-full items-start pt-10 pb-0 px-0">
+                                    <div className="flex flex-col w-full items-start pt-20 pb-0 px-4">
                                         <div className="flex flex-col w-full items-start gap-1 2xl:gap-[3px]">
                                             <div className="flex items-center justify-between w-full hover:translate-x-1 transition-transform duration-300 cursor-pointer">
-                                                <span className="[font-family:'Atyp_Text-Regular',Helvetica] font-normal text-pure-black text-xs tracking-[0] leading-4">
+                                                <span className="[font-family:'Roboto',Helvetica] font-normal text-pure-black text-xs tracking-[0] leading-4">
                                                     {item.link}
                                                 </span>
 

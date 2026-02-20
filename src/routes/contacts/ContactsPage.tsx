@@ -137,7 +137,7 @@ export const ContactsPage = (): JSX.Element => {
                             {faqItems.map((item, index) => (
                                 <Accordion.Item key={index} value={`item-${index}`} className="border-b border-pure-black/0">
                                     <Accordion.Header className="flex">
-                                        <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-['Atyp_Display-Medium',Helvetica] font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group">
+                                        <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-['Atyp_Display-Medium',Helvetica] font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group cursor-pointer">
                                             <span className="text-pure-black max-w-[80%]">{item.question}</span>
                                             <div className="relative flex items-center justify-center w-6 h-6">
                                                 <div className="absolute w-6 h-[1.5px] bg-pure-black" />

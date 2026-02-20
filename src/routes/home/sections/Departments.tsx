@@ -78,7 +78,7 @@ export const Departments = () => {
                         <button
                             key={dept.id}
                             onClick={() => setActiveId(dept.id)}
-                            className="group relative text-left py-2 focus:outline-none transition-colors duration-300"
+                            className="group relative text-left py-2 focus:outline-none transition-colors duration-300 min-h-[72px] flex items-center cursor-pointer"
                         >
                             <span
                                 className={cn(

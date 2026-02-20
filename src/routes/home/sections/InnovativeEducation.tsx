@@ -30,9 +30,9 @@ export const InnovativeEducation = (): JSX.Element => {
                     className="flex flex-col mx-auto w-full h-full items-start px-4 md:px-9 pt-20 relative z-[1] max-w-7xl 2xl:max-w-screen-2xl"
                 >
                     <header className="flex flex-col items-start relative w-full gap-8 translate-y-[-1rem] animate-fade-in opacity-0">
-                        <h1 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-4xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[132px] tracking-[0] leading-tight xl:leading-[144px] whitespace-normal md:whitespace-nowrap">
+                        <h2 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-4xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[132px] tracking-[0] leading-tight xl:leading-[144px] whitespace-normal md:whitespace-nowrap">
                             ІННОВАЦІЙНА ОСВІТА
-                        </h1>
+                        </h2>
                         <Separator className="w-full bg-separator-gray h-px" />
                         <p className="max-w-xs xl:max-w-sm 2xl:max-w-[400px] font-normal text-pure-black text-lg xl:text-xl 2xl:text-2xl tracking-[0] leading-7 xl:leading-8">
                             Створюємо майбутнє разом: технології, бізнес та аналітика в єдиному
