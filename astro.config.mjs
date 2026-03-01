@@ -9,7 +9,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://itb.oa.edu.ua',
+  site: 'https://website-ao.vercel.app',
   vite: {
     plugins: [tailwindcss()]
   },
