@@ -78,6 +78,7 @@ const currentUrl = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
 		})} />
 	</head>
 	<body class="antialiased">
+		<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-[200] focus:top-4 focus:left-4 focus:bg-white focus:text-black focus:px-4 focus:py-2 focus:rounded focus:font-medium">Перейти до вмісту</a>
 		<slot />
 	</body>
 </html>

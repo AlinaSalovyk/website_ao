@@ -1,5 +1,5 @@
 import { XIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import * as Collapsible from "@radix-ui/react-collapsible";
@@ -60,6 +60,45 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
         onClose();
     };
 
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    // Escape key handler
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [onClose]);
+
+    // Focus trap
+    const handleFocusTrap = useCallback((e: KeyboardEvent) => {
+        if (e.key !== "Tab" || !menuRef.current) return;
+        const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleFocusTrap);
+        // Focus the close button on mount
+        const closeBtn = menuRef.current?.querySelector<HTMLElement>("button");
+        closeBtn?.focus();
+        return () => document.removeEventListener("keydown", handleFocusTrap);
+    }, [handleFocusTrap]);
+
     const [isProgramsOpen, setIsProgramsOpen] = useState(true);
     const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(false);
     const [isLaboratoriesOpen, setIsLaboratoriesOpen] = useState(false);
@@ -73,7 +112,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                 onClick={handleClose}
             />
             {/* Menu Panel */}
-            <div className="flex flex-col h-screen items-start p-6 bg-layout-bg border-r border-solid border-menu-border fixed left-0 top-0 bottom-0 z-[100] overflow-y-auto w-full max-w-[480px] animate-slide-in-left">
+            <div ref={menuRef} role="dialog" aria-modal="true" aria-label="Навігаційне меню" className="flex flex-col h-screen items-start p-6 bg-layout-bg border-r border-solid border-menu-border fixed left-0 top-0 bottom-0 z-[100] overflow-y-auto w-full max-w-[480px] animate-slide-in-left">
                 <div className="inline-flex pb-4 flex-col items-start">
                     <Button
                         variant="outline"

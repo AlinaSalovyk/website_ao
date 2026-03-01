@@ -1,4 +1,4 @@
-import { useState, type ReactNode, type JSX } from "react";
+﻿import { useState, type ReactNode, type JSX } from "react";
 import { Menu } from "../routes/Menu/Menu";
 
 interface MainLayoutProps {
@@ -72,7 +72,9 @@ export const MainLayout = ({ children, variant = "default", customLogo, headerPo
         </header>
 
         {/* Page Content */}
-        {children}
+        <main id="main-content">
+          {children}
+        </main>
       </div>
     </div >
   );
