@@ -18,7 +18,6 @@ export const MainLayout = ({ children, variant = "default", customLogo, headerPo
   return (
     <div
       className={`overflow-hidden w-full min-h-screen flex justify-center ${variant === "light" ? "bg-pure-white" : "bg-layout-bg"}`}
-      data-model-id="530:5377"
     >
       {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
       <div className="flex w-full relative flex-col items-start min-h-screen">
