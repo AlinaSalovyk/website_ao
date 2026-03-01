@@ -137,9 +137,9 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                     {/* Middle Column - Socials */}
                     <div className="flex items-center gap-4 lg:gap-6">
-                        {footerSocials.map((icon, index) => (
+                        {footerSocials.map((icon) => (
                             <a
-                                key={index}
+                                key={icon.alt}
                                 href={socialLinks[icon.alt] ?? "#"}
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -154,9 +154,9 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                     </div>
 
                     <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
-                        {navigationItems.map((item, index) => (
+                        {navigationItems.map((item) => (
                             <a
-                                key={index}
+                                key={item.label}
                                 href={item.href}
                                 className="flex flex-col w-full group cursor-pointer"
                             >

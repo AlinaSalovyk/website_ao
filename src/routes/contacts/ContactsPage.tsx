@@ -122,8 +122,8 @@ export const ContactsPage = (): JSX.Element => {
                     {/* FAQ Section */}
                     <div className="w-full md:w-1/2 md:max-w-[48%] self-start flex flex-col gap-8 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:800ms]">
                         <Accordion.Root type="multiple" className="w-full flex flex-col gap-4">
-                            {faqItems.map((item, index) => (
-                                <Accordion.Item key={index} value={`item-${index}`}>
+                            {faqItems.map((item) => (
+                                <Accordion.Item key={item.question} value={item.question}>
                                     <Accordion.Header className="flex">
                                         <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group cursor-pointer">
                                             <span className="text-pure-black max-w-[80%]">{item.question}</span>

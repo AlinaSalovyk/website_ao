@@ -99,8 +99,8 @@ export const ITDegreePrograms = (): JSX.Element => {
                                     )}
                                 >
                                     <ul className="pl-12 md:pl-14 space-y-3">
-                                        {level.programs.map((program, idx) => (
-                                            <li key={idx} className="flex items-start gap-3">
+                                        {level.programs.map((program) => (
+                                            <li key={`${level.id}-${program}`} className="flex items-start gap-3">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-white mt-2 shrink-0 opacity-60" />
                                                 <span className="text-gray-300 text-sm md:text-base leading-relaxed">
                                                     {program}

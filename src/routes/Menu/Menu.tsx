@@ -127,9 +127,9 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                 <div className="flex flex-col items-start justify-between flex-1 self-stretch w-full">
                     <nav className="flex flex-col items-start self-stretch w-full">
                         <div className="flex flex-col max-w-[470.67px] items-start justify-center gap-2.5 py-2 w-full">
-                            {simpleMenuItems.map((item, index) => (
+                            {simpleMenuItems.map((item) => (
                                 <div
-                                    key={`simple-${index}`}
+                                    key={item.href}
                                     className="inline-flex flex-col items-start gap-1 w-full"
                                 >
                                     <a
@@ -175,9 +175,9 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
 
                                 <Collapsible.Content className="flex flex-col items-start w-full">
                                     <div className="flex flex-col items-start w-full">
-                                        {educationalPrograms.map((program, index) => (
+                                        {educationalPrograms.map((program) => (
                                             <a
-                                                key={`program-${index}`}
+                                                key={program.title}
                                                 href={`/#${program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}`}
                                                 onClick={onClose}
                                                 className="h-auto max-w-[470.67px] w-full flex items-center gap-3 px-0 py-2 hover:bg-pure-white/5 justify-start cursor-pointer rounded-sm transition-colors"
@@ -288,9 +288,9 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                 </Collapsible.Content>
                             </Collapsible.Root>
 
-                            {bottomSimpleMenuItems.map((item, index) => (
+                            {bottomSimpleMenuItems.map((item) => (
                                 <div
-                                    key={`bottom-${index}`}
+                                    key={item.href}
                                     className="inline-flex flex-col items-start gap-1 w-full"
                                 >
                                     <a
@@ -311,9 +311,9 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                     <footer className="flex min-h-[94.38px] justify-end pt-[178.67px] flex-1 self-stretch w-full flex-col items-start">
                         <div className="grid grid-cols-2 gap-2 self-stretch w-full">
                             <div className="flex flex-col items-start gap-2">
-                                {footerLinksLeft.map((link, index) => (
+                                {footerLinksLeft.map((link) => (
                                     <Button
-                                        key={`footer-left-${index}`}
+                                        key={`${link.label}-${link.href}`}
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start cursor-pointer"
                                         asChild
@@ -333,9 +333,9 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                             </div>
 
                             <div className="flex flex-col items-start gap-2">
-                                {footerLinksRight.map((link, index) => (
+                                {footerLinksRight.map((link) => (
                                     <Button
-                                        key={`footer-right-${index}`}
+                                        key={`${link.label}-${link.href}`}
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start cursor-pointer"
                                         asChild

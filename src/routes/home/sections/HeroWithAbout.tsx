@@ -48,8 +48,8 @@ export const HeroWithAbout = (): JSX.Element => {
 
             {/* Tags */}
             <div className="flex items-center flex-wrap gap-y-2">
-              {tags.map((tag, index) => (
-                <div key={index} className="flex items-center">
+              {tags.map((tag) => (
+                <div key={tag} className="flex items-center">
                   <span className="inline-flex items-center gap-2">
                     <span className="w-1 h-1 xl:w-1.5 xl:h-1.5 2xl:w-[5px] 2xl:h-[5px] bg-pure-white rounded-full flex-shrink-0"></span>
                     <span className="font-medium text-pure-white text-[9px] xl:text-[10px] 2xl:text-[11px] tracking-[0.1em] uppercase">

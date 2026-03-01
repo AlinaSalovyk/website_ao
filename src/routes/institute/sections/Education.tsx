@@ -126,8 +126,8 @@ export const Education = (): JSX.Element => {
                                     )}
                                 >
                                     <ul className="pl-12 md:pl-10 space-y-3">
-                                        {item.points.map((point, idx) => (
-                                            <li key={idx} className="flex items-start gap-3">
+                                        {item.points.map((point) => (
+                                            <li key={`${item.id}-${point}`} className="flex items-start gap-3">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0 opacity-80" />
                                                 <span className="text-gray-300 text-sm md:text-base leading-relaxed">
                                                     {point}

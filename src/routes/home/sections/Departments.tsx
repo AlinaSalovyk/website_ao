@@ -126,9 +126,9 @@ export const Departments = () => {
                                             Бакалаврат
                                         </h3>
                                         <ul className="space-y-2">
-                                            {activeDepartment.programs.bachelor.map((program, idx) => (
+                                            {activeDepartment.programs.bachelor.map((program) => (
                                                 <li
-                                                    key={idx}
+                                                    key={`${activeDepartment.id}-bachelor-${program}`}
                                                     className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
                                                 >
                                                     <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
@@ -145,9 +145,9 @@ export const Departments = () => {
                                             Магістратура
                                         </h3>
                                         <ul className="space-y-2">
-                                            {activeDepartment.programs.master.map((program, idx) => (
+                                            {activeDepartment.programs.master.map((program) => (
                                                 <li
-                                                    key={idx}
+                                                    key={`${activeDepartment.id}-master-${program}`}
                                                     className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
                                                 >
                                                     <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
@@ -164,9 +164,9 @@ export const Departments = () => {
                                             Аспірантура
                                         </h3>
                                         <ul className="space-y-2">
-                                            {activeDepartment.programs.phd.map((program, idx) => (
+                                            {activeDepartment.programs.phd.map((program) => (
                                                 <li
-                                                    key={idx}
+                                                    key={`${activeDepartment.id}-phd-${program}`}
                                                     className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
                                                 >
                                                     <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />

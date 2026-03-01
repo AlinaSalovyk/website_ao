@@ -101,9 +101,9 @@ export const Gallery = (): JSX.Element => {
                     className="flex overflow-x-auto gap-4 md:gap-6 snap-x snap-mandatory scrollbar-hide pb-4 w-full max-w-full"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {galleryImages.map((image, index) => (
+                    {galleryImages.map((image) => (
                         <div
-                            key={index}
+                            key={image.src}
                             className="snap-start flex-shrink-0"
                         >
                             <div className="w-[280px] sm:w-[327px] h-[170px] sm:h-[199px] overflow-hidden rounded-[8px] bg-gray-100">

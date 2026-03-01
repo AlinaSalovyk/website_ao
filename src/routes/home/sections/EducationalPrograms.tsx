@@ -59,8 +59,8 @@ export const EducationalPrograms = (): JSX.Element => {
                     </h2>
                 </header>
                 <div className="flex flex-col gap-0">
-                    {educationalPrograms.map((program, index) => (
-                        <div key={index} id={program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}>
+                    {educationalPrograms.map((program) => (
+                        <div key={program.title} id={program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}>
                             {/* Top separator line for each program */}
                             <Separator className="w-full h-px bg-pure-black" />
                             <Card
@@ -81,8 +81,8 @@ export const EducationalPrograms = (): JSX.Element => {
                                                     Перелік спеціальностей
                                                 </p>
                                                 <ul className="list-disc pl-5 space-y-1">
-                                                    {program.specialties.map((specialty, idx) => (
-                                                        <li key={idx} className="font-normal text-pure-black text-sm tracking-[0] leading-6">
+                                                    {program.specialties.map((specialty) => (
+                                                        <li key={specialty.name} className="font-normal text-pure-black text-sm tracking-[0] leading-6">
                                                             {specialty.link ? (
                                                                 <a
                                                                     href={specialty.link}
