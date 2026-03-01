@@ -199,8 +199,6 @@
   }
 }
 
-
-
 .animate-marquee-seamless {
   animation: marquee-seamless 40s linear infinite;
   width: max-content;
