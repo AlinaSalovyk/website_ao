@@ -1,11 +1,35 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { HomePage } from "../routes/home/HomePage";
+import { Header } from "../components/layout/Header";
+import { HeroWithAbout } from "../routes/home/sections/HeroWithAbout";
+import { EducationalPrograms } from "../routes/home/sections/EducationalPrograms";
+import { Departments } from "../routes/home/sections/Departments";
+import { InstituteLeadership } from "../routes/home/sections/InstituteLeadership";
+import { InnovativeEducation } from "../routes/home/sections/InnovativeEducation";
+import { NewsAndEvents } from "../routes/home/sections/NewsAndEvents";
+import { Footer } from "../components/layout/Footer";
 ---
 
 <Layout
   title="ІТБ - Інститут інформаційних технологій та бізнесу | НаУОА"
   description="Обирай навчання, яке відповідає викликам майбутнього! Інститут інформаційних технологій та бізнесу НаУОА — ІТ, бізнес, менеджмент, фінанси, маркетинг."
 >
-  <HomePage client:idle />
+  <div class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg">
+    <div class="flex w-full relative flex-col items-start min-h-screen">
+      <Header client:load headerPosition="absolute" />
+      <main id="main-content" class="w-full">
+        <HeroWithAbout />
+        <section class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
+          <EducationalPrograms />
+        </section>
+        <section class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
+          <Departments client:visible />
+        </section>
+        <InstituteLeadership client:visible />
+        <InnovativeEducation />
+        <NewsAndEvents />
+        <Footer />
+      </main>
+    </div>
+  </div>
 </Layout>

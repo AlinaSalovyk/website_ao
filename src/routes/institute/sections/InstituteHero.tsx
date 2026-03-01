@@ -26,13 +26,13 @@ export const InstituteHero = (): JSX.Element => {
                 <div className="grid grid-cols-1 lg:grid-cols-[1.9fr_1fr] gap-10 lg:gap-32 items-start">
 
                     <div className="flex flex-col gap-10">
-                        <button
-                            onClick={() => document.getElementById('general-info')?.scrollIntoView({ behavior: 'smooth' })}
+                        <a
+                            href="#general-info"
                             className="flex items-center gap-2 text-xs uppercase tracking-widest text-white mb-2 hover:text-blue-400 transition-colors text-left"
                         >
                             <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
                             <span>Про нас /</span>
-                        </button>
+                        </a>
 
                         <div className="flex flex-col gap-8">
                             <p className="text-xl md:text-2xl lg:text-3xl leading-snug text-white">

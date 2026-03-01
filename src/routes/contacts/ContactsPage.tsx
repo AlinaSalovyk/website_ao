@@ -1,5 +1,4 @@
 import type { JSX } from "react";
-import { MainLayout } from "@/layouts/MainLayout";
 import { Footer } from "@/components/layout/Footer";
 import { Separator } from "@/components/ui/separator";
 import * as Accordion from "@radix-ui/react-accordion";
@@ -25,20 +24,7 @@ const faqItems = [
 
 export const ContactsPage = (): JSX.Element => {
     return (
-        <MainLayout
-            variant="light"
-            customLogo={
-                <img
-                    src="/images/Contacts/LogoContacts.png"
-                    alt="Logo"
-                    className="h-8 md:h-10 w-auto"
-                    loading="lazy"
-                    decoding="async"
-                    width={83}
-                    height={32}
-                />
-            }
-        >
+        <>
             <div className="w-full bg-pure-white flex flex-col items-center">
                 <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9 flex flex-col pt-10 pb-20 gap-16 md:gap-24">
 
@@ -158,6 +144,6 @@ export const ContactsPage = (): JSX.Element => {
                 </div>
             </div>
             <Footer hideMainContent={true} />
-        </MainLayout>
+        </>
     );
 };
