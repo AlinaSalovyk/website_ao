@@ -77,9 +77,9 @@ export const ContactsPage = (): JSX.Element => {
                             </div>
 
                             <div className="flex flex-col gap-4 max-w-sm">
-                                <h3 className="font-medium text-xl text-pure-black">
+                                <h2 className="font-medium text-xl text-pure-black">
                                     Новоселецький Олександр Миколайович
-                                </h3>
+                                </h2>
                                 <p className="text-sm text-pure-black/70 leading-relaxed">
                                     Директор інституту ІТ та Бізнесу, кандидат економічних наук, доцент кафедри інформаційних технологій та аналітики даних
                                 </p>

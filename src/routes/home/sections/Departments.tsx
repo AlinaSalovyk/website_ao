@@ -115,16 +115,16 @@ export const Departments = () => {
                             transition={{ duration: 0.3 }}
                             className="text-white space-y-10"
                         >
-                            <h3 className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8">
+                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8">
                                 Наші освітні програми:
-                            </h3>
+                            </h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                                 {activeDepartment?.programs.bachelor && (
                                     <div className="space-y-4">
-                                        <h4 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
+                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
                                             Бакалаврат
-                                        </h4>
+                                        </h3>
                                         <ul className="space-y-2">
                                             {activeDepartment.programs.bachelor.map((program, idx) => (
                                                 <li
@@ -141,9 +141,9 @@ export const Departments = () => {
 
                                 {activeDepartment?.programs.master && (
                                     <div className="space-y-4">
-                                        <h4 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
+                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
                                             Магістратура
-                                        </h4>
+                                        </h3>
                                         <ul className="space-y-2">
                                             {activeDepartment.programs.master.map((program, idx) => (
                                                 <li
@@ -160,9 +160,9 @@ export const Departments = () => {
 
                                 {activeDepartment?.programs.phd && (
                                     <div className="space-y-4">
-                                        <h4 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
+                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
                                             Аспірантура
-                                        </h4>
+                                        </h3>
                                         <ul className="space-y-2">
                                             {activeDepartment.programs.phd.map((program, idx) => (
                                                 <li
