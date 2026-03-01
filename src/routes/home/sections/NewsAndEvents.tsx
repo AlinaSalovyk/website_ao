@@ -1,9 +1,8 @@
-import { ArrowRightIcon } from "lucide-react";
+import { getSocialIcons } from "@/components/icons/SocialIcons";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { getSocialIcons } from "@/components/icons/SocialIcons";
+import { ArrowRightIcon } from "lucide-react";
 import type { JSX } from "react";
 
 const newsItems = [
