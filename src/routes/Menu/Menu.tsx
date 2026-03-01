@@ -31,9 +31,18 @@ const simpleMenuItems = ["Головна", "Про інститут"];
 
 const bottomSimpleMenuItems = ["Студенське життя", "Наукова діяльність"];
 
-const footerLinksLeft = ["Новини", "Керівництво", "Вступ", "НаУОА"];
+const footerLinksLeft = [
+    { label: "Новини", href: "/#news" },
+    { label: "Керівництво", href: "/#leadership" },
+    { label: "Вступ", href: "https://vstup.oa.edu.ua/", isExternal: true },
+    { label: "НаУОА", href: "https://www.oa.edu.ua/", isExternal: true }
+];
 
-const footerLinksRight = ["Facebook", "Instagram", "TikTok"];
+const footerLinksRight = [
+    { label: "Facebook", href: "https://www.facebook.com/share/16TZiemvDA/", isExternal: true },
+    { label: "Instagram", href: "https://www.instagram.com/itb_oa?igsh=MWp6aWxqc3VuMDA5Zw==", isExternal: true },
+    { label: "TikTok", href: "https://www.tiktok.com/@itb_oa?_r=1&_t=ZS-945ZKJPCHMV", isExternal: true }
+];
 
 
 interface MenuProps {
@@ -270,10 +279,18 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                         key={`footer-left-${index}`}
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start cursor-pointer"
+                                        asChild
+                                        onClick={onClose}
                                     >
-                                        <span className="font-normal text-news-gray text-sm leading-4">
-                                            {link}
-                                        </span>
+                                        <a
+                                            href={link.href}
+                                            target={link.isExternal ? "_blank" : undefined}
+                                            rel={link.isExternal ? "noopener noreferrer" : undefined}
+                                        >
+                                            <span className="font-normal text-news-gray text-sm leading-4">
+                                                {link.label}
+                                            </span>
+                                        </a>
                                     </Button>
                                 ))}
                             </div>
@@ -284,10 +301,18 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                         key={`footer-right-${index}`}
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start cursor-pointer"
+                                        asChild
+                                        onClick={onClose}
                                     >
-                                        <span className="font-normal text-news-gray text-sm leading-4">
-                                            {link}
-                                        </span>
+                                        <a
+                                            href={link.href}
+                                            target={link.isExternal ? "_blank" : undefined}
+                                            rel={link.isExternal ? "noopener noreferrer" : undefined}
+                                        >
+                                            <span className="font-normal text-news-gray text-sm leading-4">
+                                                {link.label}
+                                            </span>
+                                        </a>
                                     </Button>
                                 ))}
                             </div>
