@@ -96,7 +96,7 @@ export const ContactsPage = (): JSX.Element => {
                         </div>
 
                         {/* Right Column - Contact Form */}
-                        <div className="flex flex-col gap-8 w-full font-['Roboto',sans-serif]">
+                        <form className="flex flex-col gap-8 w-full font-['Roboto',sans-serif]" onSubmit={(e) => e.preventDefault()}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="flex flex-col gap-2">
                                     <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Ім'я</label>
@@ -123,13 +123,13 @@ export const ContactsPage = (): JSX.Element => {
                                 <textarea placeholder="Розкажи нам більше, або постав питання" rows={1} className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 min-h-[30px] text-pure-black"></textarea>
                             </div>
 
-                            <div className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 mt-4 cursor-pointer hover:opacity-70 transition-opacity group">
+                            <button type="submit" className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 mt-4 cursor-pointer hover:opacity-70 transition-opacity group bg-transparent">
                                 <span className="text-xs font-medium text-pure-black">Надіслати повідомлення</span>
                                 <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="transform group-hover:translate-x-1 transition-transform">
                                     <path d="M12.5 1L17 6M17 6L12.5 11M17 6H0" stroke="black" strokeWidth="1" />
                                 </svg>
-                            </div>
-                        </div>
+                            </button>
+                        </form>
                     </div>
 
                     {/* FAQ Section */}
