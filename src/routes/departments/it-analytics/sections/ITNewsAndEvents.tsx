@@ -72,7 +72,7 @@ export const ITNewsAndEvents = (): JSX.Element => {
 
                     <div className="flex flex-col w-full items-end pt-4 pb-0 px-0 translate-y-[-0.1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
                         <a
-                            href="#"
+                            href="/#news"
                             className="flex flex-col items-end gap-1 mb-2 group cursor-pointer hover:opacity-70 transition-opacity"
                         >
                             <div className="flex items-center gap-6">

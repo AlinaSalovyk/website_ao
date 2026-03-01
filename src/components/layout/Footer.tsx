@@ -3,6 +3,13 @@ import { Separator } from "@/components/ui/separator";
 import { getSocialIcons } from "@/components/icons/SocialIcons";
 import type { JSX } from "react";
 
+const socialLinks: Record<string, string> = {
+    Instagram: "https://www.instagram.com/itb_oa",
+    LinkedIn: "https://www.linkedin.com",
+    "X (Twitter)": "https://x.com",
+    YouTube: "https://www.youtube.com",
+};
+
 const navigationItems = [
     { label: "ГОЛОВНА", href: "/", isActive: true },
     { label: "ПРО ІНСТИТУТ", href: "/institute", isActive: false },
@@ -122,7 +129,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                         </a>
                         <a href="https://www.oa.edu.ua" className="hover:underline">www.oa.edu.ua</a>
                         <a href="mailto:press@oa.edu.ua" className="hover:underline">press@oa.edu.ua</a>
-                        <p>+38 067 879 2526</p>
+                        <a href="tel:+380678792526" className="hover:underline">+38 067 879 2526</a>
                     </div>
 
                     {/* Middle Column - Socials */}
@@ -130,7 +137,9 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                         {footerSocials.map((icon, index) => (
                             <a
                                 key={index}
-                                href="#"
+                                href={socialLinks[icon.alt] ?? "#"}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
                                 aria-label={icon.alt}
                             >
