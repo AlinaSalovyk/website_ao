@@ -39,8 +39,7 @@ export const ITLeadership = (): JSX.Element => {
                                     className="w-full h-full object-cover object-top"
                                     loading="lazy"
                                     onError={(e) => {
-                                        (e.target as HTMLImageElement).src =
-                                            "https://via.placeholder.com/400x500?text=No+Image";
+                                        (e.target as HTMLImageElement).style.display = 'none';
                                     }}
                                 />
                             </div>
