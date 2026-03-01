@@ -51,6 +51,31 @@ const currentUrl = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
 		<meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
+
+		<!-- JSON-LD Structured Data -->
+		<script type="application/ld+json" set:html={JSON.stringify({
+			"@context": "https://schema.org",
+			"@type": "EducationalOrganization",
+			"name": "Інститут інформаційних технологій та бізнесу",
+			"alternateName": "ІТЕ НаУОА",
+			"url": siteUrl,
+			"logo": `${siteUrl}/favicon.svg`,
+			"description": "Інститут інформаційних технологій та бізнесу Національного університету \"Острозька академія\"",
+			"address": {
+				"@type": "PostalAddress",
+				"streetAddress": "вул. Семінарська, 2",
+				"addressLocality": "Острог",
+				"postalCode": "35800",
+				"addressCountry": "UA"
+			},
+			"telephone": "+380678792526",
+			"email": "press@oa.edu.ua",
+			"parentOrganization": {
+				"@type": "CollegeOrUniversity",
+				"name": "Національний університет \"Острозька академія\"",
+				"url": "https://www.oa.edu.ua"
+			}
+		})} />
 	</head>
 	<body class="antialiased">
 		<slot />
