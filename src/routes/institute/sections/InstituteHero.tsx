@@ -11,10 +11,10 @@ export const InstituteHero = (): JSX.Element => {
             <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col pt-70 lg:pt-90 pb-10 lg:pb-16">
 
                 {/* Title Section */}
-                <div className="flex flex-col w-full mb-8 font-['Roboto',sans-serif] font-bold text-4xl md:text-4xl lg:text-7xl xl:text-8xl leading-[1.1] tracking-[-0.02em] uppercase text-left">
+                <h1 className="flex flex-col w-full mb-8 font-['Roboto',sans-serif] font-bold text-4xl md:text-4xl lg:text-7xl xl:text-8xl leading-[1.1] tracking-[-0.02em] uppercase text-left">
                     <span>Про інститут</span>
                     <span className="text-gray-200">Інформаційних технологій та Бізнесу</span>
-                </div>
+                </h1>
 
                 <div className="w-full h-[1px] bg-white/20 mb-8"></div>
 

@@ -42,10 +42,10 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 </svg>
                                             </div>
 
-                                            <h2 className="[font-family:'Roboto',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
+                                            <p className="[font-family:'Roboto',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
                                                 Розвиток та <br />
                                                 Інновації в ІТ та Бізнесі
-                                            </h2>
+                                            </p>
                                         </div>
 
                                         <p className="font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs tracking-[0] leading-[18px]">
@@ -69,17 +69,17 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 </svg>
                                             </div>
 
-                                            <h2 className="[font-family:'Roboto',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
+                                            <p className="[font-family:'Roboto',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
                                                 Нумо змінювати світ <br />
                                                 разом з нами!
-                                            </h2>
+                                            </p>
                                         </div>
 
                                         <div className="flex flex-col md:flex-row items-start md:items-end gap-8 md:gap-4 lg:gap-[172px] w-full justify-between">
                                             <div className="inline-flex flex-col items-start justify-end">
-                                                <h3 className="[font-family:'Roboto',Helvetica] font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
+                                                <p className="[font-family:'Roboto',Helvetica] font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
                                                     Start Studying
-                                                </h3>
+                                                </p>
                                             </div>
 
                                             <div className="inline-flex flex-col w-full md:w-auto md:min-w-[180px] items-start">
