@@ -36,7 +36,7 @@ const currentUrl = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
-		{canonicalUrl && <link rel="canonical" href={currentUrl} />}
+		<link rel="canonical" href={currentUrl} />
 
 		<!-- Open Graph -->
 		<meta property="og:type" content="website" />
