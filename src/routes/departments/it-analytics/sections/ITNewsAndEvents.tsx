@@ -11,7 +11,7 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage: "https://c.animaapp.com/mkvpx7lhh8vezq/img/background.png",
+        backgroundImage: "/images/Home/news-background.png",
         link: "Дізнатися більше",
     },
     {
@@ -21,7 +21,7 @@ const newsItems = [
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
         backgroundImage:
-            "https://c.animaapp.com/mkvpx7lhh8vezq/img/background-1.png",
+            "/images/Home/news-background-1.png",
         link: "Дізнатися більше",
     },
     {
@@ -31,7 +31,7 @@ const newsItems = [
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
         backgroundImage:
-            "https://c.animaapp.com/mkvpx7lhh8vezq/img/background-2.png",
+            "/images/Home/news-background-2.png",
         link: "Дізнатися більше",
     },
     {
@@ -41,7 +41,7 @@ const newsItems = [
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
         backgroundImage:
-            "https://c.animaapp.com/mkvpx7lhh8vezq/img/background-3.png",
+            "/images/Home/news-background-3.png",
         link: "Дізнатися більше",
     },
 ];
