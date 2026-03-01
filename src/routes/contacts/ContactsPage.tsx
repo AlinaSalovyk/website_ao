@@ -72,7 +72,7 @@ export const ContactsPage = (): JSX.Element => {
 
                                 <div className="flex flex-col gap-1 mt-4 text-[10px] md:text-xs">
                                     <p className="font-medium text-pure-black">Контактна інформація:</p>
-                                    <p className="text-pure-black/70">e-mail: aleksandr.novoseletskyiy@oa.edu.ua</p>
+                                    <p className="text-pure-black/70">e-mail: <a href="mailto:aleksandr.novoseletskyiy@oa.edu.ua" className="hover:underline">aleksandr.novoseletskyiy@oa.edu.ua</a></p>
                                 </div>
 
                                 <div className="flex flex-col gap-1 text-[10px] md:text-xs">
@@ -86,28 +86,28 @@ export const ContactsPage = (): JSX.Element => {
                         <form className="flex flex-col gap-8 w-full" onSubmit={(e) => e.preventDefault()}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Ім'я</label>
-                                    <input type="text" placeholder="Бен" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
+                                    <label htmlFor="contact-first-name" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Ім'я</label>
+                                    <input id="contact-first-name" name="firstName" type="text" required placeholder="Бен" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Прізвище</label>
-                                    <input type="text" placeholder="Марк" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
+                                    <label htmlFor="contact-last-name" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Прізвище</label>
+                                    <input id="contact-last-name" name="lastName" type="text" required placeholder="Марк" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Email</label>
-                                <input type="email" placeholder="ben@gmail.com" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
+                                <label htmlFor="contact-email" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Email</label>
+                                <input id="contact-email" name="email" type="email" required placeholder="ben@gmail.com" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Область</label>
-                                <input type="text" placeholder="Вибери одну.." className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
+                                <label htmlFor="contact-region" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Область</label>
+                                <input id="contact-region" name="region" type="text" placeholder="Вибери одну.." className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Повідомлення</label>
-                                <textarea placeholder="Розкажи нам більше, або постав питання" rows={1} className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 min-h-[30px] text-pure-black"></textarea>
+                                <label htmlFor="contact-message" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Повідомлення</label>
+                                <textarea id="contact-message" name="message" placeholder="Розкажи нам більше, або постав питання" rows={1} className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 min-h-[30px] text-pure-black"></textarea>
                             </div>
 
                             <button type="submit" className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 mt-4 cursor-pointer hover:opacity-70 transition-opacity group bg-transparent">
@@ -123,7 +123,7 @@ export const ContactsPage = (): JSX.Element => {
                     <div className="w-full md:w-1/2 md:max-w-[48%] self-start flex flex-col gap-8 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:800ms]">
                         <Accordion.Root type="multiple" className="w-full flex flex-col gap-4">
                             {faqItems.map((item, index) => (
-                                <Accordion.Item key={index} value={`item-${index}`} className="border-b border-pure-black/0">
+                                <Accordion.Item key={index} value={`item-${index}`}>
                                     <Accordion.Header className="flex">
                                         <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group cursor-pointer">
                                             <span className="text-pure-black max-w-[80%]">{item.question}</span>
