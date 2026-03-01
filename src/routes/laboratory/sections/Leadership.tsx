@@ -6,7 +6,7 @@ export const Leadership = (): JSX.Element => {
             <div className="container mx-auto flex flex-col">
                 {/* Header */}
                 <div className="flex justify-end w-full mb-16 md:mb-20 border-b border-pure-black pb-4">
-                    <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold font-['Roboto',sans-serif] text-right">
+                    <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold text-right">
                         Керівництво лабораторії
                     </h2>
                 </div>
@@ -26,29 +26,29 @@ export const Leadership = (): JSX.Element => {
 
                         <div className="flex flex-col gap-8 md:gap-10 pt-2">
                             <div>
-                                <h3 className="font-['Roboto',sans-serif] font-bold text-xl md:text-2xl mb-2">
+                                <h3 className="font-bold text-xl md:text-2xl mb-2">
                                     Мельничук Олександр Павлович
                                 </h3>
-                                <p className="font-['Roboto',sans-serif] text-sm md:text-base text-black/80">
+                                <p className="text-sm md:text-base text-black/80">
                                     Викладач, фахівець-практик
                                 </p>
                             </div>
 
                             <div className="flex flex-col gap-6">
                                 <div>
-                                    <p className="font-['Roboto',sans-serif] text-sm text-black mb-1 font-semibold">
+                                    <p className="text-sm text-black mb-1 font-semibold">
                                         Контактна інформація:
                                     </p>
-                                    <a href="mailto:oleksandr.melnychuk@oa.edu.ua" className="font-['Roboto',sans-serif] text-sm text-black hover:underline block">
+                                    <a href="mailto:oleksandr.melnychuk@oa.edu.ua" className="text-sm text-black hover:underline block">
                                         e-mail: oleksandr.melnychuk@oa.edu.ua
                                     </a>
                                 </div>
 
                                 <div>
-                                    <p className="font-['Roboto',sans-serif] text-sm text-black mb-1 font-semibold">
+                                    <p className="text-sm text-black mb-1 font-semibold">
                                         Офісні години:
                                     </p>
-                                    <p className="font-['Roboto',sans-serif] text-sm text-black">
+                                    <p className="text-sm text-black">
                                         понеділок - п'ятниця: 8.30-17.30
                                     </p>
                                 </div>

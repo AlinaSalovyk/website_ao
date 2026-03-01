@@ -27,14 +27,14 @@ export const ITHeroWithAbout = (): JSX.Element => {
       <div className="relative min-h-[500px] lg:min-h-[calc(113vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-1 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms]">
         <div className="relative z-10 pt-80 lg:pt-0">
           <div className="flex justify-start items-baseline w-full flex-wrap gap-x-3 gap-y-2 mb-8">
-            <h1 className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+            <h1 className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
               Кафедра інформаційних технологій та аналітики даних
             </h1>
           </div>
           <div className="w-full h-[0.9px] bg-pure-white/35 mb-10"></div>
 
           <div className="flex flex-col md:flex-row justify-between items-end w-full gap-8 mt-8">
-            <p className="max-w-xl font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed text-gray-200 ml-1">
+            <p className="max-w-xl text-sm md:text-base leading-relaxed text-gray-200 ml-1">
               Кафедра інформаційних технологій та аналітики даних — це місце, де традиції поєднуються з інноваціями, а знання стають основою для успішної кар'єри у цифрову епоху.
             </p>
 
@@ -72,7 +72,7 @@ export const ITHeroWithAbout = (): JSX.Element => {
                 </div>
               </div>
 
-              <div className="font-['Roboto',sans-serif] text-2xl md:text-3xl lg:text-4xl font-normal leading-relaxed text-gray-100">
+              <div className="text-2xl md:text-3xl lg:text-4xl font-normal leading-relaxed text-gray-100">
                 <p className="mb-8">
                   Майбутнє належить тим, хто вміє працювати з даними. У світі, де інформація — це сила, ми навчаємо перетворювати її на рішення, що змінюють реальність.
                 </p>

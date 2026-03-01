@@ -8,7 +8,7 @@ export const AboutLaboratory = (): JSX.Element => {
 
                 {/* Header */}
                 <div className="flex justify-end mb-16 md:mb-24 border-b border-pure-black pb-4">
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl font-bold font-['Roboto',sans-serif]">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl font-bold">
                         Про лабораторію
                     </h2>
                 </div>
@@ -16,10 +16,10 @@ export const AboutLaboratory = (): JSX.Element => {
                 {/* Content Block 1: Problems and Opportunities */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 border-b border-pure-black pb-16 md:pb-24 mb-16 md:mb-24">
                     <div className="lg:col-span-4">
-                        <h3 className="text-2xl md:text-3xl font-bold font-['Roboto',sans-serif]">Проблеми й можливості</h3>
+                        <h3 className="text-2xl md:text-3xl font-bold">Проблеми й можливості</h3>
                     </div>
                     <div className="lg:col-span-5">
-                        <p className="text-base md:text-lg font-['Roboto',sans-serif] leading-relaxed">
+                        <p className="text-base md:text-lg leading-relaxed">
                             Підрозділам потрібні прості, надійні та доступні технічні рішення — від кріплень і телеметрії до навчальних тренажерів, випробувальних стендів, систем живлення, логістики й діагностики — з мінімальними термінами розробки та постачання. Водночас серійні аналоги часто відсутні або є економічно недоцільними, а їх отримання займає надто багато часу. Наш підхід базується на швидкому реінжинірингу та відновленні вузлів, наданих замовником, у поєднанні з 3D-друком, лазерною обробкою та оперативним виготовленням PCB, що дозволяє створювати робочі прототипи за лічені тижні, а не місяці.
                         </p>
                     </div>
@@ -38,10 +38,10 @@ export const AboutLaboratory = (): JSX.Element => {
                 {/* Content Block 2: Architecture */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 border-b border-pure-black pb-16 md:pb-24 mb-16 md:mb-24">
                     <div className="lg:col-span-4">
-                        <h3 className="text-2xl md:text-3xl font-bold font-['Roboto',sans-serif]">Архітектура лабораторії</h3>
+                        <h3 className="text-2xl md:text-3xl font-bold">Архітектура лабораторії</h3>
                     </div>
                     <div className="lg:col-span-5">
-                        <ul className="list-disc pl-5 space-y-6 text-base md:text-lg font-['Roboto',sans-serif] leading-relaxed">
+                        <ul className="list-disc pl-5 space-y-6 text-base md:text-lg leading-relaxed">
                             <li>
                                 <strong>Комп'ютерна зона (17–24 робочих місця)</strong>
                                 <br /> Простір для CAD-проєктування, симуляцій, аналітики та роботи з даними.
@@ -79,10 +79,10 @@ export const AboutLaboratory = (): JSX.Element => {
                 {/* Content Block 3: Examples */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 border-b border-pure-black pb-16 md:pb-24 mb-16 md:mb-24">
                     <div className="lg:col-span-4">
-                        <h3 className="text-2xl md:text-3xl font-bold font-['Roboto',sans-serif]">Приклади типових виробів</h3>
+                        <h3 className="text-2xl md:text-3xl font-bold">Приклади типових виробів</h3>
                     </div>
                     <div className="lg:col-span-5">
-                        <ul className="list-disc pl-5 space-y-2 text-base md:text-lg font-['Roboto',sans-serif] leading-relaxed">
+                        <ul className="list-disc pl-5 space-y-2 text-base md:text-lg leading-relaxed">
                             <li>Модульні кріплення/кожухи для оптики, антен, камер; амортизуючі платформи.</li>
                             <li>Стенди й тренажери для навчання операторів та для діагностики вузлів.</li>
                             <li>Системи живлення (DC-DC, батарейні модулі, герметичні бокс-кейси).</li>

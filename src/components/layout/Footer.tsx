@@ -50,7 +50,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 </svg>
                                             </div>
 
-                                            <p className="[font-family:'Roboto',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
+                                            <p className="font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
                                                 Розвиток та <br />
                                                 Інновації в ІТ та Бізнесі
                                             </p>
@@ -77,7 +77,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 </svg>
                                             </div>
 
-                                            <p className="[font-family:'Roboto',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
+                                            <p className="font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
                                                 Нумо змінювати світ <br />
                                                 разом з нами!
                                             </p>
@@ -85,7 +85,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                                         <div className="flex flex-col md:flex-row items-start md:items-end gap-8 md:gap-4 lg:gap-[172px] w-full justify-between">
                                             <div className="inline-flex flex-col items-start justify-end">
-                                                <p className="[font-family:'Roboto',Helvetica] font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
+                                                <p className="font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
                                                     Start Studying
                                                 </p>
                                             </div>
@@ -94,7 +94,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 <div className="flex flex-col w-full md:w-[229px] items-start gap-[3px]">
                                                     <a href="/contacts" className="flex items-center justify-between w-full group cursor-pointer">
                                                         <div className="relative w-full md:w-[181px] h-4">
-                                                            <span className="h-4 flex items-center justify-start md:justify-center text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs leading-4 whitespace-nowrap [font-family:'Roboto',Helvetica] font-normal tracking-[0] group-hover:opacity-80 transition-opacity">
+                                                            <span className="h-4 flex items-center justify-start md:justify-center text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs leading-4 whitespace-nowrap font-normal tracking-[0] group-hover:opacity-80 transition-opacity">
                                                                 Контактуй з нами
                                                             </span>
                                                         </div>
@@ -117,7 +117,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
             <div className="w-full bg-pure-white py-8 md:py-10 border-t border-layout-bg/10">
                 <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
                     {/* Left Column - Contacts */}
-                    <div className="flex flex-col gap-0.5 [font-family:'Roboto',sans-serif] text-pure-black text-sm lg:text-base leading-[1.3]">
+                    <div className="flex flex-col gap-0.5 text-pure-black text-sm lg:text-base leading-[1.3]">
                         <a
                             href="https://www.google.com/maps/place/%D0%B2%D1%83%D0%BB.+%D0%A1%D0%B5%D0%BC%D1%96%D0%BD%D0%B0%D1%80%D1%81%D1%8C%D0%BA%D0%B0,+2,+%D0%9E%D1%81%D1%82%D1%80%D0%BE%D0%B3,+%D0%A0%D1%96%D0%B2%D0%BD%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B0+%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C,+35800/@50.3228186,26.5054707,17z/data=!3m1!4b1!4m6!3m5!1s0x472dada058296a2f:0x6b1660ca4f5d22f6!8m2!3d50.3228152!4d26.5080456!16s%2Fg%2F12hn9506l?entry=ttu"
                             target="_blank"
@@ -159,7 +159,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                             >
                                 <div className="flex items-center justify-between w-full pb-1">
                                     <span
-                                        className={`[font-family:'Roboto',sans-serif] font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${item.isActive ? "text-leadership-link" : "text-pure-black"
+                                        className={`font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${item.isActive ? "text-leadership-link" : "text-pure-black"
                                             } group-hover:text-leadership-link`}
                                     >
                                         {item.label}
@@ -177,10 +177,10 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
             <div className="w-full bg-pure-black py-4">
                 <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-row items-center gap-8">
-                    <button className="[font-family:'Roboto',sans-serif] font-medium text-pure-white text-[10px] lg:text-xs tracking-wide hover:opacity-70 transition-opacity">
+                    <button className="font-medium text-pure-white text-[10px] lg:text-xs tracking-wide hover:opacity-70 transition-opacity">
                         Cookie Preference
                     </button>
-                    <span className="[font-family:'Roboto',sans-serif] font-medium text-pure-white text-[10px] lg:text-xs tracking-wide">
+                    <span className="font-medium text-pure-white text-[10px] lg:text-xs tracking-wide">
                         Національний університет &quot;Острозька академія&quot;
                     </span>
                 </div>

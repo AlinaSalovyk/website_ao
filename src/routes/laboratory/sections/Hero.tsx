@@ -28,7 +28,7 @@ export const Hero = (): JSX.Element => {
             {/* Hero Title */}
             <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-6 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms] mt-16 lg:mt-24">
                 <div className="relative z-10 pt-32 lg:pt-0">
-                    <h1 className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+                    <h1 className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
                         Науково-дослідна лабораторія робототехніки та вбудованих систем з прикладним AI
                     </h1>
                 </div>
@@ -62,10 +62,10 @@ export const Hero = (): JSX.Element => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
                         {/* Left Column - Text */}
                         <div className="flex flex-col gap-8 lg:gap-10 w-full">
-                            <p className="font-['Roboto',sans-serif] text-pure-white text-lg md:text-xl lg:text-[22px] xl:text-2xl 2xl:text-[26px] leading-[1.6]">
+                            <p className="text-pure-white text-lg md:text-xl lg:text-[22px] xl:text-2xl 2xl:text-[26px] leading-[1.6]">
                                 Науково-дослідна лабораторія робототехніки та вбудованих систем з прикладним AI — це простір для створення практичних апаратно-програмних рішень на перетині інженерії, штучного інтелекту та швидкого прототипування.
                             </p>
-                            <p className="font-['Roboto',sans-serif] text-pure-white text-lg md:text-xl lg:text-[22px] xl:text-2xl 2xl:text-[26px] leading-[1.6] text-white/80">
+                            <p className="text-pure-white text-lg md:text-xl lg:text-[22px] xl:text-2xl 2xl:text-[26px] leading-[1.6] text-white/80">
                                 Лабораторія працює з реальними R&D-проєктами у сфері робототехніки, embedded-систем, IoT та прикладного AI, залучаючи студентів і дослідників до повного циклу розробки — від ідеї й прототипу до тестування та малосерійного виготовлення — формуючи прикладні інженерні навички, затребувані сучасним технологічним ринком.
                             </p>
                         </div>

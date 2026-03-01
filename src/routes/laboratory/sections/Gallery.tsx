@@ -63,7 +63,7 @@ export const Gallery = (): JSX.Element => {
             <div className="container mx-auto px-4 md:px-9 flex flex-col">
                 <header className="flex flex-col w-full mb-2 mx-auto">
                     <div className="flex justify-center w-full mb-10 border-b border-pure-black pb-4">
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold font-['Roboto',sans-serif] text-center">
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center">
                             Галерея
                         </h2>
                     </div>

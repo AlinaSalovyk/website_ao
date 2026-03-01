@@ -28,7 +28,7 @@ export const HeroWithAbout = (): JSX.Element => {
       {/* Hero Title */}
       <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-6 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms]">
         <div className="relative z-10 pt-32 lg:pt-0">
-          <h1 className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+          <h1 className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
             Обирай навчання, яке відповідає викликам майбутнього!
           </h1>
         </div>
@@ -62,10 +62,10 @@ export const HeroWithAbout = (): JSX.Element => {
           <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-10 lg:gap-16 items-center">
             {/* Left Column - Text */}
             <div className="flex flex-col gap-8 lg:gap-10 w-full">
-              <p className="font-['Roboto',sans-serif] text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
+              <p className="text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
                 Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Ми поєднуємо технології, бізнес та інновації, щоб готувати фахівців, які не просто адаптуються до змін, а й створюють їх.
               </p>
-              <p className="font-['Roboto',sans-serif] text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
+              <p className="text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
                 Наші студенти отримують актуальні знання та практичний досвід у IT, аналітиці, управлінні й підприємництві. Співпраця з провідними компаніями дає їм конкурентні переваги у світі технологій та бізнесу.
               </p>
             </div>

@@ -30,7 +30,7 @@ export const InnovativeEducation = (): JSX.Element => {
                     className="flex flex-col mx-auto w-full h-full items-start px-4 md:px-9 pt-20 relative z-[1] max-w-7xl 2xl:max-w-screen-2xl"
                 >
                     <header className="flex flex-col items-start relative w-full gap-8 translate-y-[-1rem] animate-fade-in opacity-0">
-                        <h2 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-4xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[132px] tracking-[0] leading-tight xl:leading-[144px] whitespace-normal md:whitespace-nowrap">
+                        <h2 className="font-medium text-pure-black text-4xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[132px] tracking-[0] leading-tight xl:leading-[144px] whitespace-normal md:whitespace-nowrap">
                             ІННОВАЦІЙНА ОСВІТА
                         </h2>
                         <Separator className="w-full bg-separator-gray h-px" />
@@ -48,7 +48,7 @@ export const InnovativeEducation = (): JSX.Element => {
                             >
                                 <CardContent className="flex flex-col items-start gap-4 p-0">
                                     <div className="flex items-start w-full">
-                                        <h2 className="[font-family:'Roboto',Helvetica] font-normal text-pure-black text-5xl md:text-7xl xl:text-9xl 2xl:text-[140px] tracking-tight xl:tracking-[-4.80px] leading-tight xl:leading-[120px] whitespace-nowrap">
+                                        <h2 className="font-normal text-pure-black text-5xl md:text-7xl xl:text-9xl 2xl:text-[140px] tracking-tight xl:tracking-[-4.80px] leading-tight xl:leading-[120px] whitespace-nowrap">
                                             {stat.number}
                                         </h2>
                                     </div>

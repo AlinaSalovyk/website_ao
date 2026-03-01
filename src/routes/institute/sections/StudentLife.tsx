@@ -7,7 +7,7 @@ export const StudentLife = (): JSX.Element => {
 
                 {/* Section Title */}
                 <div className="flex justify-end mb-16 md:mb-24 border-b border-black pb-4">
-                    <h2 className="font-['Roboto',sans-serif] font-bold text-4xl md:text-5xl lg:text-6xl text-black text-right">
+                    <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl text-black text-right">
                         Студентське життя
                     </h2>
                 </div>
@@ -17,7 +17,7 @@ export const StudentLife = (): JSX.Element => {
                     {/* Row 1: Text Left, Image Right */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
                         <div className="order-2 lg:order-1 flex flex-col gap-6">
-                            <p className="font-['Roboto',sans-serif] text-base md:text-lg leading-relaxed text-gray-800">
+                            <p className="text-base md:text-lg leading-relaxed text-gray-800">
                                 Студентське життя є найкращим періодом для огранювання себе як особистості та формування себе як фахівця. Ти маєш можливість взяти участь у спортивному та/або культурно-мистецькому житті університету, відстоювати свою соціальну позицію будучи учасником волонтерської програми, набувати комунікативні навички у обмінних міжнародних програмах. Це все є ти!
                             </p>
                         </div>
@@ -44,7 +44,7 @@ export const StudentLife = (): JSX.Element => {
                             />
                         </div>
                         <div className="order-2 flex flex-col gap-6">
-                            <p className="font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed text-gray-800">
+                            <p className="text-sm md:text-base leading-relaxed text-gray-800">
                                 Окрім цього, на факультеті існує студентське самоврядування, що є потужним органом, який долучається до організацї освітнього процесу. Представники студентської ради на чолі із студдеканом є членами ради інституту, де мають можливість брати участь у формуванні стратегії розвитку інституту, модернізації освітнього процесу та вирішенні поточних питань. Студенти мають всі можливості для реалізації себе!
                             </p>
                         </div>
