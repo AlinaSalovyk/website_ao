@@ -1,6 +1,6 @@
+import { getSocialIcons } from "@/components/icons/SocialIcons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { getSocialIcons } from "@/components/icons/SocialIcons";
 import type { JSX } from "react";
 
 const navigationItems = [
