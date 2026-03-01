@@ -1,9 +1,7 @@
-import { ArrowRightIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { getSocialIcons } from "@/components/icons/SocialIcons";
+import { ArrowRightIcon } from "lucide-react";
 import type { JSX } from "react";
 
 const newsItems = [
@@ -13,7 +11,7 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage: "https://c.animaapp.com/mkvpx7lhh8vezq/img/background.png",
+        backgroundImage: "/images/Home/news-background.png",
         link: "Дізнатися більше",
     },
     {
@@ -23,7 +21,7 @@ const newsItems = [
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
         backgroundImage:
-            "https://c.animaapp.com/mkvpx7lhh8vezq/img/background-1.png",
+            "/images/Home/news-background-1.png",
         link: "Дізнатися більше",
     },
     {
@@ -33,7 +31,7 @@ const newsItems = [
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
         backgroundImage:
-            "https://c.animaapp.com/mkvpx7lhh8vezq/img/background-2.png",
+            "/images/Home/news-background-2.png",
         link: "Дізнатися більше",
     },
     {
@@ -43,18 +41,9 @@ const newsItems = [
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
         backgroundImage:
-            "https://c.animaapp.com/mkvpx7lhh8vezq/img/background-3.png",
+            "/images/Home/news-background-3.png",
         link: "Дізнатися більше",
     },
-];
-
-const socialIcons = getSocialIcons("fill-pure-black", "fill-layout-bg", "size-8");
-
-const navigationItems = [
-    { label: "ГОЛОВНА", isActive: true },
-    { label: "ПРО ІНСТИТУТ", isActive: false },
-    { label: "ОСВІТНІ ПРОГРАМИ", isActive: false },
-    { label: "НОВИНИ ТА ПОДІЇ", isActive: false },
 ];
 
 export const NewsAndEvents = (): JSX.Element => {
@@ -64,7 +53,7 @@ export const NewsAndEvents = (): JSX.Element => {
             <div className="w-full flex items-center justify-center px-0 pt-0.1 pb-10 md:pb-16">
                 <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start px-4 md:px-9">
                     <header className="flex flex-col items-start w-full mb-5 translate-y-[-0.1rem] animate-fade-in opacity-0">
-                        <h2 className="w-full text-center [font-family:'Roboto',Helvetica] font-medium text-pure-black text-4xl md:text-5xl xl:text-7xl 2xl:text-[80px] tracking-[0] leading-tight xl:leading-[80px]">
+                        <h2 className="w-full text-center font-medium text-pure-black text-4xl md:text-5xl xl:text-7xl 2xl:text-[80px] tracking-[0] leading-tight xl:leading-[80px]">
                             Новини та події
                         </h2>
                     </header>
@@ -76,7 +65,7 @@ export const NewsAndEvents = (): JSX.Element => {
                             className="flex flex-col items-end gap-1 mb-2 group cursor-pointer hover:opacity-70 transition-opacity"
                         >
                             <div className="flex items-center gap-6">
-                                <span className="[font-family:'Roboto',Helvetica] font-normal text-pure-black text-sm xl:text-lg 2xl:text-[22px] tracking-[0]">
+                                <span className=" font-normal text-pure-black text-sm xl:text-lg 2xl:text-[22px] tracking-[0]">
                                     Більше новин
                                 </span>
                                 <div className="group-hover:translate-x-1 transition-transform duration-300">
@@ -111,22 +100,22 @@ export const NewsAndEvents = (): JSX.Element => {
                                             <div className="flex items-center justify-between w-full">
                                                 <Badge
                                                     variant="outline"
-                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link [font-family:'Atyp_Display-Regular',Helvetica] font-normal text-xs tracking-[0] leading-[10px] hover:bg-pure-black hover:text-white transition-colors duration-300 cursor-pointer"
+                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link font-normal text-xs tracking-[0] leading-[10px] hover:bg-pure-black hover:text-white transition-colors duration-300 cursor-pointer"
                                                 >
                                                     {item.badge}
                                                 </Badge>
 
-                                                <time className="[font-family:'Atyp_Display-Light',Helvetica] font-light text-pure-black text-sm text-right tracking-[0] leading-[18px]">
+                                                <time className=" font-light text-pure-black text-sm text-right tracking-[0] leading-[18px]">
                                                     {item.date}
                                                 </time>
                                             </div>
 
                                             <div className="flex flex-col items-start gap-3 xl:gap-4 2xl:gap-[15px] w-full">
-                                                <h3 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-xl tracking-[0] leading-7 whitespace-pre-line">
+                                                <h3 className=" font-medium text-pure-black text-xl tracking-[0] leading-7 whitespace-pre-line">
                                                     {item.title}
                                                 </h3>
 
-                                                <p className="[font-family:'Roboto',Helvetica] font-normal text-news-gray text-xs tracking-[0] leading-[10px]">
+                                                <p className=" font-normal text-news-gray text-xs tracking-[0] leading-[10px]">
                                                     {item.readTime}
                                                 </p>
                                             </div>
@@ -136,7 +125,7 @@ export const NewsAndEvents = (): JSX.Element => {
                                     <div className="flex flex-col w-full items-start pt-20 pb-0 px-4">
                                         <div className="flex flex-col w-full items-start gap-1 2xl:gap-[3px]">
                                             <div className="flex items-center justify-between w-full hover:translate-x-1 transition-transform duration-300 cursor-pointer">
-                                                <span className="[font-family:'Roboto',Helvetica] font-normal text-pure-black text-xs tracking-[0] leading-4">
+                                                <span className=" font-normal text-pure-black text-xs tracking-[0] leading-4">
                                                     {item.link}
                                                 </span>
 

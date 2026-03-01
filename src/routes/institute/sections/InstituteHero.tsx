@@ -11,14 +11,14 @@ export const InstituteHero = (): JSX.Element => {
             <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col pt-70 lg:pt-90 pb-10 lg:pb-16">
 
                 {/* Title Section */}
-                <div className="flex flex-col w-full mb-8 font-['Roboto',sans-serif] font-bold text-4xl md:text-4xl lg:text-7xl xl:text-8xl leading-[1.1] tracking-[-0.02em] uppercase text-left">
+                <h1 className="flex flex-col w-full mb-8 font-bold text-4xl md:text-4xl lg:text-7xl xl:text-8xl leading-[1.1] tracking-[-0.02em] uppercase text-left">
                     <span>Про інститут</span>
                     <span className="text-gray-200">Інформаційних технологій та Бізнесу</span>
-                </div>
+                </h1>
 
                 <div className="w-full h-[1px] bg-white/20 mb-8"></div>
 
-                <p className="font-['Roboto',sans-serif] text-xs md:text-sm text-white max-w-3xl mb-20 leading-relaxed opacity-80">
+                <p className="text-xs md:text-sm text-white max-w-3xl mb-20 leading-relaxed opacity-80">
                     Місце де існує поєднання інноваційної освіти, практичного досвіду та наукових<br />
                     досліджень, що формують фахівців нового покоління для цифрової економіки.
                 </p>
@@ -26,19 +26,19 @@ export const InstituteHero = (): JSX.Element => {
                 <div className="grid grid-cols-1 lg:grid-cols-[1.9fr_1fr] gap-10 lg:gap-32 items-start">
 
                     <div className="flex flex-col gap-10">
-                        <button
-                            onClick={() => document.getElementById('general-info')?.scrollIntoView({ behavior: 'smooth' })}
+                        <a
+                            href="#general-info"
                             className="flex items-center gap-2 text-xs uppercase tracking-widest text-white mb-2 hover:text-blue-400 transition-colors text-left"
                         >
                             <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
                             <span>Про нас /</span>
-                        </button>
+                        </a>
 
                         <div className="flex flex-col gap-8">
-                            <p className="font-['Roboto',sans-serif] text-xl md:text-2xl lg:text-3xl leading-snug text-white">
+                            <p className="text-xl md:text-2xl lg:text-3xl leading-snug text-white">
                                 Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Ми поєднуємо технології, бізнес та інновації, щоб готувати фахівців, які не просто адаптуються до змін, а й створюють їх.
                             </p>
-                            <p className="font-['Roboto',sans-serif] text-xl md:text-2xl lg:text-3xl leading-snug text-white">
+                            <p className="text-xl md:text-2xl lg:text-3xl leading-snug text-white">
                                 Наші студенти отримують актуальні знання та практичний досвід у ІТ, аналітиці, управлінні й підприємництві. Співпраця з провідними компаніями дає їм конкурентні переваги у світі технологій та бізнесу.
                             </p>
                         </div>
@@ -49,6 +49,10 @@ export const InstituteHero = (): JSX.Element => {
                             src="/images/IT/ScientificActivity.jpg"
                             alt="Digital Innovation"
                             className="w-full h-full object-cover"
+                            decoding="async"
+                            fetchPriority="high"
+                            width={2731}
+                            height={4096}
                         />
                     </div>
                 </div>

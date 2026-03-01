@@ -1,4 +1,4 @@
-import { ArrowRightIcon } from "lucide-react";
+﻿import { ArrowRightIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -57,7 +57,7 @@ export const EducationalPrograms = (): JSX.Element => {
         <section id="educational-programs" className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
             <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9">
                 <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0 w-full">
-                    <h2 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] w-full">
+                    <h2 className=" font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] w-full">
                         Спеціальності та освітні програми
                     </h2>
                 </header>
@@ -123,7 +123,7 @@ export const EducationalPrograms = (): JSX.Element => {
             {/* Marquee Animation Section */}
             <div className="w-full overflow-hidden py-12 bg-pure-white">
                 <div className="flex items-center gap-16 animate-marquee-seamless">
-                    {[...Array(18)].map((_, setIndex) => (
+                    {[...Array(6)].map((_, setIndex) => (
                         <React.Fragment key={setIndex}>
                             {partnerLogos}
                         </React.Fragment>

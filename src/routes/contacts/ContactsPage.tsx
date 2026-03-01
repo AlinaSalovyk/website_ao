@@ -1,10 +1,7 @@
 import type { JSX } from "react";
-import { MainLayout } from "@/layouts/MainLayout";
 import { Footer } from "@/components/layout/Footer";
 import { Separator } from "@/components/ui/separator";
 import * as Accordion from "@radix-ui/react-accordion";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const faqItems = [
     {
@@ -27,29 +24,20 @@ const faqItems = [
 
 export const ContactsPage = (): JSX.Element => {
     return (
-        <MainLayout
-            variant="light"
-            customLogo={
-                <img
-                    src="/images/Contacts/LogoContacts.png"
-                    alt="Logo"
-                    className="h-8 md:h-10 w-auto"
-                />
-            }
-        >
+        <>
             <div className="w-full bg-pure-white flex flex-col items-center">
                 <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9 flex flex-col pt-10 pb-20 gap-16 md:gap-24">
 
                     {/* Hero Section */}
                     <div className="flex flex-col gap-6 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
                         <div className="flex flex-col gap-8 md:flex-row md:justify-between md:items-start">
-                            <h1 className="font-['Atyp_Display-Medium',Helvetica] font-medium text-4xl md:text-6xl lg:text-[80px] leading-[1.1] tracking-tight text-pure-black max-w-4xl text-left">
+                            <h1 className="font-medium text-4xl md:text-6xl lg:text-[80px] leading-[1.1] tracking-tight text-pure-black max-w-4xl text-left">
                                 Час приєднатися до <br className="hidden md:block" />
                                 інституту ІТ та Бізнесу
                             </h1>
                         </div>
 
-                        <p className="font-['Atyp_Display-Medium',Helvetica] text-xl md:text-2xl text-pure-black/80">
+                        <p className="text-xl md:text-2xl text-pure-black/80">
                             Створюй власне майбутнє разом з нами!
                         </p>
                         <Separator className="bg-pure-black/20" />
@@ -70,24 +58,24 @@ export const ContactsPage = (): JSX.Element => {
 
                             <div className="w-full md:w-auto flex-shrink-0">
                                 <div className="w-full md:w-[200px] h-[300px] md:h-[200px] bg-gray-200 rounded-lg overflow-hidden">
-                                    <img src="/images/InstituteManagement/novoseletskyy.jpg" alt="Новоселецький Олександр Миколайович" className="w-full h-full object-cover object-top" />
+                                    <img src="/images/InstituteManagement/novoseletskyy.jpg" alt="Новоселецький Олександр Миколайович" className="w-full h-full object-cover object-top" loading="lazy" decoding="async" width={200} height={200} />
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-4 max-w-sm">
-                                <h3 className="font-['Atyp_Display-Medium',Helvetica] font-medium text-xl text-pure-black">
+                                <h2 className="font-medium text-xl text-pure-black">
                                     Новоселецький Олександр Миколайович
-                                </h3>
-                                <p className="font-['Roboto',sans-serif] text-sm text-pure-black/70 leading-relaxed">
+                                </h2>
+                                <p className="text-sm text-pure-black/70 leading-relaxed">
                                     Директор інституту ІТ та Бізнесу, кандидат економічних наук, доцент кафедри інформаційних технологій та аналітики даних
                                 </p>
 
-                                <div className="flex flex-col gap-1 mt-4 font-['Roboto',sans-serif] text-[10px] md:text-xs">
+                                <div className="flex flex-col gap-1 mt-4 text-[10px] md:text-xs">
                                     <p className="font-medium text-pure-black">Контактна інформація:</p>
-                                    <p className="text-pure-black/70">e-mail: aleksandr.novoseletskyiy@oa.edu.ua</p>
+                                    <p className="text-pure-black/70">e-mail: <a href="mailto:aleksandr.novoseletskyiy@oa.edu.ua" className="hover:underline">aleksandr.novoseletskyiy@oa.edu.ua</a></p>
                                 </div>
 
-                                <div className="flex flex-col gap-1 font-['Roboto',sans-serif] text-[10px] md:text-xs">
+                                <div className="flex flex-col gap-1 text-[10px] md:text-xs">
                                     <p className="font-medium text-pure-black">Офісні години:</p>
                                     <p className="text-pure-black/70">понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30</p>
                                 </div>
@@ -95,49 +83,49 @@ export const ContactsPage = (): JSX.Element => {
                         </div>
 
                         {/* Right Column - Contact Form */}
-                        <div className="flex flex-col gap-8 w-full font-['Roboto',sans-serif]">
+                        <form className="flex flex-col gap-8 w-full" onSubmit={(e) => e.preventDefault()}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Ім'я</label>
-                                    <input type="text" placeholder="Бен" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
+                                    <label htmlFor="contact-first-name" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Ім'я</label>
+                                    <input id="contact-first-name" name="firstName" type="text" required placeholder="Бен" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
                                 </div>
                                 <div className="flex flex-col gap-2">
-                                    <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Прізвище</label>
-                                    <input type="text" placeholder="Марк" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
+                                    <label htmlFor="contact-last-name" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Прізвище</label>
+                                    <input id="contact-last-name" name="lastName" type="text" required placeholder="Марк" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Email</label>
-                                <input type="email" placeholder="ben@gmail.com" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
+                                <label htmlFor="contact-email" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Email</label>
+                                <input id="contact-email" name="email" type="email" required placeholder="ben@gmail.com" className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Область</label>
-                                <input type="text" placeholder="Вибери одну.." className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
+                                <label htmlFor="contact-region" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Область</label>
+                                <input id="contact-region" name="region" type="text" placeholder="Вибери одну.." className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black" />
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <label className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Повідомлення</label>
-                                <textarea placeholder="Розкажи нам більше, або постав питання" rows={1} className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 min-h-[30px] text-pure-black"></textarea>
+                                <label htmlFor="contact-message" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Повідомлення</label>
+                                <textarea id="contact-message" name="message" placeholder="Розкажи нам більше, або постав питання" rows={1} className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 min-h-[30px] text-pure-black"></textarea>
                             </div>
 
-                            <div className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 mt-4 cursor-pointer hover:opacity-70 transition-opacity group">
+                            <button type="submit" className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 mt-4 cursor-pointer hover:opacity-70 transition-opacity group bg-transparent">
                                 <span className="text-xs font-medium text-pure-black">Надіслати повідомлення</span>
                                 <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="transform group-hover:translate-x-1 transition-transform">
                                     <path d="M12.5 1L17 6M17 6L12.5 11M17 6H0" stroke="black" strokeWidth="1" />
                                 </svg>
-                            </div>
-                        </div>
+                            </button>
+                        </form>
                     </div>
 
                     {/* FAQ Section */}
                     <div className="w-full md:w-1/2 md:max-w-[48%] self-start flex flex-col gap-8 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:800ms]">
                         <Accordion.Root type="multiple" className="w-full flex flex-col gap-4">
-                            {faqItems.map((item, index) => (
-                                <Accordion.Item key={index} value={`item-${index}`} className="border-b border-pure-black/0">
+                            {faqItems.map((item) => (
+                                <Accordion.Item key={item.question} value={item.question}>
                                     <Accordion.Header className="flex">
-                                        <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-['Atyp_Display-Medium',Helvetica] font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group cursor-pointer">
+                                        <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group cursor-pointer">
                                             <span className="text-pure-black max-w-[80%]">{item.question}</span>
                                             <div className="relative flex items-center justify-center w-6 h-6">
                                                 <div className="absolute w-6 h-[1.5px] bg-pure-black" />
@@ -156,6 +144,6 @@ export const ContactsPage = (): JSX.Element => {
                 </div>
             </div>
             <Footer hideMainContent={true} />
-        </MainLayout>
+        </>
     );
 };

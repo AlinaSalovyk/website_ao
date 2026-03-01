@@ -7,7 +7,7 @@ export const GeneralInfo = (): JSX.Element => {
             <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col">
 
                 {/* Title */}
-                <h2 className="font-['Roboto',sans-serif] font-bold text-4xl md:text-5xl lg:text-6xl text-black mb-12">
+                <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl text-black mb-12">
                     Загальна інформація
                 </h2>
 
@@ -19,7 +19,7 @@ export const GeneralInfo = (): JSX.Element => {
                     {/* Left Column: Text Content (Span 2) */}
                     <div className="lg:col-span-2 flex flex-col gap-12">
                         {/* Subtitle */}
-                        <p className="font-['Roboto',sans-serif] text-xl md:text-2xl text-gray-600 leading-relaxed">
+                        <p className="text-xl md:text-2xl text-gray-600 leading-relaxed">
                             Ласкаво просимо до нашого інституту, де знання стають інноваціями, а навчання – стартом для твого успіху в динамічному світі майбутнього!
                         </p>
 
@@ -40,6 +40,10 @@ export const GeneralInfo = (): JSX.Element => {
                             src="/images/TheInstitute/GeneralInformation.png"
                             alt="General Information"
                             className="w-full h-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                            width={377}
+                            height={548}
                         />
                     </div>
                 </div>

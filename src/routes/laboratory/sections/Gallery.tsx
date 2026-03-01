@@ -1,7 +1,5 @@
 import type { JSX } from "react";
 import { useRef } from "react";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const galleryImages = [
     {
@@ -65,7 +63,7 @@ export const Gallery = (): JSX.Element => {
             <div className="container mx-auto px-4 md:px-9 flex flex-col">
                 <header className="flex flex-col w-full mb-2 mx-auto">
                     <div className="flex justify-center w-full mb-10 border-b border-pure-black pb-4">
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold font-['Roboto',sans-serif] text-center">
+                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-center">
                             Галерея
                         </h2>
                     </div>
@@ -103,16 +101,20 @@ export const Gallery = (): JSX.Element => {
                     className="flex overflow-x-auto gap-4 md:gap-6 snap-x snap-mandatory scrollbar-hide pb-4 w-full max-w-full"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {galleryImages.map((image, index) => (
+                    {galleryImages.map((image) => (
                         <div
-                            key={index}
+                            key={image.src}
                             className="snap-start flex-shrink-0"
                         >
-                            <div className="w-[327px] h-[199px] overflow-hidden rounded-[8px] bg-gray-100">
+                            <div className="w-[280px] sm:w-[327px] h-[170px] sm:h-[199px] overflow-hidden rounded-[8px] bg-gray-100">
                                 <img
                                     src={image.src}
                                     alt={image.alt}
                                     className="w-full h-full object-cover"
+                                    loading="lazy"
+                                    decoding="async"
+                                    width={1920}
+                                    height={1080}
                                 />
                             </div>
                         </div>

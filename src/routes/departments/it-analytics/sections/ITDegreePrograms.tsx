@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { JSX } from "react";
 import { cn } from "@/lib/utils";
 
@@ -58,7 +58,7 @@ export const ITDegreePrograms = (): JSX.Element => {
 
                     {/* Title Section */}
                     <div>
-                        <h2 className="font-['Roboto',sans-serif] font-medium text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white">
+                        <h2 className="font-medium text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white">
                             Наші<br />освітні<br />програми
                         </h2>
                     </div>
@@ -75,7 +75,7 @@ export const ITDegreePrograms = (): JSX.Element => {
                                         <span className="text-blue-600 font-mono text-sm md:text-base tracking-widest">
                                             {level.id}
                                         </span>
-                                        <span className="text-2xl md:text-3xl font-['Roboto',sans-serif]">
+                                        <span className="text-2xl md:text-3xl">
                                             {level.title}
                                         </span>
                                     </div>
@@ -99,10 +99,10 @@ export const ITDegreePrograms = (): JSX.Element => {
                                     )}
                                 >
                                     <ul className="pl-12 md:pl-14 space-y-3">
-                                        {level.programs.map((program, idx) => (
-                                            <li key={idx} className="flex items-start gap-3">
+                                        {level.programs.map((program) => (
+                                            <li key={`${level.id}-${program}`} className="flex items-start gap-3">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-white mt-2 shrink-0 opacity-60" />
-                                                <span className="text-gray-300 font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed">
+                                                <span className="text-gray-300 text-sm md:text-base leading-relaxed">
                                                     {program}
                                                 </span>
                                             </li>

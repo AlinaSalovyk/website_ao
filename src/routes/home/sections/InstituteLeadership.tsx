@@ -81,7 +81,7 @@ export const InstituteLeadership = (): JSX.Element => {
             <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9">
 
                 {/* Header - Right Aligned as per grey screenshot */}
-                <h2 className="font-['Roboto',sans-serif] font-bold text-4xl md:text-5xl lg:text-6xl text-black text-right mb-10">
+                <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl text-black text-right mb-10">
                     Керівництво інституту
                 </h2>
                 <Separator className="w-full bg-black/40 h-px mb-16" />
@@ -106,31 +106,31 @@ export const InstituteLeadership = (): JSX.Element => {
                         {/* Text Info */}
                         <div className="flex flex-col text-left py-4 flex-1">
                             {/* Name */}
-                            <h3 className="font-['Roboto',sans-serif] font-bold text-2xl md:text-3xl text-black mb-1">
+                            <h3 className="font-bold text-2xl md:text-3xl text-black mb-1">
                                 {currentMember.name}
                             </h3>
 
                             {/* Role */}
-                            <p className="font-['Roboto',sans-serif] text-sm md:text-base text-black/80 mb-10 leading-relaxed max-w-lg">
+                            <p className="text-sm md:text-base text-black/80 mb-10 leading-relaxed max-w-lg">
                                 {currentMember.role}
                             </p>
 
                             {/* Contact Info */}
                             <div className="flex flex-col gap-6">
                                 <div>
-                                    <p className="font-['Roboto',sans-serif] font-bold text-sm text-black mb-1">
+                                    <p className="font-bold text-sm text-black mb-1">
                                         Контактна інформація:
                                     </p>
-                                    <a href={`mailto:${currentMember.email}`} className="font-['Roboto',sans-serif] text-sm text-black hover:underline">
+                                    <a href={`mailto:${currentMember.email}`} className="text-sm text-black hover:underline">
                                         e-mail: {currentMember.email}
                                     </a>
                                 </div>
 
                                 <div>
-                                    <p className="font-['Roboto',sans-serif] font-bold text-sm text-black mb-1">
+                                    <p className="font-bold text-sm text-black mb-1">
                                         Офісні години:
                                     </p>
-                                    <p className="font-['Roboto',sans-serif] text-sm text-black">
+                                    <p className="text-sm text-black">
                                         {currentMember.officeHours}
                                     </p>
                                 </div>

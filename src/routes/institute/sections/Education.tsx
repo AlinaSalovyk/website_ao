@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { JSX } from "react";
 import { cn } from "@/lib/utils";
 
@@ -85,7 +85,7 @@ export const Education = (): JSX.Element => {
 
                     {/* Title Section */}
                     <div>
-                        <h2 className="font-['Roboto',sans-serif] font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-white">
+                        <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-white">
                             Навчання в<br />Інституті IT<br />та бізнесу
                         </h2>
                     </div>
@@ -99,10 +99,10 @@ export const Education = (): JSX.Element => {
                                     className="w-full flex items-center justify-between py-8 group text-left cursor-pointer"
                                 >
                                     <div className="flex items-start gap-1 md:gap-2">
-                                        <span className="font-['Roboto',sans-serif] text-sm md:text-base font-medium text-[#0E53FF] mt-1">
+                                        <span className="text-sm md:text-base font-medium text-[#0E53FF] mt-1">
                                             {item.id}
                                         </span>
-                                        <span className="text-xl md:text-2xl font-['Roboto',sans-serif] font-medium transition-colors group-hover:text-blue-400 text-left">
+                                        <span className="text-xl md:text-2xl font-medium transition-colors group-hover:text-blue-400 text-left">
                                             {item.title}
                                         </span>
                                     </div>
@@ -126,10 +126,10 @@ export const Education = (): JSX.Element => {
                                     )}
                                 >
                                     <ul className="pl-12 md:pl-10 space-y-3">
-                                        {item.points.map((point, idx) => (
-                                            <li key={idx} className="flex items-start gap-3">
+                                        {item.points.map((point) => (
+                                            <li key={`${item.id}-${point}`} className="flex items-start gap-3">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0 opacity-80" />
-                                                <span className="text-gray-300 font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed">
+                                                <span className="text-gray-300 text-sm md:text-base leading-relaxed">
                                                     {point}
                                                 </span>
                                             </li>

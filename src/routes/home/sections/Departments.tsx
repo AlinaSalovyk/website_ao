@@ -1,4 +1,3 @@
-"use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
@@ -116,20 +115,20 @@ export const Departments = () => {
                             transition={{ duration: 0.3 }}
                             className="text-white space-y-10"
                         >
-                            <h3 className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8">
+                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8">
                                 Наші освітні програми:
-                            </h3>
+                            </h2>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
                                 {activeDepartment?.programs.bachelor && (
                                     <div className="space-y-4">
-                                        <h4 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
+                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
                                             Бакалаврат
-                                        </h4>
+                                        </h3>
                                         <ul className="space-y-2">
-                                            {activeDepartment.programs.bachelor.map((program, idx) => (
+                                            {activeDepartment.programs.bachelor.map((program) => (
                                                 <li
-                                                    key={idx}
+                                                    key={`${activeDepartment.id}-bachelor-${program}`}
                                                     className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
                                                 >
                                                     <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
@@ -142,13 +141,13 @@ export const Departments = () => {
 
                                 {activeDepartment?.programs.master && (
                                     <div className="space-y-4">
-                                        <h4 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
+                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
                                             Магістратура
-                                        </h4>
+                                        </h3>
                                         <ul className="space-y-2">
-                                            {activeDepartment.programs.master.map((program, idx) => (
+                                            {activeDepartment.programs.master.map((program) => (
                                                 <li
-                                                    key={idx}
+                                                    key={`${activeDepartment.id}-master-${program}`}
                                                     className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
                                                 >
                                                     <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
@@ -161,13 +160,13 @@ export const Departments = () => {
 
                                 {activeDepartment?.programs.phd && (
                                     <div className="space-y-4">
-                                        <h4 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
+                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
                                             Аспірантура
-                                        </h4>
+                                        </h3>
                                         <ul className="space-y-2">
-                                            {activeDepartment.programs.phd.map((program, idx) => (
+                                            {activeDepartment.programs.phd.map((program) => (
                                                 <li
-                                                    key={idx}
+                                                    key={`${activeDepartment.id}-phd-${program}`}
                                                     className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
                                                 >
                                                     <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />

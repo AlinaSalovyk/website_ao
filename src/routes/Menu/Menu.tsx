@@ -1,5 +1,5 @@
 import { XIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import * as Collapsible from "@radix-ui/react-collapsible";
@@ -27,9 +27,15 @@ const educationalPrograms = [
     },
 ];
 
-const simpleMenuItems = ["Головна", "Про інститут"];
+const simpleMenuItems = [
+    { label: "Головна", href: "/" },
+    { label: "Про інститут", href: "/institute" },
+];
 
-const bottomSimpleMenuItems = ["Студенське життя", "Наукова діяльність"];
+const bottomSimpleMenuItems = [
+    { label: "Студенське життя", href: "/institute#student-life" },
+    { label: "Наукова діяльність", href: "/institute#scientific-activity" },
+];
 
 const footerLinksLeft = [
     { label: "Новини", href: "/#news" },
@@ -54,18 +60,49 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
         onClose();
     };
 
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    // Escape key handler
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                onClose();
+            }
+        };
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [onClose]);
+
+    // Focus trap
+    const handleFocusTrap = useCallback((e: KeyboardEvent) => {
+        if (e.key !== "Tab" || !menuRef.current) return;
+        const focusable = menuRef.current.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener("keydown", handleFocusTrap);
+        // Focus the close button on mount
+        const closeBtn = menuRef.current?.querySelector<HTMLElement>("button");
+        closeBtn?.focus();
+        return () => document.removeEventListener("keydown", handleFocusTrap);
+    }, [handleFocusTrap]);
+
     const [isProgramsOpen, setIsProgramsOpen] = useState(true);
     const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(false);
     const [isLaboratoriesOpen, setIsLaboratoriesOpen] = useState(false);
 
-    const handleNavigation = (item: string) => {
-        if (item === "Головна") {
-            window.location.href = "/";
-        } else if (item === "Про інститут") {
-            window.location.href = "/institute";
-        }
-        onClose();
-    };
 
     return (
         <>
@@ -75,7 +112,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                 onClick={handleClose}
             />
             {/* Menu Panel */}
-            <div className="flex flex-col h-screen items-start p-6 bg-layout-bg border-r border-solid border-menu-border fixed left-0 top-0 bottom-0 z-[100] overflow-y-auto w-full max-w-[480px] animate-slide-in-left">
+            <div ref={menuRef} role="dialog" aria-modal="true" aria-label="Навігаційне меню" className="flex flex-col h-screen items-start p-6 bg-layout-bg border-r border-solid border-menu-border fixed left-0 top-0 bottom-0 z-[100] overflow-y-auto w-full max-w-[480px] animate-slide-in-left">
                 <div className="inline-flex pb-4 flex-col items-start">
                     <Button
                         variant="outline"
@@ -90,20 +127,20 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                 <div className="flex flex-col items-start justify-between flex-1 self-stretch w-full">
                     <nav className="flex flex-col items-start self-stretch w-full">
                         <div className="flex flex-col max-w-[470.67px] items-start justify-center gap-2.5 py-2 w-full">
-                            {simpleMenuItems.map((item, index) => (
+                            {simpleMenuItems.map((item) => (
                                 <div
-                                    key={`simple-${index}`}
+                                    key={item.href}
                                     className="inline-flex flex-col items-start gap-1 w-full"
                                 >
-                                    <Button
-                                        variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start w-full cursor-pointer"
-                                        onClick={() => handleNavigation(item)}
+                                    <a
+                                        href={item.href}
+                                        onClick={onClose}
+                                        className="h-auto p-0 justify-start w-full cursor-pointer hover:opacity-80 transition-opacity"
                                     >
                                         <span className="text-white text-2xl leading-8 font-normal">
-                                            {item}
+                                            {item.label}
                                         </span>
-                                    </Button>
+                                    </a>
                                     <Separator className="w-full h-px bg-[#ffffff33]" />
                                 </div>
                             ))}
@@ -138,9 +175,9 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
 
                                 <Collapsible.Content className="flex flex-col items-start w-full">
                                     <div className="flex flex-col items-start w-full">
-                                        {educationalPrograms.map((program, index) => (
+                                        {educationalPrograms.map((program) => (
                                             <a
-                                                key={`program-${index}`}
+                                                key={program.title}
                                                 href={`/#${program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}`}
                                                 onClick={onClose}
                                                 className="h-auto max-w-[470.67px] w-full flex items-center gap-3 px-0 py-2 hover:bg-pure-white/5 justify-start cursor-pointer rounded-sm transition-colors"
@@ -251,20 +288,20 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                 </Collapsible.Content>
                             </Collapsible.Root>
 
-                            {bottomSimpleMenuItems.map((item, index) => (
+                            {bottomSimpleMenuItems.map((item) => (
                                 <div
-                                    key={`bottom-${index}`}
+                                    key={item.href}
                                     className="inline-flex flex-col items-start gap-1 w-full"
                                 >
-                                    <Button
-                                        variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start w-full cursor-pointer"
-                                        onClick={() => handleNavigation(item)}
+                                    <a
+                                        href={item.href}
+                                        onClick={onClose}
+                                        className="h-auto p-0 justify-start w-full cursor-pointer hover:opacity-80 transition-opacity"
                                     >
                                         <span className="text-white text-2xl leading-8 font-normal">
-                                            {item}
+                                            {item.label}
                                         </span>
-                                    </Button>
+                                    </a>
                                     <Separator className="w-full h-px bg-[#ffffff33]" />
                                 </div>
                             ))}
@@ -274,9 +311,9 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                     <footer className="flex min-h-[94.38px] justify-end pt-[178.67px] flex-1 self-stretch w-full flex-col items-start">
                         <div className="grid grid-cols-2 gap-2 self-stretch w-full">
                             <div className="flex flex-col items-start gap-2">
-                                {footerLinksLeft.map((link, index) => (
+                                {footerLinksLeft.map((link) => (
                                     <Button
-                                        key={`footer-left-${index}`}
+                                        key={`${link.label}-${link.href}`}
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start cursor-pointer"
                                         asChild
@@ -296,9 +333,9 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                             </div>
 
                             <div className="flex flex-col items-start gap-2">
-                                {footerLinksRight.map((link, index) => (
+                                {footerLinksRight.map((link) => (
                                     <Button
-                                        key={`footer-right-${index}`}
+                                        key={`${link.label}-${link.href}`}
                                         variant="ghost"
                                         className="h-auto p-0 hover:bg-transparent justify-start cursor-pointer"
                                         asChild

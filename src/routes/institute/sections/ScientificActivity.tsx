@@ -14,15 +14,15 @@ const scientificData: ScientificItem[] = [
         title: "Напрями наукових досліджень",
         content: (
             <ul className="space-y-4">
-                <li className="text-gray-300 font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed">
+                <li className="text-gray-300 text-sm md:text-base leading-relaxed">
                     <strong className="text-white block mb-1">1. Кафедра фінансів та бізнесу</strong>
                     «Забезпечення сталого розвитку фінансової системи України в умовах глобалізації», номер державної реєстрації 0122U000732, науковий керівник — кандидат економічних наук, доцент Шершньова О. В.
                 </li>
-                <li className="text-gray-300 font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed">
+                <li className="text-gray-300 text-sm md:text-base leading-relaxed">
                     <strong className="text-white block mb-1">2. Кафедра менеджменту та маркетингу</strong>
                     «Теоретико-методологічні та практичні аспекти формування механізмів управління підприємствами та організаціями», номер державної реєстрації 0122U000741, науковий керівник — доктор економічних наук, доцент Козак Л. В.
                 </li>
-                <li className="text-gray-300 font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed">
+                <li className="text-gray-300 text-sm md:text-base leading-relaxed">
                     <strong className="text-white block mb-1">3. Кафедра інформаційних технологій та аналітики даних</strong>
                     «Моделювання та комп'ютерне моделювання природничих, технічних та економічних процесів та розробка інформаційних систем», номер державної реєстрації 0121U108333, науковий керівник — доктор фізико-математичних наук, доцент Глюз О. А.
                 </li>
@@ -33,7 +33,7 @@ const scientificData: ScientificItem[] = [
         id: "02",
         title: "Наукові фахові видання",
         content: (
-            <div className="space-y-4 text-gray-300 font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed">
+            <div className="space-y-4 text-gray-300 text-sm md:text-base leading-relaxed">
                 <p>
                     Науковий вісник Національного університету «Острозька академія» серія «Економіка».
                 </p>
@@ -53,7 +53,7 @@ const scientificData: ScientificItem[] = [
         id: "03",
         title: "Наукові конференції",
         content: (
-            <ul className="space-y-2 text-gray-300 font-['Roboto',sans-serif] text-sm md:text-base leading-relaxed list-decimal pl-5">
+            <ul className="space-y-2 text-gray-300 text-sm md:text-base leading-relaxed list-decimal pl-5">
                 <li>
                     Щорічна міжнародна науково-практична інтернет-конференція «Фінансова система країни: тенденції та перспективи розвитку».
                 </li>
@@ -77,13 +77,13 @@ export const ScientificActivity = (): JSX.Element => {
     };
 
     return (
-        <section className="w-full bg-[#00113B] py-24 text-white">
+        <section id="scientific-activity" className="w-full bg-[#00113B] py-24 text-white">
             <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9">
                 <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-16 lg:gap-24">
 
                     {/* Title Section */}
                     <div>
-                        <h2 className="font-['Roboto',sans-serif] font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-white">
+                        <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl leading-[1.1] text-white">
                             Наукова активність
                         </h2>
                     </div>
@@ -97,10 +97,10 @@ export const ScientificActivity = (): JSX.Element => {
                                     className="w-full flex items-center justify-between py-6 group text-left cursor-pointer"
                                 >
                                     <div className="flex items-start gap-1 md:gap-2">
-                                        <span className="font-['Roboto',sans-serif] text-sm md:text-base font-medium text-[#0E53FF] mt-1">
+                                        <span className="text-sm md:text-base font-medium text-[#0E53FF] mt-1">
                                             {item.id}
                                         </span>
-                                        <span className="text-lg md:text-xl font-['Roboto',sans-serif] font-medium transition-colors group-hover:text-blue-400 text-left">
+                                        <span className="text-lg md:text-xl font-medium transition-colors group-hover:text-blue-400 text-left">
                                             {item.title}
                                         </span>
                                     </div>
