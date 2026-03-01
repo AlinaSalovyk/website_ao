@@ -27,9 +27,15 @@ const educationalPrograms = [
     },
 ];
 
-const simpleMenuItems = ["Головна", "Про інститут"];
+const simpleMenuItems = [
+    { label: "Головна", href: "/" },
+    { label: "Про інститут", href: "/institute" },
+];
 
-const bottomSimpleMenuItems = ["Студенське життя", "Наукова діяльність"];
+const bottomSimpleMenuItems = [
+    { label: "Студенське життя", href: "/institute#student-life" },
+    { label: "Наукова діяльність", href: "/institute#scientific-activity" },
+];
 
 const footerLinksLeft = [
     { label: "Новини", href: "/#news" },
@@ -58,14 +64,6 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
     const [isDepartmentsOpen, setIsDepartmentsOpen] = useState(false);
     const [isLaboratoriesOpen, setIsLaboratoriesOpen] = useState(false);
 
-    const handleNavigation = (item: string) => {
-        if (item === "Головна") {
-            window.location.href = "/";
-        } else if (item === "Про інститут") {
-            window.location.href = "/institute";
-        }
-        onClose();
-    };
 
     return (
         <>
@@ -95,15 +93,15 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                     key={`simple-${index}`}
                                     className="inline-flex flex-col items-start gap-1 w-full"
                                 >
-                                    <Button
-                                        variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start w-full cursor-pointer"
-                                        onClick={() => handleNavigation(item)}
+                                    <a
+                                        href={item.href}
+                                        onClick={onClose}
+                                        className="h-auto p-0 justify-start w-full cursor-pointer hover:opacity-80 transition-opacity"
                                     >
                                         <span className="text-white text-2xl leading-8 font-normal">
-                                            {item}
+                                            {item.label}
                                         </span>
-                                    </Button>
+                                    </a>
                                     <Separator className="w-full h-px bg-[#ffffff33]" />
                                 </div>
                             ))}
@@ -256,15 +254,15 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                     key={`bottom-${index}`}
                                     className="inline-flex flex-col items-start gap-1 w-full"
                                 >
-                                    <Button
-                                        variant="ghost"
-                                        className="h-auto p-0 hover:bg-transparent justify-start w-full cursor-pointer"
-                                        onClick={() => handleNavigation(item)}
+                                    <a
+                                        href={item.href}
+                                        onClick={onClose}
+                                        className="h-auto p-0 justify-start w-full cursor-pointer hover:opacity-80 transition-opacity"
                                     >
                                         <span className="text-white text-2xl leading-8 font-normal">
-                                            {item}
+                                            {item.label}
                                         </span>
-                                    </Button>
+                                    </a>
                                     <Separator className="w-full h-px bg-[#ffffff33]" />
                                 </div>
                             ))}

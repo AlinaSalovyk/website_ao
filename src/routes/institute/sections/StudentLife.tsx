@@ -2,7 +2,7 @@ import type { JSX } from "react";
 
 export const StudentLife = (): JSX.Element => {
     return (
-        <section className="w-full bg-white py-24 overflow-hidden">
+        <section id="student-life" className="w-full bg-white py-24 overflow-hidden">
             <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col">
 
                 {/* Section Title */}

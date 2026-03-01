@@ -77,7 +77,7 @@ export const ScientificActivity = (): JSX.Element => {
     };
 
     return (
-        <section className="w-full bg-[#00113B] py-24 text-white">
+        <section id="scientific-activity" className="w-full bg-[#00113B] py-24 text-white">
             <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9">
                 <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-16 lg:gap-24">
 
