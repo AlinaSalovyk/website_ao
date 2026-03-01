@@ -1,7 +1,10 @@
+import { ArrowRightIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { JSX } from "react";
 import React from "react";
+import { Button } from "@/components/ui/button";
 import { partnerLogos } from "@/components/icons/PartnerLogos";
 
 interface Specialty {
@@ -54,13 +57,13 @@ export const EducationalPrograms = (): JSX.Element => {
         <section id="educational-programs" className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
             <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9">
                 <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0 w-full">
-                    <h2 className="font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] w-full">
+                    <h2 className=" font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] w-full">
                         Спеціальності та освітні програми
                     </h2>
                 </header>
                 <div className="flex flex-col gap-0">
-                    {educationalPrograms.map((program) => (
-                        <div key={program.title} id={program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}>
+                    {educationalPrograms.map((program, index) => (
+                        <div key={index} id={program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}>
                             {/* Top separator line for each program */}
                             <Separator className="w-full h-px bg-pure-black" />
                             <Card
@@ -81,8 +84,8 @@ export const EducationalPrograms = (): JSX.Element => {
                                                     Перелік спеціальностей
                                                 </p>
                                                 <ul className="list-disc pl-5 space-y-1">
-                                                    {program.specialties.map((specialty) => (
-                                                        <li key={specialty.name} className="font-normal text-pure-black text-sm tracking-[0] leading-6">
+                                                    {program.specialties.map((specialty, idx) => (
+                                                        <li key={idx} className="font-normal text-pure-black text-sm tracking-[0] leading-6">
                                                             {specialty.link ? (
                                                                 <a
                                                                     href={specialty.link}
@@ -106,10 +109,6 @@ export const EducationalPrograms = (): JSX.Element => {
                                                 className="w-64 xl:w-72 2xl:w-[340px] h-72 xl:h-80 2xl:h-[400px] rounded-lg object-cover"
                                                 alt={program.title}
                                                 src={program.image}
-                                                loading="lazy"
-                                                decoding="async"
-                                                width={340}
-                                                height={400}
                                             />
                                         </div>
                                     </div>
@@ -124,7 +123,7 @@ export const EducationalPrograms = (): JSX.Element => {
             {/* Marquee Animation Section */}
             <div className="w-full overflow-hidden py-12 bg-pure-white">
                 <div className="flex items-center gap-16 animate-marquee-seamless">
-                    {[...Array(6)].map((_, setIndex) => (
+                    {[...Array(18)].map((_, setIndex) => (
                         <React.Fragment key={setIndex}>
                             {partnerLogos}
                         </React.Fragment>

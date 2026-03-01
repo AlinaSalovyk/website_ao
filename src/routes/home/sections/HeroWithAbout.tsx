@@ -22,19 +22,37 @@ export const HeroWithAbout = (): JSX.Element => {
           alt="Element black chrome"
           src="/images/Home/3d-black-chrome-shape.png"
           style={{ filter: 'hue-rotate(-20deg) brightness(1.55) saturate(2.0)' }}
-          decoding="async"
-          fetchPriority="high"
-          width={1401}
-          height={1462}
         />
       </div>
 
       {/* Hero Title */}
       <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-6 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms]">
         <div className="relative z-10 pt-32 lg:pt-0">
-          <h1 className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
-            Обирай навчання, яке відповідає викликам майбутнього!
-          </h1>
+          <div className="flex justify-start items-baseline w-full flex-wrap gap-x-3 gap-y-2">
+            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+              Обирай
+            </span>
+            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+              навчання,
+            </span>
+            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+              яке
+            </span>
+          </div>
+          <div className="flex justify-start items-baseline w-full flex-wrap gap-x-4 gap-y-2">
+            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+              відповідає
+            </span>
+            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+              викликам
+            </span>
+          </div>
+
+          <div className="flex justify-start">
+            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+              майбутнього!
+            </span>
+          </div>
         </div>
       </div>
 
@@ -48,8 +66,8 @@ export const HeroWithAbout = (): JSX.Element => {
 
             {/* Tags */}
             <div className="flex items-center flex-wrap gap-y-2">
-              {tags.map((tag) => (
-                <div key={tag} className="flex items-center">
+              {tags.map((tag, index) => (
+                <div key={index} className="flex items-center">
                   <span className="inline-flex items-center gap-2">
                     <span className="w-1 h-1 xl:w-1.5 xl:h-1.5 2xl:w-[5px] 2xl:h-[5px] bg-pure-white rounded-full flex-shrink-0"></span>
                     <span className="font-medium text-pure-white text-[9px] xl:text-[10px] 2xl:text-[11px] tracking-[0.1em] uppercase">
@@ -80,10 +98,6 @@ export const HeroWithAbout = (): JSX.Element => {
                 src="/images/Home/pexels-mikae.jpg"
                 alt="Students working"
                 className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover rounded-2xl shadow-lg"
-                loading="lazy"
-                decoding="async"
-                width={4096}
-                height={2733}
               />
             </div>
           </div>

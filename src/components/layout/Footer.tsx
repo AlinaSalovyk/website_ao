@@ -3,13 +3,6 @@ import { Separator } from "@/components/ui/separator";
 import { getSocialIcons } from "@/components/icons/SocialIcons";
 import type { JSX } from "react";
 
-const socialLinks: Record<string, string> = {
-    Instagram: "https://www.instagram.com/itb_oa",
-    LinkedIn: "https://www.linkedin.com",
-    "X (Twitter)": "https://x.com",
-    YouTube: "https://www.youtube.com",
-};
-
 const navigationItems = [
     { label: "ГОЛОВНА", href: "/", isActive: true },
     { label: "ПРО ІНСТИТУТ", href: "/institute", isActive: false },
@@ -32,10 +25,6 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                         className="absolute top-0 left-0 w-full h-full object-cover object-top"
                         alt="Background"
                         src="/images/Backgroundfooter.png"
-                        loading="lazy"
-                        decoding="async"
-                        width={1024}
-                        height={1024}
                     />
 
                     <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start justify-center px-4 md:px-9 py-0 relative flex-1">
@@ -53,10 +42,10 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 </svg>
                                             </div>
 
-                                            <p className="font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
+                                            <h2 className=" font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
                                                 Розвиток та <br />
                                                 Інновації в ІТ та Бізнесі
-                                            </p>
+                                            </h2>
                                         </div>
 
                                         <p className="font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs tracking-[0] leading-[18px]">
@@ -80,17 +69,17 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 </svg>
                                             </div>
 
-                                            <p className="font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
+                                            <h2 className=" font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
                                                 Нумо змінювати світ <br />
                                                 разом з нами!
-                                            </p>
+                                            </h2>
                                         </div>
 
                                         <div className="flex flex-col md:flex-row items-start md:items-end gap-8 md:gap-4 lg:gap-[172px] w-full justify-between">
                                             <div className="inline-flex flex-col items-start justify-end">
-                                                <p className="font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
+                                                <h3 className=" font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
                                                     Start Studying
-                                                </p>
+                                                </h3>
                                             </div>
 
                                             <div className="inline-flex flex-col w-full md:w-auto md:min-w-[180px] items-start">
@@ -132,17 +121,15 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                         </a>
                         <a href="https://www.oa.edu.ua" className="hover:underline">www.oa.edu.ua</a>
                         <a href="mailto:press@oa.edu.ua" className="hover:underline">press@oa.edu.ua</a>
-                        <a href="tel:+380678792526" className="hover:underline">+38 067 879 2526</a>
+                        <p>+38 067 879 2526</p>
                     </div>
 
                     {/* Middle Column - Socials */}
                     <div className="flex items-center gap-4 lg:gap-6">
-                        {footerSocials.map((icon) => (
+                        {footerSocials.map((icon, index) => (
                             <a
-                                key={icon.alt}
-                                href={socialLinks[icon.alt] ?? "#"}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                key={index}
+                                href="#"
                                 className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
                                 aria-label={icon.alt}
                             >
@@ -154,15 +141,15 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                     </div>
 
                     <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
-                        {navigationItems.map((item) => (
+                        {navigationItems.map((item, index) => (
                             <a
-                                key={item.label}
+                                key={index}
                                 href={item.href}
                                 className="flex flex-col w-full group cursor-pointer"
                             >
                                 <div className="flex items-center justify-between w-full pb-1">
                                     <span
-                                        className={`font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${item.isActive ? "text-leadership-link" : "text-pure-black"
+                                        className={` font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${item.isActive ? "text-leadership-link" : "text-pure-black"
                                             } group-hover:text-leadership-link`}
                                     >
                                         {item.label}
@@ -180,10 +167,10 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
             <div className="w-full bg-pure-black py-4">
                 <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-row items-center gap-8">
-                    <button className="font-medium text-pure-white text-[10px] lg:text-xs tracking-wide hover:opacity-70 transition-opacity">
+                    <button className=" font-medium text-pure-white text-[10px] lg:text-xs tracking-wide hover:opacity-70 transition-opacity">
                         Cookie Preference
                     </button>
-                    <span className="font-medium text-pure-white text-[10px] lg:text-xs tracking-wide">
+                    <span className=" font-medium text-pure-white text-[10px] lg:text-xs tracking-wide">
                         Національний університет &quot;Острозька академія&quot;
                     </span>
                 </div>
