@@ -111,12 +111,12 @@ export const NewsAndEvents = (): JSX.Element => {
                                             <div className="flex items-center justify-between w-full">
                                                 <Badge
                                                     variant="outline"
-                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link [font-family:'Atyp_Display-Regular',Helvetica] font-normal text-xs tracking-[0] leading-[10px] hover:bg-pure-black hover:text-white transition-colors duration-300 cursor-pointer"
+                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link [font-family:'Roboto',Helvetica] font-normal text-xs tracking-[0] leading-[10px] hover:bg-pure-black hover:text-white transition-colors duration-300 cursor-pointer"
                                                 >
                                                     {item.badge}
                                                 </Badge>
 
-                                                <time className="[font-family:'Atyp_Display-Light',Helvetica] font-light text-pure-black text-sm text-right tracking-[0] leading-[18px]">
+                                                <time className="[font-family:'Roboto',Helvetica] font-light text-pure-black text-sm text-right tracking-[0] leading-[18px]">
                                                     {item.date}
                                                 </time>
                                             </div>

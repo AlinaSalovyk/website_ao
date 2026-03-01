@@ -43,13 +43,13 @@ export const ContactsPage = (): JSX.Element => {
                     {/* Hero Section */}
                     <div className="flex flex-col gap-6 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
                         <div className="flex flex-col gap-8 md:flex-row md:justify-between md:items-start">
-                            <h1 className="font-['Atyp_Display-Medium',Helvetica] font-medium text-4xl md:text-6xl lg:text-[80px] leading-[1.1] tracking-tight text-pure-black max-w-4xl text-left">
+                            <h1 className="font-['Roboto',Helvetica] font-medium text-4xl md:text-6xl lg:text-[80px] leading-[1.1] tracking-tight text-pure-black max-w-4xl text-left">
                                 Час приєднатися до <br className="hidden md:block" />
                                 інституту ІТ та Бізнесу
                             </h1>
                         </div>
 
-                        <p className="font-['Atyp_Display-Medium',Helvetica] text-xl md:text-2xl text-pure-black/80">
+                        <p className="font-['Roboto',Helvetica] text-xl md:text-2xl text-pure-black/80">
                             Створюй власне майбутнє разом з нами!
                         </p>
                         <Separator className="bg-pure-black/20" />
@@ -75,7 +75,7 @@ export const ContactsPage = (): JSX.Element => {
                             </div>
 
                             <div className="flex flex-col gap-4 max-w-sm">
-                                <h3 className="font-['Atyp_Display-Medium',Helvetica] font-medium text-xl text-pure-black">
+                                <h3 className="font-['Roboto',Helvetica] font-medium text-xl text-pure-black">
                                     Новоселецький Олександр Миколайович
                                 </h3>
                                 <p className="font-['Roboto',sans-serif] text-sm text-pure-black/70 leading-relaxed">
@@ -137,7 +137,7 @@ export const ContactsPage = (): JSX.Element => {
                             {faqItems.map((item, index) => (
                                 <Accordion.Item key={index} value={`item-${index}`} className="border-b border-pure-black/0">
                                     <Accordion.Header className="flex">
-                                        <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-['Atyp_Display-Medium',Helvetica] font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group cursor-pointer">
+                                        <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-['Roboto',Helvetica] font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group cursor-pointer">
                                             <span className="text-pure-black max-w-[80%]">{item.question}</span>
                                             <div className="relative flex items-center justify-center w-6 h-6">
                                                 <div className="absolute w-6 h-[1.5px] bg-pure-black" />

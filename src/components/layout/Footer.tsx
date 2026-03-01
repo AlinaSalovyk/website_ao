@@ -42,7 +42,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 </svg>
                                             </div>
 
-                                            <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
+                                            <h2 className="[font-family:'Roboto',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
                                                 Розвиток та <br />
                                                 Інновації в ІТ та Бізнесі
                                             </h2>
@@ -69,7 +69,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 </svg>
                                             </div>
 
-                                            <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
+                                            <h2 className="[font-family:'Roboto',Helvetica] font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
                                                 Нумо змінювати світ <br />
                                                 разом з нами!
                                             </h2>
@@ -77,7 +77,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                                         <div className="flex flex-col md:flex-row items-start md:items-end gap-8 md:gap-4 lg:gap-[172px] w-full justify-between">
                                             <div className="inline-flex flex-col items-start justify-end">
-                                                <h3 className="[font-family:'Atyp_Display-Semibold',Helvetica] font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
+                                                <h3 className="[font-family:'Roboto',Helvetica] font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
                                                     Start Studying
                                                 </h3>
                                             </div>
@@ -86,7 +86,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                                                 <div className="flex flex-col w-full md:w-[229px] items-start gap-[3px]">
                                                     <a href="/contacts" className="flex items-center justify-between w-full group cursor-pointer">
                                                         <div className="relative w-full md:w-[181px] h-4">
-                                                            <span className="h-4 flex items-center justify-start md:justify-center text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs leading-4 whitespace-nowrap [font-family:'Atyp_Text-Regular',Helvetica] font-normal tracking-[0] group-hover:opacity-80 transition-opacity">
+                                                            <span className="h-4 flex items-center justify-start md:justify-center text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs leading-4 whitespace-nowrap [font-family:'Roboto',Helvetica] font-normal tracking-[0] group-hover:opacity-80 transition-opacity">
                                                                 Контактуй з нами
                                                             </span>
                                                         </div>

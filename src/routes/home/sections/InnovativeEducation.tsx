@@ -48,7 +48,7 @@ export const InnovativeEducation = (): JSX.Element => {
                             >
                                 <CardContent className="flex flex-col items-start gap-4 p-0">
                                     <div className="flex items-start w-full">
-                                        <h2 className="[font-family:'Atyp_Text-Semibold',Helvetica] font-normal text-pure-black text-5xl md:text-7xl xl:text-9xl 2xl:text-[140px] tracking-tight xl:tracking-[-4.80px] leading-tight xl:leading-[120px] whitespace-nowrap">
+                                        <h2 className="[font-family:'Roboto',Helvetica] font-normal text-pure-black text-5xl md:text-7xl xl:text-9xl 2xl:text-[140px] tracking-tight xl:tracking-[-4.80px] leading-tight xl:leading-[120px] whitespace-nowrap">
                                             {stat.number}
                                         </h2>
                                     </div>

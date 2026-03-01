@@ -24,7 +24,7 @@ export const ITLeadership = (): JSX.Element => {
     return (
         <section className="w-full bg-pure-white flex flex-col relative">
             <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9 py-20 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-                <h2 className="[font-family:'Atyp_Display-Medium',Helvetica] font-medium text-pure-black text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[72px] tracking-[0] leading-tight xl:leading-[86px] mb-10 self-end text-right">
+                <h2 className="[font-family:'Roboto',Helvetica] font-medium text-pure-black text-3xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-[72px] tracking-[0] leading-tight xl:leading-[86px] mb-10 self-end text-right">
                     Керівництво кафедри
                 </h2>
                 <Separator className="w-full bg-pure-black h-px mb-16" />
