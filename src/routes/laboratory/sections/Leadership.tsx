@@ -1,5 +1,4 @@
 import type { JSX } from "react";
-import { ArrowRightIcon } from "lucide-react";
 
 export const Leadership = (): JSX.Element => {
     return (

@@ -1,11 +1,13 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { ContactsPage } from "@/routes/contacts/ContactsPage";
+
+const pageDescription = "Зв'яжіться з нами — контактна інформація Інституту інформаційних технологій та бізнесу Національного університету «Острозька академія».";
 ---
 
 <Layout
   title="Контакти | Інститут ІТ та бізнесу НаУОА"
-  description="Зв'яжіться з нами — контактна інформація Інституту інформаційних технологій та бізнесу Національного університету \"Острозька академія\"."
+  description={pageDescription}
 >
     <ContactsPage client:idle />
 </Layout>

@@ -2,8 +2,6 @@ import { ArrowRightIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { getSocialIcons } from "@/components/icons/SocialIcons";
 import type { JSX } from "react";
 
 const newsItems = [
@@ -46,15 +44,6 @@ const newsItems = [
             "https://c.animaapp.com/mkvpx7lhh8vezq/img/background-3.png",
         link: "Дізнатися більше",
     },
-];
-
-const socialIcons = getSocialIcons("fill-pure-black", "fill-layout-bg", "size-8");
-
-const navigationItems = [
-    { label: "ГОЛОВНА", isActive: true },
-    { label: "ПРО ІНСТИТУТ", isActive: false },
-    { label: "ОСВІТНІ ПРОГРАМИ", isActive: false },
-    { label: "НОВИНИ ТА ПОДІЇ", isActive: false },
 ];
 
 export const ITNewsAndEvents = (): JSX.Element => {

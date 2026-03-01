@@ -3,8 +3,6 @@ import { MainLayout } from "@/layouts/MainLayout";
 import { Footer } from "@/components/layout/Footer";
 import { Separator } from "@/components/ui/separator";
 import * as Accordion from "@radix-ui/react-accordion";
-import { ChevronDown } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const faqItems = [
     {

@@ -1,10 +1,7 @@
-import { ArrowRightIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { JSX } from "react";
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { partnerLogos } from "@/components/icons/PartnerLogos";
 
 interface Specialty {

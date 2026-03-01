@@ -1,7 +1,5 @@
 import type { JSX } from "react";
 import { useRef } from "react";
-import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const galleryImages = [
     {
