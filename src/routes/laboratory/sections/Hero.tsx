@@ -77,6 +77,7 @@ export const Hero = (): JSX.Element => {
                                     src="/images/laboratory.jpg"
                                     alt="Abstract 3D sphere"
                                     className="w-full h-full object-cover mix-blend-lighten opacity-90"
+                                    loading="lazy"
                                 />
                             </div>
                         </div>

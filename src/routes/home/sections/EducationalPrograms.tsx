@@ -109,6 +109,7 @@ export const EducationalPrograms = (): JSX.Element => {
                                                 className="w-64 xl:w-72 2xl:w-[340px] h-72 xl:h-80 2xl:h-[400px] rounded-lg object-cover"
                                                 alt={program.title}
                                                 src={program.image}
+                                                loading="lazy"
                                             />
                                         </div>
                                     </div>

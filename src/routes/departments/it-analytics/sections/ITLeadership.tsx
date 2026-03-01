@@ -37,6 +37,7 @@ export const ITLeadership = (): JSX.Element => {
                                     src={member.image}
                                     alt={member.name}
                                     className="w-full h-full object-cover object-top"
+                                    loading="lazy"
                                     onError={(e) => {
                                         (e.target as HTMLImageElement).src =
                                             "https://via.placeholder.com/400x500?text=No+Image";

@@ -22,6 +22,7 @@ export const ITEducationalPrograms = (): JSX.Element => {
                             src="/images/IT/information.jpg"
                             alt="Abstract blue graphic"
                             className="w-full h-full object-cover"
+                            loading="lazy"
                         />
                     </div>
 

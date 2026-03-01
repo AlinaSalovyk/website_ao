@@ -20,6 +20,7 @@ export const Leadership = (): JSX.Element => {
                                     src="/images/InstituteManagement/Melnychuk.jpg"
                                     alt="Мельничук Олександр Павлович"
                                     className="w-full h-full object-cover"
+                                    loading="lazy"
                                 />
                             </div>
                         </div>

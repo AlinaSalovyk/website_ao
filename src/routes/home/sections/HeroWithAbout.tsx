@@ -76,6 +76,7 @@ export const HeroWithAbout = (): JSX.Element => {
                 src="/images/Home/pexels-mikae.jpg"
                 alt="Students working"
                 className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover rounded-2xl shadow-lg"
+                loading="lazy"
               />
             </div>
           </div>

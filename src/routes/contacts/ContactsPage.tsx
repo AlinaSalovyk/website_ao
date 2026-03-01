@@ -34,6 +34,7 @@ export const ContactsPage = (): JSX.Element => {
                     src="/images/Contacts/LogoContacts.png"
                     alt="Logo"
                     className="h-8 md:h-10 w-auto"
+                    loading="lazy"
                 />
             }
         >
@@ -70,7 +71,7 @@ export const ContactsPage = (): JSX.Element => {
 
                             <div className="w-full md:w-auto flex-shrink-0">
                                 <div className="w-full md:w-[200px] h-[300px] md:h-[200px] bg-gray-200 rounded-lg overflow-hidden">
-                                    <img src="/images/InstituteManagement/novoseletskyy.jpg" alt="Новоселецький Олександр Миколайович" className="w-full h-full object-cover object-top" />
+                                    <img src="/images/InstituteManagement/novoseletskyy.jpg" alt="Новоселецький Олександр Миколайович" className="w-full h-full object-cover object-top" loading="lazy" />
                                 </div>
                             </div>
 

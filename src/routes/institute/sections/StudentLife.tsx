@@ -27,6 +27,7 @@ export const StudentLife = (): JSX.Element => {
                                 src="/images/TheInstitute/StudentLife.jpg"
                                 alt="Students working together"
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                             />
                         </div>
                     </div>
@@ -39,6 +40,7 @@ export const StudentLife = (): JSX.Element => {
                                 src="/images/TheInstitute/Pexels.jpg"
                                 alt="Student working on laptop"
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                             />
                         </div>
                         <div className="order-2 flex flex-col gap-6">

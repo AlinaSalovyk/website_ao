@@ -29,6 +29,7 @@ export const AboutLaboratory = (): JSX.Element => {
                                 src="/images/EducationalPrograms/BachelorsDegree.png"
                                 alt="Abstract 3D Shape"
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                             />
                         </div>
                     </div>
@@ -69,6 +70,7 @@ export const AboutLaboratory = (): JSX.Element => {
                                 src="/images/EducationalPrograms/Magistracy.png"
                                 alt="Abstract Rings"
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                             />
                         </div>
                     </div>
@@ -97,6 +99,7 @@ export const AboutLaboratory = (): JSX.Element => {
                                 src="/images/EducationalPrograms/PostgraduateStudies.png"
                                 alt="Abstract Digital Block"
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                             />
                         </div>
                     </div>

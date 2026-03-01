@@ -40,6 +40,7 @@ export const GeneralInfo = (): JSX.Element => {
                             src="/images/TheInstitute/GeneralInformation.png"
                             alt="General Information"
                             className="w-full h-full object-cover"
+                            loading="lazy"
                         />
                     </div>
                 </div>

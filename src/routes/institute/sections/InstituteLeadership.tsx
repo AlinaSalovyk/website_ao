@@ -97,6 +97,7 @@ export const InstituteLeadership = (): JSX.Element => {
                                 src={currentMember.image}
                                 alt={currentMember.name}
                                 className="w-full h-full object-cover"
+                                loading="lazy"
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=No+Image';
                                 }}
