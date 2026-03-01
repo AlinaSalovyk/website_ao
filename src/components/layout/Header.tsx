@@ -13,7 +13,7 @@ export const Header = ({ variant = "default", headerPosition = "relative", custo
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const logo = customLogo ?? (logoSrc ? (
-    <img src={logoSrc} alt="Logo" className="h-8 md:h-10 w-auto" loading="lazy" decoding="async" width={83} height={32} />
+    <img src={logoSrc} alt="Logo" className="h-8 md:h-10 w-auto" loading="eager" decoding="async" fetchPriority="high" width={83} height={32} />
   ) : (
     <Logo />
   ));
