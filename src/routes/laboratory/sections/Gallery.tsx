@@ -106,7 +106,7 @@ export const Gallery = (): JSX.Element => {
                             key={index}
                             className="snap-start flex-shrink-0"
                         >
-                            <div className="w-[327px] h-[199px] overflow-hidden rounded-[8px] bg-gray-100">
+                            <div className="w-[280px] sm:w-[327px] h-[170px] sm:h-[199px] overflow-hidden rounded-[8px] bg-gray-100">
                                 <img
                                     src={image.src}
                                     alt={image.alt}

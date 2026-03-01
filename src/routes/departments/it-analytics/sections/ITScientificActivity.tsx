@@ -22,12 +22,8 @@ export const ITScientificActivity = (): JSX.Element => {
                         />
                     </div>
                     <div className="w-full lg:w-3/5 lg:-mt-50">
-                        <p className="font-normal text-pure-black text-lg xl:text-xl 2xl:text-3xl tracking-[0] leading-10 xl:leading-10">
-                            Викладачі кафедри працюють над науково-<br />
-                            дослідною темою «Математичні  методи, моделі та<br />
-                            інформаційні технології в освіті, науці, бізнесі»,<br />
-                            0123U103522, доктор фізико-математичних наук, <br />
-                            професор Нікітін Анатолій  Володимирович.
+                        <p className="font-normal text-pure-black text-lg xl:text-xl 2xl:text-3xl tracking-[0] leading-relaxed xl:leading-10">
+                            Викладачі кафедри працюють над науково-дослідною темою «Математичні методи, моделі та інформаційні технології в освіті, науці, бізнесі», 0123U103522, доктор фізико-математичних наук, професор Нікітін Анатолій Володимирович.
                         </p>
                     </div>
                 </div>

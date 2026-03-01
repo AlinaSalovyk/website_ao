@@ -24,7 +24,7 @@ export const ITHeroWithAbout = (): JSX.Element => {
       </div>
 
       {/* Hero Title */}
-      <div className="relative min-h-[500px] lg:min-h-[calc(113vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px- flex flex-col justify-end pb-4 lg:pb-1 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms]">
+      <div className="relative min-h-[500px] lg:min-h-[calc(113vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-1 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms]">
         <div className="relative z-10 pt-80 lg:pt-0">
           <div className="flex justify-start items-baseline w-full flex-wrap gap-x-3 gap-y-2 mb-8">
             <h1 className="font-['Roboto',sans-serif] font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
