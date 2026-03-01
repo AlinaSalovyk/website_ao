@@ -77,7 +77,7 @@ export const InstituteLeadership = (): JSX.Element => {
 
     return (
         // Using a grey background similar to the screenshot
-        <section className="w-full bg-white flex flex-col relative py-20 transition-colors duration-300">
+        <section id="leadership" className="w-full bg-white flex flex-col relative py-20 transition-colors duration-300">
             <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9">
 
                 {/* Header - Right Aligned as per grey screenshot */}

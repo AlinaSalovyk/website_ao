@@ -18,7 +18,7 @@ export const ITScientificActivity = (): JSX.Element => {
                         <img
                             src="/images/IT/sphere1.jpg"
                             alt="Abstract sphere"
-                            className="w-full h-auto rounded-lg object-cover aspect-[480/580]"
+                            className="w-full h-auto rounded-lg object-cover aspect-[4/3]"
                         />
                     </div>
                     <div className="w-full lg:w-3/5 lg:-mt-50">
