@@ -98,6 +98,9 @@ export const InstituteLeadership = (): JSX.Element => {
                                 alt={currentMember.name}
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+                                decoding="async"
+                                width={200}
+                                height={200}
                                 onError={(e) => {
                                     (e.target as HTMLImageElement).style.display = 'none';
                                 }}

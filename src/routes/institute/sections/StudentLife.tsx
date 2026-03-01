@@ -28,6 +28,9 @@ export const StudentLife = (): JSX.Element => {
                                 alt="Students working together"
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+                                decoding="async"
+                                width={4096}
+                                height={2731}
                             />
                         </div>
                     </div>
@@ -41,6 +44,9 @@ export const StudentLife = (): JSX.Element => {
                                 alt="Student working on laptop"
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+                                decoding="async"
+                                width={4096}
+                                height={2731}
                             />
                         </div>
                         <div className="order-2 flex flex-col gap-6">

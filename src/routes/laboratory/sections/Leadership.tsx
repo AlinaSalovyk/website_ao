@@ -20,6 +20,9 @@ export const Leadership = (): JSX.Element => {
                                     alt="Мельничук Олександр Павлович"
                                     className="w-full h-full object-cover"
                                     loading="lazy"
+                                    decoding="async"
+                                    width={200}
+                                    height={200}
                                 />
                             </div>
                         </div>

@@ -23,6 +23,9 @@ export const ITEducationalPrograms = (): JSX.Element => {
                             alt="Abstract blue graphic"
                             className="w-full h-full object-cover"
                             loading="lazy"
+                            decoding="async"
+                            width={564}
+                            height={681}
                         />
                     </div>
 

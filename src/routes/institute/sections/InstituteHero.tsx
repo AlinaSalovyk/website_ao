@@ -49,6 +49,10 @@ export const InstituteHero = (): JSX.Element => {
                             src="/images/IT/ScientificActivity.jpg"
                             alt="Digital Innovation"
                             className="w-full h-full object-cover"
+                            decoding="async"
+                            fetchPriority="high"
+                            width={2731}
+                            height={4096}
                         />
                     </div>
                 </div>

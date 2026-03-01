@@ -22,6 +22,10 @@ export const HeroWithAbout = (): JSX.Element => {
           alt="Element black chrome"
           src="/images/Home/3d-black-chrome-shape.png"
           style={{ filter: 'hue-rotate(-20deg) brightness(1.55) saturate(2.0)' }}
+          decoding="async"
+          fetchPriority="high"
+          width={1401}
+          height={1462}
         />
       </div>
 
@@ -77,6 +81,9 @@ export const HeroWithAbout = (): JSX.Element => {
                 alt="Students working"
                 className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover rounded-2xl shadow-lg"
                 loading="lazy"
+                decoding="async"
+                width={4096}
+                height={2733}
               />
             </div>
           </div>

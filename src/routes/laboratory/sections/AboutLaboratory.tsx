@@ -30,6 +30,9 @@ export const AboutLaboratory = (): JSX.Element => {
                                 alt="Abstract 3D Shape"
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+                                decoding="async"
+                                width={340}
+                                height={400}
                             />
                         </div>
                     </div>
@@ -71,6 +74,9 @@ export const AboutLaboratory = (): JSX.Element => {
                                 alt="Abstract Rings"
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+                                decoding="async"
+                                width={340}
+                                height={400}
                             />
                         </div>
                     </div>
@@ -100,6 +106,9 @@ export const AboutLaboratory = (): JSX.Element => {
                                 alt="Abstract Digital Block"
                                 className="w-full h-full object-cover"
                                 loading="lazy"
+                                decoding="async"
+                                width={340}
+                                height={400}
                             />
                         </div>
                     </div>

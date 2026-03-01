@@ -41,6 +41,9 @@ export const GeneralInfo = (): JSX.Element => {
                             alt="General Information"
                             className="w-full h-full object-cover"
                             loading="lazy"
+                            decoding="async"
+                            width={377}
+                            height={548}
                         />
                     </div>
                 </div>

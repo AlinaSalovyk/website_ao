@@ -61,6 +61,9 @@ export const InnovativeEducation = (): JSX.Element => {
                                             alt="Decorative container"
                                             src={stat.imageSrc}
                                             loading="lazy"
+                                            decoding="async"
+                                            width={404}
+                                            height={40}
                                         />
                                     )}
                                 </CardContent>

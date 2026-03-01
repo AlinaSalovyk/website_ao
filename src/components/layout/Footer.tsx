@@ -33,6 +33,9 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                         alt="Background"
                         src="/images/Backgroundfooter.png"
                         loading="lazy"
+                        decoding="async"
+                        width={1024}
+                        height={1024}
                     />
 
                     <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start justify-center px-4 md:px-9 py-0 relative flex-1">

@@ -20,6 +20,10 @@ export const ITHeroWithAbout = (): JSX.Element => {
           alt="Element black chrome"
           src="/images/IT/3D Black Chrome Shape1.png"
           style={{ filter: 'hue-rotate(-50deg) brightness(1.0) saturate(9.0)' }}
+          decoding="async"
+          fetchPriority="high"
+          width={1426}
+          height={1456}
         />
       </div>
 
@@ -89,6 +93,9 @@ export const ITHeroWithAbout = (): JSX.Element => {
                 alt="Students working"
                 className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover rounded-2xl shadow-lg"
                 loading="lazy"
+                decoding="async"
+                width={4096}
+                height={2732}
               />
             </div>
           </div>

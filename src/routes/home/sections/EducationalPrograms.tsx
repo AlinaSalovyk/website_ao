@@ -107,6 +107,9 @@ export const EducationalPrograms = (): JSX.Element => {
                                                 alt={program.title}
                                                 src={program.image}
                                                 loading="lazy"
+                                                decoding="async"
+                                                width={340}
+                                                height={400}
                                             />
                                         </div>
                                     </div>

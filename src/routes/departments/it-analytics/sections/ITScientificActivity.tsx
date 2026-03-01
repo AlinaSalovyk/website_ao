@@ -19,6 +19,9 @@ export const ITScientificActivity = (): JSX.Element => {
                             alt="Abstract sphere"
                             className="w-full h-auto rounded-lg object-cover aspect-[4/3]"
                             loading="lazy"
+                            decoding="async"
+                            width={684}
+                            height={672}
                         />
                     </div>
                     <div className="w-full lg:w-3/5 lg:-mt-50">

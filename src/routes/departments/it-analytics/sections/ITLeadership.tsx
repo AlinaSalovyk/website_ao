@@ -38,6 +38,9 @@ export const ITLeadership = (): JSX.Element => {
                                     alt={member.name}
                                     className="w-full h-full object-cover object-top"
                                     loading="lazy"
+                                    decoding="async"
+                                    width={400}
+                                    height={400}
                                     onError={(e) => {
                                         (e.target as HTMLImageElement).style.display = 'none';
                                     }}

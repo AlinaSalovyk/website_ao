@@ -112,6 +112,9 @@ export const Gallery = (): JSX.Element => {
                                     alt={image.alt}
                                     className="w-full h-full object-cover"
                                     loading="lazy"
+                                    decoding="async"
+                                    width={1920}
+                                    height={1080}
                                 />
                             </div>
                         </div>
