@@ -285,6 +285,15 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             Лабораторія робототехніки та вбудованих систем
                                         </a>
                                     </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="h-auto p-0 px-1 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
+                                        asChild
+                                    >
+                                        <a href="/laboratory-vr" className="block w-full min-w-0 text-pure-white text-lg leading-6 font-normal !whitespace-normal break-words text-left">
+                                            Лабораторія інноваційних систем моделювання, симуляції та цифрової візуалізації
+                                        </a>
+                                    </Button>
                                 </Collapsible.Content>
                             </Collapsible.Root>
 
