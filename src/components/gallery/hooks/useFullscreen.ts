@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type RefObject } from "react";
 
 export function useFullscreen(
-  targetRef: React.RefObject<HTMLElement | null>,
+  targetRef: RefObject<HTMLElement | null>,
 ) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 

@@ -15,7 +15,7 @@ import {
   DialogOverlay,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Dialog as DialogPrimitive } from "radix-ui";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 
 import type { GalleryItem } from "../types";

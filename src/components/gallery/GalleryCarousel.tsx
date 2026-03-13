@@ -134,7 +134,7 @@ export function GalleryCarousel({
                 src={item.src}
                 alt={item.alt}
                 className="pointer-events-none h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                loading="eager"
+                loading={index === 0 ? "eager" : "lazy"}
                 decoding="async"
                 width={327}
                 height={199}

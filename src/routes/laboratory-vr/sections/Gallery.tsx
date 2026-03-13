@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import { LabGallerySection } from "@/components/gallery";
+import { GalleryCarousel } from "@/components/gallery";
 
 const galleryImages = [
   {
@@ -36,5 +36,5 @@ const galleryImages = [
 ];
 
 export const Gallery = (): JSX.Element => {
-  return <LabGallerySection items={galleryImages} />;
+  return <GalleryCarousel items={galleryImages} />;
 };
