@@ -77,7 +77,7 @@ export const Education = (): JSX.Element => {
         <section
             className="w-full py-24 text-white"
             style={{
-                background: 'linear-gradient(to bottom, #00113B 0%, #000411 100%)'
+                background: `linear-gradient(to bottom, var(--color-footer-bg) 0%, var(--color-section-dark) 100%)`
             }}
         >
             <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9">
@@ -99,20 +99,20 @@ export const Education = (): JSX.Element => {
                                     className="w-full flex items-center justify-between py-8 group text-left cursor-pointer"
                                 >
                                     <div className="flex items-start gap-1 md:gap-2">
-                                        <span className="text-sm md:text-base font-medium text-[#0E53FF] mt-1">
+                                        <span className="text-sm md:text-base font-medium text-accent-number mt-1">
                                             {item.id}
                                         </span>
                                         <span className="text-xl md:text-2xl font-medium transition-colors group-hover:text-blue-400 text-left">
                                             {item.title}
                                         </span>
                                     </div>
-                                    <div className="relative flex items-center justify-center w-6 h-6">
+                                    <div className="grid place-items-center w-6 h-6">
                                         {/* Horizontal line (always visible) */}
-                                        <div className="absolute w-6 h-[1px] bg-white transition-transform duration-300" />
+                                        <div className="w-6 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
                                         {/* Vertical line (rotates to horizontal when open) */}
                                         <div
                                             className={cn(
-                                                "absolute w-6 h-[1px] bg-white transition-transform duration-300",
+                                                "w-6 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
                                                 openItems.includes(item.id) ? "rotate-0" : "-rotate-90"
                                             )}
                                         />

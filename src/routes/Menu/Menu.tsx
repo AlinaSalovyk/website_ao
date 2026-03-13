@@ -164,7 +164,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             {item.label}
                                         </span>
                                     </a>
-                                    <Separator className="w-full h-px bg-[#ffffff33]" />
+                                    <Separator className="w-full h-px bg-menu-separator" />
                                 </div>
                             ))}
 
@@ -182,18 +182,18 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Освітні програми
                                             </span>
-                                            <div className="relative flex items-center justify-center w-5 h-5">
-                                                <div className="absolute w-5 h-[1px] bg-white transition-transform duration-300" />
+                                            <div className="grid place-items-center w-5 h-5">
+                                                <div className="w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
                                                 <div
                                                     className={cn(
-                                                        "absolute w-5 h-[1px] bg-white transition-transform duration-300",
+                                                        "w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
                                                         isProgramsOpen ? "rotate-0" : "-rotate-90"
                                                     )}
                                                 />
                                             </div>
                                         </Button>
                                     </Collapsible.Trigger>
-                                    <Separator className="w-full h-px bg-[#ffffff33]" />
+                                    <Separator className="w-full h-px bg-menu-separator" />
                                 </div>
 
                                 <Collapsible.Content className="flex flex-col items-start w-full">
@@ -245,18 +245,18 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Кафедри інституту
                                             </span>
-                                            <div className="relative flex items-center justify-center w-5 h-5">
-                                                <div className="absolute w-5 h-[1px] bg-white transition-transform duration-300" />
+                                            <div className="grid place-items-center w-5 h-5">
+                                                <div className="w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
                                                 <div
                                                     className={cn(
-                                                        "absolute w-5 h-[1px] bg-white transition-transform duration-300",
+                                                        "w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
                                                         isDepartmentsOpen ? "rotate-0" : "-rotate-90"
                                                     )}
                                                 />
                                             </div>
                                         </Button>
                                     </Collapsible.Trigger>
-                                    <Separator className="w-full h-px bg-[#ffffff33]" />
+                                    <Separator className="w-full h-px bg-menu-separator" />
                                 </div>
                                 <Collapsible.Content className="flex flex-col items-start w-full pl-4">
                                     <Button
@@ -285,18 +285,18 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             <span className="text-pure-white text-2xl leading-8 font-normal">
                                                 Лабораторії інституту
                                             </span>
-                                            <div className="relative flex items-center justify-center w-5 h-5">
-                                                <div className="absolute w-5 h-[1px] bg-white transition-transform duration-300" />
+                                            <div className="grid place-items-center w-5 h-5">
+                                                <div className="w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
                                                 <div
                                                     className={cn(
-                                                        "absolute w-5 h-[1px] bg-white transition-transform duration-300",
+                                                        "w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
                                                         isLaboratoriesOpen ? "rotate-0" : "-rotate-90"
                                                     )}
                                                 />
                                             </div>
                                         </Button>
                                     </Collapsible.Trigger>
-                                    <Separator className="w-full h-px bg-[#ffffff33]" />
+                                    <Separator className="w-full h-px bg-menu-separator" />
                                 </div>
                                 <Collapsible.Content className="flex flex-col items-start w-full pl-4">
                                     <Button
@@ -334,7 +334,7 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             {item.label}
                                         </span>
                                     </a>
-                                    <Separator className="w-full h-px bg-[#ffffff33]" />
+                                    <Separator className="w-full h-px bg-menu-separator" />
                                 </div>
                             ))}
                         </div>

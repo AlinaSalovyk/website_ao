@@ -1,8 +1,8 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { ArrowRightIcon } from "lucide-react";
 import type { JSX } from "react";
+import { motion } from "motion/react";
+import { ArrowRightIcon, ArrowUpRight } from "lucide-react";
+import { ScrollReveal } from "@/components/effects/ScrollReveal";
+import { cn } from "@/lib/utils";
 
 const newsItems = [
     {
@@ -20,8 +20,7 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage:
-            "/images/Home/news-background-1.png",
+        backgroundImage: "/images/Home/news-background-1.png",
         link: "Дізнатися більше",
     },
     {
@@ -30,8 +29,7 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage:
-            "/images/Home/news-background-2.png",
+        backgroundImage: "/images/Home/news-background-2.png",
         link: "Дізнатися більше",
     },
     {
@@ -40,105 +38,131 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage:
-            "/images/Home/news-background-3.png",
+        backgroundImage: "/images/Home/news-background-3.png",
         link: "Дізнатися більше",
     },
 ];
 
+const BentoCard = ({ item, className, isLarge = false }: { item: typeof newsItems[0], className?: string, isLarge?: boolean }) => {
+    return (
+        <div className={cn("w-full h-full flex flex-col", className)}>
+            <ScrollReveal variant="fade-up" delay={item.id * 100} className="w-full h-full flex-1">
+                <motion.a 
+                    href="#"
+                    whileHover="hover"
+                    className={cn(
+                        "relative flex flex-col justify-end w-full h-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group cursor-pointer border border-black/5 flex-1 shadow-xl bg-gray-900 isolate",
+                        isLarge ? "min-h-[280px] md:min-h-full" : "min-h-[220px] md:min-h-full"
+                    )}
+                >
+                    {/* Background Image */}
+                    <div 
+                        className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
+                        style={{ backgroundImage: `url(${item.backgroundImage})` }}
+                    />
+
+                    {/* Gradient Overlays for Readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 z-10 opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
+                    
+                    {/* Subtle Hover Glow */}
+                    <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 mix-blend-overlay z-10 transition-opacity duration-500 pointer-events-none" />
+
+                    {/* Content */}
+                    <div className="relative z-20 p-5 md:p-8 flex flex-col h-full w-full justify-between">
+                        
+                        {/* Top Info */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 w-full mb-auto mt-1 md:mt-2">
+                            <div className="backdrop-blur-md bg-white/10 border border-white/20 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full shrink-0">
+                                <span className="text-white text-[9px] md:text-[10px] lg:text-xs font-semibold tracking-wider uppercase">
+                                    {item.badge}
+                                </span>
+                            </div>
+                            <div className="backdrop-blur-md bg-black/30 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5 md:gap-2 shrink-0">
+                                <span className="text-white/80 text-[9px] md:text-[10px] lg:text-xs font-medium tracking-wider uppercase">
+                                    {item.date}
+                                </span>
+                                <span className="w-1 h-1 rounded-full bg-white/50" />
+                                <span className="text-white/80 text-[9px] md:text-[10px] lg:text-xs font-medium tracking-wider uppercase">
+                                    {item.readTime}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Bottom Info */}
+                        <div className="flex flex-col gap-2 md:gap-4 mt-6 md:mt-8">
+                            <h3 className={cn(
+                                "font-semibold text-white tracking-tight text-balance",
+                                isLarge ? "text-xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight" : "text-lg md:text-2xl lg:text-3xl leading-snug"
+                            )}>
+                                {item.title}
+                            </h3>
+
+                            <div className="flex items-center gap-2.5 md:gap-3 mt-1 md:mt-4">
+                                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors duration-300">
+                                    <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-black group-hover:text-white transition-colors" />
+                                </div>
+                                <span className="text-sm md:text-base font-medium text-white/90 group-hover:text-white relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-white group-hover:after:w-full after:transition-all after:duration-300">
+                                    {item.link}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </motion.a>
+            </ScrollReveal>
+        </div>
+    );
+};
+
 export const NewsAndEvents = (): JSX.Element => {
     return (
-        <section id="news" className="w-full bg-pure-white">
-            {/* News Section */}
-            <div className="w-full flex items-center justify-center px-0 pt-0.1 pb-10 md:pb-16">
-                <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start px-4 md:px-9">
-                    <header className="flex flex-col items-start w-full mb-5 translate-y-[-0.1rem] animate-fade-in opacity-0">
-                        <h2 className="w-full text-center font-medium text-pure-black text-4xl md:text-5xl xl:text-7xl 2xl:text-[80px] tracking-[0] leading-tight xl:leading-[80px]">
-                            Новини та події
-                        </h2>
-                    </header>
-                    <Separator className="w-full bg-news-gray" />
+        <section id="news" className="w-full bg-pure-white py-16 md:py-24 relative overflow-hidden">
+            {/* Background creative flares */}
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-blue-50 rounded-full blur-[80px] md:blur-[120px] -translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
-                    <div className="flex flex-col w-full items-end pt-4 pb-0 px-0 translate-y-[-0.1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
+            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 relative z-10">
+                
+                {/* Header */}
+                <ScrollReveal variant="fade-up">
+                    <header className="flex flex-col md:flex-row items-start md:items-end justify-between w-full mb-10 md:mb-16 gap-6 md:gap-8">
+                        <div className="flex flex-col items-start gap-3 w-full md:w-auto">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold tracking-wide">
+                                <span className="w-1.5 h-1.5 rounded-full bg-gray-700 animate-pulse"></span>
+                                Актуально
+                            </div>
+                            <h2 className="font-semibold text-pure-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1]">
+                                Новини та події
+                            </h2>
+                        </div>
+
                         <a
                             href="#"
-                            className="flex flex-col items-end gap-1 mb-2 group cursor-pointer hover:opacity-70 transition-opacity"
+                            className="group flex items-center justify-center gap-3 bg-pure-black text-white px-6 py-3.5 rounded-full font-medium text-sm md:text-base hover:bg-gray-800 transition-colors duration-300 w-full md:w-max"
                         >
-                            <div className="flex items-center gap-6">
-                                <span className=" font-normal text-pure-black text-sm xl:text-lg 2xl:text-[22px] tracking-[0]">
-                                    Більше новин
-                                </span>
-                                <div className="group-hover:translate-x-1 transition-transform duration-300">
-                                    <svg width="42" height="14" viewBox="0 0 42 14" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-[30px] xl:w-[36px] 2xl:w-[42px] h-auto">
-                                        <path d="M0 7H40M40 7L34 1M40 7L34 13" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div className="w-full h-[1px] bg-pure-black mt-1" />
+                            Всі новини
+                            <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </a>
-                    </div>
+                    </header>
+                </ScrollReveal>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-10 md:pt-12 w-full">
-                        {newsItems.map((item, index) => (
-                            <Card
-                                key={item.id}
-                                className="group cursor-pointer border-0 shadow-none bg-transparent hover:shadow-lg transition-shadow duration-300 translate-y-[-1rem] animate-fade-in opacity-0"
-                                style={
-                                    {
-                                        "--animation-delay": `${400 + index * 100}ms`,
-                                    } as React.CSSProperties
-                                }
-                            >
-                                <CardContent className="p-0 flex flex-col h-full">
-                                    <div
-                                        className="w-full h-48 sm:h-64 md:h-36 xl:h-44 2xl:h-[198px] rounded-lg bg-cover bg-center bg-no-repeat"
-                                        style={{ backgroundImage: `url(${item.backgroundImage})` }}
-                                    />
-
-                                    <div className="flex flex-col items-start justify-center pt-4 xl:pt-5 2xl:pt-[22px] pb-0 px-4 flex-1">
-                                        <div className="flex flex-col items-start gap-6 w-full">
-                                            <div className="flex items-center justify-between w-full">
-                                                <Badge
-                                                    variant="outline"
-                                                    className="h-7 px-3 xl:px-4 2xl:px-[18px] py-2 rounded-full border-leadership-link text-leadership-link font-normal text-xs tracking-[0] leading-[10px] hover:bg-pure-black hover:text-white transition-colors duration-300 cursor-pointer"
-                                                >
-                                                    {item.badge}
-                                                </Badge>
-
-                                                <time className=" font-light text-pure-black text-sm text-right tracking-[0] leading-[18px]">
-                                                    {item.date}
-                                                </time>
-                                            </div>
-
-                                            <div className="flex flex-col items-start gap-3 xl:gap-4 2xl:gap-[15px] w-full">
-                                                <h3 className=" font-medium text-pure-black text-xl tracking-[0] leading-7 whitespace-pre-line">
-                                                    {item.title}
-                                                </h3>
-
-                                                <p className=" font-normal text-news-gray text-xs tracking-[0] leading-[10px]">
-                                                    {item.readTime}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex flex-col w-full items-start pt-20 pb-0 px-4">
-                                        <div className="flex flex-col w-full items-start gap-1 2xl:gap-[3px]">
-                                            <div className="flex items-center justify-between w-full hover:translate-x-1 transition-transform duration-300 cursor-pointer">
-                                                <span className=" font-normal text-pure-black text-xs tracking-[0] leading-4">
-                                                    {item.link}
-                                                </span>
-
-                                                <ArrowRightIcon className="w-4 h-4 text-pure-black" />
-                                            </div>
-
-                                            <Separator className="w-full bg-pure-black" />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6 auto-rows-auto md:auto-rows-[350px]">
+                    <BentoCard 
+                        item={newsItems[0]} 
+                        isLarge={true}
+                        className="col-span-1 md:col-span-2 md:row-span-2" 
+                    />
+                    <BentoCard 
+                        item={newsItems[1]} 
+                        className="col-span-1 row-span-1" 
+                    />
+                    <BentoCard 
+                        item={newsItems[2]} 
+                        className="col-span-1 row-span-1" 
+                    />
+                    <BentoCard 
+                        item={newsItems[3]} 
+                        className="col-span-1 md:col-span-2 lg:col-span-3 row-span-1" 
+                    />
+                    
                 </div>
             </div>
         </section>

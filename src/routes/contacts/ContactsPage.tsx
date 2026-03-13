@@ -127,9 +127,9 @@ export const ContactsPage = (): JSX.Element => {
                                     <Accordion.Header className="flex">
                                         <Accordion.Trigger className="flex flex-1 items-start justify-between py-6 font-medium text-xl md:text-2xl text-left hover:opacity-70 transition-all [&[data-state=open]>svg]:rotate-180 group cursor-pointer">
                                             <span className="text-pure-black max-w-[80%]">{item.question}</span>
-                                            <div className="relative flex items-center justify-center w-6 h-6">
-                                                <div className="absolute w-6 h-[1.5px] bg-pure-black" />
-                                                <div className="absolute w-6 h-[1.5px] bg-pure-black rotate-90 transition-transform duration-300 group-data-[state=open]:rotate-0" />
+                                            <div className="grid place-items-center w-6 h-6">
+                                                <div className="w-6 h-[1.5px] bg-pure-black [grid-area:1/1]" />
+                                                <div className="w-6 h-[1.5px] bg-pure-black rotate-90 transition-transform duration-300 group-data-[state=open]:rotate-0 [grid-area:1/1]" />
                                             </div>
                                         </Accordion.Trigger>
                                     </Accordion.Header>

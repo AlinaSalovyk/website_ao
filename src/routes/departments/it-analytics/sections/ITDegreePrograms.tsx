@@ -50,7 +50,7 @@ export const ITDegreePrograms = (): JSX.Element => {
         <section
             className="w-full py-24 text-white"
             style={{
-                background: 'linear-gradient(to bottom, #000000 0%, #01133C 100%)'
+                background: `linear-gradient(to bottom, var(--color-pure-black) 0%, var(--color-footer-bg) 100%)`
             }}
         >
             <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9">
@@ -79,13 +79,13 @@ export const ITDegreePrograms = (): JSX.Element => {
                                             {level.title}
                                         </span>
                                     </div>
-                                    <div className="relative flex items-center justify-center w-6 h-6">
+                                    <div className="grid place-items-center w-6 h-6">
                                         {/* Horizontal line (always visible) */}
-                                        <div className="absolute w-6 h-[1px] bg-white transition-transform duration-300" />
+                                        <div className="w-6 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
                                         {/* Vertical line (rotates to horizontal when open) */}
                                         <div
                                             className={cn(
-                                                "absolute w-6 h-[1px] bg-white transition-transform duration-300",
+                                                "w-6 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
                                                 openItems.includes(level.id) ? "rotate-0" : "-rotate-90"
                                             )}
                                         />

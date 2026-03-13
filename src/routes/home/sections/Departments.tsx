@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
+import { ScrollReveal } from "@/components/effects/ScrollReveal";
+import { Sparkles, ChevronDown } from "lucide-react";
 
 interface DepartmentData {
     id: string;
@@ -64,122 +66,173 @@ const DEPARTMENTS: DepartmentData[] = [
     },
 ];
 
+const ProgramLevel = ({ title, items, parentId }: { title: string; items: string[]; parentId: string }) => (
+    <div className="space-y-5">
+        <h3 className="text-sm md:text-base font-semibold text-blue-400 uppercase tracking-[0.15em]">
+            {title}
+        </h3>
+        <ul className="space-y-3 relative">
+            {items.map((program, idx) => (
+                <motion.li
+                    key={`${parentId}-${program}`}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + (idx * 0.05), duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="group flex items-start gap-3 w-full"
+                >
+                    <div className="mt-2 w-[1.5px] h-3 bg-white/20 group-hover:bg-blue-400 group-hover:shadow-[0_0_8px_var(--color-indicator-glow)] transition-all duration-300 shrink-0 rounded-full" />
+                    <span className="text-text-muted-light text-base md:text-lg font-light leading-relaxed group-hover:text-white transition-colors duration-300">
+                        {program}
+                    </span>
+                </motion.li>
+            ))}
+        </ul>
+    </div>
+);
+
 export const Departments = () => {
     const [activeId, setActiveId] = useState(DEPARTMENTS[0].id);
     const activeDepartment = DEPARTMENTS.find((d) => d.id === activeId);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     return (
-        <section className="w-full bg-layout-bg py-20 min-h-[600px] flex items-center">
-            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col md:flex-row gap-12 md:gap-20">
-                {/* Left Side: Department List */}
-                <div className="flex flex-col gap-6 md:w-1/3">
-                    {DEPARTMENTS.map((dept) => (
-                        <button
-                            key={dept.id}
-                            onClick={() => setActiveId(dept.id)}
-                            className="group relative text-left py-2 focus:outline-none transition-colors duration-300 min-h-[72px] flex items-center cursor-pointer"
-                        >
-                            <span
-                                className={cn(
-                                    "relative z-10 text-lg md:text-xl font-medium transition-colors duration-300",
-                                    activeId === dept.id
-                                        ? "text-white"
-                                        : "text-[#8F8F95] group-hover:text-white"
-                                )}
+        <section className="w-full bg-layout-bg py-24 min-h-[600px] flex items-center relative overflow-hidden">
+            <div className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse-slow" />
+            <div className="absolute top-[40%] right-[30%] w-[400px] h-[400px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 relative z-10">
+                <ScrollReveal variant="fade-up" className="w-full">
+                    <div className="flex flex-col md:flex-row gap-8 md:gap-16 lg:gap-24 items-start relative w-full">
+                        
+                        {/* Mobile Dropdown Menu (< md) */}
+                        <div className="w-full md:hidden relative z-50" ref={dropdownRef}>
+                            <button
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                className="w-full flex items-center justify-between text-left bg-white/[0.03] border border-white/10 p-5 rounded-2xl backdrop-blur-md focus:outline-none focus:ring-1 focus:ring-blue-500/50 shadow-lg transition-colors hover:bg-white/[0.05]"
                             >
-                                {dept.title}
-                            </span>
-                            {activeId === dept.id && (
-                                <motion.div
-                                    layoutId="active-department-underline"
-                                    className="absolute bottom-0 left-0 w-full h-[1px] bg-white"
-                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                />
-                            )}
-                            {/* Hover line for inactive items */}
-                            {activeId !== dept.id && (
-                                <div className="absolute bottom-0 left-0 w-full h-[1px] bg-[#323237] group-hover:bg-[#52525b] transition-colors duration-300" />
-                            )}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Right Side: Educational Programs */}
-                <div className="flex-1">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={activeId}
-                            initial={{ opacity: 0, x: 20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -20 }}
-                            transition={{ duration: 0.3 }}
-                            className="text-white space-y-10"
-                        >
-                            <h2 className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8">
-                                Наші освітні програми:
-                            </h2>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                                {activeDepartment?.programs.bachelor && (
-                                    <div className="space-y-4">
-                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                                            Бакалаврат
-                                        </h3>
-                                        <ul className="space-y-2">
-                                            {activeDepartment.programs.bachelor.map((program) => (
-                                                <li
-                                                    key={`${activeDepartment.id}-bachelor-${program}`}
-                                                    className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                                                >
-                                                    <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                                                    {program}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
+                                <span className="text-white text-base font-medium pr-4">
+                                    {activeDepartment?.title}
+                                </span>
+                                <ChevronDown className={cn("w-5 h-5 text-blue-400 transition-transform duration-300 shrink-0", isDropdownOpen && "rotate-180")} />
+                            </button>
+                            
+                            <AnimatePresence>
+                                {isDropdownOpen && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        className="absolute top-[calc(100%+8px)] left-0 w-full bg-dark-panel/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-[0_10px_40px_var(--color-shadow-dropdown)] overflow-hidden z-[100]"
+                                    >
+                                        {DEPARTMENTS.map((dept) => (
+                                            <button
+                                                key={dept.id}
+                                                onClick={() => {
+                                                    setActiveId(dept.id);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                                className={cn(
+                                                    "w-full text-left p-4 rounded-xl transition-colors duration-200 text-sm md:text-base",
+                                                    activeId === dept.id ? "bg-blue-500/15 text-white shadow-[inset_0_0_0_1px_var(--color-indicator-active-border)]" : "text-separator-gray hover:bg-white/5 hover:text-white"
+                                                )}
+                                            >
+                                                {dept.title}
+                                            </button>
+                                        ))}
+                                    </motion.div>
                                 )}
+                            </AnimatePresence>
+                        </div>
 
-                                {activeDepartment?.programs.master && (
-                                    <div className="space-y-4">
-                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                                            Магістратура
-                                        </h3>
-                                        <ul className="space-y-2">
-                                            {activeDepartment.programs.master.map((program) => (
-                                                <li
-                                                    key={`${activeDepartment.id}-master-${program}`}
-                                                    className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                                                >
-                                                    <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                                                    {program}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
+                        {/* Desktop Sidebar Sidebar (md and up) */}
+                        <div className="hidden md:flex flex-col w-[350px] lg:w-[450px] shrink-0 border-l border-white/5 relative">
+                            {DEPARTMENTS.map((dept) => {
+                                const isActive = activeId === dept.id;
+                                return (
+                                    <button
+                                        key={dept.id}
+                                        onClick={() => setActiveId(dept.id)}
+                                        className="group relative text-left py-5 pl-8 pr-4 focus:outline-none transition-all duration-300 w-full"
+                                    >
+                                        <div className={cn(
+                                            "relative z-10 text-xl font-light transition-colors duration-400 tracking-wide",
+                                            isActive
+                                                ? "text-white drop-shadow-[0_0_8px_var(--color-glass-light-border)]"
+                                                : "text-separator-gray group-hover:text-white"
+                                        )}>
+                                            {dept.title}
+                                        </div>
 
-                                {activeDepartment?.programs.phd && (
-                                    <div className="space-y-4">
-                                        <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                                            Аспірантура
-                                        </h3>
-                                        <ul className="space-y-2">
-                                            {activeDepartment.programs.phd.map((program) => (
-                                                <li
-                                                    key={`${activeDepartment.id}-phd-${program}`}
-                                                    className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                                                >
-                                                    <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                                                    {program}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        </motion.div>
-                    </AnimatePresence>
-                </div>
+                                        <div className={cn(
+                                            "absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300",
+                                            isActive && "opacity-100 bg-white/[0.04] backdrop-blur-sm"
+                                        )} />
+
+                                        {isActive && (
+                                            <motion.div
+                                                layoutId="active-dept-indicator-desktop"
+                                                className="absolute top-0 left-[-1px] w-[2px] h-full bg-gradient-to-b from-blue-400 to-cyan-300 shadow-[0_0_12px_var(--color-indicator-glow)] z-20"
+                                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                            />
+                                        )}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Right Side: High-end Glassmorphism Panel */}
+                        <div className="flex-1 w-full relative z-10">
+                            <motion.div 
+                                layout 
+                                className="relative z-0 bg-black/40 backdrop-blur-2xl border border-white/10 rounded-2xl md:rounded-[2rem] p-6 md:p-10 lg:p-12 shadow-2xl flex flex-col overflow-hidden"
+                                transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
+                            >
+                                
+                                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                                
+                                <motion.div layout="position" className="flex items-center gap-3 mb-8 md:mb-10 shrink-0">
+                                    <Sparkles className="w-5 h-5 text-blue-400" />
+                                    <h2 className="text-base md:text-lg font-medium text-white/80 tracking-wide">
+                                        Наші освітні програми
+                                    </h2>
+                                </motion.div>
+                                <div className="relative w-full">
+                                    <AnimatePresence mode="popLayout" initial={false}>
+                                        <motion.div
+                                            key={activeId}
+                                            initial={{ opacity: 0, filter: "blur(4px)", y: 10 }}
+                                            animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                                            exit={{ opacity: 0, filter: "blur(4px)", scale: 0.98 }}
+                                            transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                                            className="grid grid-cols-1 xl:grid-cols-2 gap-x-12 gap-y-10 xl:gap-16 w-full"
+                                        >
+                                            {activeDepartment?.programs.bachelor && (
+                                                <ProgramLevel title="Бакалаврат" items={activeDepartment.programs.bachelor} parentId={activeDepartment.id} />
+                                            )}
+                                            {activeDepartment?.programs.master && (
+                                                <ProgramLevel title="Магістратура" items={activeDepartment.programs.master} parentId={activeDepartment.id} />
+                                            )}
+                                            {activeDepartment?.programs.phd && (
+                                                <ProgramLevel title="Аспірантура" items={activeDepartment.programs.phd} parentId={activeDepartment.id} />
+                                            )}
+                                        </motion.div>
+                                    </AnimatePresence>
+                                </div>
+                            </motion.div>
+                        </div>
+                        
+                    </div>
+                </ScrollReveal>
             </div>
         </section>
     );

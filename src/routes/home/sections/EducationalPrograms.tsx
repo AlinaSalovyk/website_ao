@@ -1,11 +1,8 @@
-import { ArrowRightIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import type { JSX } from "react";
 import React from "react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import { partnerLogos } from "@/components/icons/PartnerLogos";
+import { ScrollReveal } from "@/components/effects/ScrollReveal";
 
 interface Specialty {
     name: string;
@@ -54,74 +51,75 @@ const educationalPrograms: EducationalProgram[] = [
 
 export const EducationalPrograms = (): JSX.Element => {
     return (
-        <section id="educational-programs" className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
-            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9">
-                <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0 w-full">
-                    <h2 className=" font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] w-full">
-                        Спеціальності та освітні програми
-                    </h2>
-                </header>
-                <div className="flex flex-col gap-0">
-                    {educationalPrograms.map((program, index) => (
-                        <div key={index} id={program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}>
-                            {/* Top separator line for each program */}
-                            <Separator className="w-full h-px bg-pure-black" />
-                            <Card
-                                className="border-0 shadow-none rounded-none bg-pure-white"
-                            >
-                                <CardContent className="p-0 bg-pure-white">
-                                    <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr_340px] gap-8 py-8">
-                                        {/* Title column */}
-                                        <div className="flex flex-col items-start">
-                                            <h3 className="font-medium text-pure-black text-xl xl:text-2xl 2xl:text-[28px] tracking-[0] leading-snug xl:leading-[34px] whitespace-nowrap">
-                                                {program.title}
-                                            </h3>
-                                        </div>
-                                        {/* Description and button column */}
-                                        <div className="flex flex-col items-end justify-between pr-0 lg:pr-10">
-                                            <div className="flex flex-col items-start w-full max-w-md ml-auto lg:mr-12">
-                                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-6 mb-2">
-                                                    Перелік спеціальностей
-                                                </p>
-                                                <ul className="list-disc pl-5 space-y-1">
-                                                    {program.specialties.map((specialty, idx) => (
-                                                        <li key={idx} className="font-normal text-pure-black text-sm tracking-[0] leading-6">
-                                                            {specialty.link ? (
-                                                                <a
-                                                                    href={specialty.link}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="hover:underline hover:text-blue-600 transition-colors"
-                                                                >
-                                                                    {specialty.name}
-                                                                </a>
-                                                            ) : (
-                                                                <span>{specialty.name}</span>
-                                                            )}
-                                                        </li>
-                                                    ))}
-                                                </ul>
+        <section id="educational-programs" className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col overflow-hidden">
+            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9 flex flex-col lg:items-center">
+                <ScrollReveal variant="fade-up">
+                    <header className="flex flex-col items-center mb-16 lg:mb-24 w-full text-center">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-semibold tracking-wide mb-5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                            Напрямки підготовки
+                        </div>
+                        <h2 className="font-semibold text-pure-black text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1] w-full max-w-3xl">
+                            Спеціальності та освітні програми
+                        </h2>
+                    </header>
+                </ScrollReveal>
+
+                <div className="flex flex-col gap-20 lg:gap-32 w-full">
+                    {educationalPrograms.map((program, index) => {
+                        const isEven = index % 2 === 0;
+                        const id = program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate";
+
+                        return (
+                            <ScrollReveal key={index} variant="fade-up" delay={100} className="w-full">
+                                <div id={id} className="flex flex-col lg:flex-row gap-8 lg:gap-16 xl:gap-20 items-center lg:items-center w-full">
+                                    {/* Image Column - Styled as a framed UI element to hide low resolution */}
+                                    <div className={`w-full max-w-[280px] lg:max-w-none lg:w-4/12 xl:w-3/12 mx-auto ${!isEven ? 'lg:order-2' : ''}`}>
+                                        <div className="w-full aspect-square rounded-[2rem] shadow-sm bg-gray-50 flex items-center justify-center relative border border-gray-100/50 p-3 lg:p-4">
+                                            <div className="w-full h-full bg-white rounded-[1.5rem] overflow-hidden shadow-sm relative">
+                                                <img
+                                                    src={program.image}
+                                                    alt={program.title}
+                                                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500 hover:opacity-90"
+                                                />
                                             </div>
                                         </div>
-                                        {/* Image column */}
-                                        <div className="hidden lg:flex items-start justify-end">
-                                            <img
-                                                className="w-64 xl:w-72 2xl:w-[340px] h-72 xl:h-80 2xl:h-[400px] rounded-lg object-cover"
-                                                alt={program.title}
-                                                src={program.image}
-                                            />
+                                    </div>
+
+                                    {/* Content Column */}
+                                    <div className={`w-full lg:w-8/12 xl:w-9/12 flex flex-col justify-center ${!isEven ? 'lg:order-1' : ''}`}>
+                                        <h3 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-6 lg:mb-10 text-pure-black tracking-tight">
+                                            {program.title}
+                                        </h3>
+                                        <div className="flex flex-col border-t border-gray-200 w-full">
+                                            {program.specialties.map((specialty, idx) => {
+                                                const Wrapper = specialty.link ? 'a' : 'div';
+                                                return (
+                                                    <Wrapper
+                                                        key={idx}
+                                                        href={specialty.link}
+                                                        target={specialty.link ? "_blank" : undefined}
+                                                        rel={specialty.link ? "noopener noreferrer" : undefined}
+                                                        className="group flex items-center justify-between py-5 md:py-6 border-b border-gray-200 hover:border-blue-600 transition-colors cursor-pointer"
+                                                    >
+                                                        <span className="text-pure-black text-sm md:text-base xl:text-lg font-medium leading-relaxed pr-6 group-hover:text-blue-600 transition-colors">
+                                                            {specialty.name}
+                                                        </span>
+                                                        <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-gray-300 group-hover:text-blue-600 group-hover:translate-x-2 transition-all shrink-0" />
+                                                    </Wrapper>
+                                                );
+                                            })}
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    ))}
-                    {/* Bottom separator line */}
-                    <Separator className="w-full h-px bg-pure-black" />
+                                </div>
+                            </ScrollReveal>
+                        );
+                    })}
                 </div>
             </div>
-            {/* Marquee Animation Section */}
-            <div className="w-full overflow-hidden py-12 bg-pure-white">
+
+            {/* Marquee Animation Section — preserved */}
+            <div className="w-full overflow-hidden mt-24 py-12 bg-pure-white border-t border-gray-100">
                 <div className="flex items-center gap-16 animate-marquee-seamless">
                     {[...Array(6)].map((_, setIndex) => (
                         <React.Fragment key={setIndex}>

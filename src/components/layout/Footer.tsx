@@ -1,7 +1,13 @@
+/**
+ * Footer — Gooey liquid footer with animated particles at the top edge,
+ * preserving all original footer content (cards, contacts, nav, socials, copyright).
+ * Uses SVG filter for the liquid/metaball effect and CSS animations for particles.
+ */
 import { getSocialIcons } from "@/components/icons/SocialIcons";
-import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { JSX } from "react";
+import { useEffect, useRef, type JSX } from "react";
+import { ScrollReveal } from "@/components/effects/ScrollReveal";
+import { ArrowUpRight } from "lucide-react";
 
 const navigationItems = [
     { label: "ГОЛОВНА", href: "/", isActive: true },
@@ -14,167 +20,199 @@ interface FooterProps {
     hideMainContent?: boolean;
 }
 
+const useGooeyParticles = (containerRef: React.RefObject<HTMLDivElement | null>, count: number = 60) => {
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < count; i++) {
+            const span = document.createElement("span");
+            span.classList.add("gooey-particle");
+            const size = 2 + Math.random() * 5;
+            const distance = 8 + Math.random() * 12;
+            const position = Math.random() * 100;
+            const time = 3 + Math.random() * 4;
+            const delay = -1 * (Math.random() * 10);
+            span.style.setProperty("--dim", `${size}rem`);
+            span.style.setProperty("--uplift", `${distance}rem`);
+            span.style.setProperty("--pos-x", `${position}%`);
+            span.style.setProperty("--dur", `${time}s`);
+            span.style.setProperty("--delay", `${delay}s`);
+            fragment.appendChild(span);
+        }
+        container.appendChild(fragment);
+
+        return () => {
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+        };
+    }, [containerRef, count]);
+};
+
 export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element => {
-    const footerSocials = getSocialIcons("fill-pure-black", "fill-transparent", "size-full");
+    const footerSocials = getSocialIcons("fill-white/80", "fill-transparent", "size-full");
+    const particleContainerRef = useRef<HTMLDivElement>(null);
+
+    useGooeyParticles(particleContainerRef, 120);
 
     return (
-        <section className="flex flex-col w-full items-start relative bg-pure-white flex-1">
-            {!hideMainContent && (
-                <div className="flex flex-col w-full items-center justify-center py-8 bg-layout-bg relative flex-1">
-                    <img
-                        className="absolute top-0 left-0 w-full h-full object-cover object-top"
-                        alt="Background"
-                        src="/images/Backgroundfooter.png"
-                    />
+        <section 
+            className="w-full relative bg-transparent"
+            style={{ overflowX: 'clip', overflowY: 'visible' }}
+        >
+            {/* Matches gooey height so the transition is flush without a black stripe gap */}
+            <div className="w-full pt-[5rem] md:pt-[6rem] relative">
+                <footer 
+                    className="w-full relative flex flex-col items-center pt-16 md:pt-24 pb-6"
+                    style={{ 
+                        '--footer-color': 'var(--color-brand-blue)',
+                        background: 'linear-gradient(180deg, var(--footer-color) 0%, var(--color-footer-gradient-mid) 30%, var(--color-pure-black) 100%)'
+                    } as React.CSSProperties}
+                >
+            {/* Gooey Liquid Top Animation */}
+            <div 
+                className="absolute top-0 w-[120%] left-[-10%] h-[5rem] md:h-[6rem] z-0 pointer-events-none" 
+                style={{ 
+                    filter: "url('#liquid-effect')", 
+                    transform: 'translateY(-98%)', 
+                    background: 'var(--footer-color)' 
+                }}
+            >
+                <div ref={particleContainerRef} className="w-full h-full relative" />
+            </div>
 
-                    <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl w-full items-start justify-center px-4 md:px-9 py-0 relative flex-1">
-                        <div className="flex flex-col items-start justify-between flex-1 w-full">
-                            <div className="flex flex-col lg:flex-row items-stretch justify-between flex-1 w-full gap-4 mt-4 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-                                <Card className="w-full lg:w-[413px] bg-footer-card-deep border-none rounded-lg hover:bg-pure-white transition-all duration-300 group/card">
-                                    <CardContent className="flex flex-col items-start justify-between h-full gap-16 sm:gap-[247.48px] p-6">
-                                        <div className="flex flex-col items-start gap-6 w-full">
-                                            <div className="flex items-center justify-between w-full">
-                                                <span className="font-normal text-xs leading-[14px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
-                                                    ПРО ІНСТИТУТ
-                                                </span>
-                                                <svg width="13" height="16" viewBox="0 0 13 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M12.3536 10.3539C12.5488 10.1586 12.5488 9.84205 12.3536 9.64679L9.17157 6.46481C8.97631 6.26954 8.65973 6.26954 8.46447 6.46481C8.2692 6.66007 8.2692 6.97665 8.46447 7.17191L11.2929 10.0003L8.46447 12.8288C8.2692 13.024 8.2692 13.3406 8.46447 13.5359C8.65973 13.7311 8.97631 13.7311 9.17157 13.5359L12.3536 10.3539ZM0 10.5003H12V9.50034H0V10.5003Z" className="fill-pure-white group-hover/card:fill-pure-black transition-colors duration-300" />
-                                                </svg>
-                                            </div>
+            <svg style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }} version="1.1" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <filter id="liquid-effect">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                        <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="liquid" />
+                    </filter>
+                </defs>
+            </svg>
 
-                                            <h2 className=" font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
-                                                Розвиток та <br />
-                                                Інновації в ІТ та Бізнесі
-                                            </h2>
+            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9 relative z-10 flex flex-col gap-16 md:gap-24">
+                
+                {/* Embedded Contact/Info Cards */}
+                {!hideMainContent && (
+                    <ScrollReveal variant="fade-up">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 w-full">
+                            
+                            {/* Card 1: About */}
+                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-10 flex flex-col justify-between min-h-[280px] md:min-h-[340px] hover:bg-white/15 transition-colors duration-500 shadow-xl">
+                                <div>
+                                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-white text-[10px] md:text-xs font-semibold tracking-widest uppercase mb-6">
+                                        Про інститут
+                                    </div>
+                                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
+                                        Розвиток та Інновації <br className="hidden md:block"/>в ІТ та Бізнесі
+                                    </h2>
+                                </div>
+                                <p className="text-white/80 text-sm leading-relaxed mt-10 md:mt-12 font-medium">
+                                    Бізнес й аналітика, Комп&apos;ютерні науки, Фінанси та банківська справа, Маркетинг, Менеджмент, Прикладна математика
+                                </p>
+                            </div>
+
+                            {/* Card 2: Contact CTA */}
+                            <div className="bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-10 flex flex-col justify-between min-h-[280px] md:min-h-[340px] hover:border-white/40 transition-colors duration-500 group shadow-xl relative overflow-hidden isolate">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[60px] pointer-events-none -z-10 group-hover:bg-white/20 transition-colors duration-700" />
+                                
+                                <div>
+                                    <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-white text-[10px] md:text-xs font-semibold tracking-widest uppercase mb-6">
+                                        Давай тримати контакт
+                                    </div>
+                                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
+                                        Нумо змінювати світ <br className="hidden md:block"/> разом з нами!
+                                    </h2>
+                                </div>
+                                
+                                <div className="flex flex-row items-end justify-between mt-10 md:mt-12">
+                                    <span className="text-5xl md:text-6xl lg:text-7xl font-normal text-white/40 tracking-tighter select-none">Start<br/>Studying</span>
+                                    <a href="/contacts" aria-label="Зв'язатись з нами" className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-blue-600 hover:scale-105 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-xl shrink-0">
+                                        <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8" />
+                                    </a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </ScrollReveal>
+                )}
+
+                {/* Footer Navigation & Details */}
+                <div className="flex flex-col w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-8 justify-between w-full">
+                        
+                        {/* Nav */}
+                        <div className="flex flex-col gap-4">
+                            <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Навігація</h4>
+                            <div className="flex flex-col gap-3">
+                                {navigationItems.map((item, idx) => (
+                                    <a key={idx} href={item.href} className="text-white hover:text-blue-200 text-sm font-medium hover:translate-x-1 transition-all duration-300 w-fit">
+                                        {item.label}
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Contacts */}
+                        <div className="flex flex-col gap-4">
+                            <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Контакти</h4>
+                            <div className="flex flex-col gap-3">
+                                <a href="https://www.oa.edu.ua" className="text-white hover:text-blue-200 text-sm font-medium transition-colors duration-300 w-fit">www.oa.edu.ua</a>
+                                <a href="mailto:press@oa.edu.ua" className="text-white hover:text-blue-200 text-sm font-medium transition-colors duration-300 w-fit">press@oa.edu.ua</a>
+                                <span className="text-white text-sm font-medium">+38 067 879 2526</span>
+                            </div>
+                        </div>
+
+                        {/* Address */}
+                        <div className="flex flex-col gap-4">
+                            <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Адреса</h4>
+                            <a
+                                href="https://www.google.com/maps/place/...Острог"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white hover:text-blue-200 text-sm font-medium leading-relaxed transition-colors duration-300 w-fit"
+                            >
+                                35800, м. Острог<br />
+                                вул. Семінарська, 2
+                            </a>
+                        </div>
+
+                        {/* Socials */}
+                        <div className="flex flex-col gap-4 lg:items-end w-full">
+                            <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest lg:text-right w-full">Соцмережі</h4>
+                            <div className="flex items-center gap-3">
+                                {footerSocials.map((icon, index) => (
+                                    <a
+                                        key={index}
+                                        href="#"
+                                        className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:-translate-y-1 transition-all duration-300 group"
+                                        aria-label={icon.alt}
+                                    >
+                                        <div className="w-5 h-5 group-hover:invert group-hover:brightness-0 transition-all flex items-center justify-center">
+                                            {icon.icon}
                                         </div>
-
-                                        <p className="font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs tracking-[0] leading-[18px]">
-                                            Бізнес й аналітика, Комп&apos;ютерні науки, <br />
-                                            Фінанси та банківська справа, Маркетинг,
-                                            <br />
-                                            Менеджмент, Прикладна математика
-                                        </p>
-                                    </CardContent>
-                                </Card>
-
-                                <Card className="flex-1 bg-footer-card-deep border-none rounded-lg overflow-hidden hover:bg-pure-white transition-all duration-300 group/card">
-                                    <CardContent className="flex flex-col items-start justify-between h-full gap-16 sm:gap-[220px] p-6">
-                                        <div className="flex flex-col items-start gap-6 w-full">
-                                            <div className="flex items-center justify-between w-full">
-                                                <span className="font-normal text-xs leading-[14px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
-                                                    ДАВАЙ ТРИМАТИ КОНТАКТ
-                                                </span>
-                                                <svg width="13" height="16" viewBox="0 0 13 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M12.3536 10.3539C12.5488 10.1586 12.5488 9.84205 12.3536 9.64679L9.17157 6.46481C8.97631 6.26954 8.65973 6.26954 8.46447 6.46481C8.2692 6.66007 8.2692 6.97665 8.46447 7.17191L11.2929 10.0003L8.46447 12.8288C8.2692 13.024 8.2692 13.3406 8.46447 13.5359C8.65973 13.7311 8.97631 13.7311 9.17157 13.5359L12.3536 10.3539ZM0 10.5003H12V9.50034H0V10.5003Z" className="fill-pure-white group-hover/card:fill-pure-black transition-colors duration-300" />
-                                                </svg>
-                                            </div>
-
-                                            <h2 className=" font-medium text-2xl sm:text-[32px] sm:leading-[38px] text-pure-white group-hover/card:text-pure-black transition-colors duration-300 tracking-[0]">
-                                                Нумо змінювати світ <br />
-                                                разом з нами!
-                                            </h2>
-                                        </div>
-
-                                        <div className="flex flex-col md:flex-row items-start md:items-end gap-8 md:gap-4 lg:gap-[172px] w-full justify-between">
-                                            <div className="inline-flex flex-col items-start justify-end">
-                                                <h3 className=" font-normal text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-3xl sm:text-5xl lg:text-7xl tracking-[0] leading-none sm:leading-[80px] whitespace-nowrap">
-                                                    Start Studying
-                                                </h3>
-                                            </div>
-
-                                            <div className="inline-flex flex-col w-full md:w-auto md:min-w-[180px] items-start">
-                                                <div className="flex flex-col w-full md:w-[229px] items-start gap-[3px]">
-                                                    <a href="/contacts" className="flex items-center justify-between w-full group cursor-pointer">
-                                                        <div className="relative w-full md:w-[181px] h-4">
-                                                            <span className="h-4 flex items-center justify-start md:justify-center text-pure-white group-hover/card:text-pure-black transition-colors duration-300 text-xs leading-4 whitespace-nowrap font-normal tracking-[0] group-hover:opacity-80 transition-opacity">
-                                                                Контактуй з нами
-                                                            </span>
-                                                        </div>
-                                                        <svg width="13" height="16" viewBox="0 0 13 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M12.3536 10.3539C12.5488 10.1586 12.5488 9.84205 12.3536 9.64679L9.17157 6.46481C8.97631 6.26954 8.65973 6.26954 8.46447 6.46481C8.2692 6.66007 8.2692 6.97665 8.46447 7.17191L11.2929 10.0003L8.46447 12.8288C8.2692 13.024 8.2692 13.3406 8.46447 13.5359C8.65973 13.7311 8.97631 13.7311 9.17157 13.5359L12.3536 10.3539ZM0 10.5003H12V9.50034H0V10.5003Z" className="fill-pure-white group-hover/card:fill-pure-black transition-colors duration-300" />
-                                                        </svg>
-                                                    </a>
-                                                    <Separator className="w-full bg-pure-white group-hover/card:bg-pure-black transition-colors duration-300" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                    </a>
+                                ))}
                             </div>
                         </div>
                     </div>
-                </div>
-            )}
 
-            <div className="w-full bg-pure-white py-8 md:py-10 border-t border-layout-bg/10">
-                <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
-                    {/* Left Column - Contacts */}
-                    <div className="flex flex-col gap-0.5 text-pure-black text-sm lg:text-base leading-[1.3]">
-                        <a
-                            href="https://www.google.com/maps/place/%D0%B2%D1%83%D0%BB.+%D0%A1%D0%B5%D0%BC%D1%96%D0%BD%D0%B0%D1%80%D1%81%D1%8C%D0%BA%D0%B0,+2,+%D0%9E%D1%81%D1%82%D1%80%D0%BE%D0%B3,+%D0%A0%D1%96%D0%B2%D0%BD%D0%B5%D0%BD%D1%81%D1%8C%D0%BA%D0%B0+%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C,+35800/@50.3228186,26.5054707,17z/data=!3m1!4b1!4m6!3m5!1s0x472dada058296a2f:0x6b1660ca4f5d22f6!8m2!3d50.3228152!4d26.5080456!16s%2Fg%2F12hn9506l?entry=ttu"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:underline"
-                        >
-                            <p>35800, м. Острог</p>
-                            <p>вул. Семінарська, 2</p>
-                        </a>
-                        <a href="https://www.oa.edu.ua" className="hover:underline">www.oa.edu.ua</a>
-                        <a href="mailto:press@oa.edu.ua" className="hover:underline">press@oa.edu.ua</a>
-                        <p>+38 067 879 2526</p>
+                    <Separator className="w-full bg-white/15 mt-12 md:mt-16 mb-6" />
+
+                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 w-full">
+                        <span className="font-light text-white/50 text-[10px] md:text-xs tracking-wide text-center">
+                            Національний університет &quot;Острозька академія&quot; © {new Date().getFullYear()}
+                        </span>
+                        <button className="font-light text-white/50 text-[10px] md:text-xs tracking-wide hover:text-white transition-colors">
+                            Cookie Preference
+                        </button>
                     </div>
-
-                    {/* Middle Column - Socials */}
-                    <div className="flex items-center gap-4 lg:gap-6">
-                        {footerSocials.map((icon, index) => (
-                            <a
-                                key={index}
-                                href="#"
-                                className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
-                                aria-label={icon.alt}
-                            >
-                                <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover:invert group-hover:brightness-0 group-hover:filter transition-all flex items-center justify-center translate-y-[1px]">
-                                    {icon.icon}
-                                </div>
-                            </a>
-                        ))}
-                    </div>
-
-                    <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
-                        {navigationItems.map((item, index) => (
-                            <a
-                                key={index}
-                                href={item.href}
-                                className="flex flex-col w-full group cursor-pointer"
-                            >
-                                <div className="flex items-center justify-between w-full pb-1">
-                                    <span
-                                        className={` font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${item.isActive ? "text-leadership-link" : "text-pure-black"
-                                            } group-hover:text-leadership-link`}
-                                    >
-                                        {item.label}
-                                    </span>
-                                    {item.isActive && (
-                                        <div className="w-1.5 h-1.5 bg-leadership-link rounded-sm" />
-                                    )}
-                                </div>
-                                <Separator className="w-full bg-pure-black/20 group-hover:bg-pure-black transition-colors" />
-                            </a>
-                        ))}
-                    </nav>
                 </div>
             </div>
-
-            <div className="w-full bg-pure-black py-4">
-                <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-row items-center gap-8">
-                    <button className=" font-medium text-pure-white text-[10px] lg:text-xs tracking-wide hover:opacity-70 transition-opacity">
-                        Cookie Preference
-                    </button>
-                    <span className=" font-medium text-pure-white text-[10px] lg:text-xs tracking-wide">
-                        Національний університет &quot;Острозька академія&quot;
-                    </span>
-                </div>
+        </footer>
             </div>
-        </section >
+        </section>
     );
 };

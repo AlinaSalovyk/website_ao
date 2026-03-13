@@ -1,6 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import type { JSX } from "react";
+import { ScrollReveal } from "@/components/effects/ScrollReveal";
+import { AnimatedCounter } from "@/components/effects/AnimatedCounter";
 
 const statsData = [
     {
@@ -29,41 +31,48 @@ export const InnovativeEducation = (): JSX.Element => {
                 <div
                     className="flex flex-col mx-auto w-full h-full items-start px-4 md:px-9 pt-20 relative z-[1] max-w-7xl 2xl:max-w-screen-2xl"
                 >
-                    <header className="flex flex-col items-start relative w-full gap-8 translate-y-[-1rem] animate-fade-in opacity-0">
-                        <h2 className=" font-medium text-pure-black text-4xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[132px] tracking-[0] leading-tight xl:leading-[144px] whitespace-normal md:whitespace-nowrap">
-                            ІННОВАЦІЙНА ОСВІТА
-                        </h2>
-                        <Separator className="w-full bg-separator-gray h-px" />
-                        <p className="max-w-xs xl:max-w-sm 2xl:max-w-[400px] font-normal text-pure-black text-lg xl:text-xl 2xl:text-2xl tracking-[0] leading-7 xl:leading-8">
-                            Створюємо майбутнє разом: технології, бізнес та аналітика в єдиному
-                            просторі.
-                        </p>
-                    </header>
+                    <ScrollReveal variant="fade-up">
+                        <header className="flex flex-col items-start relative w-full gap-8">
+                            <h2 className=" font-medium text-pure-black text-4xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[132px] tracking-[0] leading-tight xl:leading-[144px] whitespace-normal md:whitespace-nowrap">
+                                ІННОВАЦІЙНА ОСВІТА
+                            </h2>
+                            <Separator className="w-full bg-separator-gray h-px" />
+                            <p className="max-w-xs xl:max-w-sm 2xl:max-w-[400px] font-normal text-pure-black text-lg xl:text-xl 2xl:text-2xl tracking-[0] leading-7 xl:leading-8">
+                                Створюємо майбутнє разом: технології, бізнес та аналітика в єдиному
+                                просторі.
+                            </p>
+                        </header>
+                    </ScrollReveal>
 
-                    <div className="flex flex-col lg:flex-row items-center lg:items-start justify-end gap-10 lg:gap-16 xl:gap-32 2xl:gap-[200px] w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] mt-16 flex-1 pb-0">
+                    <div className="flex flex-col lg:flex-row items-center lg:items-start justify-end gap-10 lg:gap-16 xl:gap-32 2xl:gap-[200px] w-full mt-16 flex-1 pb-0">
                         {statsData.map((stat, index) => (
-                            <Card
-                                key={index}
-                                className="flex flex-col max-w-full md:max-w-xs xl:max-w-sm 2xl:max-w-[400px] w-full border-50 shadow-none bg-transparent"
-                            >
-                                <CardContent className="flex flex-col items-start gap-4 p-0">
-                                    <div className="flex items-start w-full">
-                                        <h2 className=" font-normal text-pure-black text-5xl md:text-7xl xl:text-9xl 2xl:text-[140px] tracking-tight xl:tracking-[-4.80px] leading-tight xl:leading-[120px] whitespace-nowrap">
-                                            {stat.number}
-                                        </h2>
-                                    </div>
-                                    <p className="font-normal text-pure-black text-lg tracking-[0] leading-[24px] whitespace-pre-line">
-                                        {stat.description}
-                                    </p>
-                                    {stat.imageSrc && (
-                                        <img
-                                            className="hidden lg:block w-full max-w-48 xl:max-w-64 xl:max-w-[300px]"
-                                            alt="Decorative container"
-                                            src={stat.imageSrc}
-                                        />
-                                    )}
-                                </CardContent>
-                            </Card>
+                            <ScrollReveal key={index} variant="fade-up" delay={index * 200}>
+                                <Card
+                                    className="flex flex-col max-w-full md:max-w-xs xl:max-w-sm 2xl:max-w-[400px] w-full border-50 shadow-none bg-transparent glass-panel-light rounded-2xl"
+                                >
+                                    <CardContent className="flex flex-col items-start gap-4 p-6">
+                                        <div className="flex items-start w-full">
+                                            {/* Animated counter instead of static text */}
+                                            <AnimatedCounter
+                                                value={stat.number}
+                                                duration={2200}
+                                                className="font-normal text-pure-black text-5xl md:text-7xl xl:text-9xl 2xl:text-[140px] tracking-tight xl:tracking-[-4.80px] leading-tight xl:leading-[120px] whitespace-nowrap"
+                                            />
+                                        </div>
+                                        <p className="font-normal text-pure-black text-lg tracking-[0] leading-[24px] whitespace-pre-line">
+                                            {stat.description}
+                                        </p>
+                                        {stat.imageSrc && (
+                                            <img
+                                                className="hidden lg:block w-full max-w-48 xl:max-w-64 xl:max-w-[300px]"
+                                                alt="Decorative container"
+                                                src={stat.imageSrc}
+                                                style={{ animation: "float-bob 5s ease-in-out infinite" }}
+                                            />
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </ScrollReveal>
                         ))}
                     </div>
                 </div>
