@@ -18,6 +18,7 @@ const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
 
   return (
     <section
+      aria-labelledby="degree-programs-heading"
       className="w-full py-24 text-white"
       style={{
         background: "linear-gradient(to bottom, #000000 0%, #01133C 100%)",
@@ -27,7 +28,7 @@ const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-16 lg:gap-24">
           {/* Title Section */}
           <div>
-            <h2 className="font-medium text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white">
+            <h2 id="degree-programs-heading" className="font-medium text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white">
               Наші
               <br />
               освітні
@@ -44,7 +45,10 @@ const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
                 className="border-b border-white/20 last:border-0"
               >
                 <button
+                  id={`heading-${level.id}`}
                   onClick={() => toggleItem(level.id)}
+                  aria-expanded={openItems.includes(level.id)}
+                  aria-controls={`panel-${level.id}`}
                   className="w-full flex items-center justify-between py-8 group text-left cursor-pointer"
                 >
                   <div className="flex items-center gap-6">
@@ -67,6 +71,9 @@ const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
                 </button>
 
                 <div
+                  id={`panel-${level.id}`}
+                  role="region"
+                  aria-labelledby={`heading-${level.id}`}
                   className={cn(
                     "overflow-hidden transition-all duration-300 ease-in-out",
                     openItems.includes(level.id)
