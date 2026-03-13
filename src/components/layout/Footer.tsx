@@ -18,7 +18,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
     const footerSocials = getSocialIcons("fill-pure-black", "fill-transparent", "size-full");
 
     return (
-        <section className="flex flex-col w-full items-start relative bg-pure-white flex-1">
+        <footer className="flex flex-col w-full items-start relative bg-pure-white flex-1">
             {!hideMainContent && (
                 <div className="flex flex-col w-full items-center justify-center py-8 bg-layout-bg relative flex-1">
                     <img
@@ -175,6 +175,6 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                     </span>
                 </div>
             </div>
-        </section >
+        </footer>
     );
 };
