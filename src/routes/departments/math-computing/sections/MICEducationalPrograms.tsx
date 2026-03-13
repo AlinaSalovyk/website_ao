@@ -7,7 +7,7 @@ const educationalProgramsData: EducationalProgramsData = {
   sectionId: "general-info",
   title: "Загальна інформація про кафедру",
   image: {
-    src: "/images/Departments/dfb-info.jpg",
+    src: "/images/Departments/dmc-hero.jpg",
     alt: "Mathematics and computing",
   },
   introText:

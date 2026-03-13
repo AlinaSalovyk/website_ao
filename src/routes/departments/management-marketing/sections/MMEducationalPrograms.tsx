@@ -7,7 +7,7 @@ const educationalProgramsData: EducationalProgramsData = {
   sectionId: "general-info",
   title: "Загальна інформація про кафедру",
   image: {
-    src: "/images/Departments/dfb-info.jpg",
+    src: "/images/Departments/dmm-hero.jpg",
     alt: "Management and marketing",
   },
   introText:
