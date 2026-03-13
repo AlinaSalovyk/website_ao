@@ -187,6 +187,12 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* Marquee Animation - Безперервний рух зліва направо */
 @keyframes marquee-seamless {
 
