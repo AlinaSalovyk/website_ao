@@ -16,7 +16,10 @@ const {
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString()?.replace(/\/$/, '') ?? '';
-const currentUrl = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
+const metadataBaseUrl = siteUrl || Astro.url.origin;
+const toAbsoluteUrl = (value: string): string => new URL(value, `${metadataBaseUrl}/`).toString();
+const currentUrl = toAbsoluteUrl(canonicalUrl ?? Astro.url.pathname);
+const ogImageUrl = toAbsoluteUrl(ogImage);
 ---
 
 <!doctype html>
@@ -26,9 +29,9 @@ const currentUrl = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#0f1215" />
 		<link rel="manifest" href="/site.webmanifest" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" type="image/svg+xml" sizes="any" href="/favicon.svg" />
 		<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-		<link rel="icon" sizes="any" href="/favicon.ico" />
+		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -46,7 +49,7 @@ const currentUrl = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:url" content={currentUrl} />
-		<meta property="og:image" content={`${siteUrl}${ogImage}`} />
+		<meta property="og:image" content={ogImageUrl} />
 		<meta property="og:locale" content="uk_UA" />
 		<meta property="og:site_name" content="Інститут ІТ та бізнесу НаУОА" />
 
@@ -54,7 +57,7 @@ const currentUrl = canonicalUrl ?? `${siteUrl}${Astro.url.pathname}`;
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:title" content={title} />
 		<meta name="twitter:description" content={description} />
-		<meta name="twitter:image" content={`${siteUrl}${ogImage}`} />
+		<meta name="twitter:image" content={ogImageUrl} />
 
 		<!-- JSON-LD Structured Data -->
 		<script type="application/ld+json" set:html={JSON.stringify({

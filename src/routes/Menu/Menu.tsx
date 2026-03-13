@@ -56,11 +56,23 @@ interface MenuProps {
 }
 
 export const Menu = ({ onClose }: MenuProps): JSX.Element => {
+    const openerRef = useRef<HTMLElement | null>(null);
+
     const handleClose = () => {
         onClose();
     };
 
     const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        openerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+        return () => {
+            if (openerRef.current && document.contains(openerRef.current)) {
+                openerRef.current.focus();
+            }
+        };
+    }, []);
 
     // Escape key handler
     useEffect(() => {
@@ -80,6 +92,17 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
             'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
         );
         if (focusable.length === 0) return;
+
+        if (!menuRef.current.contains(document.activeElement)) {
+            e.preventDefault();
+            if (e.shiftKey) {
+                focusable[focusable.length - 1].focus();
+            } else {
+                focusable[0].focus();
+            }
+            return;
+        }
+
         const first = focusable[0];
         const last = focusable[focusable.length - 1];
         if (e.shiftKey && document.activeElement === first) {
