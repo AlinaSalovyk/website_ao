@@ -69,10 +69,15 @@ export const NewsAndEvents = ({ data }: NewsAndEventsProps): JSX.Element => {
                 }
               >
                 <CardContent className="p-0 flex flex-col h-full">
-                  <div
-                    className="w-full h-48 sm:h-64 md:h-36 xl:h-44 2xl:h-[198px] rounded-lg bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url(${item.backgroundImage})` }}
-                  />
+                  <div className="w-full h-48 sm:h-64 md:h-36 xl:h-44 2xl:h-[198px] rounded-lg overflow-hidden">
+                    <img
+                      src={item.backgroundImage}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
 
                   <div className="flex flex-col items-start justify-center pt-4 xl:pt-5 2xl:pt-[22px] pb-0 px-4 flex-1">
                     <div className="flex flex-col items-start gap-6 w-full">
