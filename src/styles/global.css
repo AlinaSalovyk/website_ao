@@ -213,3 +213,12 @@
   background-image: url('/images/Home/InnovativeEducationBackground.jpg');
   background-size: 100% auto;
 }
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

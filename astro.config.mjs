@@ -11,7 +11,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://website-ao.vercel.app',
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
 
   integrations: [react(), sitemap()]
