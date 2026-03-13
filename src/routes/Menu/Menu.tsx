@@ -268,6 +268,33 @@ export const Menu = ({ onClose }: MenuProps): JSX.Element => {
                                             Кафедра інформаційних технологій та аналітики даних
                                         </a>
                                     </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
+                                        asChild
+                                    >
+                                        <a href="/finance-and-business" className="text-pure-white text-lg leading-6 font-normal">
+                                            Кафедра фінансів та бізнесу
+                                        </a>
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
+                                        asChild
+                                    >
+                                        <a href="/management-and-marketing" className="text-pure-white text-lg leading-6 font-normal">
+                                            Кафедра менеджменту та маркетингу
+                                        </a>
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
+                                        asChild
+                                    >
+                                        <a href="/mathematics-and-intelligent-computing" className="text-pure-white text-lg leading-6 font-normal">
+                                            Кафедра математики та інтелектуальних обчислень
+                                        </a>
+                                    </Button>
                                 </Collapsible.Content>
                             </Collapsible.Root>
 

@@ -1,0 +1,32 @@
+---
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import Layout from "@/layouts/Layout.astro";
+import { FBDegreePrograms } from "@/routes/departments/finance-business/sections/FBDegreePrograms";
+import { FBEducationalPrograms } from "@/routes/departments/finance-business/sections/FBEducationalPrograms";
+import { FBHeroWithAbout } from "@/routes/departments/finance-business/sections/FBHeroWithAbout";
+import { FBLeadership } from "@/routes/departments/finance-business/sections/FBLeadership";
+import { FBScientificActivity } from "@/routes/departments/finance-business/sections/FBScientificActivity";
+---
+
+<Layout
+  title="Кафедра фінансів та бізнесу | НаУОА"
+  description="Кафедра фінансів та бізнесу — підготовка фахівців у сфері фінансів, банківської справи, підприємництва та бізнес-аналітики."
+>
+  <div class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg">
+    <div class="flex w-full relative flex-col items-start min-h-screen">
+      <Header client:load headerPosition="absolute" />
+      <main id="main-content" class="w-full">
+        <FBHeroWithAbout />
+        <section class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
+          <FBEducationalPrograms />
+        </section>
+        <FBDegreePrograms client:visible />
+        <FBLeadership client:visible />
+        <FBScientificActivity />
+        <!-- <FBNewsAndEvents /> -->
+        <Footer />
+      </main>
+    </div>
+  </div>
+</Layout>

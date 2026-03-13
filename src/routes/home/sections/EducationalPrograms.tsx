@@ -1,135 +1,84 @@
-import { ArrowRightIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import type { JSX } from "react";
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { partnerLogos } from "@/components/icons/PartnerLogos";
+import { HomeEducationalPrograms } from "@/components/sections/HomeEducationalPrograms";
+import type { HomeEducationalProgramsData } from "@/components/sections/home-educational-programs.types";
 
-interface Specialty {
-    name: string;
-    link?: string;
-}
-
-interface EducationalProgram {
-    title: string;
-    specialties: Specialty[];
-    image: string;
-}
-
-const educationalPrograms: EducationalProgram[] = [
+const educationalProgramsData: HomeEducationalProgramsData = {
+  sectionId: "educational-programs",
+  title: "Спеціальності та освітні програми",
+  specialtiesLabel: "Перелік спеціальностей",
+  programs: [
     {
-        title: "Бакалаврат",
-        specialties: [
-            { name: "D2 «Фінанси, банківська справа, страхування та фондовий ринок» (ОПП «Фінанси та бізнес-аналітика»)", link: "https://vstup.oa.edu.ua/specialnosti/finansi-bankivska-sprava-ta-strahuvannya" },
-            { name: "F3 «Комп'ютерні науки» (ОПП «Комп'ютерні науки»)", link: "https://vstup.oa.edu.ua/specialnosti/kompyuterni-nauki" },
-            { name: "D3 «Менеджмент» (ОПП «Підприємництво та управління бізнесом»)", link: "https://vstup.oa.edu.ua/specialnosti/business_and_trade" },
-            { name: "F3 «Комп'ютерні науки» (ОПП «Програмування роботизованих систем» (Робототехніка))", link: "https://vstup.oa.edu.ua/specialnosti/robotics_and_machine_learning" },
-            { name: "D5 «Маркетинг» (ОПП «DATA-маркетинг та аналітика»)", link: "https://vstup.oa.edu.ua/specialnosti/data-marketing-ta-analitika" },
-        ],
-        image: "/images/EducationalPrograms/BachelorsDegree.png",
+      id: "bachelor",
+      title: "Бакалаврат",
+      specialties: [
+        {
+          name: "D2 «Фінанси, банківська справа, страхування та фондовий ринок» (ОПП «Фінанси та бізнес-аналітика»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/finansi-bankivska-sprava-ta-strahuvannya",
+        },
+        {
+          name: "F3 «Комп'ютерні науки» (ОПП «Комп'ютерні науки»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/kompyuterni-nauki",
+        },
+        {
+          name: "D3 «Менеджмент» (ОПП «Підприємництво та управління бізнесом»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/business_and_trade",
+        },
+        {
+          name: "F3 «Комп'ютерні науки» (ОПП «Програмування роботизованих систем» (Робототехніка))",
+          link: "https://vstup.oa.edu.ua/specialnosti/robotics_and_machine_learning",
+        },
+        {
+          name: "D5 «Маркетинг» (ОПП «DATA-маркетинг та аналітика»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/data-marketing-ta-analitika",
+        },
+      ],
+      image: "/images/EducationalPrograms/BachelorsDegree.png",
     },
     {
-        title: "Магістратура",
-        specialties: [
-            { name: "D2 «Фінанси, банківська справа та страхування» (ОПП «Фінанси та бізнес-аналітика»)", link: "https://vstup.oa.edu.ua/specialnosti/finansi-bankivska-sprava-ta-strahuvannya" },
-            { name: "D3 «Менеджмент» (ОПП «Менеджмент продажів та логістика»)", link: "https://vstup.oa.edu.ua/specialnosti/menedzhment-prodazhiv-ta-logistika" },
-            { name: "F3 «Комп'ютерні науки» (ОПП «Управління IT-проєктами»)", link: "https://vstup.oa.edu.ua/specialnosti/upravlinnya-proektami" },
-            { name: "D3 «Менеджмент» (ОПП «HR-менеджмент»)", link: "https://vstup.oa.edu.ua/specialnosti/hr-menedzhment" },
-            { name: "D1 «Облік і оподаткування» (ОПП «Облік і оподаткування»)", link: "https://vstup.oa.edu.ua/specialnosti/oblik-i-opodatkuvannya" },
-        ],
-        image: "/images/EducationalPrograms/Magistracy.png",
+      id: "master",
+      title: "Магістратура",
+      specialties: [
+        {
+          name: "D2 «Фінанси, банківська справа та страхування» (ОПП «Фінанси та бізнес-аналітика»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/finansi-bankivska-sprava-ta-strahuvannya",
+        },
+        {
+          name: "D3 «Менеджмент» (ОПП «Менеджмент продажів та логістика»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/menedzhment-prodazhiv-ta-logistika",
+        },
+        {
+          name: "F3 «Комп'ютерні науки» (ОПП «Управління IT-проєктами»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/upravlinnya-proektami",
+        },
+        {
+          name: "D3 «Менеджмент» (ОПП «HR-менеджмент»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/hr-menedzhment",
+        },
+        {
+          name: "D1 «Облік і оподаткування» (ОПП «Облік і оподаткування»)",
+          link: "https://vstup.oa.edu.ua/specialnosti/oblik-i-opodatkuvannya",
+        },
+      ],
+      image: "/images/EducationalPrograms/Magistracy.png",
     },
     {
-        title: "Аспірантура",
-        specialties: [
-            { name: "D3 «Менеджмент» (ОНП «Менеджмент»)", link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/d3_menedzhment/" },
-            { name: "F1 «Прикладна математика» (ОНП «Прикладна математика»)", link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/f1_prykladna_matematyka/" },
-        ],
-        image: "/images/EducationalPrograms/PostgraduateStudies.png",
+      id: "postgraduate",
+      title: "Аспірантура",
+      specialties: [
+        {
+          name: "D3 «Менеджмент» (ОНП «Менеджмент»)",
+          link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/d3_menedzhment/",
+        },
+        {
+          name: "F1 «Прикладна математика» (ОНП «Прикладна математика»)",
+          link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/f1_prykladna_matematyka/",
+        },
+      ],
+      image: "/images/EducationalPrograms/PostgraduateStudies.png",
     },
-];
-
+  ],
+};
 
 export const EducationalPrograms = (): JSX.Element => {
-    return (
-        <section id="educational-programs" className="w-full items-center justify-center px-0 py-20 bg-pure-white flex flex-col">
-            <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9">
-                <header className="flex flex-col items-end mb-16 translate-y-[-1rem] animate-fade-in opacity-0 w-full">
-                    <h2 className=" font-medium text-pure-black text-3xl md:text-5xl xl:text-7xl 2xl:text-[80px] text-right tracking-[0] leading-tight xl:leading-[80px] w-full">
-                        Спеціальності та освітні програми
-                    </h2>
-                </header>
-                <div className="flex flex-col gap-0">
-                    {educationalPrograms.map((program, index) => (
-                        <div key={index} id={program.title === "Бакалаврат" ? "bachelor" : program.title === "Магістратура" ? "master" : "postgraduate"}>
-                            {/* Top separator line for each program */}
-                            <Separator className="w-full h-px bg-pure-black" />
-                            <Card
-                                className="border-0 shadow-none rounded-none bg-pure-white"
-                            >
-                                <CardContent className="p-0 bg-pure-white">
-                                    <div className="grid grid-cols-1 lg:grid-cols-[180px_1fr_340px] gap-8 py-8">
-                                        {/* Title column */}
-                                        <div className="flex flex-col items-start">
-                                            <h3 className="font-medium text-pure-black text-xl xl:text-2xl 2xl:text-[28px] tracking-[0] leading-snug xl:leading-[34px] whitespace-nowrap">
-                                                {program.title}
-                                            </h3>
-                                        </div>
-                                        {/* Description and button column */}
-                                        <div className="flex flex-col items-end justify-between pr-0 lg:pr-10">
-                                            <div className="flex flex-col items-start w-full max-w-md ml-auto lg:mr-12">
-                                                <p className="font-normal text-pure-black text-sm tracking-[0] leading-6 mb-2">
-                                                    Перелік спеціальностей
-                                                </p>
-                                                <ul className="list-disc pl-5 space-y-1">
-                                                    {program.specialties.map((specialty, idx) => (
-                                                        <li key={idx} className="font-normal text-pure-black text-sm tracking-[0] leading-6">
-                                                            {specialty.link ? (
-                                                                <a
-                                                                    href={specialty.link}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="hover:underline hover:text-blue-600 transition-colors"
-                                                                >
-                                                                    {specialty.name}
-                                                                </a>
-                                                            ) : (
-                                                                <span>{specialty.name}</span>
-                                                            )}
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        {/* Image column */}
-                                        <div className="hidden lg:flex items-start justify-end">
-                                            <img
-                                                className="w-64 xl:w-72 2xl:w-[340px] h-72 xl:h-80 2xl:h-[400px] rounded-lg object-cover"
-                                                alt={program.title}
-                                                src={program.image}
-                                            />
-                                        </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                    ))}
-                    {/* Bottom separator line */}
-                    <Separator className="w-full h-px bg-pure-black" />
-                </div>
-            </div>
-            {/* Marquee Animation Section */}
-            <div className="w-full overflow-hidden py-12 bg-pure-white">
-                <div className="flex items-center gap-16 animate-marquee-seamless">
-                    {[...Array(6)].map((_, setIndex) => (
-                        <React.Fragment key={setIndex}>
-                            {partnerLogos}
-                        </React.Fragment>
-                    ))}
-                </div>
-            </div>
-        </section>
-    );
+  return <HomeEducationalPrograms data={educationalProgramsData} />;
 };
