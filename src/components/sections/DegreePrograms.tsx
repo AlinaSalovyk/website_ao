@@ -7,7 +7,7 @@ interface DegreeProgramsProps {
   programsData: ProgramLevel[];
 }
 
-const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
+export const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
   const [openItems, setOpenItems] = useState<string[]>(["01"]);
 
   const toggleItem = (id: string) => {
@@ -28,7 +28,10 @@ const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
         <div className="grid grid-cols-1 lg:grid-cols-[400px_1fr] gap-16 lg:gap-24">
           {/* Title Section */}
           <div>
-            <h2 id="degree-programs-heading" className="font-medium text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white">
+            <h2
+              id="degree-programs-heading"
+              className="font-medium text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white"
+            >
               Наші
               <br />
               освітні
@@ -118,5 +121,3 @@ const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
     </section>
   );
 };
-
-export default DegreePrograms;

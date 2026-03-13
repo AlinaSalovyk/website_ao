@@ -1,6 +1,6 @@
 import type { JSX } from "react";
 
-import PartnersCarousel from "@/components/sections/PartnersCarousel";
+import { PartnersCarousel } from "@/components/sections/PartnersCarousel";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 

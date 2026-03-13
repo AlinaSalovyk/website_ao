@@ -1,4 +1,4 @@
-import DegreePrograms from "@/components/sections/DegreePrograms";
+import { DegreePrograms } from "@/components/sections/DegreePrograms";
 import type { ProgramLevel } from "@/components/sections/degree-programs.types";
 
 const programsData: ProgramLevel[] = [
