@@ -24,6 +24,7 @@ export const Header = ({ variant = "default", headerPosition = "relative", custo
       <header className={`${headerPosition} w-full flex justify-between items-center px-4 md:px-9 py-5 z-50`}>
         <button
           onClick={() => setIsMenuOpen(true)}
+          aria-label="Відкрити меню"
           className={`rounded-[20px] border px-5 py-2 uppercase text-[11px] tracking-[0.15em] font-medium transition-colors cursor-pointer ${variant === "light" ? "border-pure-black/80 text-pure-black hover:bg-pure-black/10" : "border-white/80 bg-transparent text-white hover:bg-white/10"}`}
         >
           МЕНЮ

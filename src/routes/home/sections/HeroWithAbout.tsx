@@ -11,7 +11,7 @@ export const HeroWithAbout = (): JSX.Element => {
       />
 
       <div
-        className="absolute -top- left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
+        className="absolute top-0 left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
         style={{
           maskImage: 'linear-gradient(to bottom, black 60%, transparent 90%)',
           WebkitMaskImage: 'linear-gradient(to bottom, black 10%, transparent 90%)'
@@ -19,8 +19,11 @@ export const HeroWithAbout = (): JSX.Element => {
       >
         <img
           className="w-full h-full object-contain"
-          alt="Element black chrome"
+          alt=""
+          role="presentation"
           src="/images/Home/3d-black-chrome-shape.png"
+          width={1250}
+          height={780}
           style={{ filter: 'hue-rotate(-20deg) brightness(1.55) saturate(2.0)' }}
         />
       </div>
@@ -96,8 +99,11 @@ export const HeroWithAbout = (): JSX.Element => {
             <div className="hidden lg:flex justify-end">
               <img
                 src="/images/Home/pexels-mikae.jpg"
-                alt="Students working"
+                alt="Студенти за роботою"
                 className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover rounded-2xl shadow-lg"
+                width={400}
+                height={533}
+                loading="lazy"
               />
             </div>
           </div>
