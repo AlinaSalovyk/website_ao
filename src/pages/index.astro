@@ -19,12 +19,12 @@ import { Footer } from "../components/layout/Footer";
       <Header client:load headerPosition="absolute" />
       <main id="main-content" class="w-full">
         <HeroWithAbout />
-        <section class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
+        <div class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
           <EducationalPrograms />
-        </section>
-        <section class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
+        </div>
+        <div class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
           <Departments client:visible />
-        </section>
+        </div>
         <InstituteLeadership client:visible />
         <InnovativeEducation />
         <NewsAndEvents />

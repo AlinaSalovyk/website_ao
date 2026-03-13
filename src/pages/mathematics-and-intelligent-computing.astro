@@ -20,11 +20,11 @@ import { Footer } from "@/components/layout/Footer";
       <Header client:load headerPosition="absolute" />
       <main id="main-content" class="w-full">
         <MICHeroWithAbout />
-        <section
+        <div
           class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]"
         >
           <MICEducationalPrograms />
-        </section>
+        </div>
         <MICDegreePrograms client:visible />
         <MICLeadership client:visible />
         <MICScientificActivity />
