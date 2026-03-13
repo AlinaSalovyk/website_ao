@@ -1,2 +1,2 @@
-export { LabGallerySection } from "./LabGallerySection";
-export type { GalleryItem, LabGallerySectionProps } from "./types";
+export { GalleryCarousel as LabGallerySection } from "./GalleryCarousel";
+export type { GalleryItem, GalleryCarouselProps as LabGallerySectionProps } from "./types";

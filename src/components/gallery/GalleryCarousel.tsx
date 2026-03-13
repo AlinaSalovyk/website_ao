@@ -1,15 +1,15 @@
 import type { JSX, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useRef, useState } from "react";
 
-import type { LabGallerySectionProps } from "./types";
 import { ArrowIcon, GalleryDialog } from "./components";
+import type { GalleryCarouselProps } from "./types";
 
 const SCROLL_EDGE_OFFSET = 5;
 
-export function LabGallerySection({
+export function GalleryCarousel({
   items,
   title = "Галерея",
-}: LabGallerySectionProps): JSX.Element {
+}: GalleryCarouselProps): JSX.Element {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogIndex, setDialogIndex] = useState(0);

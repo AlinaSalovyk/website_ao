@@ -4,7 +4,7 @@ export type GalleryItem = {
   alt: string;
 };
 
-export type LabGallerySectionProps = {
+export type GalleryCarouselProps = {
   items: GalleryItem[];
   title?: string;
 };
