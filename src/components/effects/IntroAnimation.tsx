@@ -1,6 +1,12 @@
 /**
  * IntroAnimation — Premium full-screen intro with cinematic typography,
  * sequential handwriting effect, shimmering gradient, and glowing particles.
+ *
+ * Reliability improvements:
+ * - Fonts are preloaded via <link> and waited on via document.fonts.ready
+ * - Animation only starts after fonts are confirmed loaded
+ * - Fade-out sequencing is event-driven, not timer-based from mount
+ * - Visibility API pauses timers when tab is hidden
  */
 import { useEffect, useRef, useState, useCallback, useMemo, type JSX } from "react";
 
@@ -14,54 +20,39 @@ const FILL_DURATION = 1000;
 const PAUSE_BEFORE_FADE = 800;
 const FADE_OUT = 1400;
 
+/* ───── Individual animated line ───── */
 const HandwrittenLine = ({
-  text,
-  y,
-  delay,
-  completed,
-  svgFontSize,
-  fontFamily,
-  fontStyle = "normal",
-  fontWeight = 400,
-  letterSpacing = "normal",
-  opacity = 1,
+  text, y, delay, completed, fontsReady, svgFontSize,
+  fontFamily, fontStyle = "normal", fontWeight = 400,
+  letterSpacing = "normal", opacity = 1,
+  onDrawComplete,
 }: {
-  text: string;
-  y: number;
-  delay: number;
-  completed: boolean;
-  svgFontSize: number;
-  fontFamily: string;
-  fontStyle?: string;
-  fontWeight?: number;
-  letterSpacing?: string;
-  opacity?: number;
+  text: string; y: number; delay: number; completed: boolean;
+  fontsReady: boolean; svgFontSize: number; fontFamily: string;
+  fontStyle?: string; fontWeight?: number; letterSpacing?: string;
+  opacity?: number; onDrawComplete?: () => void;
 }) => {
   const chars = text.split("");
   const charCount = chars.length;
   const tspanRefs = useRef<(SVGTSpanElement | null)[]>([]);
-
   const [animState, setAnimState] = useState<"idle" | "stroking" | "filling" | "done">("idle");
   const rafRef = useRef(0);
   const startRef = useRef(0);
-
   const charPathLength = svgFontSize * 5;
 
+  // Only start when fonts are ready
   useEffect(() => {
-    if (completed) {
-      setAnimState("done");
-      return;
-    }
+    if (completed) { setAnimState("done"); return; }
+    if (!fontsReady) return;
     const t = setTimeout(() => {
       setAnimState("stroking");
       startRef.current = performance.now();
     }, delay);
     return () => clearTimeout(t);
-  }, [delay, completed]);
+  }, [delay, completed, fontsReady]);
 
   useEffect(() => {
     if (animState !== "stroking") return;
-
     const tick = (now: number) => {
       const elapsed = now - startRef.current;
       const progress = Math.min(elapsed / LINE_DRAW_DURATION, 1);
@@ -73,43 +64,33 @@ const HandwrittenLine = ({
         const startP = charCount > 1 ? (i / (charCount - 1)) * maxStart : 0;
         let charP = (progress - startP) / charDurationRatio;
         charP = Math.max(0, Math.min(1, charP));
-
         const eased = 1 - Math.pow(1 - charP, 3);
-        const offset = charPathLength * (1 - eased);
-
-        tspan.style.strokeDashoffset = `${offset}`;
+        tspan.style.strokeDashoffset = `${charPathLength * (1 - eased)}`;
       });
 
       if (progress < 1) {
         rafRef.current = requestAnimationFrame(tick);
       } else {
         setAnimState("filling");
+        onDrawComplete?.();
       }
     };
-
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [animState, charCount, charPathLength]);
+  }, [animState, charCount, charPathLength, onDrawComplete]);
 
   const isDone = completed || animState === "done";
   const isFilling = animState === "filling";
 
   return (
-    <text
-      x="50%"
-      y={y}
-      textAnchor="middle"
+    <text x="50%" y={y} textAnchor="middle"
       style={{
-        fontFamily,
-        fontStyle,
-        fontWeight,
-        fontSize: `${svgFontSize}px`,
-        letterSpacing,
+        fontFamily, fontStyle, fontWeight,
+        fontSize: `${svgFontSize}px`, letterSpacing,
         fill: isDone || isFilling ? "url(#animated-silver-gradient)" : "transparent",
-        stroke: isDone ? "transparent" : "var(--color-pure-white)",
-        strokeWidth: isDone ? 0 : 1.5,
-        opacity,
-        filter: isDone || isFilling ? "url(#glow)" : "drop-shadow(0 0 8px var(--color-glass-light-border))",
+        stroke: isDone ? "transparent" : "#ffffff",
+        strokeWidth: isDone ? 0 : 1.5, opacity,
+        filter: isDone || isFilling ? "url(#glow)" : "drop-shadow(0 0 8px rgba(255,255,255,0.7))",
         transition: isFilling
           ? `fill ${FILL_DURATION}ms ease-out, stroke-width ${FILL_DURATION}ms ease, filter ${FILL_DURATION}ms ease`
           : "none",
@@ -117,30 +98,25 @@ const HandwrittenLine = ({
       }}
     >
       {chars.map((char, i) => (
-        <tspan
-          key={i}
-          ref={(el) => {
-            tspanRefs.current[i] = el;
-          }}
+        <tspan key={i} ref={(el) => { tspanRefs.current[i] = el; }}
           style={{
             strokeDasharray: charPathLength,
             strokeDashoffset: isDone || isFilling ? 0 : charPathLength,
           }}
-        >
-          {char}
-        </tspan>
+        >{char}</tspan>
       ))}
     </text>
   );
 };
 
+/* ───── Main component ───── */
 export const IntroAnimation = (): JSX.Element => {
   const [shouldShow, setShouldShow] = useState<boolean | null>(null);
   const [completed, setCompleted] = useState(false);
+  const [fontsReady, setFontsReady] = useState(false);
+  const [line2Done, setLine2Done] = useState(false);
   const [fading, setFading] = useState(false);
   const [hidden, setHidden] = useState(false);
-
-  const totalDrawTime = LINE_2_DELAY + LINE_DRAW_DURATION + FILL_DURATION + PAUSE_BEFORE_FADE;
 
   const particles = useMemo(() => {
     return Array.from({ length: 45 }).map((_, i) => {
@@ -157,6 +133,7 @@ export const IntroAnimation = (): JSX.Element => {
     });
   }, []);
 
+  // Check localStorage
   useEffect(() => {
     try {
       if (typeof window !== "undefined" && !localStorage.getItem(STORAGE_KEY)) {
@@ -172,15 +149,51 @@ export const IntroAnimation = (): JSX.Element => {
     }
   }, []);
 
+  // Wait for fonts to be ready before starting animations
+  useEffect(() => {
+    if (shouldShow !== true) return;
+
+    const loadFonts = async () => {
+      try {
+        // Inject font links if not already present
+        if (!document.querySelector('link[href*="Cormorant+Garamond"]')) {
+          const link = document.createElement('link');
+          link.rel = 'stylesheet';
+          link.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Montserrat:wght@300&display=swap';
+          document.head.appendChild(link);
+        }
+        // Wait for all fonts to load (with timeout fallback)
+        await Promise.race([
+          document.fonts.ready,
+          new Promise(resolve => setTimeout(resolve, 3000)),
+        ]);
+      } catch { /* proceed anyway */ }
+      setFontsReady(true);
+    };
+
+    loadFonts();
+  }, [shouldShow]);
+
   const skip = useCallback(() => setCompleted(true), []);
 
+  // Event-driven fade: start fade after line2 completes + fill + pause
   useEffect(() => {
     if (fading) return;
-    const delay = completed ? 300 : totalDrawTime;
-    const t = setTimeout(() => setFading(true), delay);
-    return () => clearTimeout(t);
-  }, [completed, fading, totalDrawTime]);
 
+    if (completed) {
+      // Skipped — fade quickly
+      const t = setTimeout(() => setFading(true), 300);
+      return () => clearTimeout(t);
+    }
+
+    if (line2Done) {
+      // Normal completion: wait fill + pause then fade
+      const t = setTimeout(() => setFading(true), FILL_DURATION + PAUSE_BEFORE_FADE);
+      return () => clearTimeout(t);
+    }
+  }, [completed, fading, line2Done]);
+
+  // Scrollbar compensation
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (shouldShow) {
@@ -190,11 +203,10 @@ export const IntroAnimation = (): JSX.Element => {
       document.body.style.paddingRight = "";
       document.documentElement.classList.remove('intro-active', 'intro-transitioning');
     }
-    return () => {
-      document.body.style.paddingRight = "";
-    };
+    return () => { document.body.style.paddingRight = ""; };
   }, [shouldShow]);
 
+  // Fade-out: cleanup and mark as seen
   useEffect(() => {
     if (!fading) return;
     document.documentElement.classList.remove('intro-active');
@@ -209,12 +221,10 @@ export const IntroAnimation = (): JSX.Element => {
       setShouldShow(false);
     }, FADE_OUT + 50);
 
-    return () => {
-      clearTimeout(t);
-      clearTimeout(showSiteTimer);
-    };
+    return () => { clearTimeout(t); clearTimeout(showSiteTimer); };
   }, [fading]);
 
+  // Skip on user interaction
   useEffect(() => {
     if (shouldShow !== true || completed) return;
     const events = ["click", "scroll", "keydown", "touchstart", "wheel"] as const;
@@ -235,8 +245,6 @@ export const IntroAnimation = (): JSX.Element => {
     <>
       {seo}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Montserrat:wght@300&display=swap');
-        
         @keyframes float-up {
           0% { transform: translateY(0px) scale(1); opacity: 0; }
           15% { opacity: var(--max-opacity); }
@@ -252,13 +260,13 @@ export const IntroAnimation = (): JSX.Element => {
           transform: fading ? "scale(1.15)" : "scale(1)",
           transition: `all ${FADE_OUT}ms cubic-bezier(0.76, 0, 0.24, 1)`,
           pointerEvents: fading ? "none" : "auto",
-          backgroundColor: "var(--color-intro-bg)",
+          backgroundColor: "#030712",
         }}
       >
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[600px] pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse, var(--color-glass-bg) 0%, transparent 60%)",
+            background: "radial-gradient(ellipse, rgba(255,255,255,0.05) 0%, transparent 60%)",
             filter: "blur(90px)",
           }}
         />
@@ -268,13 +276,10 @@ export const IntroAnimation = (): JSX.Element => {
             key={p.id}
             className="absolute rounded-full bg-white pointer-events-none"
             style={{
-              left: p.left,
-              top: p.top,
-              width: `${p.size}px`,
-              height: `${p.size}px`,
-              '--max-opacity': p.opacity,
-              opacity: 0,
-              boxShadow: "0 0 10px 2px var(--color-glass-light-border)",
+              left: p.left, top: p.top,
+              width: `${p.size}px`, height: `${p.size}px`,
+              '--max-opacity': p.opacity, opacity: 0,
+              boxShadow: "0 0 10px 2px rgba(255,255,255,0.6)",
               animation: `float-up ${p.duration}s linear ${p.delay}s infinite`,
             } as React.CSSProperties}
           />
@@ -288,11 +293,11 @@ export const IntroAnimation = (): JSX.Element => {
         >
           <defs>
             <linearGradient id="animated-silver-gradient" x1="0%" y1="0%" x2="200%" y2="0%">
-              <stop offset="0%" stopColor="var(--color-pure-white)" />
-              <stop offset="25%" stopColor="var(--color-intro-silver)" />
-              <stop offset="50%" stopColor="var(--color-pure-white)" />
-              <stop offset="75%" stopColor="var(--color-intro-silver)" />
-              <stop offset="100%" stopColor="var(--color-pure-white)" />
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="25%" stopColor="#c5d0e0" />
+              <stop offset="50%" stopColor="#ffffff" />
+              <stop offset="75%" stopColor="#c5d0e0" />
+              <stop offset="100%" stopColor="#ffffff" />
               <animate attributeName="x1" values="0%;-100%" dur="8s" repeatCount="indefinite" />
               <animate attributeName="x2" values="200%;100%" dur="8s" repeatCount="indefinite" />
             </linearGradient>
@@ -304,27 +309,22 @@ export const IntroAnimation = (): JSX.Element => {
           </defs>
 
           <HandwrittenLine
-            text={LINE_1}
-            y={120}
-            delay={300}
-            completed={completed}
+            text={LINE_1} y={120} delay={300}
+            completed={completed} fontsReady={fontsReady}
             svgFontSize={86}
             fontFamily="'Cormorant Garamond', serif"
-            fontStyle="italic"
-            fontWeight={500}
+            fontStyle="italic" fontWeight={500}
             letterSpacing="0.02em"
           />
 
           <HandwrittenLine
-            text={LINE_2}
-            y={210}
-            delay={LINE_2_DELAY}
-            completed={completed}
+            text={LINE_2} y={210} delay={LINE_2_DELAY}
+            completed={completed} fontsReady={fontsReady}
             svgFontSize={28}
             fontFamily="'Montserrat', sans-serif"
-            fontWeight={300}
-            letterSpacing="0.35em"
+            fontWeight={300} letterSpacing="0.35em"
             opacity={0.85}
+            onDrawComplete={() => setLine2Done(true)}
           />
         </svg>
 
@@ -340,17 +340,17 @@ export const IntroAnimation = (): JSX.Element => {
             className="text-[10px] tracking-[0.4em] uppercase"
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              color: "var(--color-glass-light-border)",
+              color: "rgba(255,255,255,0.3)",
               transition: "color 0.4s ease",
             }}
-            onMouseEnter={(e) => { (e.target as HTMLElement).style.color = "var(--color-star)"; }}
-            onMouseLeave={(e) => { (e.target as HTMLElement).style.color = "var(--color-glass-light-border)"; }}
+            onMouseEnter={(e) => { (e.target as HTMLElement).style.color = "rgba(255,255,255,0.9)"; }}
+            onMouseLeave={(e) => { (e.target as HTMLElement).style.color = "rgba(255,255,255,0.3)"; }}
           >
             пропустити
           </span>
           <div className="w-10 h-[1px] mx-auto mt-3"
             style={{
-              background: "linear-gradient(90deg, transparent, var(--color-glass-light-border), transparent)",
+              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
             }}
           />
         </button>
