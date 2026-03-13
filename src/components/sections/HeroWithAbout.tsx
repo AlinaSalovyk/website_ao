@@ -95,7 +95,7 @@ export const HeroWithAbout = ({ data }: HeroWithAboutProps): JSX.Element => {
                         {breadcrumbLabel}
                       </span>
                     </span>
-                    <span className="text-pure-white mx- text-xs">/</span>
+                    <span className="text-pure-white mx-2 text-xs">/</span>
                   </div>
                 </div>
               </div>
