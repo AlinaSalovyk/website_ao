@@ -66,6 +66,7 @@ const DEPARTMENTS: DepartmentData[] = [
 
 export const Departments = () => {
     const [activeId, setActiveId] = useState(DEPARTMENTS[0].id);
+    const [hasInteracted, setHasInteracted] = useState(false);
     const activeDepartment = DEPARTMENTS.find((d) => d.id === activeId);
 
     return (
@@ -76,7 +77,7 @@ export const Departments = () => {
                     {DEPARTMENTS.map((dept) => (
                         <button
                             key={dept.id}
-                            onClick={() => setActiveId(dept.id)}
+                            onClick={() => { setActiveId(dept.id); setHasInteracted(true); }}
                             className="group relative text-left py-2 focus:outline-none transition-colors duration-300 min-h-[72px] flex items-center cursor-pointer"
                         >
                             <span
@@ -109,7 +110,7 @@ export const Departments = () => {
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={activeId}
-                            initial={{ opacity: 0, x: 20 }}
+                            initial={hasInteracted ? { opacity: 0, x: 20 } : false}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -20 }}
                             transition={{ duration: 0.3 }}
