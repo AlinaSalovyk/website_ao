@@ -43,9 +43,6 @@ export const Leadership = ({ data }: LeadershipProps): JSX.Element => {
                   decoding="async"
                   width={400}
                   height={400}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
                 />
               </div>
 
