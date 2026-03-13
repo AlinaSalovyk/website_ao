@@ -13,4 +13,3 @@ export const PartnersCarousel = () => {
     </div>
   );
 };
-

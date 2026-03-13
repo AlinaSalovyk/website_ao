@@ -6,15 +6,14 @@ export const HeroWithAbout = (): JSX.Element => {
   return (
     <section className="relative w-full overflow-hidden">
       {/* Background Gradients & Images */}
-      <div
-        className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient"
-      />
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient" />
 
       <div
         className="absolute top-0 left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
         style={{
-          maskImage: 'linear-gradient(to bottom, black 60%, transparent 90%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 10%, transparent 90%)'
+          maskImage: "linear-gradient(to bottom, black 60%, transparent 90%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black 10%, transparent 90%)",
         }}
       >
         <img
@@ -24,7 +23,9 @@ export const HeroWithAbout = (): JSX.Element => {
           src="/images/Home/3d-black-chrome-shape.png"
           width={1250}
           height={780}
-          style={{ filter: 'hue-rotate(-20deg) brightness(1.55) saturate(2.0)' }}
+          style={{
+            filter: "hue-rotate(-20deg) brightness(1.55) saturate(2.0)",
+          }}
         />
       </div>
 
@@ -88,10 +89,16 @@ export const HeroWithAbout = (): JSX.Element => {
             {/* Left Column - Text */}
             <div className="flex flex-col gap-8 lg:gap-10 w-full">
               <p className="text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
-                Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Ми поєднуємо технології, бізнес та інновації, щоб готувати фахівців, які не просто адаптуються до змін, а й створюють їх.
+                Інститут інформаційних технологій та бізнесу — простір, де
+                народжуються лідери цифрової ери. Ми поєднуємо технології,
+                бізнес та інновації, щоб готувати фахівців, які не просто
+                адаптуються до змін, а й створюють їх.
               </p>
               <p className="text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
-                Наші студенти отримують актуальні знання та практичний досвід у IT, аналітиці, управлінні й підприємництві. Співпраця з провідними компаніями дає їм конкурентні переваги у світі технологій та бізнесу.
+                Наші студенти отримують актуальні знання та практичний досвід у
+                IT, аналітиці, управлінні й підприємництві. Співпраця з
+                провідними компаніями дає їм конкурентні переваги у світі
+                технологій та бізнесу.
               </p>
             </div>
 
