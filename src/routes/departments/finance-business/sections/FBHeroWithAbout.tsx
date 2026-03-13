@@ -18,7 +18,7 @@ const heroWithAboutData: HeroWithAboutData = {
   ],
   aboutImage: {
     src: "/images/Departments/dfb-hero.jpg",
-    alt: "Students working",
+    alt: "Студенти за роботою",
     width: 4096,
     height: 2732,
   },
