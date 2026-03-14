@@ -89,7 +89,6 @@ export const HomeEducationalPrograms = ({
               </Card>
             </div>
           ))}
-          <Separator className="w-full h-px bg-pure-black" />
         </div>
       </div>
 

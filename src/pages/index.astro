@@ -1,13 +1,12 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import { Header } from "../components/layout/Header";
-import { HeroWithAbout } from "../routes/home/sections/HeroWithAbout";
-import { EducationalPrograms } from "../routes/home/sections/EducationalPrograms";
-import { Departments } from "../routes/home/sections/Departments";
-import { InstituteLeadership } from "../routes/home/sections/InstituteLeadership";
-import { InnovativeEducation } from "../routes/home/sections/InnovativeEducation";
-import { NewsAndEvents } from "../routes/home/sections/NewsAndEvents";
-import { Footer } from "../components/layout/Footer";
+import Layout from "@/layouts/Layout.astro";
+import { Header } from "@/components/layout/Header";
+import { HeroWithAbout } from "@/routes/home/sections/HeroWithAbout";
+import { EducationalPrograms } from "@/routes/home/sections/EducationalPrograms";
+import { Departments } from "@/routes/home/sections/Departments";
+import { InstituteLeadership } from "@/routes/home/sections/InstituteLeadership";
+import { InnovativeEducation } from "@/routes/home/sections/InnovativeEducation";
+import { Footer } from "@/components/layout/Footer";
 ---
 
 <Layout
@@ -33,7 +32,6 @@ import { Footer } from "../components/layout/Footer";
         </div>
         <InstituteLeadership client:visible />
         <InnovativeEducation />
-        <NewsAndEvents />
       </main>
       <Footer />
     </div>

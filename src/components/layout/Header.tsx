@@ -1,6 +1,6 @@
 import { useState, type ReactNode, type JSX } from "react";
+
 import { Menu } from "@/routes/Menu/Menu";
-import { Logo } from "@/components/icons/Logo";
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -16,23 +16,6 @@ export const Header = ({
   logoSrc,
 }: HeaderProps): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const logo =
-    customLogo ??
-    (logoSrc ? (
-      <img
-        src={logoSrc}
-        alt="Logo"
-        className="h-8 md:h-10 w-auto"
-        loading="eager"
-        decoding="async"
-        fetchPriority="high"
-        width={83}
-        height={32}
-      />
-    ) : (
-      <Logo />
-    ));
 
   return (
     <>
@@ -50,7 +33,23 @@ export const Header = ({
 
         <div className="flex justify-center flex-1 md:flex-none">
           <a href="/" className="inline-block cursor-pointer">
-            {logo}
+            {customLogo ??
+              (logoSrc ? (
+                <img
+                  src={logoSrc}
+                  alt="Logo"
+                  className="h-8 md:h-10 w-auto"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  width={83}
+                  height={32}
+                />
+              ) : (
+                <span className="italic xs:text-sm sm:text-3xl">
+                  ІТБ — інновації твого життя
+                </span>
+              ))}
           </a>
         </div>
 

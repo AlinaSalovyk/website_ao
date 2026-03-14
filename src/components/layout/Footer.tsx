@@ -1,7 +1,8 @@
+import type { JSX } from "react";
+
 import { getSocialIcons } from "@/components/icons/SocialIcons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { JSX } from "react";
 
 const navigationItems = [
   { label: "ГОЛОВНА", href: "/", isActive: true },
@@ -11,7 +12,11 @@ const navigationItems = [
     href: "/#educational-programs",
     isActive: false,
   },
-  { label: "НОВИНИ ТА ПОДІЇ", href: "/#news", isActive: false },
+  {
+    label: "НуОА",
+    href: "https://www.oa.edu.ua/ua/departments/economics/",
+    isActive: false,
+  },
 ];
 
 interface FooterProps {
@@ -172,7 +177,7 @@ export const Footer = ({
           <div className="flex items-center gap-4 lg:gap-6">
             {footerSocials.map((icon, index) => (
               <a
-                key={index}
+                key={icon.alt + index}
                 href="#"
                 className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
                 aria-label={icon.alt}
@@ -187,7 +192,7 @@ export const Footer = ({
           <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
             {navigationItems.map((item, index) => (
               <a
-                key={index}
+                key={item.href + index}
                 href={item.href}
                 className="flex flex-col w-full group cursor-pointer"
               >
@@ -212,9 +217,6 @@ export const Footer = ({
 
       <div className="w-full bg-pure-black py-4">
         <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-row items-center gap-8">
-          <button className=" font-medium text-pure-white text-[10px] lg:text-xs tracking-wide hover:opacity-70 transition-opacity">
-            Cookie Preference
-          </button>
           <span className=" font-medium text-pure-white text-[10px] lg:text-xs tracking-wide">
             Національний університет &quot;Острозька академія&quot;
           </span>
