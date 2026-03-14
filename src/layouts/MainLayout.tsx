@@ -1,6 +1,6 @@
 ﻿import { useState, type ReactNode, type JSX } from "react";
-import { Menu } from "../routes/Menu/Menu";
-import { Logo } from "../components/icons/Logo";
+import { Menu } from "@/routes/Menu/Menu";
+import { Logo } from "@/components/icons/Logo";
 
 interface MainLayoutProps {
   children: ReactNode;

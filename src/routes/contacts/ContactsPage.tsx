@@ -48,13 +48,6 @@ export const ContactsPage = (): JSX.Element => {
 
                         {/* Left Column - Director Info */}
                         <div className="flex flex-col gap-8 md:flex-row md:gap-6 items-start">
-                            {/* Line decoration similar to screenshot */}
-                            <div className="hidden md:flex flex-col gap-2 pt-2">
-                                <div className="w-0.5 h-6 bg-pure-black/20"></div>
-                                <div className="w-0.5 h-6 bg-pure-black/20"></div>
-                                <div className="w-0.5 h-6 bg-pure-black"></div>
-                                <div className="w-0.5 h-6 bg-pure-black/20"></div>
-                            </div>
 
                             <div className="w-full md:w-auto flex-shrink-0">
                                 <div className="w-full md:w-[200px] h-[300px] md:h-[200px] bg-gray-200 rounded-lg overflow-hidden">
@@ -107,7 +100,21 @@ export const ContactsPage = (): JSX.Element => {
 
                             <div className="flex flex-col gap-2">
                                 <label htmlFor="contact-message" className="text-[10px] uppercase font-bold tracking-wider text-pure-black">Повідомлення</label>
-                                <textarea id="contact-message" name="message" placeholder="Розкажи нам більше, або постав питання" rows={1} className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 min-h-[30px] text-pure-black"></textarea>
+                                <textarea
+                                    id="contact-message"
+                                    name="message"
+                                    placeholder="Розкажи нам більше, або постав питання"
+                                    rows={1}
+                                    className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 text-pure-black overflow-y-auto"
+                                    style={{
+                                        minHeight: '32px',
+                                        maxHeight: '80px', // Approximates 3 lines of text
+                                    }}
+                                    onInput={(e) => {
+                                        e.currentTarget.style.height = 'auto';
+                                        e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+                                    }}
+                                ></textarea>
                             </div>
 
                             <button type="submit" className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 mt-4 cursor-pointer hover:opacity-70 transition-opacity group bg-transparent">
