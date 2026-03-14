@@ -31,23 +31,22 @@ interface FooterProps {
 export const Footer = ({
   hideMainContent = false,
 }: FooterProps): JSX.Element => {
-  const footerVisibleSocials: SocialIconAlt[] = [
-    "Instagram",
-    "Facebook",
-    "TikTok",
-  ];
+  const footerSocialLinkByAlt: Partial<Record<SocialIconAlt, string>> = {
+    Instagram: SOCIAL_URLS.instagram,
+    Facebook: SOCIAL_URLS.facebook,
+    TikTok: SOCIAL_URLS.tiktok,
+  };
+
+  const footerVisibleSocials: SocialIconAlt[] = Object.keys(
+    footerSocialLinkByAlt,
+  ) as SocialIconAlt[];
+
   const footerSocials = getSocialIcons(
     "fill-pure-black",
     "fill-transparent",
     "size-full",
     footerVisibleSocials,
   );
-
-  const footerSocialLinkByAlt: Partial<Record<SocialIconAlt, string>> = {
-    Instagram: SOCIAL_URLS.instagram,
-    Facebook: SOCIAL_URLS.facebook,
-    TikTok: SOCIAL_URLS.tiktok,
-  };
 
   return (
     <footer className="flex flex-col w-full items-start relative bg-pure-white flex-1">
