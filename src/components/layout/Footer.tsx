@@ -1,6 +1,9 @@
 import type { JSX } from "react";
 
-import { getSocialIcons } from "@/components/icons/SocialIcons";
+import {
+  getSocialIcons,
+  type SocialIconAlt,
+} from "@/components/icons/SocialIcons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { SOCIAL_URLS } from "@/lib/social-links";
@@ -28,22 +31,22 @@ interface FooterProps {
 export const Footer = ({
   hideMainContent = false,
 }: FooterProps): JSX.Element => {
+  const footerSocialLinkByAlt: Partial<Record<SocialIconAlt, string>> = {
+    Instagram: SOCIAL_URLS.instagram,
+    Facebook: SOCIAL_URLS.facebook,
+    TikTok: SOCIAL_URLS.tiktok,
+  };
+
+  const footerVisibleSocials: SocialIconAlt[] = Object.keys(
+    footerSocialLinkByAlt,
+  ) as SocialIconAlt[];
+
   const footerSocials = getSocialIcons(
     "fill-pure-black",
     "fill-transparent",
     "size-full",
+    footerVisibleSocials,
   );
-
-  const footerSocialLinkByAlt: Record<string, { href: string; label: string }> =
-    {
-      Instagram: { href: SOCIAL_URLS.instagram, label: "Instagram" },
-      LinkedIn: { href: SOCIAL_URLS.facebook, label: "Facebook" },
-      "X (Twitter)": { href: SOCIAL_URLS.tiktok, label: "TikTok" },
-    };
-
-  const socialLinksWithIcons = footerSocials
-    .map((icon) => ({ ...icon, ...footerSocialLinkByAlt[icon.alt] }))
-    .filter((icon) => Boolean(icon.href));
 
   return (
     <footer className="flex flex-col w-full items-start relative bg-pure-white flex-1">
@@ -188,46 +191,61 @@ export const Footer = ({
 
           {/* Middle Column - Socials */}
           <div className="flex items-center gap-4 lg:gap-6">
-            {socialLinksWithIcons.map((icon, index) => (
-              <a
-                key={icon.alt + index}
-                href={icon.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
-                aria-label={icon.label}
-              >
-                <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover:invert group-hover:brightness-0 group-hover:filter transition-all flex items-center justify-center translate-y-[1px]">
-                  {icon.icon}
-                </div>
-              </a>
-            ))}
+            {footerSocials.map((icon, index) => {
+              const href = footerSocialLinkByAlt[icon.alt];
+              if (!href) {
+                return null;
+              }
+              const isExternal = href.startsWith("http");
+
+              return (
+                <a
+                  key={icon.alt + index}
+                  href={href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
+                  aria-label={icon.alt}
+                >
+                  <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover:invert group-hover:brightness-0 group-hover:filter transition-all flex items-center justify-center translate-y-[1px]">
+                    {icon.icon}
+                  </div>
+                </a>
+              );
+            })}
           </div>
 
           <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
-            {navigationItems.map((item, index) => (
-              <a
-                key={item.href + index}
-                href={item.href}
-                target={item.isExternal ? "_blank" : undefined}
-                rel={item.isExternal ? "noopener noreferrer" : undefined}
-                className="flex flex-col w-full group cursor-pointer"
-              >
-                <div className="flex items-center justify-between w-full pb-1">
-                  <span
-                    className={` font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${
-                      item.isActive ? "text-leadership-link" : "text-pure-black"
-                    } group-hover:text-leadership-link`}
-                  >
-                    {item.label}
-                  </span>
-                  {item.isActive && (
-                    <div className="w-1.5 h-1.5 bg-leadership-link rounded-sm" />
-                  )}
-                </div>
-                <Separator className="w-full bg-pure-black/20 group-hover:bg-pure-black transition-colors" />
-              </a>
-            ))}
+            {navigationItems.map((item, index) => {
+              const isExternal =
+                item.isExternal ?? item.href.startsWith("http");
+
+              return (
+                <a
+                  key={item.href + index}
+                  href={item.href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className="flex flex-col w-full group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between w-full pb-1">
+                    <span
+                      className={` font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${
+                        item.isActive
+                          ? "text-leadership-link"
+                          : "text-pure-black"
+                      } group-hover:text-leadership-link`}
+                    >
+                      {item.label}
+                    </span>
+                    {item.isActive && (
+                      <div className="w-1.5 h-1.5 bg-leadership-link rounded-sm" />
+                    )}
+                  </div>
+                  <Separator className="w-full bg-pure-black/20 group-hover:bg-pure-black transition-colors" />
+                </a>
+              );
+            })}
           </nav>
         </div>
       </div>
