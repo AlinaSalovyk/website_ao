@@ -1,6 +1,9 @@
 import type { JSX } from "react";
 
-import { getSocialIcons } from "@/components/icons/SocialIcons";
+import {
+  getSocialIcons,
+  type SocialIconAlt,
+} from "@/components/icons/SocialIcons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { SOCIAL_URLS } from "@/lib/social-links";
@@ -27,16 +30,21 @@ interface FooterProps {
 export const Footer = ({
   hideMainContent = false,
 }: FooterProps): JSX.Element => {
+  const footerVisibleSocials: SocialIconAlt[] = [
+    "Instagram",
+    "Facebook",
+    "TikTok",
+  ];
   const footerSocials = getSocialIcons(
     "fill-pure-black",
     "fill-transparent",
     "size-full",
+    footerVisibleSocials,
   );
   const footerSocialLinkByAlt: Record<string, string> = {
     Instagram: SOCIAL_URLS.instagram,
     Facebook: SOCIAL_URLS.facebook,
     TikTok: SOCIAL_URLS.tiktok,
-    YouTube: "#",
   };
 
   return (
