@@ -14,10 +14,9 @@ const navigationItems = [
     isActive: false,
   },
   {
-    label: "НаУОА",
+    label: "НуОА",
     href: "https://www.oa.edu.ua/ua/departments/economics/",
     isActive: false,
-    isExternal: true,
   },
 ];
 
@@ -33,17 +32,12 @@ export const Footer = ({
     "fill-transparent",
     "size-full",
   );
-
-  const footerSocialLinkByAlt: Record<string, { href: string; label: string }> =
-    {
-      Instagram: { href: SOCIAL_URLS.instagram, label: "Instagram" },
-      LinkedIn: { href: SOCIAL_URLS.facebook, label: "Facebook" },
-      "X (Twitter)": { href: SOCIAL_URLS.tiktok, label: "TikTok" },
-    };
-
-  const socialLinksWithIcons = footerSocials
-    .map((icon) => ({ ...icon, ...footerSocialLinkByAlt[icon.alt] }))
-    .filter((icon) => Boolean(icon.href));
+  const footerSocialLinkByAlt: Record<string, string> = {
+    Instagram: SOCIAL_URLS.instagram,
+    Facebook: SOCIAL_URLS.facebook,
+    TikTok: SOCIAL_URLS.tiktok,
+    YouTube: "#",
+  };
 
   return (
     <footer className="flex flex-col w-full items-start relative bg-pure-white flex-1">
@@ -188,20 +182,25 @@ export const Footer = ({
 
           {/* Middle Column - Socials */}
           <div className="flex items-center gap-4 lg:gap-6">
-            {socialLinksWithIcons.map((icon, index) => (
-              <a
-                key={icon.alt + index}
-                href={icon.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
-                aria-label={icon.label}
-              >
-                <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover:invert group-hover:brightness-0 group-hover:filter transition-all flex items-center justify-center translate-y-[1px]">
-                  {icon.icon}
-                </div>
-              </a>
-            ))}
+            {footerSocials.map((icon, index) => {
+              const href = footerSocialLinkByAlt[icon.alt] ?? "#";
+              const isExternal = href.startsWith("http");
+
+              return (
+                <a
+                  key={icon.alt + index}
+                  href={href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
+                  aria-label={icon.alt}
+                >
+                  <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover:invert group-hover:brightness-0 group-hover:filter transition-all flex items-center justify-center translate-y-[1px]">
+                    {icon.icon}
+                  </div>
+                </a>
+              );
+            })}
           </div>
 
           <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
@@ -209,8 +208,6 @@ export const Footer = ({
               <a
                 key={item.href + index}
                 href={item.href}
-                target={item.isExternal ? "_blank" : undefined}
-                rel={item.isExternal ? "noopener noreferrer" : undefined}
                 className="flex flex-col w-full group cursor-pointer"
               >
                 <div className="flex items-center justify-between w-full pb-1">
