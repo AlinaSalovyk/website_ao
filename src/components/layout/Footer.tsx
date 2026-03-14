@@ -1,7 +1,9 @@
+import type { JSX } from "react";
+
 import { getSocialIcons } from "@/components/icons/SocialIcons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { JSX } from "react";
+import { SOCIAL_URLS } from "@/lib/social-links";
 
 const navigationItems = [
   { label: "ГОЛОВНА", href: "/", isActive: true },
@@ -11,7 +13,12 @@ const navigationItems = [
     href: "/#educational-programs",
     isActive: false,
   },
-  { label: "НОВИНИ ТА ПОДІЇ", href: "/#news", isActive: false },
+  {
+    label: "НаУОА",
+    href: "https://www.oa.edu.ua/ua/departments/economics/",
+    isActive: false,
+    isExternal: true,
+  },
 ];
 
 interface FooterProps {
@@ -26,6 +33,17 @@ export const Footer = ({
     "fill-transparent",
     "size-full",
   );
+
+  const footerSocialLinkByAlt: Record<string, { href: string; label: string }> =
+    {
+      Instagram: { href: SOCIAL_URLS.instagram, label: "Instagram" },
+      LinkedIn: { href: SOCIAL_URLS.facebook, label: "Facebook" },
+      "X (Twitter)": { href: SOCIAL_URLS.tiktok, label: "TikTok" },
+    };
+
+  const socialLinksWithIcons = footerSocials
+    .map((icon) => ({ ...icon, ...footerSocialLinkByAlt[icon.alt] }))
+    .filter((icon) => Boolean(icon.href));
 
   return (
     <footer className="flex flex-col w-full items-start relative bg-pure-white flex-1">
@@ -170,12 +188,14 @@ export const Footer = ({
 
           {/* Middle Column - Socials */}
           <div className="flex items-center gap-4 lg:gap-6">
-            {footerSocials.map((icon, index) => (
+            {socialLinksWithIcons.map((icon, index) => (
               <a
-                key={index}
-                href="#"
+                key={icon.alt + index}
+                href={icon.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group"
-                aria-label={icon.alt}
+                aria-label={icon.label}
               >
                 <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover:invert group-hover:brightness-0 group-hover:filter transition-all flex items-center justify-center translate-y-[1px]">
                   {icon.icon}
@@ -187,8 +207,10 @@ export const Footer = ({
           <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
             {navigationItems.map((item, index) => (
               <a
-                key={index}
+                key={item.href + index}
                 href={item.href}
+                target={item.isExternal ? "_blank" : undefined}
+                rel={item.isExternal ? "noopener noreferrer" : undefined}
                 className="flex flex-col w-full group cursor-pointer"
               >
                 <div className="flex items-center justify-between w-full pb-1">
@@ -212,9 +234,6 @@ export const Footer = ({
 
       <div className="w-full bg-pure-black py-4">
         <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-row items-center gap-8">
-          <button className=" font-medium text-pure-white text-[10px] lg:text-xs tracking-wide hover:opacity-70 transition-opacity">
-            Cookie Preference
-          </button>
           <span className=" font-medium text-pure-white text-[10px] lg:text-xs tracking-wide">
             Національний університет &quot;Острозька академія&quot;
           </span>

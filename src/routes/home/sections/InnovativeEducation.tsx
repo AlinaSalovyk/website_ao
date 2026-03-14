@@ -3,71 +3,65 @@ import { Separator } from "@/components/ui/separator";
 import type { JSX } from "react";
 
 const statsData = [
-    {
-        number: "500+",
-        description:
-            "Успішних випускників щороку, які стають лідерами у сфері IT, фінансів та управління.",
-        imageSrc: "/images/Home/container-1.svg",
-    },
-    {
-        number: "#1",
-        description:
-            "Серед інноваційних навчальних програм у сфері цифрової економіки та підприємництва. Співпраця з 30+ компаніями Реальні кейси, стажування та можливості для міжнародного навчання.",
-    },
+  {
+    number: "500+",
+    description:
+      "Успішних випускників щороку, які стають лідерами у сфері IT, фінансів та управління.",
+    imageSrc: "/images/Home/container-1.svg",
+  },
+  {
+    number: "#1",
+    description:
+      "Серед інноваційних навчальних програм у сфері цифрової економіки та підприємництва. Співпраця з 30+ компаніями Реальні кейси, стажування та можливості для міжнародного навчання.",
+  },
 ];
 
 export const InnovativeEducation = (): JSX.Element => {
-    return (
-        <section className="w-full bg-pure-white flex flex-col relative overflow-hidden">
-            <div
-                className="relative w-full h-auto min-h-[640px] xl:h-[940px] 2xl:h-[1310px]"
-            >
-                <div
-                    className="absolute left-0 right-0 pointer-events-none bg-innovative-education -bottom-[200px] h-full"
-                />
+  return (
+    <section className="w-full bg-pure-white flex flex-col relative overflow-hidden">
+      <div className="relative w-full h-auto min-h-[640px] xl:h-[940px] 2xl:h-[1310px]">
+        <div className="absolute left-0 right-0 pointer-events-none bg-innovative-education -bottom-[200px] h-full" />
 
-                <div
-                    className="flex flex-col mx-auto w-full h-full items-start px-4 md:px-9 pt-20 relative z-[1] max-w-7xl 2xl:max-w-screen-2xl"
-                >
-                    <header className="flex flex-col items-start relative w-full gap-8 translate-y-[-1rem] animate-fade-in opacity-0">
-                        <h2 className=" font-medium text-pure-black text-4xl md:text-5xl lg:text-7xl xl:text-8xl 2xl:text-[132px] tracking-[0] leading-tight xl:leading-[144px] whitespace-normal md:whitespace-nowrap">
-                            ІННОВАЦІЙНА ОСВІТА
-                        </h2>
-                        <Separator className="w-full bg-separator-gray h-px" />
-                        <p className="max-w-xs xl:max-w-sm 2xl:max-w-[400px] font-normal text-pure-black text-lg xl:text-xl 2xl:text-2xl tracking-[0] leading-7 xl:leading-8">
-                            Створюємо майбутнє разом: технології, бізнес та аналітика в єдиному
-                            просторі.
-                        </p>
-                    </header>
+        <div className="flex flex-col mx-auto w-full h-full px-4 md:px-9 pt-20 relative z-[1] max-w-7xl 2xl:max-w-screen-2xl">
+          <header className="flex flex-col relative w-full gap-8 translate-y-[-1rem] animate-fade-in opacity-0">
+            <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl text-pure-black text-right">
+              Інноваційна освіта
+            </h2>
+            <Separator className="w-full bg-separator-gray h-px" />
+            <p className="max-w-xs xl:max-w-sm 2xl:max-w-[400px] font-normal text-pure-black text-lg xl:text-xl 2xl:text-2xl tracking-[0] leading-7 xl:leading-8">
+              Створюємо майбутнє разом: технології, бізнес та аналітика в
+              єдиному просторі.
+            </p>
+          </header>
 
-                    <div className="flex flex-col lg:flex-row items-center lg:items-start justify-end gap-10 lg:gap-16 xl:gap-32 2xl:gap-[200px] w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] mt-16 flex-1 pb-0">
-                        {statsData.map((stat, index) => (
-                            <Card
-                                key={index}
-                                className="flex flex-col max-w-full md:max-w-xs xl:max-w-sm 2xl:max-w-[400px] w-full border-50 shadow-none bg-transparent"
-                            >
-                                <CardContent className="flex flex-col items-start gap-4 p-0">
-                                    <div className="flex items-start w-full">
-                                        <h2 className=" font-normal text-pure-black text-5xl md:text-7xl xl:text-9xl 2xl:text-[140px] tracking-tight xl:tracking-[-4.80px] leading-tight xl:leading-[120px] whitespace-nowrap">
-                                            {stat.number}
-                                        </h2>
-                                    </div>
-                                    <p className="font-normal text-pure-black text-lg tracking-[0] leading-[24px] whitespace-pre-line">
-                                        {stat.description}
-                                    </p>
-                                    {stat.imageSrc && (
-                                        <img
-                                            className="hidden lg:block w-full max-w-48 xl:max-w-64 xl:max-w-[300px]"
-                                            alt="Decorative container"
-                                            src={stat.imageSrc}
-                                        />
-                                    )}
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
+          <div className="flex flex-col lg:flex-row items-center lg:items-start justify-end gap-10 lg:gap-16 xl:gap-32 2xl:gap-[200px] w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms] mt-16 flex-1 pb-0">
+            {statsData.map((stat, index) => (
+              <Card
+                key={index}
+                className="flex flex-col max-w-full md:max-w-xs xl:max-w-sm 2xl:max-w-[400px] w-full border-50 shadow-none bg-transparent"
+              >
+                <CardContent className="flex flex-col items-start gap-4 p-0">
+                  <div className="flex items-start w-full">
+                    <h2 className=" font-normal text-pure-black text-5xl md:text-7xl xl:text-9xl 2xl:text-[140px] tracking-tight xl:tracking-[-4.80px] leading-tight xl:leading-[120px] whitespace-nowrap">
+                      {stat.number}
+                    </h2>
+                  </div>
+                  <p className="font-normal text-pure-black text-lg tracking-[0] leading-[24px] whitespace-pre-line">
+                    {stat.description}
+                  </p>
+                  {stat.imageSrc && (
+                    <img
+                      className="hidden lg:block w-full max-w-48 xl:max-w-64 xl:max-w-[300px]"
+                      alt="Decorative container"
+                      src={stat.imageSrc}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
