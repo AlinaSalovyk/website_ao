@@ -9,7 +9,7 @@ import {
 
 interface SocialIcon {
   icon: JSX.Element;
-  alt: string;
+  alt: SocialIconAlt;
 }
 
 export type SocialIconAlt =

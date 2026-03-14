@@ -17,9 +17,10 @@ const navigationItems = [
     isActive: false,
   },
   {
-    label: "НуОА",
+    label: "НаУОА",
     href: "https://www.oa.edu.ua/ua/departments/economics/",
     isActive: false,
+    isExternal: true,
   },
 ];
 
@@ -41,7 +42,8 @@ export const Footer = ({
     "size-full",
     footerVisibleSocials,
   );
-  const footerSocialLinkByAlt: Record<string, string> = {
+
+  const footerSocialLinkByAlt: Partial<Record<SocialIconAlt, string>> = {
     Instagram: SOCIAL_URLS.instagram,
     Facebook: SOCIAL_URLS.facebook,
     TikTok: SOCIAL_URLS.tiktok,
@@ -191,7 +193,10 @@ export const Footer = ({
           {/* Middle Column - Socials */}
           <div className="flex items-center gap-4 lg:gap-6">
             {footerSocials.map((icon, index) => {
-              const href = footerSocialLinkByAlt[icon.alt] ?? "#";
+              const href = footerSocialLinkByAlt[icon.alt];
+              if (!href) {
+                return null;
+              }
               const isExternal = href.startsWith("http");
 
               return (
@@ -212,27 +217,36 @@ export const Footer = ({
           </div>
 
           <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
-            {navigationItems.map((item, index) => (
-              <a
-                key={item.href + index}
-                href={item.href}
-                className="flex flex-col w-full group cursor-pointer"
-              >
-                <div className="flex items-center justify-between w-full pb-1">
-                  <span
-                    className={` font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${
-                      item.isActive ? "text-leadership-link" : "text-pure-black"
-                    } group-hover:text-leadership-link`}
-                  >
-                    {item.label}
-                  </span>
-                  {item.isActive && (
-                    <div className="w-1.5 h-1.5 bg-leadership-link rounded-sm" />
-                  )}
-                </div>
-                <Separator className="w-full bg-pure-black/20 group-hover:bg-pure-black transition-colors" />
-              </a>
-            ))}
+            {navigationItems.map((item, index) => {
+              const isExternal =
+                item.isExternal ?? item.href.startsWith("http");
+
+              return (
+                <a
+                  key={item.href + index}
+                  href={item.href}
+                  target={isExternal ? "_blank" : undefined}
+                  rel={isExternal ? "noopener noreferrer" : undefined}
+                  className="flex flex-col w-full group cursor-pointer"
+                >
+                  <div className="flex items-center justify-between w-full pb-1">
+                    <span
+                      className={` font-medium text-[10px] lg:text-xs tracking-wider uppercase transition-colors ${
+                        item.isActive
+                          ? "text-leadership-link"
+                          : "text-pure-black"
+                      } group-hover:text-leadership-link`}
+                    >
+                      {item.label}
+                    </span>
+                    {item.isActive && (
+                      <div className="w-1.5 h-1.5 bg-leadership-link rounded-sm" />
+                    )}
+                  </div>
+                  <Separator className="w-full bg-pure-black/20 group-hover:bg-pure-black transition-colors" />
+                </a>
+              );
+            })}
           </nav>
         </div>
       </div>
