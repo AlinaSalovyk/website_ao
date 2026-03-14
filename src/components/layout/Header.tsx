@@ -46,7 +46,7 @@ export const Header = ({
                   height={32}
                 />
               ) : (
-                <span className="italic xs:text-sm sm:text-3xl">
+                <span className="italic text-sm sm:text-3xl">
                   ІТБ — інновації твого життя
                 </span>
               ))}

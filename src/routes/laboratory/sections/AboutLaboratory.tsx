@@ -1,4 +1,3 @@
-import { PartnersCarousel } from "@/components/sections/PartnersCarousel";
 import { type JSX } from "react";
 
 export const AboutLaboratory = (): JSX.Element => {

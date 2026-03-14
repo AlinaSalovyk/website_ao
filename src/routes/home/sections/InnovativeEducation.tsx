@@ -24,8 +24,8 @@ export const InnovativeEducation = (): JSX.Element => {
 
         <div className="flex flex-col mx-auto w-full h-full px-4 md:px-9 pt-20 relative z-[1] max-w-7xl 2xl:max-w-screen-2xl">
           <header className="flex flex-col relative w-full gap-8 translate-y-[-1rem] animate-fade-in opacity-0">
-            <h2 className="font-bold font-medium text-4xl md:text-5xl lg:text-6xl text-pure-black text-right">
-              ІННОВАЦІЙНА ОСВІТА
+            <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl text-pure-black text-right">
+              Інноваційна освіта
             </h2>
             <Separator className="w-full bg-separator-gray h-px" />
             <p className="max-w-xs xl:max-w-sm 2xl:max-w-[400px] font-normal text-pure-black text-lg xl:text-xl 2xl:text-2xl tracking-[0] leading-7 xl:leading-8">
