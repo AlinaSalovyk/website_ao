@@ -1,6 +1,6 @@
 import { Separator } from "@/components/ui/separator";
 import type { JSX } from "react";
-import { InstagramIcon, LinkedInIcon, YouTubeIcon } from "@/components/icons/social";
+import { FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/icons/social";
 
 interface LeadershipMember {
     id: number;
@@ -105,33 +105,33 @@ export const InstituteLeadership = (): JSX.Element => {
                                 {/* Contact Info */}
                                 <div className="flex flex-col mb-8 mt-auto">
                                     <p className="text-[11px] md:text-[12px] text-black mb-0.5">
-                                        Контактна інформація:
-                                    </p>
+                                            Контактна інформація:
+                                        </p>
                                     <a href={`mailto:${member.email}`} className="text-[11px] md:text-[12px] text-black hover:underline">
-                                        e-mail: {member.email}
-                                    </a>
-                                </div>
+                                            e-mail: {member.email}
+                                        </a>
+                                    </div>
 
                                 {/* Social Links */}
                                 <div className="flex gap-4 lg:gap-6 mt-auto">
                                     <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
                                         <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
                                             <InstagramIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
-                                        </div>
-                                    </a>
+                                            </div>
+                                        </a>
+                                    <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
+                                        <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
+                                            <FacebookIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
+                                            </div>
+                                        </a>
                                     <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
                                         <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
                                             <LinkedInIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
-                                        </div>
-                                    </a>
-                                    <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
-                                        <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
-                                            <YouTubeIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
-                                        </div>
-                                    </a>
+                                            </div>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                     ))}
                 </div>
             </div>

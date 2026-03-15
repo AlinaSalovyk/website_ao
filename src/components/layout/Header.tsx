@@ -1,6 +1,6 @@
 import { useState, type ReactNode, type JSX } from "react";
+
 import { Menu } from "@/routes/Menu/Menu";
-import { Logo } from "@/components/icons/Logo";
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -17,23 +17,6 @@ export const Header = ({
 }: HeaderProps): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const logo =
-    customLogo ??
-    (logoSrc ? (
-      <img
-        src={logoSrc}
-        alt="Logo"
-        className="h-8 md:h-10 w-auto"
-        loading="eager"
-        decoding="async"
-        fetchPriority="high"
-        width={83}
-        height={32}
-      />
-    ) : (
-      <Logo />
-    ));
-
   return (
     <>
       {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
@@ -42,15 +25,33 @@ export const Header = ({
       >
         <button
           onClick={() => setIsMenuOpen(true)}
+          className={`rounded-xl border p-2 flex items-center justify-center transition-colors cursor-pointer ${variant === "light" ? "border-pure-black/80 text-pure-black hover:bg-pure-black/10" : "border-white/80 text-white hover:bg-white/10"}`}
           aria-label="Відкрити меню"
-          className={`rounded-[20px] border px-5 py-2 uppercase text-[11px] tracking-[0.15em] font-medium transition-colors cursor-pointer ${variant === "light" ? "border-pure-black/80 text-pure-black hover:bg-pure-black/10" : "border-white/80 bg-transparent text-white hover:bg-white/10"}`}
         >
-          МЕНЮ
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 8H19M5 12H19M5 16H19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
         </button>
 
         <div className="flex justify-center flex-1 md:flex-none">
           <a href="/" className="inline-block cursor-pointer">
-            {logo}
+            {customLogo ??
+              (logoSrc ? (
+                <img
+                  src={logoSrc}
+                  alt="Logo"
+                  className="h-8 md:h-10 w-auto"
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
+                  width={83}
+                  height={32}
+                />
+              ) : (
+                <span className="italic text-sm sm:text-3xl">
+                  ІТБ — інновації твого життя
+                </span>
+              ))}
           </a>
         </div>
 
