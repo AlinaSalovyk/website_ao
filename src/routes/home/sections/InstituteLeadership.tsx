@@ -1,6 +1,6 @@
 import { Separator } from "@/components/ui/separator";
-import { useState, type JSX } from "react";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import type { JSX } from "react";
+import { FacebookIcon, InstagramIcon, LinkedInIcon } from "@/components/icons/social";
 
 interface LeadershipMember {
     id: number;
@@ -16,7 +16,7 @@ const leadershipData: LeadershipMember[] = [
         id: 1,
         name: "Новоселецький Олександр Миколайович",
         role: "Директор Інституту ІТ та бізнесу, кандидат економічних наук, доцент кафедри інформаційних технологій та аналітики даних",
-        email: "oleksandr.novoseletskyi@oa.edu.ua",
+        email: "oleksandr.novoseletskyy@oa.edu.ua",
         officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
         image: "/images/InstituteManagement/novoseletskyy.jpg"
     },
@@ -63,99 +63,76 @@ const leadershipData: LeadershipMember[] = [
 ];
 
 export const InstituteLeadership = (): JSX.Element => {
-    const [currentIndex, setCurrentIndex] = useState(0);
-
-    const handleNext = () => {
-        setCurrentIndex((prev) => (prev + 1) % leadershipData.length);
-    };
-
-    const handlePrev = () => {
-        setCurrentIndex((prev) => (prev - 1 + leadershipData.length) % leadershipData.length);
-    };
-
-    const currentMember = leadershipData[currentIndex];
-
     return (
-        // Using a grey background similar to the screenshot
-        <section id="leadership" className="w-full bg-white flex flex-col relative py-20 transition-colors duration-300">
+        <section id="leadership" className="w-full bg-white flex flex-col relative py-20">
             <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9">
 
-                {/* Header - Right Aligned as per grey screenshot */}
-                <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl text-black text-right mb-10">
+                {/* Header */}
+                <h2 className="font-bold text-4xl md:text-5xl lg:text-[60px] text-black text-right mb-10 tracking-tight">
                     Керівництво інституту
                 </h2>
                 <Separator className="w-full bg-black/40 h-px mb-16" />
 
-                {/* Content Container */}
-                <div className="flex flex-col items-center w-full max-w-5xl mx-auto">
+                {/* Grid Content Container */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 lg:gap-x-32 gap-y-16 lg:gap-y-24 w-full lg:px-12 xl:px-20">
+                    {leadershipData.map((member) => (
+                        <div key={member.id} className="flex flex-col sm:flex-row items-start gap-6 lg:gap-10 w-full group">
 
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-16 w-full animate-fade-in">
+                            {/* Image */}
+                            <div className="w-full sm:w-[220px] h-[280px] overflow-hidden rounded-[20px] flex-shrink-0 bg-gray-200">
+                                <img
+                                    src={member.image}
+                                    alt={member.name}
+                                    className="w-full h-full object-cover grayscale-0"
+                                    onError={(e) => {
+                                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/220x280?text=No+Image';
+                                    }}
+                                />
+                            </div>
 
-                        {/* Image */}
-                        <div className="w-full md:w-[350px] aspect-square md:aspect-[4/5] overflow-hidden rounded-xl flex-shrink-0 bg-gray-300 shadow-lg">
-                            <img
-                                src={currentMember.image}
-                                alt={currentMember.name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x500?text=No+Image';
-                                }}
-                            />
-                        </div>
+                            {/* Text Info */}
+                            <div className="flex flex-col text-left py-2 flex-1 h-full">
+                                {/* Name */}
+                                <h3 className="font-bold text-[15px] md:text-[17px] text-black mb-1.5">
+                                    {member.name}
+                                </h3>
 
-                        {/* Text Info */}
-                        <div className="flex flex-col text-left py-4 flex-1">
-                            {/* Name */}
-                            <h3 className="font-bold text-2xl md:text-3xl text-black mb-1">
-                                {currentMember.name}
-                            </h3>
+                                {/* Role */}
+                                <p className="text-[10px] md:text-[11px] text-black max-w-[320px] leading-snug mb-10 font-medium">
+                                    {member.role}
+                                </p>
 
-                            {/* Role */}
-                            <p className="text-sm md:text-base text-black/80 mb-10 leading-relaxed max-w-lg">
-                                {currentMember.role}
-                            </p>
+                                {/* Contact Info */}
+                                <div className="flex flex-col mb-8 mt-auto">
+                                    <p className="text-[11px] md:text-[12px] text-black mb-0.5">
+                                            Контактна інформація:
+                                        </p>
+                                    <a href={`mailto:${member.email}`} className="text-[11px] md:text-[12px] text-black hover:underline">
+                                            e-mail: {member.email}
+                                        </a>
+                                    </div>
 
-                            {/* Contact Info */}
-                            <div className="flex flex-col gap-6">
-                                <div>
-                                    <p className="font-bold text-sm text-black mb-1">
-                                        Контактна інформація:
-                                    </p>
-                                    <a href={`mailto:${currentMember.email}`} className="text-sm text-black hover:underline">
-                                        e-mail: {currentMember.email}
-                                    </a>
-                                </div>
-
-                                <div>
-                                    <p className="font-bold text-sm text-black mb-1">
-                                        Офісні години:
-                                    </p>
-                                    <p className="text-sm text-black">
-                                        {currentMember.officeHours}
-                                    </p>
+                                {/* Social Links */}
+                                <div className="flex gap-4 lg:gap-6 mt-auto">
+                                    <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
+                                        <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
+                                            <InstagramIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
+                                            </div>
+                                        </a>
+                                    <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
+                                        <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
+                                            <FacebookIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
+                                            </div>
+                                        </a>
+                                    <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
+                                        <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
+                                            <LinkedInIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
+                                            </div>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Navigation Arrows */}
-                    <div className="flex items-center gap-8 mt-16 md:mt-20">
-                        <button
-                            onClick={handlePrev}
-                            className="p-3 hover:bg-black/10 rounded-full transition-colors group cursor-pointer"
-                            aria-label="Previous member"
-                        >
-                            <ArrowLeft className="w-8 h-8 text-black group-hover:scale-110 transition-transform" />
-                        </button>
-                        <button
-                            onClick={handleNext}
-                            className="p-3 hover:bg-black/10 rounded-full transition-colors group cursor-pointer"
-                            aria-label="Next member"
-                        >
-                            <ArrowRight className="w-8 h-8 text-black group-hover:scale-110 transition-transform" />
-                        </button>
-                    </div>
-
+                    ))}
                 </div>
             </div>
         </section>
