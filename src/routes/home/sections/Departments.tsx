@@ -20,7 +20,10 @@ export const Departments = () => {
   const activeDepartment = DEPARTMENTS.find((d) => d.id === activeId);
 
   return (
-    <section className="w-full bg-layout-bg py-20 min-h-[600px] flex items-center">
+    <section
+      aria-labelledby="departments-programs-heading"
+      className="w-full bg-layout-bg py-20 min-h-[600px] flex items-center"
+    >
       <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col md:flex-row gap-12 md:gap-20">
         {/* Left Side: Department List */}
         <div className="flex flex-col gap-6 md:w-1/3">
@@ -66,7 +69,10 @@ export const Departments = () => {
               transition={{ duration: 0.3 }}
               className="text-white space-y-10"
             >
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8">
+              <h2
+                id="departments-programs-heading"
+                className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8"
+              >
                 Наші освітні програми:
               </h2>
 

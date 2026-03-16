@@ -54,7 +54,9 @@ export const Footer = ({
         <div className="flex flex-col w-full items-center justify-center py-8 bg-layout-bg relative flex-1">
           <img
             className="absolute top-0 left-0 w-full h-full object-cover object-top"
-            alt="Background"
+            alt=""
+            role="presentation"
+            aria-hidden="true"
             src="/images/Backgroundfooter.png"
           />
 
@@ -215,7 +217,10 @@ export const Footer = ({
             })}
           </div>
 
-          <nav className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]">
+          <nav
+            aria-label="Навігація по сайту"
+            className="flex flex-col gap-3 w-full md:w-auto min-w-[140px] lg:min-w-[180px]"
+          >
             {navigationItems.map((item, index) => {
               const isExternal =
                 item.isExternal ?? item.href.startsWith("http");
