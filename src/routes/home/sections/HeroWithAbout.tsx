@@ -7,7 +7,6 @@ export const HeroWithAbout = (): JSX.Element => {
     <section className="relative w-full overflow-hidden">
       {/* Background Gradients & Images */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient" />
-
       <div
         className="absolute top-0 left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
         style={{
@@ -33,33 +32,12 @@ export const HeroWithAbout = (): JSX.Element => {
       <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-6 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms]">
         <div className="relative z-10 pt-32 lg:pt-0">
           <div className="flex justify-start items-baseline w-full flex-wrap gap-x-3 gap-y-2">
-            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
-              Обирай
-            </span>
-            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
-              навчання,
-            </span>
-            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
-              яке
-            </span>
-          </div>
-          <div className="flex justify-start items-baseline w-full flex-wrap gap-x-4 gap-y-2">
-            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
-              відповідає
-            </span>
-            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
-              викликам
-            </span>
-          </div>
-
-          <div className="flex justify-start">
-            <span className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
-              майбутнього!
-            </span>
+            <h1 className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
+              Навчально-науковий інститут інформаційних технологій та бізнесу
+            </h1>
           </div>
         </div>
       </div>
-
       {/* About Section */}
       <div className="relative w-full py-16 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
         <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9">
@@ -99,6 +77,9 @@ export const HeroWithAbout = (): JSX.Element => {
                 IT, аналітиці, управлінні й підприємництві. Співпраця з
                 провідними компаніями дає їм конкурентні переваги у світі
                 технологій та бізнесу.
+              </p>
+              <p className="italic text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
+                Обирай навчання, яке відповідає викликам майбутнього!
               </p>
             </div>
 

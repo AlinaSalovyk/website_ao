@@ -1,64 +1,18 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
+import type { ProgramLevel } from "@/components/sections/degree-programs.types";
+import { DEPARTMENTS } from "@/routes/departments/departments-programs";
 
-interface DepartmentData {
-  id: string;
-  title: string;
-  programs: {
-    bachelor?: string[];
-    master?: string[];
-    phd?: string[];
-  };
-}
+const PROGRAM_PREFIX_BY_TYPE = {
+  OPP: "ОПП",
+  ONP: "ОНП",
+} as const;
 
-const DEPARTMENTS: DepartmentData[] = [
-  {
-    id: "finance",
-    title: "Кафедра фінансів та бізнесу",
-    programs: {
-      bachelor: [
-        'ОПП "Фінанси та бізнес-аналітика"',
-        'ОПП "Підприємництво та торгівля"',
-        'ОПП "Підприємництво та управління бізнесом"',
-      ],
-      master: [
-        'ОПП "Фінанси та бізнес-аналітика"',
-        'ОПП "Підприємництво та торгівля"',
-        'ОПП "Підприємництво та управління бізнесом"',
-      ],
-    },
-  },
-  {
-    id: "management",
-    title: "Кафедра менеджменту та маркетингу",
-    programs: {
-      bachelor: ['ОПП "Data-маркетинг та аналітика"'],
-      master: ['ОПП "HR-менеджмент"', 'ОПП "Менеджмент продажів та логістика"'],
-      phd: ['ОПП "Менеджмент"'],
-    },
-  },
-  {
-    id: "it",
-    title: "Кафедра інформаційних технологій та аналітики даних",
-    programs: {
-      bachelor: [
-        'ОПП "Робототехніка та машинне навчання"',
-        'ОПП "Штучний інтелект та аналітика даних"',
-        'ОПП "Комп\'ютерні науки"',
-        'ОПП "Економічна кібернетика"',
-      ],
-      master: ['ОПП "Управління проєктами"'],
-      phd: ['ОПП "Прикладна математика"'],
-    },
-  },
-  {
-    id: "math",
-    title: "Кафедра математики та інтелектуальних обчислень",
-    programs: {
-      phd: ['ОПП "Прикладна математика"'],
-    },
-  },
+const LEVELS: ProgramLevel["title"][] = [
+  "Бакалаврат",
+  "Магістратура",
+  "Аспірантура",
 ];
 
 export const Departments = () => {
@@ -66,7 +20,10 @@ export const Departments = () => {
   const activeDepartment = DEPARTMENTS.find((d) => d.id === activeId);
 
   return (
-    <section className="w-full bg-layout-bg py-20 min-h-[600px] flex items-center">
+    <section
+      aria-labelledby="departments-programs-heading"
+      className="w-full bg-layout-bg py-20 min-h-[600px] flex items-center"
+    >
       <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col md:flex-row gap-12 md:gap-20">
         {/* Left Side: Department List */}
         <div className="flex flex-col gap-6 md:w-1/3">
@@ -112,67 +69,59 @@ export const Departments = () => {
               transition={{ duration: 0.3 }}
               className="text-white space-y-10"
             >
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8">
+              <h2
+                id="departments-programs-heading"
+                className="text-2xl md:text-3xl lg:text-4xl font-normal mb-8"
+              >
                 Наші освітні програми:
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                {activeDepartment?.programs.bachelor && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                      Бакалаврат
-                    </h3>
-                    <ul className="space-y-2">
-                      {activeDepartment.programs.bachelor.map((program) => (
-                        <li
-                          key={`${activeDepartment.id}-bachelor-${program}`}
-                          className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                        >
-                          <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                          {program}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {LEVELS.map((levelTitle) => {
+                  const level = activeDepartment?.programs.find(
+                    (programLevel) => programLevel.title === levelTitle,
+                  );
 
-                {activeDepartment?.programs.master && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                      Магістратура
-                    </h3>
-                    <ul className="space-y-2">
-                      {activeDepartment.programs.master.map((program) => (
-                        <li
-                          key={`${activeDepartment.id}-master-${program}`}
-                          className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                        >
-                          <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                          {program}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  if (!level) {
+                    return null;
+                  }
 
-                {activeDepartment?.programs.phd && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                      Аспірантура
-                    </h3>
-                    <ul className="space-y-2">
-                      {activeDepartment.programs.phd.map((program) => (
-                        <li
-                          key={`${activeDepartment.id}-phd-${program}`}
-                          className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                        >
-                          <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                          {program}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  return (
+                    <div key={`${activeId}-${level.id}`} className="space-y-4">
+                      <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
+                        {level.title}
+                      </h3>
+                      <ul className="space-y-2">
+                        {level.programs.map((program) => (
+                          <li
+                            key={`${activeId}-${level.id}-${program.title}`}
+                            className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
+                          >
+                            <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
+                            {(() => {
+                              const programPrefix =
+                                PROGRAM_PREFIX_BY_TYPE[program.programType];
+                              const programText = `${programPrefix} ${program.title}`;
+
+                              return program.link ? (
+                                <a
+                                  href={program.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:text-white transition-colors duration-200"
+                                >
+                                  {programText}
+                                </a>
+                              ) : (
+                                <span>{programText}</span>
+                              );
+                            })()}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
               </div>
             </motion.div>
           </AnimatePresence>
