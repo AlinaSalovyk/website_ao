@@ -2,170 +2,12 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import type { ProgramLevel } from "@/components/sections/degree-programs.types";
+import { DEPARTMENTS } from "@/routes/departments/departments-programs";
 
-interface DepartmentData {
-  id: string;
-  title: string;
-  programs: ProgramLevel[];
-}
-
-const DEPARTMENTS: DepartmentData[] = [
-  {
-    id: "finance",
-    title: "Кафедра фінансів та бізнесу",
-    programs: [
-      {
-        id: "01",
-        title: "Бакалаврат",
-        programs: [
-          {
-            label: "освітньо-професійна програма",
-            title: '"Фінанси та бізнес-аналітика"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/d2_finansy_ta_biznes-analityka/",
-          },
-          {
-            label: "освітньо-професійна програма",
-            title: '"Підприємництво та торгівля"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/076_pidpryiemnytstvo_ta_torhivlia/",
-          },
-          {
-            label: "освітньо-професійна програма",
-            title: '"Підприємництво та управління бізнесом"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/d3_pidpryiemnytstvo_ta_upravlinnia_biznesom/",
-          },
-        ],
-      },
-      {
-        id: "02",
-        title: "Магістратура",
-        programs: [
-          {
-            label: "освітньо-професійна програма",
-            title: '"Фінанси та бізнес-аналітика"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/d2_finansy_ta_biznes-analityka/",
-          },
-          {
-            label: "освітньо-професійна програма",
-            title: '"Облік і оподаткування"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/d1_oblik_i_opodatkuvannia/",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "management",
-    title: "Кафедра менеджменту та маркетингу",
-    programs: [
-      {
-        id: "01",
-        title: "Бакалаврат",
-        programs: [
-          {
-            label: "освітньо-професійна програма",
-            title: '"Data-маркетинг та аналітика"',
-          },
-        ],
-      },
-      {
-        id: "02",
-        title: "Магістратура",
-        programs: [
-          {
-            label: "освітньо-професійна програма",
-            title: '"HR-менеджмент"',
-          },
-          {
-            label: "освітньо-професійна програма",
-            title: '"Менеджмент продажів та логістика"',
-          },
-        ],
-      },
-      {
-        id: "03",
-        title: "Аспірантура",
-        programs: [
-          {
-            label: "освітньо-наукова програма",
-            title: '"Менеджмент"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/d3_menedzhment/",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "it",
-    title: "Кафедра інформаційних технологій та аналітики даних",
-    programs: [
-      {
-        id: "01",
-        title: "Бакалаврат",
-        programs: [
-          {
-            label: "освітньо-професійна програма",
-            title: '"Робототехніка та машинне навчання"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/122_robototekhnika_ta_mashynne_navchannia/",
-          },
-          {
-            label: "освітньо-професійна програма",
-            title: '"Штучний інтелект та аналітика даних"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/122_shtuchnyi_intelekt_ta_analityka_danykh/",
-          },
-          {
-            label: "освітньо-професійна програма",
-            title: '"Комп\'ютерні науки"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/f3_kompiuterni_nauky/",
-          },
-          {
-            label: "освітньо-професійна програма",
-            title: '"Економічна кібернетика"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/051_ekonomichna_kibernetyka/",
-          },
-        ],
-      },
-      {
-        id: "02",
-        title: "Магістратура",
-        programs: [
-          {
-            label: "освітньо-професійна програма",
-            title: '"Управління проєктами"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/122_upravlinnia_proiektamy/",
-          },
-        ],
-      },
-      {
-        id: "03",
-        title: "Аспірантура",
-        programs: [
-          {
-            label: "освітньо-наукова програма",
-            title: '"Прикладна математика"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/f1_prykladna_matematyka/",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "math",
-    title: "Кафедра математики та інтелектуальних обчислень",
-    programs: [
-      {
-        id: "01",
-        title: "Аспірантура",
-        programs: [
-          {
-            label: "освітньо-наукова програма",
-            title: '"Прикладна математика"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/f1_prykladna_matematyka/",
-          },
-        ],
-      },
-    ],
-  },
-];
+const PROGRAM_PREFIX_BY_TYPE = {
+  OPP: "ОПП",
+  ONP: "ОНП",
+} as const;
 
 const LEVELS: ProgramLevel["title"][] = [
   "Бакалаврат",
@@ -251,11 +93,8 @@ export const Departments = () => {
                           >
                             <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
                             {(() => {
-                              const programPrefix = program.label.includes(
-                                "наукова",
-                              )
-                                ? "ОНП"
-                                : "ОПП";
+                              const programPrefix =
+                                PROGRAM_PREFIX_BY_TYPE[program.programType];
                               const programText = `${programPrefix} ${program.title}`;
 
                               return program.link ? (
