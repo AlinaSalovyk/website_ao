@@ -15,6 +15,9 @@ interface LeadershipMember {
   image: string;
 }
 
+const FALLBACK_IMAGE_SRC =
+  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 280'><rect width='220' height='280' fill='%23e5e7eb'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236b7280' font-family='Arial,sans-serif' font-size='16'>No image</text></svg>";
+
 const leadershipData: LeadershipMember[] = [
   {
     id: 1,
@@ -98,8 +101,8 @@ export const InstituteLeadership = (): JSX.Element => {
                   alt={member.name}
                   className="w-full h-full object-cover grayscale-0"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://via.placeholder.com/220x280?text=No+Image";
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = FALLBACK_IMAGE_SRC;
                   }}
                 />
               </div>
