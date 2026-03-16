@@ -31,7 +31,7 @@ const simpleMenuItems = [
 ];
 
 const bottomSimpleMenuItems = [
-  { label: "Студенське життя", href: "/institute#student-life" },
+  { label: "Студентське життя", href: "/institute#student-life" },
   { label: "Наукова діяльність", href: "/institute#scientific-activity" },
 ];
 
