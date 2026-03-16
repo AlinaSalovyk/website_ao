@@ -1,64 +1,176 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
+import type { ProgramLevel } from "@/components/sections/degree-programs.types";
 
 interface DepartmentData {
   id: string;
   title: string;
-  programs: {
-    bachelor?: string[];
-    master?: string[];
-    phd?: string[];
-  };
+  programs: ProgramLevel[];
 }
 
 const DEPARTMENTS: DepartmentData[] = [
   {
     id: "finance",
     title: "Кафедра фінансів та бізнесу",
-    programs: {
-      bachelor: [
-        'ОПП "Фінанси та бізнес-аналітика"',
-        'ОПП "Підприємництво та торгівля"',
-        'ОПП "Підприємництво та управління бізнесом"',
-      ],
-      master: [
-        'ОПП "Фінанси та бізнес-аналітика"',
-        'ОПП "Підприємництво та торгівля"',
-        'ОПП "Підприємництво та управління бізнесом"',
-      ],
-    },
+    programs: [
+      {
+        id: "01",
+        title: "Бакалаврат",
+        programs: [
+          {
+            label: "освітньо-професійна програма",
+            title: '"Фінанси та бізнес-аналітика"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/d2_finansy_ta_biznes-analityka/",
+          },
+          {
+            label: "освітньо-професійна програма",
+            title: '"Підприємництво та торгівля"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/076_pidpryiemnytstvo_ta_torhivlia/",
+          },
+          {
+            label: "освітньо-професійна програма",
+            title: '"Підприємництво та управління бізнесом"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/d3_pidpryiemnytstvo_ta_upravlinnia_biznesom/",
+          },
+        ],
+      },
+      {
+        id: "02",
+        title: "Магістратура",
+        programs: [
+          {
+            label: "освітньо-професійна програма",
+            title: '"Фінанси та бізнес-аналітика"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/d2_finansy_ta_biznes-analityka/",
+          },
+          {
+            label: "освітньо-професійна програма",
+            title: '"Облік і оподаткування"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/d1_oblik_i_opodatkuvannia/",
+          },
+        ],
+      },
+    ],
   },
   {
     id: "management",
     title: "Кафедра менеджменту та маркетингу",
-    programs: {
-      bachelor: ['ОПП "Data-маркетинг та аналітика"'],
-      master: ['ОПП "HR-менеджмент"', 'ОПП "Менеджмент продажів та логістика"'],
-      phd: ['ОПП "Менеджмент"'],
-    },
+    programs: [
+      {
+        id: "01",
+        title: "Бакалаврат",
+        programs: [
+          {
+            label: "освітньо-професійна програма",
+            title: '"Data-маркетинг та аналітика"',
+          },
+        ],
+      },
+      {
+        id: "02",
+        title: "Магістратура",
+        programs: [
+          {
+            label: "освітньо-професійна програма",
+            title: '"HR-менеджмент"',
+          },
+          {
+            label: "освітньо-професійна програма",
+            title: '"Менеджмент продажів та логістика"',
+          },
+        ],
+      },
+      {
+        id: "03",
+        title: "Аспірантура",
+        programs: [
+          {
+            label: "освітньо-наукова програма",
+            title: '"Менеджмент"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/d3_menedzhment/",
+          },
+        ],
+      },
+    ],
   },
   {
     id: "it",
     title: "Кафедра інформаційних технологій та аналітики даних",
-    programs: {
-      bachelor: [
-        'ОПП "Робототехніка та машинне навчання"',
-        'ОПП "Штучний інтелект та аналітика даних"',
-        'ОПП "Комп\'ютерні науки"',
-        'ОПП "Економічна кібернетика"',
-      ],
-      master: ['ОПП "Управління проєктами"'],
-      phd: ['ОПП "Прикладна математика"'],
-    },
+    programs: [
+      {
+        id: "01",
+        title: "Бакалаврат",
+        programs: [
+          {
+            label: "освітньо-професійна програма",
+            title: '"Робототехніка та машинне навчання"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/122_robototekhnika_ta_mashynne_navchannia/",
+          },
+          {
+            label: "освітньо-професійна програма",
+            title: '"Штучний інтелект та аналітика даних"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/122_shtuchnyi_intelekt_ta_analityka_danykh/",
+          },
+          {
+            label: "освітньо-професійна програма",
+            title: '"Комп\'ютерні науки"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/f3_kompiuterni_nauky/",
+          },
+          {
+            label: "освітньо-професійна програма",
+            title: '"Економічна кібернетика"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/051_ekonomichna_kibernetyka/",
+          },
+        ],
+      },
+      {
+        id: "02",
+        title: "Магістратура",
+        programs: [
+          {
+            label: "освітньо-професійна програма",
+            title: '"Управління проєктами"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/122_upravlinnia_proiektamy/",
+          },
+        ],
+      },
+      {
+        id: "03",
+        title: "Аспірантура",
+        programs: [
+          {
+            label: "освітньо-наукова програма",
+            title: '"Прикладна математика"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/f1_prykladna_matematyka/",
+          },
+        ],
+      },
+    ],
   },
   {
     id: "math",
     title: "Кафедра математики та інтелектуальних обчислень",
-    programs: {
-      phd: ['ОПП "Прикладна математика"'],
-    },
+    programs: [
+      {
+        id: "01",
+        title: "Аспірантура",
+        programs: [
+          {
+            label: "освітньо-наукова програма",
+            title: '"Прикладна математика"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/f1_prykladna_matematyka/",
+          },
+        ],
+      },
+    ],
   },
+];
+
+const LEVELS: ProgramLevel["title"][] = [
+  "Бакалаврат",
+  "Магістратура",
+  "Аспірантура",
 ];
 
 export const Departments = () => {
@@ -117,62 +229,54 @@ export const Departments = () => {
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
-                {activeDepartment?.programs.bachelor && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                      Бакалаврат
-                    </h3>
-                    <ul className="space-y-2">
-                      {activeDepartment.programs.bachelor.map((program) => (
-                        <li
-                          key={`${activeDepartment.id}-bachelor-${program}`}
-                          className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                        >
-                          <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                          {program}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                {LEVELS.map((levelTitle) => {
+                  const level = activeDepartment?.programs.find(
+                    (programLevel) => programLevel.title === levelTitle,
+                  );
 
-                {activeDepartment?.programs.master && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                      Магістратура
-                    </h3>
-                    <ul className="space-y-2">
-                      {activeDepartment.programs.master.map((program) => (
-                        <li
-                          key={`${activeDepartment.id}-master-${program}`}
-                          className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                        >
-                          <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                          {program}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  if (!level) {
+                    return null;
+                  }
 
-                {activeDepartment?.programs.phd && (
-                  <div className="space-y-4">
-                    <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
-                      Аспірантура
-                    </h3>
-                    <ul className="space-y-2">
-                      {activeDepartment.programs.phd.map((program) => (
-                        <li
-                          key={`${activeDepartment.id}-phd-${program}`}
-                          className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
-                        >
-                          <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
-                          {program}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+                  return (
+                    <div key={`${activeId}-${level.id}`} className="space-y-4">
+                      <h3 className="text-xl md:text-2xl font-light text-[#E4E4E7]">
+                        {level.title}
+                      </h3>
+                      <ul className="space-y-2">
+                        {level.programs.map((program) => (
+                          <li
+                            key={`${activeId}-${level.id}-${program.title}`}
+                            className="text-[#A1A1AA] text-sm md:text-base flex items-start gap-2"
+                          >
+                            <span className="mt-1.5 w-1 h-1 rounded-full bg-[#A1A1AA] shrink-0" />
+                            {(() => {
+                              const programPrefix = program.label.includes(
+                                "наукова",
+                              )
+                                ? "ОНП"
+                                : "ОПП";
+                              const programText = `${programPrefix} ${program.title}`;
+
+                              return program.link ? (
+                                <a
+                                  href={program.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="hover:text-white transition-colors duration-200"
+                                >
+                                  {programText}
+                                </a>
+                              ) : (
+                                <span>{programText}</span>
+                              );
+                            })()}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
               </div>
             </motion.div>
           </AnimatePresence>
