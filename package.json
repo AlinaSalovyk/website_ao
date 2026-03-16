@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "predev": "node -e \"const fs=require('fs');fs.rmSync('node_modules/.vite',{ recursive: true, force: true });\"",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
