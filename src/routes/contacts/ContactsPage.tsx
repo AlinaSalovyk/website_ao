@@ -75,21 +75,21 @@ export const ContactsPage = (): JSX.Element => {
                                     </div>
 
                                     <div className="flex gap-4 lg:gap-6">
-                                        <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
+                                        <button type="button" aria-label="Instagram профіль недоступний" title="Instagram профіль недоступний" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social cursor-default">
                                             <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
                                                 <InstagramIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
                                             </div>
-                                        </a>
-                                        <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
+                                        </button>
+                                        <button type="button" aria-label="Facebook профіль недоступний" title="Facebook профіль недоступний" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social cursor-default">
                                             <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
                                                 <FacebookIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
                                             </div>
-                                        </a>
-                                        <a href="#" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social">
+                                        </button>
+                                        <button type="button" aria-label="LinkedIn профіль недоступний" title="LinkedIn профіль недоступний" className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social cursor-default">
                                             <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
                                                 <LinkedInIcon iconColor="fill-pure-black" borderColor="fill-transparent" iconSize="size-full" />
                                             </div>
-                                        </a>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
