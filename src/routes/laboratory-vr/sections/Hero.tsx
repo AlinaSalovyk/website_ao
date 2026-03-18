@@ -19,7 +19,9 @@ export const Hero = (): JSX.Element => {
             >
                 <img
                     className="w-full h-full object-contain"
-                    alt="Element black chrome"
+                    alt=""
+                    role="presentation"
+                    aria-hidden="true"
                     src="/images/Home/3d-black-chrome-shape.png"
                     style={{ filter: 'hue-rotate(-30deg) brightness(1.2) saturate(2.0)' }}
                     decoding="async"

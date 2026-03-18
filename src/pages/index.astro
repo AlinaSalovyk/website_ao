@@ -6,38 +6,34 @@ import { EducationalPrograms } from "@/routes/home/sections/EducationalPrograms"
 import { Departments } from "@/routes/home/sections/Departments";
 import { InstituteLeadership } from "@/routes/home/sections/InstituteLeadership";
 import { InnovativeEducation } from "@/routes/home/sections/InnovativeEducation";
-import { NewsAndEvents } from "@/routes/home/sections/NewsAndEvents";
 import { Footer } from "@/components/layout/Footer";
-import { CursorEffects } from "@/components/effects/CursorEffects";
-import { IntroAnimation } from "@/components/effects/IntroAnimation";
 ---
 
 <Layout
   title="ІТБ - Інститут інформаційних технологій та бізнесу | НаУОА"
   description="Обирай навчання, яке відповідає викликам майбутнього! Інститут інформаційних технологій та бізнесу НаУОА — ІТ, бізнес, менеджмент, фінанси, маркетинг."
 >
-  <!-- First-visit intro animation (typewriter effect) -->
-  <IntroAnimation client:load />
-
-  <!-- Custom cursor (only on pointer:fine devices) -->
-  <CursorEffects client:load />
-
-  <div class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg">
+  <div
+    class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg"
+  >
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header client:load headerPosition="absolute" />
       <main id="main-content" class="w-full">
-        <HeroWithAbout client:load />
-        <section class="relative w-full">
-          <EducationalPrograms client:load />
-        </section>
-        <section class="relative w-full">
+        <HeroWithAbout />
+        <div
+          class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]"
+        >
+          <EducationalPrograms />
+        </div>
+        <div
+          class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]"
+        >
           <Departments client:visible />
-        </section>
+        </div>
         <InstituteLeadership client:visible />
-        <InnovativeEducation client:visible />
-        <NewsAndEvents client:visible />
-        <Footer client:visible />
+        <InnovativeEducation />
       </main>
+      <Footer />
     </div>
   </div>
 </Layout>

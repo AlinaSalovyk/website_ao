@@ -12,7 +12,9 @@ import { Footer } from "@/components/layout/Footer";
   title="Лабораторія інноваційних систем моделювання, симуляції та цифрової візуалізації | НаУОА"
   description="Науково-дослідна лабораторія інноваційних систем моделювання, симуляції та цифрової візуалізації — простір для створення інноваційних рішень у сфері VR/AR, 3D-моделювання та цифрової симуляції."
 >
-  <div class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg">
+  <div
+    class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg"
+  >
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header client:load headerPosition="absolute" />
       <main id="main-content" class="w-full">
@@ -20,8 +22,8 @@ import { Footer } from "@/components/layout/Footer";
         <AboutLaboratory />
         <Leadership />
         <Gallery client:visible />
-        <Footer />
       </main>
+      <Footer />
     </div>
   </div>
 </Layout>

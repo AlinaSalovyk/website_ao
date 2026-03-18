@@ -14,7 +14,9 @@ import { Footer } from "@/components/layout/Footer";
   title="Про інститут | Інститут ІТ та бізнесу НаУОА"
   description="Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Технології, бізнес та інновації."
 >
-  <div class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg">
+  <div
+    class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg"
+  >
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header client:load />
       <main id="main-content" class="w-full">
@@ -24,8 +26,8 @@ import { Footer } from "@/components/layout/Footer";
         <StudentLife />
         <ScientificActivity client:visible />
         <InstituteLeadership client:visible />
-        <Footer />
       </main>
+      <Footer />
     </div>
   </div>
 </Layout>
