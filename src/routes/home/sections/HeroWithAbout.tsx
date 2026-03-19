@@ -4,13 +4,10 @@ import { ScrollReveal } from "@/components/effects/ScrollReveal";
 
 const tags = ["ІТ", "БІЗНЕС", "МЕНЕДЖМЕНТ", "ФІНАНСИ", "МАРКЕТИНГ"];
 
-const ctaLine = ["Обирай", "навчання,"];
+const ctaLine = ["Навчально-науковий", "інститут"];
 const titleLines = [
-  ["яке", "відповідає", "викликам", "майбутнього!"],
+  ["інформаційних", "технологій", "та", "бізнесу"],
 ];
-
-/** Words that get the hero call-to-action gradient */
-const heroCallWords = new Set(["Обирай", "навчання,"]);
 
 export const HeroWithAbout = (): JSX.Element => {
   const shapeRef = useRef<HTMLDivElement>(null);
@@ -38,39 +35,89 @@ export const HeroWithAbout = (): JSX.Element => {
 
   return (
     <section className="relative w-full overflow-hidden">
-      {/* Background Gradients & Images */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient" />
+      {/* Background Gradient */}
       <div
-        className="absolute top-0 left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
+        className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient"
+      />
+
+      {/* Interactive Particle Canvas */}
+      <div className="absolute inset-0 pointer-events-none z-[2]">
+        <ParticleCanvas
+          particleColor="rgba(100, 160, 255, 0.5)"
+          lineColor="rgba(100, 160, 255, 0.12)"
+          maxParticles={120}
+          connectionDistance={140}
+          mouseRadius={180}
+        />
+      </div>
+
+      {/* 3D Chrome Shape — with parallax effect */}
+      <div
+        ref={shapeRef}
+        className="absolute -top-0 left-1/2 -translate-x-1/4 w-[400px] md:w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms] parallax-slow"
         style={{
-          maskImage: "linear-gradient(to bottom, black 60%, transparent 90%)",
-          WebkitMaskImage:
-            "linear-gradient(to bottom, black 10%, transparent 90%)",
+          maskImage: 'linear-gradient(to bottom, black 60%, transparent 90%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black 10%, transparent 90%)',
         }}
       >
         <img
           className="w-full h-full object-contain"
-          alt=""
-          role="presentation"
+          alt="Element black chrome"
           src="/images/Home/3d-black-chrome-shape.png"
-          width={1250}
-          height={780}
-          style={{
-            filter: "hue-rotate(-20deg) brightness(1.55) saturate(2.0)",
-          }}
+          style={{ filter: 'hue-rotate(-20deg) brightness(1.55) saturate(2.0)' }}
         />
       </div>
 
-      {/* Hero Title */}
-      <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-6 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms]">
-        <div className="relative z-10 pt-32 lg:pt-0">
-          <div className="flex justify-start items-baseline w-full flex-wrap gap-x-3 gap-y-2">
-            <h1 className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
-              Навчально-науковий інститут інформаційних технологій та бізнесу
-            </h1>
+      {/* Hero Title — stagger-animated words */}
+      <div className="relative min-h-[400px] md:min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end items-center pb-0 lg:pb-2 z-10">
+        <div className="relative z-10 pt-48 lg:pt-32 w-full flex flex-col items-center text-center" style={{ perspective: "600px" }}>
+          {/* Main Call to Action Line */}
+          <div className="flex justify-center items-baseline w-full flex-wrap gap-x-3 md:gap-x-4 gap-y-1 md:gap-y-2 mb-2 md:mb-4 lg:mb-4">
+            {ctaLine.map((word) => {
+              const delay = wordIndex * 120;
+              wordIndex++;
+              return (
+                <span
+                  key={word}
+                  className="font-bold text-4xl md:text-5xl lg:text-6xl 2xl:text-[80px] leading-[1.05] tracking-[-0.02em] gradient-text-hero-call"
+                  style={{
+                    opacity: 0,
+                    animation: `hero-word-enter 0.8s cubic-bezier(0.16,1,0.3,1) ${delay}ms forwards, gradient-shift 7s ease-in-out infinite`,
+                  }}
+                >
+                  {word}
+                </span>
+              );
+            })}
           </div>
+
+          {/* Sub lines */}
+          {titleLines.map((line, lineIdx) => (
+            <div
+              key={lineIdx}
+              className="flex justify-center items-baseline w-full flex-wrap gap-x-2 md:gap-x-3 gap-y-1 md:gap-y-2"
+            >
+              {line.map((word) => {
+                const delay = wordIndex * 120;
+                wordIndex++;
+                return (
+                  <span
+                    key={word}
+                    className="font-bold text-pure-white text-3xl md:text-4xl lg:text-5xl 2xl:text-[64px] leading-[1.05] tracking-[-0.02em]"
+                    style={{
+                      opacity: 0,
+                      animation: `hero-word-enter 0.8s cubic-bezier(0.16,1,0.3,1) ${delay}ms forwards`,
+                    }}
+                  >
+                    {word}
+                  </span>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
+
       {/* About Section */}
       <div className="relative w-full pt-16 md:pt-24 pb-10 md:pb-16 mt-4 lg:mt-8">
         <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9">
@@ -98,35 +145,25 @@ export const HeroWithAbout = (): JSX.Element => {
           {/* Description Section with Image */}
           <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-10 lg:gap-16 items-center">
             {/* Left Column - Text */}
-            <div className="flex flex-col gap-8 lg:gap-10 w-full">
-              <p className="text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
-                Інститут інформаційних технологій та бізнесу — простір, де
-                народжуються лідери цифрової ери. Ми поєднуємо технології,
-                бізнес та інновації, щоб готувати фахівців, які не просто
-                адаптуються до змін, а й створюють їх.
+            <div className="flex flex-col gap-6 md:gap-8 w-full border-l-[3px] border-brand-blue-light/30 pl-5 md:pl-8 py-2">
+              <p className="text-pure-white/90 text-lg md:text-xl xl:text-2xl 2xl:text-3xl leading-[1.6] md:leading-[1.7] font-light tracking-wide">
+                Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Ми поєднуємо технології, бізнес та інновації, щоб готувати фахівців, які не просто адаптуються до змін, а й створюють їх.
               </p>
-              <p className="text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
-                Наші студенти отримують актуальні знання та практичний досвід у
-                IT, аналітиці, управлінні й підприємництві. Співпраця з
-                провідними компаніями дає їм конкурентні переваги у світі
-                технологій та бізнесу.
-              </p>
-              <p className="italic text-pure-white text-base xl:text-lg 2xl:text-[30px] leading-[1.2]">
-                Обирай навчання, яке відповідає викликам майбутнього!
+              <p className="text-pure-white/90 text-lg md:text-xl xl:text-2xl 2xl:text-3xl leading-[1.6] md:leading-[1.7] font-light tracking-wide">
+                Наші студенти отримують актуальні знання та практичний досвід у IT, аналітиці, управлінні й підприємництві. Співпраця з провідними компаніями дає їм конкурентні переваги у світі технологій та бізнесу.
               </p>
             </div>
 
-            {/* Right Column - Image */}
-            <div className="hidden lg:flex justify-end">
-              <img
-                src="/images/Home/pexels-mikae.jpg"
-                alt="Студенти за роботою"
-                className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover rounded-2xl shadow-lg"
-                width={400}
-                height={533}
-                loading="lazy"
-              />
-            </div>
+            {/* Right Column - Image with zoom effect */}
+            <ScrollReveal variant="fade-left" delay={300} className="hidden lg:flex justify-end">
+              <div className="img-zoom-container rounded-2xl shadow-lg overflow-hidden">
+                <img
+                  src="/images/Home/pexels-mikae.jpg"
+                  alt="Students working"
+                  className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover"
+                />
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </div>

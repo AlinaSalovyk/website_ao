@@ -1,4 +1,5 @@
 import type { JSX } from "react";
+import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
 
 export const InstituteHero = (): JSX.Element => {
     return (
@@ -7,6 +8,17 @@ export const InstituteHero = (): JSX.Element => {
             <div
                 className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient"
             />
+
+            {/* Interactive Particle Canvas */}
+            <div className="absolute inset-0 pointer-events-none z-[2]">
+                <ParticleCanvas
+                    particleColor="rgba(100, 160, 255, 0.5)"
+                    lineColor="rgba(100, 160, 255, 0.12)"
+                    maxParticles={120}
+                    connectionDistance={140}
+                    mouseRadius={180}
+                />
+            </div>
 
             <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col pt-70 lg:pt-90 pb-10 lg:pb-16">
 

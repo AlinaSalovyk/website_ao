@@ -6,105 +6,14 @@ export interface DepartmentData {
   id: DepartmentId;
   title: string;
   programs: ProgramLevel[];
+  departmentLink?: string;
 }
 
 export const DEPARTMENTS: DepartmentData[] = [
   {
-    id: "finance",
-    title: "Кафедра фінансів та бізнесу",
-    programs: [
-      {
-        id: "01",
-        title: "Бакалаврат",
-        programs: [
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
-            title: '"Фінанси та бізнес-аналітика"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/d2_finansy_ta_biznes-analityka/",
-          },
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
-            title: '"Підприємництво та торгівля"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/076_pidpryiemnytstvo_ta_torhivlia/",
-          },
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
-            title: '"Підприємництво та управління бізнесом"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/d3_pidpryiemnytstvo_ta_upravlinnia_biznesom/",
-          },
-        ],
-      },
-      {
-        id: "02",
-        title: "Магістратура",
-        programs: [
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
-            title: '"Фінанси та бізнес-аналітика"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/d2_finansy_ta_biznes-analityka/",
-          },
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
-            title: '"Облік і оподаткування"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/d1_oblik_i_opodatkuvannia/",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "management",
-    title: "Кафедра менеджменту та маркетингу",
-    programs: [
-      {
-        id: "01",
-        title: "Бакалаврат",
-        programs: [
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
-            title: '"Data-маркетинг та аналітика"',
-          },
-        ],
-      },
-      {
-        id: "02",
-        title: "Магістратура",
-        programs: [
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
-            title: '"HR-менеджмент"',
-          },
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
-            title: '"Менеджмент продажів та логістика"',
-          },
-        ],
-      },
-      {
-        id: "03",
-        title: "Аспірантура",
-        programs: [
-          {
-            programType: "ONP",
-            label: "освітньо-наукова програма",
-            title: '"Менеджмент"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/d3_menedzhment/",
-          },
-        ],
-      },
-    ],
-  },
-  {
     id: "it",
     title: "Кафедра інформаційних технологій та аналітики даних",
+    departmentLink: "/information-technologies-and-data-analytics",
     programs: [
       {
         id: "01",
@@ -163,8 +72,104 @@ export const DEPARTMENTS: DepartmentData[] = [
     ],
   },
   {
+    id: "finance",
+    title: "Кафедра фінансів та бізнесу",
+    departmentLink: "/finance-and-business",
+    programs: [
+      {
+        id: "01",
+        title: "Бакалаврат",
+        programs: [
+          {
+            programType: "OPP",
+            label: "освітньо-професійна програма",
+            title: '"Фінанси та бізнес-аналітика"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/d2_finansy_ta_biznes-analityka/",
+          },
+          {
+            programType: "OPP",
+            label: "освітньо-професійна програма",
+            title: '"Підприємництво та торгівля"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/076_pidpryiemnytstvo_ta_torhivlia/",
+          },
+          {
+            programType: "OPP",
+            label: "освітньо-професійна програма",
+            title: '"Підприємництво та управління бізнесом"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/d3_pidpryiemnytstvo_ta_upravlinnia_biznesom/",
+          },
+        ],
+      },
+      {
+        id: "02",
+        title: "Магістратура",
+        programs: [
+          {
+            programType: "OPP",
+            label: "освітньо-професійна програма",
+            title: '"Фінанси та бізнес-аналітика"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/d2_finansy_ta_biznes-analityka/",
+          },
+          {
+            programType: "OPP",
+            label: "освітньо-професійна програма",
+            title: '"Облік і оподаткування"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/mag/itb/d1_oblik_i_opodatkuvannia/",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "management",
+    title: "Кафедра менеджменту та маркетингу",
+    departmentLink: "/management-and-marketing",
+    programs: [
+      {
+        id: "01",
+        title: "Бакалаврат",
+        programs: [
+          {
+            programType: "OPP",
+            label: "освітньо-професійна програма",
+            title: '"Data-маркетинг та аналітика"',
+          },
+        ],
+      },
+      {
+        id: "02",
+        title: "Магістратура",
+        programs: [
+          {
+            programType: "OPP",
+            label: "освітньо-професійна програма",
+            title: '"HR-менеджмент"',
+          },
+          {
+            programType: "OPP",
+            label: "освітньо-професійна програма",
+            title: '"Менеджмент продажів та логістика"',
+          },
+        ],
+      },
+      {
+        id: "03",
+        title: "Аспірантура",
+        programs: [
+          {
+            programType: "ONP",
+            label: "освітньо-наукова програма",
+            title: '"Менеджмент"',
+            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/d3_menedzhment/",
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: "math",
     title: "Кафедра математики та інтелектуальних обчислень",
+    departmentLink: "/mathematics-and-intelligent-computing",
     programs: [
       {
         id: "01",

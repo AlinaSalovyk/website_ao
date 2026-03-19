@@ -477,10 +477,6 @@
     transform: none;
   }
 
-  .gooey-particle {
-    animation: none;
-  }
-
   .gradient-text-animated,
   .gradient-text-hero-call {
     animation: none;

@@ -20,7 +20,7 @@ import { Footer } from "@/components/layout/Footer";
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header client:load headerPosition="absolute" />
       <main id="main-content" class="w-full">
-        <MMHeroWithAbout />
+        <MMHeroWithAbout client:load />
         <div
           class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]"
         >
@@ -30,7 +30,7 @@ import { Footer } from "@/components/layout/Footer";
         <MMLeadership />
         <MMScientificActivity />
       </main>
-      <Footer />
+      <Footer client:visible />
     </div>
   </div>
 </Layout>

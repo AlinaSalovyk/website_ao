@@ -1,181 +1,79 @@
-import { Separator } from "@/components/ui/separator";
-import type { JSX } from "react";
-import {
-  FacebookIcon,
-  InstagramIcon,
-  LinkedInIcon,
-} from "@/components/icons/social";
+import { TeamShowcase, type TeamMember, type TeamMemberSocial } from "@/components/sections/TeamShowcase";
+import { FacebookIcon } from "@/components/icons/social/FacebookIcon";
+import { InstagramIcon } from "@/components/icons/social/InstagramIcon";
+import { LinkedInIcon } from "@/components/icons/social/LinkedInIcon";
 
-interface LeadershipMember {
-  id: number;
-  name: string;
-  role: string;
-  email: string;
-  officeHours: string;
-  image: string;
-}
-
-const FALLBACK_IMAGE_SRC =
-  "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 220 280'><rect width='220' height='280' fill='%23e5e7eb'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236b7280' font-family='Arial,sans-serif' font-size='16'>No image</text></svg>";
-
-const leadershipData: LeadershipMember[] = [
-  {
-    id: 1,
-    name: "Новоселецький Олександр Миколайович",
-    role: "Директор Інституту ІТ та бізнесу, кандидат економічних наук, доцент кафедри інформаційних технологій та аналітики даних",
-    email: "oleksandr.novoseletskyy@oa.edu.ua",
-    officeHours:
-      "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-    image: "/images/InstituteManagement/novoseletskyy.jpg",
-  },
-  {
-    id: 2,
-    name: "Шулик Юлія Віталіївна",
-    role: "Заступник директора з навчально-наукової роботи, кандидат економічних наук, доцент, завідувач кафедри фінансів та бізнесу",
-    email: "yulia.shulyk@oa.edu.ua",
-    officeHours: "понеділок-п'ятниця: 8.30-17.30, обідня перерва 12.30-13.30",
-    image: "/images/InstituteManagement/shulyk.jpg",
-  },
-  {
-    id: 3,
-    name: "Чернявський Андрій Володимирович",
-    role: "Заступник директора з навчально-виховної роботи, викладач кафедри інформаційних технологій та аналітики даних",
-    email: "andrii.cherniavskyi@oa.edu.ua",
-    officeHours:
-      "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-    image: "/images/InstituteManagement/cherniavskyi.jpg",
-  },
-  {
-    id: 4,
-    name: "Козак Людмила Василівна",
-    role: "Заступник директора з питань якості освіти, доктор економічних наук, доцент кафедри менеджменту та маркетингу",
-    email: "lyudmyla.kozak@oa.edu.ua",
-    officeHours:
-      "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-    image: "/images/InstituteManagement/Kozak.jpg",
-  },
-  {
-    id: 5,
-    name: "Новак Анна Федорівна",
-    role: "Заступник директора з профорієнтаційної роботи, викладач кафедри фінансів та бізнесу",
-    email: "anna.novak@oa.edu.ua",
-    officeHours:
-      "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-    image: "/images/InstituteManagement/novak.jpg",
-  },
-  {
-    id: 6,
-    name: "Галецька Тамара Володимирівна",
-    role: "Старший лаборант",
-    email: "dekanat.ekonomichnyi@oa.edu.ua",
-    officeHours:
-      "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-    image: "/images/InstituteManagement/haletska.jpg",
-  },
+const defaultSocials: TeamMemberSocial[] = [
+    {
+        icon: <FacebookIcon iconSize="w-10 h-10 md:w-14 md:h-14" iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors" borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors" />,
+        href: "#",
+        label: "Facebook",
+    },
+    {
+        icon: <InstagramIcon iconSize="w-10 h-10 md:w-14 md:h-14" iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors" borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors" />,
+        href: "#",
+        label: "Instagram",
+    },
+    {
+        icon: <LinkedInIcon iconSize="w-10 h-10 md:w-14 md:h-14" iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors" borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors" />,
+        href: "#",
+        label: "LinkedIn",
+    },
 ];
 
-export const InstituteLeadership = (): JSX.Element => {
-  return (
-    <section
-      id="leadership"
-      className="w-full bg-white flex flex-col relative py-20"
-    >
-      <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9">
-        {/* Header */}
-        <h2 className="font-bold text-4xl md:text-5xl lg:text-[60px] text-black text-right mb-10 tracking-tight">
-          Керівництво інституту
-        </h2>
-        <Separator className="w-full bg-black/40 h-px mb-16" />
+const leadershipData: TeamMember[] = [
+    {
+        id: 1,
+        name: "Новоселецький Олександр Миколайович",
+        role: "Директор Інституту ІТ та бізнесу, кандидат економічних наук, доцент кафедри інформаційних технологій та аналітики даних",
+        email: "oleksandr.novoseletskyi@oa.edu.ua",
+        image: "/images/InstituteManagement/novoseletskyy.jpg",
+    },
+    {
+        id: 2,
+        name: "Шулик Юлія Віталіївна",
+        role: "Заступник директора з навчально-наукової роботи, кандидат економічних наук, доцент, завідувач кафедри фінансів та бізнесу",
+        email: "yulia.shulyk@oa.edu.ua",
+        image: "/images/InstituteManagement/shulyk.jpg",
+    },
+    {
+        id: 3,
+        name: "Чернявський Андрій Володимирович",
+        role: "Заступник директора з навчально-виховної роботи, викладач кафедри інформаційних технологій та аналітики даних",
+        email: "andrii.cherniavskyi@oa.edu.ua",
+        image: "/images/InstituteManagement/cherniavskyi.jpg",
+    },
+    {
+        id: 4,
+        name: "Козак Людмила Василівна",
+        role: "Заступник директора з питань якості освіти, доктор економічних наук, доцент кафедри менеджменту та маркетингу",
+        email: "lyudmyla.kozak@oa.edu.ua",
+        image: "/images/InstituteManagement/Kozak.jpg",
+    },
+    {
+        id: 5,
+        name: "Новак Анна Федорівна",
+        role: "Заступник директора з профорієнтаційної роботи, викладач кафедри фінансів та бізнесу",
+        email: "anna.novak@oa.edu.ua",
+        image: "/images/InstituteManagement/novak.jpg",
+    },
+    {
+        id: 6,
+        name: "Галецька Тамара Володимирівна",
+        role: "Старший лаборант",
+        email: "dekanat.ekonomichnyi@oa.edu.ua",
+        image: "/images/InstituteManagement/haletska.jpg",
+    },
+];
 
-        {/* Grid Content Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 lg:gap-x-32 gap-y-16 lg:gap-y-24 w-full lg:px-12 xl:px-20">
-          {leadershipData.map((member) => (
-            <div
-              key={member.id}
-              className="flex flex-col sm:flex-row items-start gap-6 lg:gap-10 w-full group"
-            >
-              {/* Image */}
-              <div className="w-full sm:w-[220px] h-[280px] overflow-hidden rounded-[20px] flex-shrink-0 bg-gray-200">
-                <img
-                  src={member.image}
-                  alt={member.name}
-                  className="w-full h-full object-cover grayscale-0"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = FALLBACK_IMAGE_SRC;
-                  }}
-                />
-              </div>
-
-              {/* Text Info */}
-              <div className="flex flex-col text-left py-2 flex-1 h-full">
-                {/* Name */}
-                <h3 className="font-bold text-[15px] md:text-[17px] text-black mb-1.5">
-                  {member.name}
-                </h3>
-
-                {/* Role */}
-                <p className="text-[10px] md:text-[11px] text-black max-w-[320px] leading-snug mb-10 font-medium">
-                  {member.role}
-                </p>
-
-                {/* Contact Info */}
-                <div className="flex flex-col mb-8 mt-auto">
-                  <p className="text-[11px] md:text-[12px] text-black mb-0.5">
-                    Контактна інформація:
-                  </p>
-                  <a
-                    href={`mailto:${member.email}`}
-                    className="text-[11px] md:text-[12px] text-black hover:underline"
-                  >
-                    e-mail: {member.email}
-                  </a>
-                </div>
-
-                {/* Social Links */}
-                <div className="flex gap-4 lg:gap-6 mt-auto">
-                  <a
-                    href="#"
-                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social"
-                  >
-                    <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
-                      <InstagramIcon
-                        iconColor="fill-pure-black"
-                        borderColor="fill-transparent"
-                        iconSize="size-full"
-                      />
-                    </div>
-                  </a>
-                  <a
-                    href="#"
-                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social"
-                  >
-                    <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
-                      <FacebookIcon
-                        iconColor="fill-pure-black"
-                        borderColor="fill-transparent"
-                        iconSize="size-full"
-                      />
-                    </div>
-                  </a>
-                  <a
-                    href="#"
-                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social"
-                  >
-                    <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
-                      <LinkedInIcon
-                        iconColor="fill-pure-black"
-                        borderColor="fill-transparent"
-                        iconSize="size-full"
-                      />
-                    </div>
-                  </a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+export const InstituteLeadership = () => {
+    return (
+        <TeamShowcase
+            members={leadershipData}
+            defaultSocials={defaultSocials}
+            badge="Наша команда"
+            heading="Керівництво інституту"
+            sectionId="leadership"
+        />
+    );
 };
