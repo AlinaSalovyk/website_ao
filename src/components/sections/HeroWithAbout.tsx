@@ -8,7 +8,7 @@ interface HeroWithAboutProps {
 }
 
 const defaultShapeImage = {
-  src: "/images/IT/3D Black Chrome Shape1.png",
+  src: "/images/IT/3D Black Chrome Shape1.webp",
   alt: "Element black chrome",
   width: 1426,
   height: 1456,

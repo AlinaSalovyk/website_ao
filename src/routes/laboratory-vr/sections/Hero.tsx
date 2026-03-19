@@ -34,7 +34,7 @@ export const Hero = (): JSX.Element => {
                     alt=""
                     role="presentation"
                     aria-hidden="true"
-                    src="/images/Home/3d-black-chrome-shape.png"
+                    src="/images/Home/3d-black-chrome-shape.webp"
                     style={{ filter: 'hue-rotate(-30deg) brightness(1.2) saturate(2.0)' }}
                     decoding="async"
                     fetchPriority="high"
@@ -92,7 +92,7 @@ export const Hero = (): JSX.Element => {
                         <div className="hidden lg:flex justify-end w-full">
                             <div className="w-full max-w-[400px] 2xl:max-w-[460px] h-auto aspect-[480/678] relative overflow-hidden rounded-[20px]">
                                 <img
-                                    src="/images/Labs/laboratory-vr-hero-img.jpg"
+                                    src="/images/Labs/laboratory-vr-hero-img.webp"
                                     alt="VR laboratory visualization"
                                     className="w-full h-full object-cover mix-blend-lighten opacity-90"
                                     loading="lazy"

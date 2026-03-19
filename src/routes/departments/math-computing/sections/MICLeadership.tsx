@@ -12,7 +12,7 @@ const leadershipData: LeadershipData = {
       role: "Завідувач кафедри, доктор фізико-математичних наук, професор",
       email: "anatolii.nikitin@oa.edu.ua",
       officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/InstituteManagement/nikitin.jpg",
+      image: "/images/InstituteManagement/nikitin.webp",
     },
     {
       id: 2,
@@ -20,7 +20,7 @@ const leadershipData: LeadershipData = {
       role: "Старший лаборант",
       email: "kafedra.mio@oa.edu.ua",
       officeHours: "понеділок - п'ятниця: 8.30 – 12.30",
-      image: "/images/InstituteManagement/yasinska_ya.jpg",
+      image: "/images/InstituteManagement/yasinska_ya.webp",
     },
   ],
 };

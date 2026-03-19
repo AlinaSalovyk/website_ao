@@ -7,7 +7,7 @@ const scientificActivityData: ScientificActivityData = {
   headingVariant: "compact",
   contentSpacing: "my",
   image: {
-    src: "/images/logo-compact.jpg",
+    src: "/images/logo-compact.webp",
     alt: "Scientific activity",
     width: 684,
     height: 672,

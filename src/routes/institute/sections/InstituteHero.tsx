@@ -58,7 +58,7 @@ export const InstituteHero = (): JSX.Element => {
 
                     <div className="hidden lg:block relative w-full xl:w-[320px] 2xl:w-[400px] aspect-[3/4] rounded-xl overflow-hidden lg:-mt-20 mx-auto animate-fade-in opacity-0 [--animation-delay:400ms]">
                         <img
-                            src="/images/IT/ScientificActivity.jpg"
+                            src="/images/IT/ScientificActivity.webp"
                             alt="Digital Innovation"
                             className="w-full h-full object-cover"
                             decoding="async"

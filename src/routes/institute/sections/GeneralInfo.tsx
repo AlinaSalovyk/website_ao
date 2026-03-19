@@ -37,7 +37,7 @@ export const GeneralInfo = (): JSX.Element => {
                     {/* Right Column: Image (Span 1) */}
                     <div className="relative w-full h-full min-h-[400px] lg:min-h-auto rounded-lg overflow-hidden">
                         <img
-                            src="/images/TheInstitute/GeneralInformation.png"
+                            src="/images/TheInstitute/GeneralInformation.webp"
                             alt="General Information"
                             className="w-full h-full object-cover"
                             loading="lazy"

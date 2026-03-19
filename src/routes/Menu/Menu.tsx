@@ -11,19 +11,19 @@ const educationalPrograms = [
         title: "Бакалаврат",
         description: "І рівень вищої освіти",
         image:
-            "/images/EducationalPrograms/BachelorsDegree.png",
+            "/images/EducationalPrograms/BachelorsDegree.webp",
     },
     {
         title: "Магістратура",
         description: "ІІ рівень вищої освіти",
         image:
-            "/images/EducationalPrograms/Magistracy.png",
+            "/images/EducationalPrograms/Magistracy.webp",
     },
     {
         title: "Аспірантура",
         description: "ІІІ освітньо-науковий рівень",
         image:
-            "/images/EducationalPrograms/PostgraduateStudies.png",
+            "/images/EducationalPrograms/PostgraduateStudies.webp",
     },
 ];
 

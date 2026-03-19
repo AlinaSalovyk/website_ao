@@ -12,7 +12,7 @@
  *   import { TeamShowcase, type TeamMember } from "@/components/sections/TeamShowcase";
  *
  *   const members: TeamMember[] = [
- *     { id: 1, name: "Іванко Петренко Олегович", role: "Директор", email: "ivan@oa.edu.ua", image: "/images/ivan.jpg" },
+ *     { id: 1, name: "Іванко Петренко Олегович", role: "Директор", email: "ivan@oa.edu.ua", image: "/images/ivan.webp" },
  *   ];
  *
  *   <TeamShowcase members={members} />

@@ -25,7 +25,7 @@ const educationalPrograms: EducationalProgram[] = [
             { name: "D3 «Менеджмент» (ОПП «Підприємництво та управління бізнесом»)", link: "https://vstup.oa.edu.ua/specialnosti/business_and_trade" },
             { name: "D5 «Маркетинг» (ОПП «DATA-маркетинг та аналітика»)", link: "https://vstup.oa.edu.ua/specialnosti/data-marketing-ta-analitika" },
         ],
-        image: "/images/EducationalPrograms/BachelorsDegree.png",
+        image: "/images/EducationalPrograms/BachelorsDegree.webp",
     },
     {
         title: "Магістратура",
@@ -36,7 +36,7 @@ const educationalPrograms: EducationalProgram[] = [
             { name: "D3 «Менеджмент» (ОПП «HR-менеджмент»)", link: "https://vstup.oa.edu.ua/specialnosti/hr-menedzhment" },
             { name: "D1 «Облік і оподаткування» (ОПП «Облік і оподаткування»)", link: "https://vstup.oa.edu.ua/specialnosti/oblik-i-opodatkuvannya" },
         ],
-        image: "/images/EducationalPrograms/Magistracy.png",
+        image: "/images/EducationalPrograms/Magistracy.webp",
     },
     {
         title: "Аспірантура",
@@ -44,7 +44,7 @@ const educationalPrograms: EducationalProgram[] = [
             { name: "F1 «Прикладна математика» (ОНП «Прикладна математика»)", link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/f1_prykladna_matematyka/" },
             { name: "D3 «Менеджмент» (ОНП «Менеджмент»)", link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/doc/itb/d3_menedzhment/" },
         ],
-        image: "/images/EducationalPrograms/PostgraduateStudies.png",
+        image: "/images/EducationalPrograms/PostgraduateStudies.webp",
     },
 ];
 

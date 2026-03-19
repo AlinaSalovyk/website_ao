@@ -18,13 +18,13 @@ const heroWithAboutData: HeroWithAboutData = {
     "Стань лідером, який формує майбутнє бізнесу!",
   ],
   aboutImage: {
-    src: "/images/Departments/dmm-hero.jpg",
+    src: "/images/Departments/dmm-hero.webp",
     alt: "Студенти за роботою",
     width: 4096,
     height: 2732,
   },
   backgroundShapeImage: {
-    src: "/images/IT/3D Black Chrome Shape1.png",
+    src: "/images/IT/3D Black Chrome Shape1.webp",
     alt: "Element black chrome",
     width: 1426,
     height: 1456,

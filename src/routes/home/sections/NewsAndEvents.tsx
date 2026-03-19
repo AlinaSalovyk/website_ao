@@ -11,7 +11,7 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage: "/images/Home/news-background.png",
+        backgroundImage: "/images/Home/news-background.webp",
         link: "Дізнатися більше",
     },
     {
@@ -20,7 +20,7 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage: "/images/Home/news-background-1.png",
+        backgroundImage: "/images/Home/news-background-1.webp",
         link: "Дізнатися більше",
     },
     {
@@ -29,7 +29,7 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage: "/images/Home/news-background-2.png",
+        backgroundImage: "/images/Home/news-background-2.webp",
         link: "Дізнатися більше",
     },
     {
@@ -38,7 +38,7 @@ const newsItems = [
         date: "Feb 19",
         title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
         readTime: "MIN READ",
-        backgroundImage: "/images/Home/news-background-3.png",
+        backgroundImage: "/images/Home/news-background-3.webp",
         link: "Дізнатися більше",
     },
 ];

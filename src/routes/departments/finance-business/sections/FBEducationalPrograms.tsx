@@ -8,7 +8,7 @@ const educationalProgramsData: EducationalProgramsData = {
   title: "Загальна інформація",
   titleAlign: "right",
   image: {
-    src: "/images/Departments/dfb-info.jpg",
+    src: "/images/Departments/dfb-info.webp",
     alt: "Finance and business",
   },
   introText:

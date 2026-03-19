@@ -11,7 +11,7 @@ const leadershipData: LeadershipData = {
       role: "Завідувач кафедри, доктор економічних наук, професор",
       email: "olha.kryvytska@oa.edu.ua",
       officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/IT/kryvytska.jpg",
+      image: "/images/IT/kryvytska.webp",
     },
     {
       id: 2,
@@ -19,7 +19,7 @@ const leadershipData: LeadershipData = {
       role: "Старший лаборант",
       email: "kafedra.mmite@oa.edu.ua",
       officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/IT/poruchnyk.jpg",
+      image: "/images/IT/poruchnyk.webp",
     },
   ],
 };

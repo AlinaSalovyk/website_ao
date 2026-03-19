@@ -16,7 +16,7 @@ export const Leadership = (): JSX.Element => {
                         <div className="flex-shrink-0 mx-auto md:mx-0">
                             <div className="w-full aspect-square md:w-[240px] md:h-[260px] md:aspect-auto rounded-2xl overflow-hidden bg-gray-200">
                                 <img
-                                    src="/images/InstituteManagement/Melnychuk.jpg"
+                                    src="/images/InstituteManagement/Melnychuk.webp"
                                     alt="Мельничук Олександр Павлович"
                                     className="w-full h-full object-cover"
                                     loading="lazy"
