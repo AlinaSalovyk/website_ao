@@ -12,7 +12,7 @@ const leadershipData: LeadershipData = {
       role: "Завідувач кафедри, доктор економічних наук, доцент кафедри економічної теорії, менеджменту і маркетингу",
       email: "lyudmyla.kozak@oa.edu.ua",
       officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/InstituteManagement/Kozak.jpg",
+      image: "/images/InstituteManagement/Kozak.webp",
     },
     {
       id: 2,
@@ -20,7 +20,7 @@ const leadershipData: LeadershipData = {
       role: "Методист кафедри",
       email: "kafedra.et@oa.edu.ua",
       officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/InstituteManagement/fominyh.jpg",
+      image: "/images/InstituteManagement/fominyh.webp",
     },
   ],
 };

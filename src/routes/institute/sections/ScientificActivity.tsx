@@ -77,7 +77,7 @@ export const ScientificActivity = (): JSX.Element => {
     };
 
     return (
-        <section id="scientific-activity" className="w-full bg-[#00113B] py-24 text-white">
+        <section id="scientific-activity" className="w-full bg-footer-bg py-24 text-white">
             <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9">
                 <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] gap-16 lg:gap-24">
 
@@ -97,18 +97,18 @@ export const ScientificActivity = (): JSX.Element => {
                                     className="w-full flex items-center justify-between py-6 group text-left cursor-pointer"
                                 >
                                     <div className="flex items-start gap-1 md:gap-2">
-                                        <span className="text-sm md:text-base font-medium text-[#0E53FF] mt-1">
+                                        <span className="text-sm md:text-base font-medium text-accent-number mt-1">
                                             {item.id}
                                         </span>
                                         <span className="text-lg md:text-xl font-medium transition-colors group-hover:text-blue-400 text-left">
                                             {item.title}
                                         </span>
                                     </div>
-                                    <div className="relative flex items-center justify-center w-6 h-6">
-                                        <div className="absolute w-4 h-[1px] bg-white transition-transform duration-300" />
+                                    <div className="grid place-items-center w-6 h-6">
+                                        <div className="w-4 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
                                         <div
                                             className={cn(
-                                                "absolute w-4 h-[1px] bg-white transition-transform duration-300",
+                                                "w-4 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
                                                 openItems.includes(item.id) ? "rotate-0" : "-rotate-90"
                                             )}
                                         />

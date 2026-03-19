@@ -11,7 +11,7 @@ const leadershipData: LeadershipData = {
       role: "Завідувач кафедри, кандидат економічних наук, доцент кафедри фінансів та бізнесу",
       email: "yulia.shulyk@oa.edu.ua",
       officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/InstituteManagement/shulyk.jpg",
+      image: "/images/InstituteManagement/shulyk.webp",
     },
     {
       id: 2,
@@ -19,7 +19,7 @@ const leadershipData: LeadershipData = {
       role: "Методист кафедри",
       email: "kafedra.finansiv@oa.edu.ua",
       officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/InstituteManagement/hontar.jpg",
+      image: "/images/InstituteManagement/hontar.webp",
     },
   ],
 };

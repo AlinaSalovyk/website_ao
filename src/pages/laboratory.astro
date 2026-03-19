@@ -18,12 +18,12 @@ import { Footer } from "@/components/layout/Footer";
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header client:load headerPosition="absolute" />
       <main id="main-content" class="w-full">
-        <Hero />
+        <Hero client:load />
         <AboutLaboratory />
         <Leadership />
         <Gallery client:visible />
       </main>
-      <Footer />
+      <Footer client:visible />
     </div>
   </div>
 </Layout>

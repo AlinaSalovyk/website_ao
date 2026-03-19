@@ -20,14 +20,14 @@ import { Footer } from "@/components/layout/Footer";
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header client:load />
       <main id="main-content" class="w-full">
-        <InstituteHero />
+        <InstituteHero client:load />
         <GeneralInfo />
         <Education client:visible />
         <StudentLife />
         <ScientificActivity client:visible />
         <InstituteLeadership client:visible />
       </main>
-      <Footer />
+      <Footer client:visible />
     </div>
   </div>
 </Layout>

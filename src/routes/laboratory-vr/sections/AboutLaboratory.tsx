@@ -31,7 +31,7 @@ export const AboutLaboratory = (): JSX.Element => {
           <div className="hidden lg:block lg:col-span-3">
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
-                src="/images/EducationalPrograms/BachelorsDegree.png"
+                src="/images/EducationalPrograms/BachelorsDegree.webp"
                 alt="VR моделювання"
                 className="w-full h-full object-cover"
                 loading="lazy"
@@ -75,7 +75,7 @@ export const AboutLaboratory = (): JSX.Element => {
           <div className="hidden lg:block lg:col-span-3">
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
-                src="/images/EducationalPrograms/Magistracy.png"
+                src="/images/EducationalPrograms/Magistracy.webp"
                 alt="Інфраструктура лабораторії"
                 className="w-full h-full object-cover"
                 loading="lazy"
@@ -119,7 +119,7 @@ export const AboutLaboratory = (): JSX.Element => {
           <div className="hidden lg:block lg:col-span-3">
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
-                src="/images/EducationalPrograms/PostgraduateStudies.png"
+                src="/images/EducationalPrograms/PostgraduateStudies.webp"
                 alt="Дослідницькі проєкти"
                 className="w-full h-full object-cover"
                 loading="lazy"

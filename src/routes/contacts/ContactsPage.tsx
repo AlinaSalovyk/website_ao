@@ -57,7 +57,7 @@ export const ContactsPage = (): JSX.Element => {
             <div className="flex flex-col sm:flex-row items-start gap-6 lg:gap-10 w-full group">
               <div className="w-full sm:w-[220px] h-[280px] overflow-hidden rounded-2xl flex-shrink-0 bg-gray-200">
                 <img
-                  src="/images/InstituteManagement/novoseletskyy.jpg"
+                  src="/images/InstituteManagement/novoseletskyy.webp"
                   alt="Новоселецький Олександр Миколайович"
                   className="w-full h-full object-cover object-top"
                   loading="lazy"

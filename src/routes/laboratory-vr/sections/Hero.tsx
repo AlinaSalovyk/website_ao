@@ -1,4 +1,5 @@
 import type { JSX } from "react";
+import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
 
 const tags = ["СИМУЛЯЦІЇ", "VR", "AR", "ARCHVIZ", "WEBGL", "ЦИФРОВІ ДВІЙНИКИ", "ІГРОВІ ТЕХНОЛОГІЇ"];
 
@@ -9,6 +10,17 @@ export const Hero = (): JSX.Element => {
             <div
                 className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-black"
             />
+
+            {/* Interactive Particle Canvas */}
+            <div className="absolute inset-0 pointer-events-none z-[2]">
+                <ParticleCanvas
+                    particleColor="rgba(100, 160, 255, 0.5)"
+                    lineColor="rgba(100, 160, 255, 0.12)"
+                    maxParticles={120}
+                    connectionDistance={140}
+                    mouseRadius={180}
+                />
+            </div>
 
             <div
                 className="absolute -top-0 left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
@@ -22,7 +34,7 @@ export const Hero = (): JSX.Element => {
                     alt=""
                     role="presentation"
                     aria-hidden="true"
-                    src="/images/Home/3d-black-chrome-shape.png"
+                    src="/images/Home/3d-black-chrome-shape.webp"
                     style={{ filter: 'hue-rotate(-30deg) brightness(1.2) saturate(2.0)' }}
                     decoding="async"
                     fetchPriority="high"
@@ -80,7 +92,7 @@ export const Hero = (): JSX.Element => {
                         <div className="hidden lg:flex justify-end w-full">
                             <div className="w-full max-w-[400px] 2xl:max-w-[460px] h-auto aspect-[480/678] relative overflow-hidden rounded-[20px]">
                                 <img
-                                    src="/images/Labs/laboratory-vr-hero-img.jpg"
+                                    src="/images/Labs/laboratory-vr-hero-img.webp"
                                     alt="VR laboratory visualization"
                                     className="w-full h-full object-cover mix-blend-lighten opacity-90"
                                     loading="lazy"

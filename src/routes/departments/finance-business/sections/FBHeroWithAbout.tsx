@@ -17,13 +17,13 @@ const heroWithAboutData: HeroWithAboutData = {
     "Долучайся до тих, хто формує фінансову стабільність, розвиває підприємництво та будує успішне економічне завтра!",
   ],
   aboutImage: {
-    src: "/images/Departments/dfb-hero.jpg",
+    src: "/images/Departments/dfb-hero.webp",
     alt: "Студенти за роботою",
     width: 4096,
     height: 2732,
   },
   backgroundShapeImage: {
-    src: "/images/IT/3D Black Chrome Shape1.png",
+    src: "/images/IT/3D Black Chrome Shape1.webp",
     alt: "Element black chrome",
     width: 1426,
     height: 1456,

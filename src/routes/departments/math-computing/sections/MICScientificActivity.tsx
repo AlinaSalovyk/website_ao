@@ -9,7 +9,7 @@ const scientificActivityData: ScientificActivityData = {
   contentSpacing: "my",
   imageFit: "contain",
   image: {
-    src: "/images/Departments/dmc-logo.png",
+    src: "/images/Departments/dmc-logo.webp",
     alt: "Scientific activity",
     width: 684,
     height: 672,

@@ -18,7 +18,7 @@ const leadershipData: LeadershipMember[] = [
         role: "Директор Інституту ІТ та бізнесу, кандидат економічних наук, доцент кафедри інформаційних технологій та аналітики даних",
         email: "oleksandr.novoseletskyy@oa.edu.ua",
         officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-        image: "/images/InstituteManagement/novoseletskyy.jpg"
+        image: "/images/InstituteManagement/novoseletskyy.webp"
     },
     {
         id: 2,
@@ -26,7 +26,7 @@ const leadershipData: LeadershipMember[] = [
         role: "Заступник директора з навчально-наукової роботи, кандидат економічних наук, доцент, завідувач кафедри фінансів та бізнесу",
         email: "yulia.shulyk@oa.edu.ua",
         officeHours: "понеділок-п'ятниця: 8.30-17.30, обідня перерва 12.30-13.30",
-        image: "/images/InstituteManagement/shulyk.jpg"
+        image: "/images/InstituteManagement/shulyk.webp"
     },
     {
         id: 3,
@@ -34,7 +34,7 @@ const leadershipData: LeadershipMember[] = [
         role: "Заступник директора з навчально-виховної роботи, викладач кафедри інформаційних технологій та аналітики даних",
         email: "andrii.cherniavskyi@oa.edu.ua",
         officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-        image: "/images/InstituteManagement/cherniavskyi.jpg"
+        image: "/images/InstituteManagement/cherniavskyi.webp"
     },
     {
         id: 4,
@@ -42,7 +42,7 @@ const leadershipData: LeadershipMember[] = [
         role: "Заступник директора з питань якості освіти, доктор економічних наук, доцент кафедри менеджменту та маркетингу",
         email: "lyudmyla.kozak@oa.edu.ua",
         officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-        image: "/images/InstituteManagement/Kozak.jpg"
+        image: "/images/InstituteManagement/Kozak.webp"
     },
     {
         id: 5,
@@ -50,7 +50,7 @@ const leadershipData: LeadershipMember[] = [
         role: "Заступник директора з профорієнтаційної роботи, викладач кафедри фінансів та бізнесу",
         email: "anna.novak@oa.edu.ua",
         officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-        image: "/images/InstituteManagement/novak.jpg"
+        image: "/images/InstituteManagement/novak.webp"
     },
     {
         id: 6,
@@ -58,7 +58,7 @@ const leadershipData: LeadershipMember[] = [
         role: "Старший лаборант",
         email: "dekanat.ekonomichnyi@oa.edu.ua",
         officeHours: "понеділок - п'ятниця: 8.30-17.30, обідня перерва: 12.30-13.30",
-        image: "/images/InstituteManagement/haletska.jpg"
+        image: "/images/InstituteManagement/haletska.webp"
     }
 ];
 

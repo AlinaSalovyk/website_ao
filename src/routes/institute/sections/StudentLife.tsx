@@ -24,7 +24,7 @@ export const StudentLife = (): JSX.Element => {
                         <div className="order-1 lg:order-2 w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
                             {/* Placeholder generic student image */}
                             <img
-                                src="/images/TheInstitute/StudentLife.jpg"
+                                src="/images/TheInstitute/StudentLife.webp"
                                 alt="Students working together"
                                 className="w-full h-full object-cover"
                                 loading="lazy"
@@ -40,7 +40,7 @@ export const StudentLife = (): JSX.Element => {
                         <div className="order-1 w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
                             {/* Placeholder generic laptop image */}
                             <img
-                                src="/images/TheInstitute/Pexels.jpg"
+                                src="/images/TheInstitute/Pexels.webp"
                                 alt="Student working on laptop"
                                 className="w-full h-full object-cover"
                                 loading="lazy"
