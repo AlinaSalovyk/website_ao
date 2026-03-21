@@ -8,7 +8,6 @@ import { InstituteLeadership } from "@/routes/home/sections/InstituteLeadership"
 import { InnovativeEducation } from "@/routes/home/sections/InnovativeEducation";
 import { NewsAndEvents } from "@/routes/home/sections/NewsAndEvents";
 import { Footer } from "@/components/layout/Footer";
-import { CursorEffects } from "@/components/effects/CursorEffects";
 import { IntroAnimation } from "@/components/effects/IntroAnimation";
 ---
 
@@ -18,9 +17,6 @@ import { IntroAnimation } from "@/components/effects/IntroAnimation";
 >
   <!-- First-visit intro animation (typewriter effect) -->
   <IntroAnimation client:load />
-
-  <!-- Custom cursor (only on pointer:fine devices) -->
-  <CursorEffects client:load />
 
   <div class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg">
     <div class="flex w-full relative flex-col items-start min-h-screen">

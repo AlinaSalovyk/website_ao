@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { CursorEffects } from "@/components/effects/CursorEffects";
 
 interface Props {
 	title?: string;
@@ -113,6 +114,7 @@ const ogImageUrl = toAbsoluteUrl(ogImage);
 		<div id="site-wrapper">
 			<slot />
 		</div>
+		<CursorEffects client:load />
 	</body>
 </html>
 
