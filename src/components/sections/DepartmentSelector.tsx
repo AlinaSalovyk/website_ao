@@ -164,8 +164,8 @@ export const DepartmentSelector = ({
           </AnimatePresence>
         </div>
 
-        {/* Desktop Sidebar (md and up) */}
-        <div className="hidden md:flex flex-col w-[350px] lg:w-[450px] shrink-0 border-l border-white/5 relative">
+        {/* Desktop Sidebar (md and up)  */}
+        <div className="hidden md:flex flex-col w-[350px] lg:w-[450px] shrink-0 border-l border-white/5 relative self-start">
           {departments.map((dept) => {
             const isActive = activeId === dept.id;
             return (
@@ -189,7 +189,7 @@ export const DepartmentSelector = ({
                   className={cn(
                     "absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300",
                     isActive &&
-                      "opacity-100 bg-white/[0.04] backdrop-blur-sm"
+                    "opacity-100 bg-white/[0.04] backdrop-blur-sm"
                   )}
                 />
 
