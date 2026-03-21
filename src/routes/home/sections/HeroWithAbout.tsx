@@ -1,6 +1,7 @@
 import { useEffect, useRef, type JSX } from "react";
 import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
+import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
 
 const tags = ["ІТ", "БІЗНЕС", "МЕНЕДЖМЕНТ", "ФІНАНСИ", "МАРКЕТИНГ"];
 
@@ -115,6 +116,15 @@ export const HeroWithAbout = (): JSX.Element => {
               })}
             </div>
           ))}
+          <div
+            className="mt-6 md:mt-12"
+            style={{
+              opacity: 0,
+              animation: `hero-word-enter 1s cubic-bezier(0.16,1,0.3,1) ${wordIndex * 120 + 200}ms forwards`,
+            }}
+          >
+            <InnovationsBadge />
+          </div>
         </div>
       </div>
 
