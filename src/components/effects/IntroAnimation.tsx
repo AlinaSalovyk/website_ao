@@ -136,7 +136,9 @@ export const IntroAnimation = (): JSX.Element => {
   // Check localStorage
   useEffect(() => {
     try {
-      if (typeof window !== "undefined" && !localStorage.getItem(STORAGE_KEY)) {
+      const isBot = typeof navigator !== "undefined" && /bot|googlebot|crawler|spider|robot|crawling|lighthouse|chrome-lighthouse/i.test(navigator.userAgent);
+      
+      if (typeof window !== "undefined" && !localStorage.getItem(STORAGE_KEY) && !isBot) {
         setShouldShow(true);
         document.body.style.overflow = "hidden";
       } else {

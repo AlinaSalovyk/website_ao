@@ -162,7 +162,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                 {/* Nav */}
                 <div className="flex flex-col gap-4">
-                  <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Навігація</h4>
+                  <p className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Навігація</p>
                   <div className="flex flex-col gap-3">
                     {navigationItems.map((item, idx) => (
                       <a key={idx} href={item.href} className="text-white hover:text-brand-blue-soft text-sm font-medium transition-colors duration-300 w-fit">
@@ -174,7 +174,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                 {/* Contacts */}
                 <div className="flex flex-col gap-4">
-                  <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Контакти</h4>
+                  <p className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Контакти</p>
                   <div className="flex flex-col gap-3">
                     <a href="https://www.oa.edu.ua" className="text-white hover:text-brand-blue-soft text-sm font-medium transition-colors duration-300 w-fit">www.oa.edu.ua</a>
                     <a href="mailto:press@oa.edu.ua" className="text-white hover:text-brand-blue-soft text-sm font-medium transition-colors duration-300 w-fit">press@oa.edu.ua</a>
@@ -184,7 +184,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                 {/* Address */}
                 <div className="flex flex-col gap-4">
-                  <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Адреса</h4>
+                  <p className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Адреса</p>
                   <a
                     href="https://www.google.com/maps/place/...Острог"
                     target="_blank"
@@ -198,7 +198,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
 
                 {/* Socials */}
                 <div className="flex flex-col gap-4 lg:items-end w-full">
-                  <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest lg:text-right w-full">Соцмережі</h4>
+                  <p className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest lg:text-right w-full">Соцмережі</p>
                   <div className="flex items-center gap-4">
                     {footerSocials.map((icon, index) => {
                       const linkHref = footerSocialLinkByAlt[icon.alt as keyof typeof footerSocialLinkByAlt] || "#";

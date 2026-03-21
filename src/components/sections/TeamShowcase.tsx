@@ -287,7 +287,7 @@ export const TeamShowcase = ({
                       <Mail className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                     </div>
                     <div className="flex flex-col justify-center">
-                      <span className="text-[10px] md:text-xs text-blue-500 font-semibold uppercase tracking-wider mb-0.5 md:mb-1">
+                      <span className="text-[10px] md:text-xs text-blue-600 font-semibold uppercase tracking-wider mb-0.5 md:mb-1">
                         Електронна пошта
                       </span>
                       <a
@@ -303,7 +303,7 @@ export const TeamShowcase = ({
                     <>
                       <div className="h-px w-full bg-gray-100" />
                       <div className="flex flex-col gap-2 text-left w-full mt-2">
-                        <span className="text-[10px] md:text-xs text-blue-500 font-semibold uppercase tracking-wider">
+                        <span className="text-[10px] md:text-xs text-blue-600 font-semibold uppercase tracking-wider">
                           Соціальні мережі
                         </span>
                         <div className="flex gap-4 items-center mt-1">
