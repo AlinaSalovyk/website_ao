@@ -64,7 +64,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
   const footerVisibleSocials = Object.keys(footerSocialLinkByAlt) as ("Instagram" | "Facebook" | "LinkedIn" | "TikTok" | "YouTube")[];
 
   const footerSocials = getSocialIcons(
-    "fill-white",          
+    "fill-white",
     "fill-transparent",
     "size-full",
     footerVisibleSocials
@@ -165,7 +165,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                   <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Навігація</h4>
                   <div className="flex flex-col gap-3">
                     {navigationItems.map((item, idx) => (
-                      <a key={idx} href={item.href} className="text-white hover:text-blue-200 text-sm font-medium transition-colors duration-300 w-fit">
+                      <a key={idx} href={item.href} className="text-white hover:text-brand-blue-soft text-sm font-medium transition-colors duration-300 w-fit">
                         {item.label}
                       </a>
                     ))}
@@ -176,8 +176,8 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                 <div className="flex flex-col gap-4">
                   <h4 className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">Контакти</h4>
                   <div className="flex flex-col gap-3">
-                    <a href="https://www.oa.edu.ua" className="text-white hover:text-blue-200 text-sm font-medium transition-colors duration-300 w-fit">www.oa.edu.ua</a>
-                    <a href="mailto:press@oa.edu.ua" className="text-white hover:text-blue-200 text-sm font-medium transition-colors duration-300 w-fit">press@oa.edu.ua</a>
+                    <a href="https://www.oa.edu.ua" className="text-white hover:text-brand-blue-soft text-sm font-medium transition-colors duration-300 w-fit">www.oa.edu.ua</a>
+                    <a href="mailto:press@oa.edu.ua" className="text-white hover:text-brand-blue-soft text-sm font-medium transition-colors duration-300 w-fit">press@oa.edu.ua</a>
                     <span className="text-white text-sm font-medium">+38 067 879 2526</span>
                   </div>
                 </div>
@@ -189,7 +189,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                     href="https://www.google.com/maps/place/...Острог"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-white hover:text-blue-200 text-sm font-medium leading-relaxed transition-colors duration-300 w-fit"
+                    className="text-white hover:text-brand-blue-soft text-sm font-medium leading-relaxed transition-colors duration-300 w-fit"
                   >
                     35800, м. Острог<br />
                     вул. Семінарська, 2
@@ -210,7 +210,7 @@ export const Footer = ({ hideMainContent = false }: FooterProps): JSX.Element =>
                           href={linkHref}
                           target={isExternal ? "_blank" : undefined}
                           rel={isExternal ? "noopener noreferrer" : undefined}
-                          className="w-14 h-14 md:w-16 md:h-16 rounded-full border-[1.5px] border-white/30 flex items-center justify-center hover:border-white hover:bg-white/10 hover:-translate-y-2 transition-all duration-300 group shadow-lg"
+                          className="w-14 h-14 md:w-16 md:h-16 rounded-full border-[1.5px] border-white/30 flex items-center justify-center hover:border-white hover:bg-white/10 transition-all duration-300 group shadow-lg"
                           aria-label={icon.alt}
                         >
                           <div className="w-8 h-8 md:w-10 md:h-10 transition-all duration-300 flex items-center justify-center">

@@ -43,7 +43,7 @@ export const ScientificActivity = ({
       id={sectionId}
       className="w-full bg-pure-white flex flex-col relative overflow-hidden"
     >
-      <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 pt-20 pb-0">
+      <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 pt-20 pb-32 md:pb-48">
         <header className="flex flex-col items-start relative w-full gap-8 translate-y-[-1rem] animate-fade-in opacity-0">
           <h2 className={headingVariantClasses[headingVariant]}>{title}</h2>
           <Separator className="w-full bg-separator-gray h-px" />
