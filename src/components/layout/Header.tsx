@@ -42,9 +42,12 @@ export const Header = ({
   }, [handleScroll]);
 
   const isSticky = scrollState !== "top";
+  const isRelativeHeader = headerPosition === "relative";
 
   const positionClass = isSticky
-    ? `fixed top-0 left-0 ${scrollState === "visible" ? "translate-y-0" : "-translate-y-full"}`
+    ? isRelativeHeader
+      ? `sticky top-0 left-0 ${scrollState === "visible" ? "translate-y-0" : "-translate-y-full"}`
+      : `fixed top-0 left-0 ${scrollState === "visible" ? "translate-y-0" : "-translate-y-full"}`
     : headerPosition;
 
   const bgClass = isSticky
