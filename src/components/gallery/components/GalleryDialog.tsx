@@ -1,26 +1,27 @@
 import type { JSX } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  X,
-  Maximize,
-  Minimize,
-  ZoomIn,
-  ZoomOut,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+
+import { ToolbarButton } from "@/components/gallery/components/ToolbarButton";
+import { VideoUnavailableIcon } from "@/components/gallery/components/VideoUnavailableIcon";
+import { useFullscreen, useKeyboardNavigation } from "@/components/gallery/hooks";
+import type { GalleryItem } from "@/components/gallery/types";
 import {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
   DialogClose,
+  DialogOverlay,
+  DialogPortal,
 } from "@/components/ui/dialog";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
-
-import type { GalleryItem } from "../types";
-import { useFullscreen, useKeyboardNavigation } from "../hooks";
-import { ToolbarButton } from "./ToolbarButton";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Maximize,
+  Minimize,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 
 type GalleryDialogProps = {
   items: GalleryItem[];
@@ -172,9 +173,8 @@ export function GalleryDialog({
               {isVideo ? (
                 currentItem?.id && videoErrors.has(currentItem.id) ? (
                   <div className="flex flex-col items-center justify-center gap-3 text-white/60">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
-                    <span className="text-sm">Відео не може бути відтворене</span>
-                    <span className="text-xs text-white/40">Формат не підтримується браузером</span>
+                    <VideoUnavailableIcon size={48} />
+                    <span className="text-sm">Відео недоступне</span>
                   </div>
                 ) : (
                   <video

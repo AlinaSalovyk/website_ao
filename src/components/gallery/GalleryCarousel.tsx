@@ -1,8 +1,8 @@
 import type { JSX, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useRef, useState } from "react";
 
-import { ArrowIcon, GalleryDialog } from "./components";
-import type { GalleryCarouselProps } from "./types";
+import { ArrowIcon, GalleryDialog, VideoUnavailableIcon } from "@/components/gallery/components";
+import type { GalleryCarouselProps } from "@/components/gallery/types";
 
 const SCROLL_EDGE_OFFSET = 5;
 
@@ -142,10 +142,7 @@ export function GalleryCarousel({
               {item.type === "video" ? (
                 videoErrors.has(item.id) ? (
                   <span className="flex flex-col items-center justify-center h-full w-full text-gray-400 text-xs gap-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/>
-                      <path d="m8.5 8.5 7 7"/>
-                    </svg>
+                    <VideoUnavailableIcon />
                     <span>Відео недоступне</span>
                   </span>
                 ) : (
@@ -153,7 +150,7 @@ export function GalleryCarousel({
                     src={item.src}
                     muted
                     playsInline
-                    preload="metadata"
+                    preload="none"
                     className="pointer-events-none h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     width={327}
                     height={199}
