@@ -37,6 +37,8 @@ export function GalleryDialog({
 }: GalleryDialogProps): JSX.Element {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [videoErrors, setVideoErrors] = useState<Set<string>>(new Set());
+  const [thumbErrors, setThumbErrors] = useState<Set<string>>(new Set());
   const contentRef = useRef<HTMLDivElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -168,7 +170,13 @@ export function GalleryDialog({
 
             <div className="flex h-full w-full items-center justify-center px-12 md:px-16">
               {isVideo ? (
-                <>
+                currentItem?.id && videoErrors.has(currentItem.id) ? (
+                  <div className="flex flex-col items-center justify-center gap-3 text-white/60">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+                    <span className="text-sm">Відео не може бути відтворене</span>
+                    <span className="text-xs text-white/40">Формат не підтримується браузером</span>
+                  </div>
+                ) : (
                   <video
                     ref={videoRef}
                     key={currentItem?.id}
@@ -177,20 +185,13 @@ export function GalleryDialog({
                     autoPlay
                     playsInline
                     className="max-h-full max-w-full select-none object-contain"
-                    onError={(e) => {
-                      const el = e.currentTarget;
-                      el.removeAttribute("src");
-                      el.classList.add("hidden");
-                      const sibling = el.parentElement?.querySelector(".video-error-fallback");
-                      if (sibling) sibling.classList.remove("hidden");
+                    onError={() => {
+                      if (currentItem?.id) {
+                        setVideoErrors((prev) => new Set(prev).add(currentItem.id));
+                      }
                     }}
                   />
-                  <div className="video-error-fallback hidden flex flex-col items-center justify-center gap-3 text-white/60">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
-                    <span className="text-sm">Відео не може бути відтворене</span>
-                    <span className="text-xs text-white/40">Формат не підтримується браузером</span>
-                  </div>
-                </>
+                )
               ) : (
                 <img
                   src={currentItem?.src}
@@ -244,24 +245,22 @@ export function GalleryDialog({
                   )}
                 >
                   {item.type === "video" ? (
-                    <video
-                      src={item.src}
-                      muted
-                      playsInline
-                      preload="metadata"
-                      className="h-16 w-24 object-cover"
-                      onError={(e) => {
-                        const el = e.currentTarget;
-                        el.remove();
-                        const parent = e.currentTarget.parentElement;
-                        if (parent && !parent.querySelector(".thumb-fallback")) {
-                          const span = document.createElement("span");
-                          span.className = "thumb-fallback flex items-center justify-center h-16 w-24 bg-white/10 text-white/40 text-[10px]";
-                          span.textContent = "Відео";
-                          parent.appendChild(span);
-                        }
-                      }}
-                    />
+                    thumbErrors.has(item.id) ? (
+                      <span className="flex items-center justify-center h-16 w-24 bg-white/10 text-white/40 text-[10px]">
+                        Відео
+                      </span>
+                    ) : (
+                      <video
+                        src={item.src}
+                        muted
+                        playsInline
+                        preload="metadata"
+                        className="h-16 w-24 object-cover"
+                        onError={() => {
+                          setThumbErrors((prev) => new Set(prev).add(item.id));
+                        }}
+                      />
+                    )
                   ) : (
                     <img
                       src={item.src}
