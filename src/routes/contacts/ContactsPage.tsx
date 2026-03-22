@@ -141,6 +141,7 @@ export const ContactsPage = (): JSX.Element => {
                   <div className="flex gap-4 lg:gap-6">
                     <a
                       href="#"
+                      aria-label="Instagram"
                       className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social"
                     >
                       <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
@@ -153,6 +154,7 @@ export const ContactsPage = (): JSX.Element => {
                     </a>
                     <a
                       href="#"
+                      aria-label="Facebook"
                       className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social"
                     >
                       <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
@@ -165,6 +167,7 @@ export const ContactsPage = (): JSX.Element => {
                     </a>
                     <a
                       href="#"
+                      aria-label="LinkedIn"
                       className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-pure-black flex items-center justify-center transition-all hover:bg-pure-black group/social"
                     >
                       <div className="w-9 h-9 lg:w-20 lg:h-30 group-hover/social:invert group-hover/social:brightness-0 group-hover/social:filter transition-all flex items-center justify-center translate-y-[1px]">
@@ -239,7 +242,7 @@ export const ContactsPage = (): JSX.Element => {
                 />
               </div>
 
-              <div className="flex flex-col gap-2 relative">
+              <div className="flex flex-col gap-2">
                 <label
                   htmlFor="contact-message"
                   className="text-[10px] uppercase font-bold tracking-wider text-pure-black"
@@ -249,9 +252,10 @@ export const ContactsPage = (): JSX.Element => {
                 <textarea
                   id="contact-message"
                   name="message"
+                  required
                   placeholder="Розкажи нам більше, або постав питання"
                   rows={1}
-                  className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 text-pure-black overflow-y-auto w-full absolute top-[18px] left-0 md:bg-[#fcfcfc] sm:bg-[#fcfcfc]"
+                  className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent resize-none placeholder:text-black/20 text-pure-black overflow-y-auto w-full"
                   style={{
                     minHeight: "32px",
                     maxHeight: "80px",
@@ -261,13 +265,13 @@ export const ContactsPage = (): JSX.Element => {
                     e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
                   }}
                 ></textarea>
-                <div className="w-full h-[32px] invisible"></div>
               </div>
 
               <div className="flex flex-col gap-3 mt-6">
                 <button
                   type="submit"
                   disabled={status === "sending"}
+                  aria-busy={status === "sending"}
                   className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 cursor-pointer hover:opacity-70 transition-opacity group bg-transparent relative z-10 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <span className="text-xs font-medium text-pure-black">
