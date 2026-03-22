@@ -1,6 +1,7 @@
 import { useState, type ReactNode, type JSX } from "react";
 
 import { Menu } from "@/routes/Menu/Menu";
+import { Logo } from "@/components/icons/Logo";
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -46,7 +47,7 @@ export const Header = ({
         </button>
 
         <div className="flex justify-center flex-1 md:flex-none">
-          <a href="/" className="inline-block cursor-pointer">
+          <a aria-label="Головна сторінка" href="/" className="inline-block cursor-pointer opacity-90 hover:opacity-100 transition-opacity">
             {customLogo ??
               (logoSrc ? (
                 <img
@@ -60,9 +61,7 @@ export const Header = ({
                   height={32}
                 />
               ) : (
-                <span className="italic text-sm sm:text-3xl">
-                  ІТБ — інновації твого життя
-                </span>
+                <Logo className="h-7 sm:h-9 md:h-10 w-auto" />
               ))}
           </a>
         </div>

@@ -1,5 +1,6 @@
 import type { JSX } from "react";
 import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
+import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
 
 const tags = ["РОБОТОТЕХНІКА", "ВБУДОВАНІ СИСТЕМИ", "EMBEDDED AI", "ПРОТОТИПУВАННЯ"];
 
@@ -49,6 +50,8 @@ export const Hero = (): JSX.Element => {
                     <h1 className="font-bold text-pure-white text-5xl md:text-6xl lg:text-7xl 2xl:text-[100px] leading-[1.0] tracking-[-0.02em]">
                         Науково-дослідна лабораторія робототехніки та вбудованих систем з прикладним AI
                     </h1>
+
+                    <InnovationsBadge className="mt-8" />
                 </div>
             </div>
 

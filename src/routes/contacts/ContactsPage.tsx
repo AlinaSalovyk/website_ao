@@ -83,7 +83,7 @@ export const ContactsPage = (): JSX.Element => {
   return (
     <>
       <div className="w-full bg-pure-white flex flex-col items-center">
-        <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9 flex flex-col pt-10 pb-20 gap-16 md:gap-24">
+        <div className="w-full max-w-7xl 2xl:max-w-screen-2xl px-4 md:px-9 flex flex-col pt-10 pb-32 md:pb-48 gap-16 md:gap-24">
           {/* Hero Section */}
           <div className="flex flex-col gap-6 translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:200ms]">
             <div className="flex flex-col gap-8 md:flex-row md:justify-between md:items-start">

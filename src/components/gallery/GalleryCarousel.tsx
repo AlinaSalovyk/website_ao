@@ -68,7 +68,7 @@ export function GalleryCarousel({
 
   return (
     <section
-      className="w-full bg-pure-white py-20 text-pure-black"
+      className="w-full bg-pure-white pt-20 pb-32 md:pb-48 text-pure-black"
       aria-label="Галерея лабораторії"
     >
       <div className="container mx-auto flex flex-col px-4 md:px-9">

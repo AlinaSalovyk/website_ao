@@ -193,13 +193,13 @@ export const TeamShowcase = ({
 
         {/* Mobile Only: Avatar Dock (Top) */}
         {renderAvatarDock(
-          "mb-8 w-full flex flex-col items-center lg:hidden"
+          "mb-2 md:mb-3 w-full flex flex-col items-center lg:hidden"
         )}
 
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-24 items-center justify-center w-full max-w-5xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-0 md:gap-4 lg:gap-24 items-center lg:items-stretch justify-center w-full max-w-5xl mx-auto">
           {/* Interactive 3D Image Card */}
           <div
-            className="w-full max-w-[200px] sm:max-w-[260px] md:max-w-[360px] lg:max-w-none lg:w-5/12 shrink-0 flex justify-center"
+            className="w-full max-w-[12.5rem] sm:max-w-[16.25rem] md:max-w-[22.5rem] lg:max-w-[26.25rem] xl:max-w-[28.125rem] shrink-0 flex justify-center"
             style={{ perspective: "1000px" }}
           >
             <motion.div
@@ -211,7 +211,7 @@ export const TeamShowcase = ({
                 rotateY,
                 transformStyle: "preserve-3d",
               }}
-              className="relative w-full aspect-[4/5] rounded-[2rem] shadow-2xl bg-white border border-gray-100 cursor-crosshair group p-2.5 md:p-3.5 lg:p-4"
+              className="relative w-full aspect-[4/5] lg:aspect-auto lg:h-full rounded-[2rem] shadow-2xl bg-white border border-gray-100 cursor-crosshair group p-2.5 md:p-3.5 lg:p-4"
             >
               <div
                 className="relative w-full h-full rounded-[1.25rem] md:rounded-[1.5rem] overflow-hidden bg-gray-50"
@@ -220,31 +220,29 @@ export const TeamShowcase = ({
                   transform: "translateZ(20px)",
                 }}
               >
-                <AnimatePresence mode="popLayout" initial={false}>
+                <AnimatePresence initial={false}>
                   <motion.img
                     key={currentMember.id}
                     src={currentMember.image}
                     alt={currentMember.name}
                     initial={{
                       opacity: 0,
-                      scale: 1.1,
                       filter: "blur(8px)",
                     }}
                     animate={{
                       opacity: 1,
-                      scale: 1,
                       filter: "blur(0px)",
                     }}
                     exit={{
                       opacity: 0,
-                      scale: 0.95,
                       filter: "blur(8px)",
                     }}
                     transition={{
-                      duration: 0.6,
-                      ease: [0.25, 1, 0.5, 1],
+                      duration: 0.5,
+                      ease: "easeInOut",
                     }}
                     className="absolute inset-0 w-full h-full object-cover"
+                    style={{ transformOrigin: "center center" }}
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =
                         "https://via.placeholder.com/400x500?text=No+Image";
@@ -262,32 +260,32 @@ export const TeamShowcase = ({
           </div>
 
           {/* Member Details & Contact Panel */}
-          <div className="w-full lg:w-7/12 flex flex-col items-center lg:items-start text-center lg:text-left mt-8 lg:mt-0 min-w-0">
+          <div className="w-full flex-1 flex flex-col items-center lg:items-start text-center lg:text-left mt-3 lg:mt-0 min-w-0">
             <div className="relative w-full flex flex-col items-center lg:items-start min-w-0">
               <div className="w-full flex flex-col items-center lg:items-start min-w-0">
-                <h3 className="font-bold text-[clamp(1.5rem,5vw,2.25rem)] lg:text-[clamp(1.75rem,3.5vw,3rem)] text-pure-black mb-3 md:mb-4 tracking-tight leading-tight px-2 md:px-0 w-full max-w-full">
+                <h3 className="font-bold text-[clamp(1.25rem,4vw,1.75rem)] lg:text-[clamp(1.5rem,2.5vw,2.25rem)] text-pure-black mb-1 md:mb-2 tracking-tight leading-tight px-2 md:px-0 w-full max-w-full min-h-0 lg:min-h-[80px] block">
                   <span className="inline-block whitespace-nowrap">
                     {currentMember.name.split(" ").slice(0, 2).join(" ")}
                   </span>
                   {currentMember.name.split(" ").length > 2 && (
-                    <span className="block text-[clamp(1.125rem,4vw,1.75rem)] lg:text-[clamp(1.25rem,2.5vw,2rem)] text-pure-black/90 mt-1 md:mt-2">
+                    <span className="block text-[clamp(1.125rem,3vw,1.25rem)] lg:text-[clamp(1.25rem,2vw,1.75rem)] text-pure-black/90 mt-1 md:mt-2">
                       {currentMember.name.split(" ").slice(2).join(" ")}
                     </span>
                   )}
                 </h3>
 
-                <p className="text-base md:text-xl text-gray-500 font-light mb-8 md:mb-10 max-w-lg leading-relaxed px-4 md:px-0 min-h-[100px] lg:min-h-[120px]">
+                <p className="text-base md:text-xl text-gray-500 font-light mb-3 md:mb-5 max-w-lg leading-relaxed px-4 md:px-0 min-h-0 lg:min-h-[100px] block">
                   {currentMember.role}
                 </p>
 
                 {/* Premium Floating Contact Panel */}
-                <div className="flex flex-col gap-3 md:gap-5 bg-white border border-gray-100 shadow-[0_8px_30px_var(--color-shadow-card)] p-4 md:p-8 rounded-2xl md:rounded-[1.5rem] w-full max-w-[360px] md:max-w-md mx-auto lg:mx-0">
+                <div className="flex flex-col gap-3 md:gap-5 bg-white border border-gray-100 shadow-[0_8px_30px_var(--color-shadow-card)] p-4 md:p-6 rounded-2xl md:rounded-[1.5rem] w-full max-w-[360px] md:max-w-md mx-auto lg:mx-0">
                   <div className="flex flex-row items-center md:items-start justify-start gap-3 md:gap-4 text-left">
                     <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
                       <Mail className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
                     </div>
                     <div className="flex flex-col justify-center">
-                      <span className="text-[10px] md:text-xs text-blue-500 font-semibold uppercase tracking-wider mb-0.5 md:mb-1">
+                      <span className="text-[10px] md:text-xs text-blue-600 font-semibold uppercase tracking-wider mb-0.5 md:mb-1">
                         Електронна пошта
                       </span>
                       <a
@@ -303,7 +301,7 @@ export const TeamShowcase = ({
                     <>
                       <div className="h-px w-full bg-gray-100" />
                       <div className="flex flex-col gap-2 text-left w-full mt-2">
-                        <span className="text-[10px] md:text-xs text-blue-500 font-semibold uppercase tracking-wider">
+                        <span className="text-[10px] md:text-xs text-blue-600 font-semibold uppercase tracking-wider">
                           Соціальні мережі
                         </span>
                         <div className="flex gap-4 items-center mt-1">
@@ -327,7 +325,7 @@ export const TeamShowcase = ({
 
                 {/* Desktop Only: Avatar Dock (Bottom) */}
                 {renderAvatarDock(
-                  "mt-12 w-full max-w-md mx-0 relative z-20 hidden lg:flex flex-col items-start"
+                  "mt-6 md:mt-8 w-full max-w-md mx-0 relative z-20 hidden lg:flex flex-col items-start"
                 )}
               </div>
             </div>
