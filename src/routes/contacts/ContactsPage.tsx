@@ -34,7 +34,7 @@ const faqItems = [
   },
 ];
 
-const RECIPIENT_EMAIL = "93e01c640924de638e41437f227fc24e";
+const RECIPIENT_ID = "93e01c640924de638e41437f227fc24e";
 
 export const ContactsPage = (): JSX.Element => {
   const [status, setStatus] = useState<"idle" | "sending">("idle");
@@ -42,20 +42,20 @@ export const ContactsPage = (): JSX.Element => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setStatus("sending");
 
     const formData = new FormData(e.currentTarget);
     const honeypot = formData.get("_honeypot");
     if (honeypot) return;
 
+    setStatus("sending");
+
     const firstName = formData.get("firstName") as string;
     const lastName = formData.get("lastName") as string;
     const email = formData.get("email") as string;
-    const region = formData.get("region") as string;
     const message = formData.get("message") as string;
 
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
+      const res = await fetch(`https://formsubmit.co/ajax/${RECIPIENT_ID}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
