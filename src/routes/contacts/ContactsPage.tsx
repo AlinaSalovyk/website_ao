@@ -1,4 +1,6 @@
-import type { JSX } from "react";
+import { useState, useRef, type JSX } from "react";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/layout/Footer";
 import { Separator } from "@/components/ui/separator";
 import * as Accordion from "@radix-ui/react-accordion";
@@ -31,7 +33,53 @@ const faqItems = [
   },
 ];
 
+const RECIPIENT_EMAIL = "93e01c640924de638e41437f227fc24e";
+
 export const ContactsPage = (): JSX.Element => {
+  const [status, setStatus] = useState<"idle" | "sending">("idle");
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setStatus("sending");
+
+    const formData = new FormData(e.currentTarget);
+    const honeypot = formData.get("_honeypot");
+    if (honeypot) return;
+
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const email = formData.get("email") as string;
+    const region = formData.get("region") as string;
+    const message = formData.get("message") as string;
+
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          _subject: "Нове повідомлення з сайту Інституту ІТ та бізнесу",
+          _template: "box",
+          "Ім'я": `${firstName} ${lastName}`,
+          "Email відправника": email,
+          "Повідомлення": `Someone sent email with text: ${message}`,
+        }),
+      });
+
+      if (res.ok) {
+        setStatus("idle");
+        formRef.current?.reset();
+        toast.success("Повідомлення успішно надіслано!", { position: "top-center" });
+      } else {
+        setStatus("idle");
+        toast.error("Помилка надсилання. Спробуйте ще раз.", { position: "top-center" });
+      }
+    } catch {
+      setStatus("idle");
+      toast.error("Помилка надсилання. Спробуйте ще раз.", { position: "top-center" });
+    }
+  };
+
   return (
     <>
       <div className="w-full bg-pure-white flex flex-col items-center">
@@ -133,9 +181,11 @@ export const ContactsPage = (): JSX.Element => {
 
             {/* Right Column - Contact Form */}
             <form
+              ref={formRef}
               className="flex flex-col gap-8 w-full"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={handleSubmit}
             >
+              <input type="text" name="_honeypot" style={{ display: "none" }} tabIndex={-1} autoComplete="off" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="flex flex-col gap-2">
                   <label
@@ -188,22 +238,6 @@ export const ContactsPage = (): JSX.Element => {
                 />
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="contact-region"
-                  className="text-[10px] uppercase font-bold tracking-wider text-pure-black"
-                >
-                  Область
-                </label>
-                <input
-                  id="contact-region"
-                  name="region"
-                  type="text"
-                  placeholder="Вибери одну.."
-                  className="border-b border-pure-black/20 pb-2 outline-none focus:border-pure-black transition-colors bg-transparent placeholder:text-black/20 text-pure-black"
-                />
-              </div>
-
               <div className="flex flex-col gap-2 relative">
                 <label
                   htmlFor="contact-message"
@@ -229,28 +263,34 @@ export const ContactsPage = (): JSX.Element => {
                 <div className="w-full h-[32px] invisible"></div>
               </div>
 
-              <button
-                type="submit"
-                className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 mt-6 cursor-pointer hover:opacity-70 transition-opacity group bg-transparent relative z-10"
-              >
-                <span className="text-xs font-medium text-pure-black">
-                  Надіслати повідомлення
-                </span>
-                <svg
-                  width="18"
-                  height="12"
-                  viewBox="0 0 18 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="transform group-hover:translate-x-1 transition-transform"
+              <div className="flex flex-col gap-3 mt-6">
+                <button
+                  type="submit"
+                  disabled={status === "sending"}
+                  className="w-fit flex gap-4 items-center border-b border-pure-black pb-1 cursor-pointer hover:opacity-70 transition-opacity group bg-transparent relative z-10 disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                  <path
-                    d="M12.5 1L17 6M17 6L12.5 11M17 6H0"
-                    stroke="black"
-                    strokeWidth="1"
-                  />
-                </svg>
-              </button>
+                  <span className="text-xs font-medium text-pure-black">
+                    {status === "sending" ? "Надсилання..." : "Надіслати повідомлення"}
+                  </span>
+                  {status !== "sending" && (
+                    <svg
+                      width="18"
+                      height="12"
+                      viewBox="0 0 18 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="transform group-hover:translate-x-1 transition-transform"
+                    >
+                      <path
+                        d="M12.5 1L17 6M17 6L12.5 11M17 6H0"
+                        stroke="black"
+                        strokeWidth="1"
+                      />
+                    </svg>
+                  )}
+                </button>
+
+              </div>
             </form>
           </div>
 
@@ -283,7 +323,8 @@ export const ContactsPage = (): JSX.Element => {
           </div>
         </div>
       </div>
-      <Footer hideMainContent={true} />
+      <Footer hideMainContent />
+      <Toaster />
     </>
   );
 };
