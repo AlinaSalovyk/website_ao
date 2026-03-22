@@ -16,6 +16,9 @@ export function GalleryCarousel({
   const [videoErrors, setVideoErrors] = useState<Set<string>>(new Set());
 
   const openGallery = (index: number) => {
+    // Pause and reset any playing preview video before opening the dialog
+    const videos = containerRef.current?.querySelectorAll("video");
+    videos?.forEach((video) => { video.pause(); video.currentTime = 0; });
     setDialogIndex(index);
     setDialogOpen(true);
   };
