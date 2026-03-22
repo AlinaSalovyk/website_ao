@@ -6,7 +6,7 @@ const galleryImages = [
   {
     id: "vr-lab-1",
     src: "/images/Labs/vr/photo_2026-03-04_11-53-42.webp",
-    alt: "VR/Game Development Lab: загальний вигляд лабораторії",
+    alt: "VR-лабораторія: загальний вигляд лабораторії",
   },
   {
     id: "vr-lab-2",
