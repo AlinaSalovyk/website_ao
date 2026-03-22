@@ -62,7 +62,7 @@ export const ContactsPage = (): JSX.Element => {
           _template: "box",
           "Ім'я": `${firstName} ${lastName}`,
           "Email відправника": email,
-          "Повідомлення": `Someone sent email with text: ${message}`,
+          "Повідомлення": message,
         }),
       });
 
