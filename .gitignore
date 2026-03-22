@@ -22,3 +22,7 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# large video files (upload manually to server)
+public/images/Labs/robo/interview.mp4
+public/images/Labs/robo/Tetris.mp4
