@@ -254,7 +254,7 @@ export function GalleryDialog({
                         src={item.src}
                         muted
                         playsInline
-                        preload="metadata"
+                        preload="none"
                         className="h-16 w-24 object-cover"
                         onError={() => {
                           setThumbErrors((prev) => new Set(prev).add(item.id));
