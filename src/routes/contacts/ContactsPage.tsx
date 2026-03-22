@@ -1,3 +1,4 @@
+import type React from "react";
 import { useState, useRef, type JSX } from "react";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
