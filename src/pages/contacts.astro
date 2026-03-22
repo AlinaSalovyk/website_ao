@@ -3,20 +3,19 @@ import Layout from "@/layouts/Layout.astro";
 import { Header } from "@/components/layout/Header";
 import { ContactsPage } from "@/routes/contacts/ContactsPage";
 
-const pageDescription = "Зв'яжіться з нами — контактна інформація Інституту інформаційних технологій та бізнесу Національного університету «Острозька академія».";
+const pageDescription =
+  "Зв'яжіться з нами — контактна інформація Інституту інформаційних технологій та бізнесу Національного університету «Острозька академія».";
 ---
 
 <Layout
   title="Контакти | Інститут ІТ та бізнесу НаУОА"
   description={pageDescription}
 >
-  <div class="overflow-hidden w-full min-h-screen flex justify-center bg-pure-white">
+  <div
+    class="overflow-hidden w-full min-h-screen flex justify-center bg-pure-white"
+  >
     <div class="flex w-full relative flex-col items-start min-h-screen">
-      <Header
-        client:load
-        variant="light"
-        logoSrc="/images/Contacts/LogoContacts.webp"
-      />
+      <Header client:load variant="light" />
       <main id="main-content" class="w-full">
         <ContactsPage client:idle />
       </main>

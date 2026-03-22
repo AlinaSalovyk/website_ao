@@ -16,7 +16,7 @@ export const Header = ({
   variant = "default",
   headerPosition = "relative",
   customLogo,
-  logoSrc,
+  logoSrc = "/images/logo/logo-icon.webp",
 }: HeaderProps): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollState, setScrollState] = useState<"top" | "hidden" | "visible">("top");
@@ -63,7 +63,7 @@ export const Header = ({
     <>
       {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
       <header
-        className={`${positionClass} ${bgClass} w-full flex justify-between items-center px-4 md:px-9 py-5 z-50 transition-transform duration-300`}
+        className={`${positionClass} ${bgClass} w-full flex justify-between items-center px-4 md:px-9 py-0 z-50 transition-transform duration-300`}
       >
         <button
           onClick={() => setIsMenuOpen(true)}
@@ -94,12 +94,12 @@ export const Header = ({
                 <img
                   src={logoSrc}
                   alt="Логотип Інституту інформаційних технологій та бізнесу НаУОА"
-                  className="h-8 md:h-10 w-auto"
+
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
-                  width={83}
-                  height={32}
+                  width={80}
+                  height={80}
                 />
               ) : (
                 <Logo className="h-7 sm:h-9 md:h-10 w-auto" />
