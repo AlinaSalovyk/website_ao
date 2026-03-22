@@ -3,7 +3,7 @@ import { Toaster as Sonner } from "sonner";
 
 const Toaster = (props: React.ComponentProps<typeof Sonner>) => (
   <Sonner
-    position="bottom-right"
+    position="top-center"
     toastOptions={{
       classNames: {
         toast: "bg-white text-pure-black border border-pure-black/10 shadow-lg",

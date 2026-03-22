@@ -1,6 +1,5 @@
 import type React from "react";
 import { useState, useRef, type JSX } from "react";
-import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { Footer } from "@/components/layout/Footer";
 import { Separator } from "@/components/ui/separator";
@@ -36,17 +35,25 @@ const faqItems = [
 
 const RECIPIENT_ID = "93e01c640924de638e41437f227fc24e";
 
+const showToast = async (type: "success" | "error", message: string) => {
+  const { toast } = await import("sonner");
+  toast[type](message);
+};
+
 export const ContactsPage = (): JSX.Element => {
   const [status, setStatus] = useState<"idle" | "sending">("idle");
   const formRef = useRef<HTMLFormElement>(null);
+  const isSubmitting = useRef(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isSubmitting.current) return;
 
     const formData = new FormData(e.currentTarget);
     const honeypot = formData.get("_honeypot");
     if (honeypot) return;
 
+    isSubmitting.current = true;
     setStatus("sending");
 
     const firstName = formData.get("firstName") as string;
@@ -68,16 +75,16 @@ export const ContactsPage = (): JSX.Element => {
       });
 
       if (res.ok) {
-        setStatus("idle");
         formRef.current?.reset();
-        toast.success("Повідомлення успішно надіслано!", { position: "top-center" });
+        showToast("success", "Повідомлення успішно надіслано!");
       } else {
-        setStatus("idle");
-        toast.error("Помилка надсилання. Спробуйте ще раз.", { position: "top-center" });
+        showToast("error", "Помилка надсилання. Спробуйте ще раз.");
       }
     } catch {
+      showToast("error", "Помилка надсилання. Спробуйте ще раз.");
+    } finally {
       setStatus("idle");
-      toast.error("Помилка надсилання. Спробуйте ще раз.", { position: "top-center" });
+      isSubmitting.current = false;
     }
   };
 
