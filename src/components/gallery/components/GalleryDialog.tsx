@@ -39,6 +39,7 @@ export function GalleryDialog({
   const [isZoomed, setIsZoomed] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(contentRef);
 
@@ -65,6 +66,7 @@ export function GalleryDialog({
   const goTo = useCallback(
     (direction: "prev" | "next") => {
       setIsZoomed(false);
+      videoRef.current?.pause();
       setCurrentIndex((prev) =>
         direction === "prev"
           ? prev <= 0
@@ -84,6 +86,7 @@ export function GalleryDialog({
   useKeyboardNavigation(open, goPrev, goNext);
 
   const currentItem = items[currentIndex];
+  const isVideo = currentItem?.type === "video";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -125,16 +128,18 @@ export function GalleryDialog({
                 )}
               </ToolbarButton>
 
-              <ToolbarButton
-                onClick={() => setIsZoomed((z) => !z)}
-                label={isZoomed ? "Зменшити" : "Збільшити"}
-              >
-                {isZoomed ? (
-                  <ZoomOut className="size-5" />
-                ) : (
-                  <ZoomIn className="size-5" />
-                )}
-              </ToolbarButton>
+              {!isVideo && (
+                <ToolbarButton
+                  onClick={() => setIsZoomed((z) => !z)}
+                  label={isZoomed ? "Зменшити" : "Збільшити"}
+                >
+                  {isZoomed ? (
+                    <ZoomOut className="size-5" />
+                  ) : (
+                    <ZoomIn className="size-5" />
+                  )}
+                </ToolbarButton>
+              )}
 
               <DialogClose asChild>
                 <button
@@ -162,15 +167,41 @@ export function GalleryDialog({
             </button>
 
             <div className="flex h-full w-full items-center justify-center px-12 md:px-16">
-              <img
-                src={currentItem?.src}
-                alt={currentItem?.alt}
-                className={cn(
-                  "max-h-full max-w-full select-none object-contain transition-transform duration-300",
-                  isZoomed && "scale-150",
-                )}
-                draggable={false}
-              />
+              {isVideo ? (
+                <>
+                  <video
+                    ref={videoRef}
+                    key={currentItem?.id}
+                    src={currentItem?.src}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="max-h-full max-w-full select-none object-contain"
+                    onError={(e) => {
+                      const el = e.currentTarget;
+                      el.removeAttribute("src");
+                      el.classList.add("hidden");
+                      const sibling = el.parentElement?.querySelector(".video-error-fallback");
+                      if (sibling) sibling.classList.remove("hidden");
+                    }}
+                  />
+                  <div className="video-error-fallback hidden flex flex-col items-center justify-center gap-3 text-white/60">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg>
+                    <span className="text-sm">Відео не може бути відтворене</span>
+                    <span className="text-xs text-white/40">Формат не підтримується браузером</span>
+                  </div>
+                </>
+              ) : (
+                <img
+                  src={currentItem?.src}
+                  alt={currentItem?.alt}
+                  className={cn(
+                    "max-h-full max-w-full select-none object-contain transition-transform duration-300",
+                    isZoomed && "scale-150",
+                  )}
+                  draggable={false}
+                />
+              )}
             </div>
 
             <button
@@ -200,10 +231,11 @@ export function GalleryDialog({
                   key={item.id}
                   type="button"
                   onClick={() => {
+                    videoRef.current?.pause();
                     setCurrentIndex(index);
                     setIsZoomed(false);
                   }}
-                  aria-label={`Перейти до зображення ${index + 1}`}
+                  aria-label={`Перейти до ${item.type === "video" ? "відео" : "зображення"} ${index + 1}`}
                   className={cn(
                     "shrink-0 cursor-pointer overflow-hidden rounded-md border-2 transition-colors",
                     index === currentIndex
@@ -211,13 +243,34 @@ export function GalleryDialog({
                       : "border-transparent hover:border-white/30",
                   )}
                 >
-                  <img
-                    src={item.src}
-                    alt=""
-                    className="h-16 w-24 object-cover"
-                    loading="lazy"
-                    draggable={false}
-                  />
+                  {item.type === "video" ? (
+                    <video
+                      src={item.src}
+                      muted
+                      playsInline
+                      preload="metadata"
+                      className="h-16 w-24 object-cover"
+                      onError={(e) => {
+                        const el = e.currentTarget;
+                        el.remove();
+                        const parent = e.currentTarget.parentElement;
+                        if (parent && !parent.querySelector(".thumb-fallback")) {
+                          const span = document.createElement("span");
+                          span.className = "thumb-fallback flex items-center justify-center h-16 w-24 bg-white/10 text-white/40 text-[10px]";
+                          span.textContent = "Відео";
+                          parent.appendChild(span);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt=""
+                      className="h-16 w-24 object-cover"
+                      loading="lazy"
+                      draggable={false}
+                    />
+                  )}
                 </button>
               ))}
             </div>
