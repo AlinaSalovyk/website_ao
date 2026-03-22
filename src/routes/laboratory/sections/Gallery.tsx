@@ -6,38 +6,26 @@ import type { GalleryItem } from "@/components/gallery";
 const galleryItems: GalleryItem[] = [
   {
     id: "robo-1",
-    src: "/images/Labs/robo/IMG_0790.MOV",
+    src: "/images/Labs/robo/IMG_0790.mp4",
     alt: "Лабораторія робототехніки: робота з обладнанням",
     type: "video",
   },
   {
     id: "robo-2",
-    src: "/images/Labs/robo/IMG_2695.MOV",
+    src: "/images/Labs/robo/IMG_2695.mp4",
     alt: "Лабораторія робототехніки: тестування прототипу",
     type: "video",
   },
   {
     id: "robo-3",
-    src: "/images/Labs/robo/IMG_3382.MOV",
+    src: "/images/Labs/robo/IMG_3382.mp4",
     alt: "Лабораторія робототехніки: процес складання",
     type: "video",
   },
   {
     id: "robo-4",
-    src: "/images/Labs/robo/IMG_7281.MOV",
+    src: "/images/Labs/robo/IMG_7281.mp4",
     alt: "Лабораторія робототехніки: демонстрація проєкту",
-    type: "video",
-  },
-  {
-    id: "robo-5",
-    src: "/images/Labs/robo/interview.mp4",
-    alt: "Лабораторія робототехніки: інтерв'ю",
-    type: "video",
-  },
-  {
-    id: "robo-6",
-    src: "/images/Labs/robo/Tetris.mp4",
-    alt: "Лабораторія робототехніки: проєкт Tetris",
     type: "video",
   },
   {
