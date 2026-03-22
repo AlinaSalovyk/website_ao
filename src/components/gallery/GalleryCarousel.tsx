@@ -130,11 +130,11 @@ export function GalleryCarousel({
               }}
               aria-label={`Відкрити ${item.type === "video" ? "відео" : "зображення"}: ${item.alt}`}
               className="group h-[170px] w-[280px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[8px] bg-gray-100 sm:h-[199px] sm:w-[327px]"
-              onMouseOver={(e) => {
+              onMouseEnter={(e) => {
                 const video = e.currentTarget.querySelector("video");
                 video?.play().catch(() => {});
               }}
-              onMouseOut={(e) => {
+              onMouseLeave={(e) => {
                 const video = e.currentTarget.querySelector("video");
                 if (video) { video.pause(); video.currentTime = 0; }
               }}
