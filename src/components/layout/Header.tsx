@@ -1,4 +1,4 @@
-import { useState, type ReactNode, type JSX } from "react";
+import { useState, useEffect, useRef, useCallback, type ReactNode, type JSX } from "react";
 
 import { Menu } from "@/routes/Menu/Menu";
 import { Logo } from "@/components/icons/Logo";
@@ -10,6 +10,8 @@ interface HeaderProps {
   logoSrc?: string;
 }
 
+const SCROLL_THRESHOLD = 50;
+
 export const Header = ({
   variant = "default",
   headerPosition = "relative",
@@ -17,12 +19,51 @@ export const Header = ({
   logoSrc,
 }: HeaderProps): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrollState, setScrollState] = useState<"top" | "hidden" | "visible">("top");
+  const lastScrollY = useRef(0);
+
+  const handleScroll = useCallback(() => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY <= SCROLL_THRESHOLD) {
+      setScrollState("top");
+    } else if (currentScrollY > lastScrollY.current) {
+      setScrollState("hidden");
+    } else {
+      setScrollState("visible");
+    }
+
+    lastScrollY.current = currentScrollY;
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    lastScrollY.current = window.scrollY;
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  const isSticky = scrollState !== "top";
+  const isRelativeHeader = headerPosition === "relative";
+
+  const positionClass = isSticky
+    ? isRelativeHeader
+      ? `sticky top-0 left-0 ${scrollState === "visible" ? "translate-y-0" : "-translate-y-full"}`
+      : `fixed top-0 left-0 ${scrollState === "visible" ? "translate-y-0" : "-translate-y-full"}`
+    : headerPosition;
+
+  const bgClass = isSticky
+    ? variant === "light"
+      ? "bg-pure-white/80 backdrop-blur-md shadow-sm"
+      : "bg-layout-bg/80 backdrop-blur-md shadow-sm"
+    : "";
 
   return (
     <>
       {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
       <header
-        className={`${headerPosition} w-full flex justify-between items-center px-4 md:px-9 py-5 z-50`}
+        className={`${positionClass} ${bgClass} w-full flex justify-between items-center px-4 md:px-9 py-5 z-50 transition-transform duration-300`}
       >
         <button
           onClick={() => setIsMenuOpen(true)}
