@@ -30,12 +30,12 @@ async function walkDir(dir) {
         } else {
           console.log(`Converting ${fullPath} to ${newPath}`);
           await sharp(fullPath).webp({ quality: 85 }).toFile(newPath);
-        }
-        try {
-          fs.unlinkSync(fullPath);
-          console.log(`Deleted original: ${fullPath}`);
-        } catch (err) {
-          console.warn(`Could not delete ${fullPath}: ${err.message}`);
+          try {
+            fs.unlinkSync(fullPath);
+            console.log(`Deleted original: ${fullPath}`);
+          } catch (err) {
+            console.warn(`Could not delete ${fullPath}: ${err.message}`);
+          }
         }
       }
     }
