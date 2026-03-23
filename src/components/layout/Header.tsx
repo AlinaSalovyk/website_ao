@@ -84,7 +84,7 @@ export const Header = ({
   return (
     <>
       {isMenuOpen && (
-        <Suspense>
+        <Suspense fallback={null}>
           <Menu onClose={() => setIsMenuOpen(false)} locale={locale} />
         </Suspense>
       )}

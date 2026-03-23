@@ -3,23 +3,22 @@
  * Element subtly moves toward the cursor on hover.
  * Uses CSS transforms for GPU-accelerated movement.
  */
-import { useCallback, useRef, type JSX, type ReactNode } from "react";
+import {
+  useCallback,
+  useRef,
+  type ComponentPropsWithoutRef,
+  type JSX,
+  type ReactNode,
+} from "react";
 
 type MagneticTag = "div" | "button" | "a";
 
-type ElementForTag<T extends MagneticTag> = T extends "div"
-  ? HTMLDivElement
-  : T extends "button"
-    ? HTMLButtonElement
-    : HTMLAnchorElement;
-
-interface MagneticButtonProps<T extends MagneticTag = "div"> {
+type MagneticButtonProps<T extends MagneticTag = "div"> = {
   children: ReactNode;
   className?: string;
   strength?: number;
   as?: T;
-  [key: string]: unknown;
-}
+} & Omit<ComponentPropsWithoutRef<T>, "children" | "className">;
 
 export const MagneticButton = <T extends MagneticTag = "div">({
   children,
@@ -28,11 +27,11 @@ export const MagneticButton = <T extends MagneticTag = "div">({
   as,
   ...rest
 }: MagneticButtonProps<T>): JSX.Element => {
-  const Tag = (as ?? "div") as MagneticTag;
+  const tag = as ?? "div";
   const elRef = useRef<HTMLElement | null>(null);
 
   const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+    (e: React.MouseEvent<HTMLElement>) => {
       if (!elRef.current) return;
       const rect = elRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
@@ -47,18 +46,64 @@ export const MagneticButton = <T extends MagneticTag = "div">({
     elRef.current.style.transform = "translate(0, 0)";
   }, []);
 
+  if (tag === "button") {
+    const buttonProps = rest as Omit<
+      ComponentPropsWithoutRef<"button">,
+      "children" | "className"
+    >;
+    return (
+      <button
+        ref={(node: HTMLButtonElement | null) => {
+          elRef.current = node;
+        }}
+        className={`transition-transform duration-300 ease-out ${className}`}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        data-magnetic
+        {...buttonProps}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  if (tag === "a") {
+    const anchorProps = rest as Omit<
+      ComponentPropsWithoutRef<"a">,
+      "children" | "className"
+    >;
+    return (
+      <a
+        ref={(node: HTMLAnchorElement | null) => {
+          elRef.current = node;
+        }}
+        className={`transition-transform duration-300 ease-out ${className}`}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        data-magnetic
+        {...anchorProps}
+      >
+        {children}
+      </a>
+    );
+  }
+
+  const divProps = rest as Omit<
+    ComponentPropsWithoutRef<"div">,
+    "children" | "className"
+  >;
   return (
-    <Tag
-      ref={(node: HTMLElement | null) => {
+    <div
+      ref={(node: HTMLDivElement | null) => {
         elRef.current = node;
       }}
       className={`transition-transform duration-300 ease-out ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       data-magnetic
-      {...rest}
+      {...divProps}
     >
       {children}
-    </Tag>
+    </div>
   );
 };
