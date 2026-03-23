@@ -1,4 +1,6 @@
 import {
+  Suspense,
+  lazy,
   useCallback,
   useEffect,
   useRef,
@@ -11,7 +13,10 @@ import { Logo } from "@/components/icons/Logo";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import type { Locale } from "@/i18n";
 import { getLocalizedPath, getTranslations } from "@/i18n";
-import { Menu } from "@/routes/Menu/Menu";
+
+const Menu = lazy(() =>
+  import("@/routes/Menu/Menu").then((m) => ({ default: m.Menu })),
+);
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -79,7 +84,9 @@ export const Header = ({
   return (
     <>
       {isMenuOpen && (
-        <Menu onClose={() => setIsMenuOpen(false)} locale={locale} />
+        <Suspense>
+          <Menu onClose={() => setIsMenuOpen(false)} locale={locale} />
+        </Suspense>
       )}
       <header
         className={`${positionClass} ${bgClass} w-full flex justify-between items-center px-4 md:px-9 py-0 z-50 transition-transform duration-300`}
