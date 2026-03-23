@@ -1,4 +1,4 @@
-﻿import type { JSX } from "react";
+import type { JSX } from "react";
 
 import { EducationalPrograms } from "@/components/sections/EducationalPrograms";
 import type { EducationalProgramsData } from "@/components/sections/educational-programs.types";

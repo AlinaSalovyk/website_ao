@@ -1,4 +1,4 @@
-﻿import { useState, type JSX, type ReactNode } from "react";
+import { useState, type JSX, type ReactNode } from "react";
 
 import { Logo } from "@/components/icons/Logo";
 import type { Locale } from "@/i18n";
