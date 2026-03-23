@@ -211,7 +211,7 @@ export const TeamShowcase = ({
         <div className="flex flex-col lg:flex-row gap-0 md:gap-4 lg:gap-24 items-center lg:items-stretch justify-center w-full max-w-5xl mx-auto">
           {/* Interactive 3D Image Card */}
           <div
-            className="w-full max-w-[12.5rem] sm:max-w-[16.25rem] md:max-w-[22.5rem] lg:max-w-[26.25rem] xl:max-w-[28.125rem] shrink-0 flex justify-center"
+            className="w-full max-w-[12.5rem] sm:max-w-[14rem] md:max-w-[18rem] lg:max-w-[20rem] xl:max-w-[22rem] shrink-0 flex justify-center"
             style={{ perspective: "1000px" }}
           >
             <motion.div
