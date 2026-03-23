@@ -421,7 +421,7 @@ export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
             </div>
           </nav>
 
-          <footer className="flex min-h-[94.38px] justify-end pt-[178.67px] flex-1 self-stretch w-full flex-col items-start">
+          <footer className="flex min-h-[94.38px] justify-end mt-auto flex-1 self-stretch w-full flex-col items-start">
             <div className="grid grid-cols-2 gap-2 self-stretch w-full">
               <div className="flex flex-col items-start gap-2">
                 {footerLinksLeft.map((link) => (

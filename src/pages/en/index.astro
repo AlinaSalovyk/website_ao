@@ -37,7 +37,7 @@ const t = getTranslations(locale);
       <main id="main-content" class="w-full">
         <HeroWithAbout client:load locale={locale} />
         <section class="relative w-full">
-          <EducationalPrograms client:load locale={locale} />
+          <EducationalPrograms client:visible locale={locale} />
         </section>
         <section class="relative w-full">
           <Departments client:visible locale={locale} />
