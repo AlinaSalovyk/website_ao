@@ -481,6 +481,7 @@ export const uk = {
 
   galleryUI: {
     title: "Галерея",
+    carousel: "карусель",
     ariaLabel: "Галерея лабораторії",
     scrollLeft: "Прокрутити галерею ліворуч",
     scrollRight: "Прокрутити галерею праворуч",

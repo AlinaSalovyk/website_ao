@@ -482,6 +482,7 @@ export const en: Translations = {
 
   galleryUI: {
     title: "Gallery",
+    carousel: "carousel",
     ariaLabel: "Laboratory gallery",
     scrollLeft: "Scroll gallery left",
     scrollRight: "Scroll gallery right",

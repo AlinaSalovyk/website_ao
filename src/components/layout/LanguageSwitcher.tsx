@@ -33,7 +33,7 @@ export function LanguageSwitcher({
     <DropdownMenu>
       <DropdownMenuTrigger
         className={`rounded-xl border p-2 px-3 flex items-center gap-1.5 text-[11px] tracking-[0.08em] font-medium uppercase transition-colors cursor-pointer outline-none ${borderColor} ${textColor} ${hoverBg}`}
-        aria-label="Switch language"
+        aria-label={locale === "uk" ? "Змінити мову" : "Switch language"}
       >
         <svg
           width="16"

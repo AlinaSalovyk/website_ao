@@ -134,7 +134,7 @@ export function GalleryCarousel({
           className="scrollbar-hide flex w-full max-w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-4 outline-none md:gap-6"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           role="region"
-          aria-roledescription="carousel"
+          aria-roledescription={t.galleryUI.carousel}
           tabIndex={0}
           onKeyDown={handleGalleryKeyDown}
         >
