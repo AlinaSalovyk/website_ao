@@ -5,42 +5,53 @@
  */
 import { useCallback, useRef, type JSX, type ReactNode } from "react";
 
-interface MagneticButtonProps {
+type MagneticTag = "div" | "button" | "a";
+
+type ElementForTag<T extends MagneticTag> = T extends "div"
+  ? HTMLDivElement
+  : T extends "button"
+    ? HTMLButtonElement
+    : HTMLAnchorElement;
+
+interface MagneticButtonProps<T extends MagneticTag = "div"> {
   children: ReactNode;
   className?: string;
   strength?: number;
-  as?: "div" | "button" | "a";
+  as?: T;
   [key: string]: unknown;
 }
 
-export const MagneticButton = ({
+export const MagneticButton = <T extends MagneticTag = "div">({
   children,
   className = "",
   strength = 0.3,
-  as: Tag = "div",
+  as,
   ...rest
-}: MagneticButtonProps): JSX.Element => {
-  const ref = useRef<HTMLDivElement & HTMLButtonElement & HTMLAnchorElement>(null);
+}: MagneticButtonProps<T>): JSX.Element => {
+  const Tag = (as ?? "div") as MagneticTag;
+  const elRef = useRef<HTMLElement | null>(null);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
-      if (!ref.current) return;
-      const rect = ref.current.getBoundingClientRect();
+      if (!elRef.current) return;
+      const rect = elRef.current.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
       const y = e.clientY - rect.top - rect.height / 2;
-      ref.current.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+      elRef.current.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
     },
     [strength],
   );
 
   const handleMouseLeave = useCallback(() => {
-    if (!ref.current) return;
-    ref.current.style.transform = "translate(0, 0)";
+    if (!elRef.current) return;
+    elRef.current.style.transform = "translate(0, 0)";
   }, []);
 
   return (
     <Tag
-      ref={ref}
+      ref={(node: HTMLElement | null) => {
+        elRef.current = node;
+      }}
       className={`transition-transform duration-300 ease-out ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
