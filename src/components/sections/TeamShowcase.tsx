@@ -120,7 +120,7 @@ export const TeamShowcase = ({
   const memberSocials = currentMember.socials ?? defaultSocials ?? [];
 
   /* ── Avatar Dock (rendered in two places: mobile top, desktop bottom) ── */
-  const renderAvatarDock = (dockClassName?: string) => (
+  const renderAvatarDock = (dockClassName?: string, layoutIdSuffix = "") => (
     <div className={cn("w-full relative z-20", dockClassName)}>
       <p className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-widest mb-3 md:mb-4 lg:hidden">
         {t.teamShowcase.selectToView}
@@ -142,7 +142,7 @@ export const TeamShowcase = ({
               {/* Active Ring Indicator */}
               {isActive && (
                 <motion.div
-                  layoutId="active-avatar-ring"
+                  layoutId={`active-avatar-ring${layoutIdSuffix}`}
                   className="absolute inset-0 rounded-full border-[2.5px] border-blue-500"
                   transition={{
                     type: "spring",
@@ -162,6 +162,9 @@ export const TeamShowcase = ({
                 <img
                   src={member.image}
                   alt={member.name}
+                  loading="lazy"
+                  width={56}
+                  height={56}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -206,6 +209,7 @@ export const TeamShowcase = ({
         {/* Mobile Only: Avatar Dock (Top) */}
         {renderAvatarDock(
           "mb-2 md:mb-3 w-full flex flex-col items-center lg:hidden",
+          "-mobile",
         )}
 
         <div className="flex flex-col lg:flex-row gap-0 md:gap-4 lg:gap-24 items-center lg:items-stretch justify-center w-full max-w-5xl mx-auto">
@@ -237,6 +241,8 @@ export const TeamShowcase = ({
                     key={currentMember.id}
                     src={currentMember.image}
                     alt={currentMember.name}
+                    width={400}
+                    height={500}
                     initial={{
                       opacity: 0,
                       filter: "blur(8px)",
@@ -338,6 +344,7 @@ export const TeamShowcase = ({
                 {/* Desktop Only: Avatar Dock (Bottom) */}
                 {renderAvatarDock(
                   "mt-6 md:mt-8 w-full max-w-md mx-0 relative z-20 hidden lg:flex flex-col items-start",
+                  "-desktop",
                 )}
               </div>
             </div>
