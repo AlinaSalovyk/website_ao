@@ -47,14 +47,14 @@ export const Header = ({
   const handleScroll = useCallback(() => {
     const currentScrollY = window.scrollY;
 
-    if (currentScrollY <= SCROLL_THRESHOLD) {
-      setScrollState("top");
-    } else if (currentScrollY > lastScrollY.current) {
-      setScrollState("hidden");
-    } else {
-      setScrollState("visible");
-    }
+    const next: "top" | "hidden" | "visible" =
+      currentScrollY <= SCROLL_THRESHOLD
+        ? "top"
+        : currentScrollY > lastScrollY.current
+          ? "hidden"
+          : "visible";
 
+    setScrollState((prev) => (prev === next ? prev : next));
     lastScrollY.current = currentScrollY;
   }, []);
 

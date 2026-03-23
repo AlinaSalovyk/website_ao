@@ -107,7 +107,7 @@ export const Footer = ({
 
   const particleContainerRef = useRef<HTMLDivElement>(null);
 
-  useGooeyParticles(particleContainerRef, 120);
+  useGooeyParticles(particleContainerRef, 60);
 
   return (
     <section
@@ -155,7 +155,7 @@ export const Footer = ({
               <filter id="liquid-effect">
                 <feGaussianBlur
                   in="SourceGraphic"
-                  stdDeviation="10"
+                  stdDeviation="7"
                   result="blur"
                 />
                 <feColorMatrix

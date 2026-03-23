@@ -46,6 +46,7 @@ export const CursorEffects = (): JSX.Element | null => {
     let ringX = 0;
     let ringY = 0;
     let movedOnce = false;
+    let isAnimating = false;
 
     const handleMouseMove = (e: MouseEvent) => {
       if (!currentIsPointer) return;
@@ -63,18 +64,30 @@ export const CursorEffects = (): JSX.Element | null => {
       if (dotRef.current) {
         dotRef.current.style.transform = `translate(${mouseX - 4}px, ${mouseY - 4}px)`;
       }
+
+      // Start RAF loop on first move, it self-stops when ring catches up
+      if (!isAnimating) {
+        isAnimating = true;
+        rafId = requestAnimationFrame(animateRing);
+      }
     };
 
     const animateRing = () => {
-      if (currentIsPointer) {
-        ringX += (mouseX - ringX) * 0.15;
-        ringY += (mouseY - ringY) * 0.15;
+      const diffX = mouseX - ringX;
+      const diffY = mouseY - ringY;
+      ringX += diffX * 0.15;
+      ringY += diffY * 0.15;
 
-        if (ringRef.current) {
-          ringRef.current.style.transform = `translate(${ringX - 20}px, ${ringY - 20}px)`;
-        }
+      if (ringRef.current) {
+        ringRef.current.style.transform = `translate(${ringX - 20}px, ${ringY - 20}px)`;
       }
-      rafId = requestAnimationFrame(animateRing);
+
+      // Stop looping when the ring has essentially caught up (< 0.5px)
+      if (Math.abs(diffX) > 0.5 || Math.abs(diffY) > 0.5) {
+        rafId = requestAnimationFrame(animateRing);
+      } else {
+        isAnimating = false;
+      }
     };
 
     const handleMouseOver = (e: MouseEvent) => {
@@ -92,7 +105,6 @@ export const CursorEffects = (): JSX.Element | null => {
     });
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseover", handleMouseOver);
-    rafId = requestAnimationFrame(animateRing);
 
     return () => {
       mq.removeEventListener("change", handleMediaChange);

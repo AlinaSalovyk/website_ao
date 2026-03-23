@@ -130,15 +130,27 @@ export const ParticleCanvas = ({
       ctx.clearRect(0, 0, width, height);
       const particles = particlesRef.current;
       const mouse = mouseRef.current;
+      const mouseRadiusSq = mouseRadius * mouseRadius;
+      const connectionDistSq = connectionDistance * connectionDistance;
+
+      // Pre-compute index where stars begin (core particles first)
+      let coreEnd = particles.length;
+      for (let i = 0; i < particles.length; i++) {
+        if (particles[i].isStar) {
+          coreEnd = i;
+          break;
+        }
+      }
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Mouse repulsion — strong push away
+        // Mouse repulsion — use squared distance to avoid sqrt
         const dx = p.x - mouse.x;
         const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < mouseRadius && dist > 0) {
+        const distSq = dx * dx + dy * dy;
+        if (distSq < mouseRadiusSq && distSq > 0) {
+          const dist = Math.sqrt(distSq);
           const force = ((mouseRadius - dist) / mouseRadius) * 1.2;
           p.vx += (dx / dist) * force * 0.5;
           p.vy += (dy / dist) * force * 0.5;
@@ -176,16 +188,15 @@ export const ParticleCanvas = ({
         }
         ctx.fill();
 
-        // Draw connections only if it's not a loose star
-        if (!p.isStar) {
-          for (let j = i + 1; j < particles.length; j++) {
+        // Draw connections — only between core particles, use squared distance first
+        if (i < coreEnd) {
+          for (let j = i + 1; j < coreEnd; j++) {
             const p2 = particles[j];
-            if (p2.isStar) continue;
-
             const cdx = p.x - p2.x;
             const cdy = p.y - p2.y;
-            const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
-            if (cdist < connectionDistance) {
+            const cdistSq = cdx * cdx + cdy * cdy;
+            if (cdistSq < connectionDistSq) {
+              const cdist = Math.sqrt(cdistSq);
               const alpha = 1 - cdist / connectionDistance;
               ctx.beginPath();
               ctx.moveTo(p.x, p.y);

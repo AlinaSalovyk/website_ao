@@ -1,5 +1,5 @@
 import type { JSX, KeyboardEvent as ReactKeyboardEvent } from "react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   ArrowIcon,
@@ -19,6 +19,7 @@ export function GalleryCarousel({
   const t = getTranslations(locale);
   const displayTitle = title ?? t.galleryUI.title;
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollAmountRef = useRef(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogIndex, setDialogIndex] = useState(0);
   const [videoErrors, setVideoErrors] = useState<Set<string>>(new Set());
@@ -34,16 +35,23 @@ export function GalleryCarousel({
     setDialogOpen(true);
   };
 
-  const getScrollAmount = (container: HTMLDivElement): number => {
+  // Cache scroll amount on mount and resize to avoid layout thrashing on every click
+  const updateScrollAmount = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
     const firstItem = container.firstElementChild as HTMLDivElement | null;
-    if (!firstItem) return 0;
-
+    if (!firstItem) return;
     const itemWidth = firstItem.getBoundingClientRect().width;
     const styles = window.getComputedStyle(container);
     const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    scrollAmountRef.current = itemWidth + gap;
+  }, []);
 
-    return itemWidth + gap;
-  };
+  useEffect(() => {
+    updateScrollAmount();
+    window.addEventListener("resize", updateScrollAmount);
+    return () => window.removeEventListener("resize", updateScrollAmount);
+  }, [updateScrollAmount]);
 
   const scrollTo = (direction: "left" | "right") => {
     const container = containerRef.current;
@@ -52,7 +60,7 @@ export function GalleryCarousel({
     const maxScrollLeft = container.scrollWidth - container.clientWidth;
     if (maxScrollLeft <= 0) return;
 
-    const scrollAmount = getScrollAmount(container);
+    const scrollAmount = scrollAmountRef.current;
     if (scrollAmount <= 0) return;
 
     if (direction === "left") {
