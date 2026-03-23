@@ -66,6 +66,7 @@ const BentoCard = ({
       >
         <motion.a
           href="#"
+          aria-label={`${t.home.news[item.linkKey]}: ${item.title}`}
           whileHover="hover"
           className={cn(
             "relative flex flex-col justify-end w-full h-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group cursor-pointer border border-black/5 flex-1 shadow-xl bg-gray-900 isolate",
