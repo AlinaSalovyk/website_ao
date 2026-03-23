@@ -192,6 +192,10 @@ export const HeroWithAbout = ({ locale }: { locale?: Locale }): JSX.Element => {
                   src="/images/Home/pexels-mikae.webp"
                   alt={t.home.hero.studentsWorking}
                   className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover"
+                  width={800}
+                  height={1067}
+                  loading="lazy"
+                  decoding="async"
                 />
               </div>
             </ScrollReveal>
