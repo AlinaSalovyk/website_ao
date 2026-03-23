@@ -192,6 +192,7 @@ export const en: Translations = {
     hero: {
       title: "About the Institute",
       subtitle: "of Information Technologies and Business",
+      imageAlt: "Scientific activity at the Institute of Information Technologies and Business",
       tagline:
         "A place where innovative education, practical experience, and scientific research come together to shape the next generation of professionals for the digital economy.",
       aboutUs: "About us /",
@@ -202,6 +203,7 @@ export const en: Translations = {
     },
     generalInfo: {
       title: "General Information",
+      imageAlt: "Students at the Institute of Information Technologies and Business",
       subtitle:
         "Welcome to our institute, where knowledge becomes innovation and education is the start of your success in the dynamic world of the future!",
       paragraph1:
@@ -271,6 +273,10 @@ export const en: Translations = {
         "Student life is the best period for shaping yourself as a person and developing as a professional. You have the opportunity to participate in sports and/or cultural-artistic life of the university, defend your social position as a volunteer, and develop communication skills through international exchange programs. All of this is you!",
       paragraph2:
         "Additionally, the faculty has student self-governance, which is a powerful body involved in organizing the educational process. Student council representatives, led by the student dean, are members of the institute council where they can participate in shaping the institute's development strategy, modernizing the educational process, and resolving current issues. Students have every opportunity for self-realization!",
+      imageAlts: {
+        studentsWorkingTogether: "Students working together",
+        studentWorkingOnLaptop: "Student working on laptop",
+      },
     },
     scientificActivity: {
       title: "Scientific Activity",

@@ -44,7 +44,7 @@ export const GeneralInfo = ({ locale }: { locale?: Locale }): JSX.Element => {
           <div className="relative w-full h-full min-h-[400px] lg:min-h-auto rounded-lg overflow-hidden">
             <img
               src="/images/TheInstitute/GeneralInformation.webp"
-              alt="General Information"
+              alt={t.institute.generalInfo.imageAlt}
               className="w-full h-full object-cover"
               loading="lazy"
               decoding="async"

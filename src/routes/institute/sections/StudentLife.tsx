@@ -31,7 +31,7 @@ export const StudentLife = ({ locale }: { locale?: Locale }): JSX.Element => {
               {/* Placeholder generic student image */}
               <img
                 src="/images/TheInstitute/StudentLife.webp"
-                alt="Students working together"
+                alt={t.institute.studentLife.imageAlts.studentsWorkingTogether}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
@@ -47,7 +47,7 @@ export const StudentLife = ({ locale }: { locale?: Locale }): JSX.Element => {
               {/* Placeholder generic laptop image */}
               <img
                 src="/images/TheInstitute/Pexels.webp"
-                alt="Student working on laptop"
+                alt={t.institute.studentLife.imageAlts.studentWorkingOnLaptop}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
