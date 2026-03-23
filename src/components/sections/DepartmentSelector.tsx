@@ -20,6 +20,7 @@ import type {
   DepartmentData,
   DepartmentId,
 } from "@/routes/departments/departments-programs";
+import type { ProgramLevelProgram } from "@/components/sections/degree-programs.types";
 
 /* ── Sub-component: Single program level (Бакалаврат / Магістратура / etc.) ── */
 const ProgramLevel = ({
@@ -29,7 +30,7 @@ const ProgramLevel = ({
   locale,
 }: {
   title: string;
-  items: any[];
+  items: ProgramLevelProgram[];
   parentId: string;
   locale?: Locale;
 }) => {

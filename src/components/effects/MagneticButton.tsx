@@ -20,7 +20,7 @@ export const MagneticButton = ({
   as: Tag = "div",
   ...rest
 }: MagneticButtonProps): JSX.Element => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement & HTMLButtonElement & HTMLAnchorElement>(null);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -40,7 +40,7 @@ export const MagneticButton = ({
 
   return (
     <Tag
-      ref={ref as any}
+      ref={ref}
       className={`transition-transform duration-300 ease-out ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
