@@ -334,6 +334,7 @@ export const en: Translations = {
     hero: {
       title:
         "Research Laboratory of Robotics and Embedded Systems with Applied AI",
+      imageAlt: "Abstract 3D sphere",
       tags: ["ROBOTICS", "EMBEDDED SYSTEMS", "EMBEDDED AI", "PROTOTYPING"],
       paragraph1:
         "The Research Laboratory of Robotics and Embedded Systems with Applied AI is a space for creating practical hardware and software solutions at the intersection of engineering, artificial intelligence, and rapid prototyping.",
@@ -343,6 +344,11 @@ export const en: Translations = {
     about: {
       title: "About the Laboratory",
       problems: "Problems & Opportunities",
+      imageAlts: {
+        problems: "Abstract 3D shape",
+        architecture: "Abstract rings",
+        examples: "Abstract digital block",
+      },
       problemsText:
         "Units need simple, reliable, and accessible technical solutions — from mounts and telemetry to training simulators, test stands, power systems, logistics, and diagnostics — with minimal development and delivery times. Meanwhile, off-the-shelf analogues are often unavailable or economically impractical, and their procurement takes too long. Our approach is based on rapid re-engineering and restoration of units provided by the customer, combined with 3D printing, laser processing, and rapid PCB manufacturing, creating working prototypes in weeks rather than months.",
       architecture: "Laboratory Architecture",
@@ -412,6 +418,7 @@ export const en: Translations = {
     hero: {
       title:
         "Research Laboratory of Innovative Modeling, Simulation and Digital Visualization Systems",
+      imageAlt: "VR laboratory visualization",
       tags: [
         "SIMULATIONS",
         "VR",
