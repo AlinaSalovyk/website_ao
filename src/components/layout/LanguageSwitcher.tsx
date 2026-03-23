@@ -52,16 +52,22 @@ export function LanguageSwitcher({
         {LOCALE_LABELS[locale]}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[6rem]">
-        {LOCALES.map((loc) => (
-          <DropdownMenuItem key={loc} asChild disabled={loc === locale}>
-            <a
-              href={getAlternatePath(currentPath, loc)}
-              className={`cursor-pointer ${loc === locale ? "font-semibold" : ""}`}
-            >
-              {LOCALE_LABELS[loc]}
-            </a>
-          </DropdownMenuItem>
-        ))}
+        {LOCALES.map((loc) =>
+          loc === locale ? (
+            <DropdownMenuItem key={loc} disabled>
+              <span className="font-semibold">{LOCALE_LABELS[loc]}</span>
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem key={loc} asChild>
+              <a
+                href={getAlternatePath(currentPath, loc)}
+                className="cursor-pointer"
+              >
+                {LOCALE_LABELS[loc]}
+              </a>
+            </DropdownMenuItem>
+          ),
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
