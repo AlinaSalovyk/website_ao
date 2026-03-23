@@ -1,26 +1,27 @@
 import type { JSX } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  X,
-  Maximize,
-  Minimize,
-  ZoomIn,
-  ZoomOut,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+
+import { ToolbarButton } from "@/components/gallery/components/ToolbarButton";
+import { VideoUnavailableIcon } from "@/components/gallery/components/VideoUnavailableIcon";
+import { useFullscreen, useKeyboardNavigation } from "@/components/gallery/hooks";
+import type { GalleryItem } from "@/components/gallery/types";
 import {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
   DialogClose,
+  DialogOverlay,
+  DialogPortal,
 } from "@/components/ui/dialog";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
-
-import type { GalleryItem } from "../types";
-import { useFullscreen, useKeyboardNavigation } from "../hooks";
-import { ToolbarButton } from "./ToolbarButton";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Maximize,
+  Minimize,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 
 type GalleryDialogProps = {
   items: GalleryItem[];
@@ -37,8 +38,11 @@ export function GalleryDialog({
 }: GalleryDialogProps): JSX.Element {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [videoErrors, setVideoErrors] = useState<Set<string>>(new Set());
+  const [thumbErrors, setThumbErrors] = useState<Set<string>>(new Set());
   const contentRef = useRef<HTMLDivElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(contentRef);
 
@@ -65,6 +69,7 @@ export function GalleryDialog({
   const goTo = useCallback(
     (direction: "prev" | "next") => {
       setIsZoomed(false);
+      videoRef.current?.pause();
       setCurrentIndex((prev) =>
         direction === "prev"
           ? prev <= 0
@@ -84,6 +89,7 @@ export function GalleryDialog({
   useKeyboardNavigation(open, goPrev, goNext);
 
   const currentItem = items[currentIndex];
+  const isVideo = currentItem?.type === "video";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -125,16 +131,18 @@ export function GalleryDialog({
                 )}
               </ToolbarButton>
 
-              <ToolbarButton
-                onClick={() => setIsZoomed((z) => !z)}
-                label={isZoomed ? "Зменшити" : "Збільшити"}
-              >
-                {isZoomed ? (
-                  <ZoomOut className="size-5" />
-                ) : (
-                  <ZoomIn className="size-5" />
-                )}
-              </ToolbarButton>
+              {!isVideo && (
+                <ToolbarButton
+                  onClick={() => setIsZoomed((z) => !z)}
+                  label={isZoomed ? "Зменшити" : "Збільшити"}
+                >
+                  {isZoomed ? (
+                    <ZoomOut className="size-5" />
+                  ) : (
+                    <ZoomIn className="size-5" />
+                  )}
+                </ToolbarButton>
+              )}
 
               <DialogClose asChild>
                 <button
@@ -162,15 +170,39 @@ export function GalleryDialog({
             </button>
 
             <div className="flex h-full w-full items-center justify-center px-12 md:px-16">
-              <img
-                src={currentItem?.src}
-                alt={currentItem?.alt}
-                className={cn(
-                  "max-h-full max-w-full select-none object-contain transition-transform duration-300",
-                  isZoomed && "scale-150",
-                )}
-                draggable={false}
-              />
+              {isVideo ? (
+                currentItem?.id && videoErrors.has(currentItem.id) ? (
+                  <div className="flex flex-col items-center justify-center gap-3 text-white/60">
+                    <VideoUnavailableIcon size={48} />
+                    <span className="text-sm">Відео недоступне</span>
+                  </div>
+                ) : (
+                  <video
+                    ref={videoRef}
+                    key={currentItem?.id}
+                    src={currentItem?.src}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="max-h-full max-w-full select-none object-contain"
+                    onError={() => {
+                      if (currentItem?.id) {
+                        setVideoErrors((prev) => new Set(prev).add(currentItem.id));
+                      }
+                    }}
+                  />
+                )
+              ) : (
+                <img
+                  src={currentItem?.src}
+                  alt={currentItem?.alt}
+                  className={cn(
+                    "max-h-full max-w-full select-none object-contain transition-transform duration-300",
+                    isZoomed && "scale-150",
+                  )}
+                  draggable={false}
+                />
+              )}
             </div>
 
             <button
@@ -200,10 +232,11 @@ export function GalleryDialog({
                   key={item.id}
                   type="button"
                   onClick={() => {
+                    videoRef.current?.pause();
                     setCurrentIndex(index);
                     setIsZoomed(false);
                   }}
-                  aria-label={`Перейти до зображення ${index + 1}`}
+                  aria-label={`Перейти до ${item.type === "video" ? "відео" : "зображення"} ${index + 1}`}
                   className={cn(
                     "shrink-0 cursor-pointer overflow-hidden rounded-md border-2 transition-colors",
                     index === currentIndex
@@ -211,13 +244,32 @@ export function GalleryDialog({
                       : "border-transparent hover:border-white/30",
                   )}
                 >
-                  <img
-                    src={item.src}
-                    alt=""
-                    className="h-16 w-24 object-cover"
-                    loading="lazy"
-                    draggable={false}
-                  />
+                  {item.type === "video" ? (
+                    thumbErrors.has(item.id) ? (
+                      <span className="flex items-center justify-center h-16 w-24 bg-white/10 text-white/40 text-[10px]">
+                        Відео
+                      </span>
+                    ) : (
+                      <video
+                        src={item.src}
+                        muted
+                        playsInline
+                        preload="none"
+                        className="h-16 w-24 object-cover"
+                        onError={() => {
+                          setThumbErrors((prev) => new Set(prev).add(item.id));
+                        }}
+                      />
+                    )
+                  ) : (
+                    <img
+                      src={item.src}
+                      alt=""
+                      className="h-16 w-24 object-cover"
+                      loading="lazy"
+                      draggable={false}
+                    />
+                  )}
                 </button>
               ))}
             </div>

@@ -1,8 +1,8 @@
 import type { JSX, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useRef, useState } from "react";
 
-import { ArrowIcon, GalleryDialog } from "./components";
-import type { GalleryCarouselProps } from "./types";
+import { ArrowIcon, GalleryDialog, VideoUnavailableIcon } from "@/components/gallery/components";
+import type { GalleryCarouselProps } from "@/components/gallery/types";
 
 const SCROLL_EDGE_OFFSET = 5;
 
@@ -13,8 +13,12 @@ export function GalleryCarousel({
   const containerRef = useRef<HTMLDivElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogIndex, setDialogIndex] = useState(0);
+  const [videoErrors, setVideoErrors] = useState<Set<string>>(new Set());
 
   const openGallery = (index: number) => {
+    // Pause and reset any playing preview video before opening the dialog
+    const videos = containerRef.current?.querySelectorAll("video");
+    videos?.forEach((video) => { video.pause(); video.currentTime = 0; });
     setDialogIndex(index);
     setDialogOpen(true);
   };
@@ -127,18 +131,48 @@ export function GalleryCarousel({
                   openGallery(index);
                 }
               }}
-              aria-label={`Відкрити зображення: ${item.alt}`}
+              aria-label={`Відкрити ${item.type === "video" ? "відео" : "зображення"}: ${item.alt}`}
               className="group h-[170px] w-[280px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[8px] bg-gray-100 sm:h-[199px] sm:w-[327px]"
+              onMouseEnter={(e) => {
+                const video = e.currentTarget.querySelector("video");
+                video?.play().catch(() => {});
+              }}
+              onMouseLeave={(e) => {
+                const video = e.currentTarget.querySelector("video");
+                if (video) { video.pause(); video.currentTime = 0; }
+              }}
             >
-              <img
-                src={item.src}
-                alt={item.alt}
-                className="pointer-events-none h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                loading="eager"
-                decoding="async"
-                width={327}
-                height={199}
-              />
+              {item.type === "video" ? (
+                videoErrors.has(item.id) ? (
+                  <span className="flex flex-col items-center justify-center h-full w-full text-gray-400 text-xs gap-1">
+                    <VideoUnavailableIcon />
+                    <span>Відео недоступне</span>
+                  </span>
+                ) : (
+                  <video
+                    src={item.src}
+                    muted
+                    playsInline
+                    preload="none"
+                    className="pointer-events-none h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                    width={327}
+                    height={199}
+                    onError={() => {
+                      setVideoErrors((prev) => new Set(prev).add(item.id));
+                    }}
+                  />
+                )
+              ) : (
+                <img
+                  src={item.src}
+                  alt={item.alt}
+                  className="pointer-events-none h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                  loading="eager"
+                  decoding="async"
+                  width={327}
+                  height={199}
+                />
+              )}
             </div>
           ))}
         </div>
