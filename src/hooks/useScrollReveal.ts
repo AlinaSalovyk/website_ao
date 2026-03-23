@@ -21,13 +21,14 @@ export const useScrollReveal = (options: ScrollRevealOptions = {}) => {
   } = options;
   const ref = useRef<HTMLDivElement>(null);
   const [isRevealed, setIsRevealed] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const handleIntersect = useCallback(
     (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           if (delay > 0) {
-            setTimeout(() => setIsRevealed(true), delay);
+            timerRef.current = setTimeout(() => setIsRevealed(true), delay);
           } else {
             setIsRevealed(true);
           }
@@ -48,7 +49,10 @@ export const useScrollReveal = (options: ScrollRevealOptions = {}) => {
       rootMargin,
     });
     observer.observe(el);
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(timerRef.current);
+      observer.disconnect();
+    };
   }, [handleIntersect, threshold, rootMargin]);
 
   return { ref, isRevealed };

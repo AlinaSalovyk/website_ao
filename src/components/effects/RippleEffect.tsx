@@ -3,7 +3,7 @@
  * Wraps children with a relative container and spawns
  * expanding circles on click using CSS animations.
  */
-import { useCallback, useState, type JSX, type ReactNode } from "react";
+import { useCallback, useRef, useState, type JSX, type ReactNode } from "react";
 
 interface Ripple {
   id: number;
@@ -18,21 +18,20 @@ interface RippleEffectProps {
   color?: string;
 }
 
-let rippleId = 0;
-
 export const RippleEffect = ({
   children,
   className = "",
   color = "rgba(255, 255, 255, 0.3)",
 }: RippleEffectProps): JSX.Element => {
   const [ripples, setRipples] = useState<Ripple[]>([]);
+  const rippleIdRef = useRef(0);
 
   const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const size = Math.max(rect.width, rect.height) * 2;
     const x = e.clientX - rect.left - size / 2;
     const y = e.clientY - rect.top - size / 2;
-    const id = ++rippleId;
+    const id = ++rippleIdRef.current;
 
     setRipples((prev) => [...prev, { id, x, y, size }]);
 
