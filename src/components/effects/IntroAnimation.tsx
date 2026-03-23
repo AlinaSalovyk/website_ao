@@ -17,6 +17,8 @@ import {
   type JSX,
 } from "react";
 
+import "@fontsource/cormorant-garamond/500-italic.css";
+import "@fontsource/montserrat/300.css";
 import { getTranslations, type Locale } from "@/i18n";
 
 const STORAGE_KEY = "itb_intro_seen";
@@ -225,15 +227,7 @@ export const IntroAnimation = ({
 
     const loadFonts = async () => {
       try {
-        // Inject font links if not already present
-        if (!document.querySelector('link[href*="Cormorant+Garamond"]')) {
-          const link = document.createElement("link");
-          link.rel = "stylesheet";
-          link.href =
-            "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Montserrat:wght@300&display=swap";
-          document.head.appendChild(link);
-        }
-        // Wait for all fonts to load (with timeout fallback)
+        // Wait for self-hosted fonts to load (with timeout fallback)
         await Promise.race([
           document.fonts.ready,
           new Promise((resolve) => setTimeout(resolve, 3000)),
@@ -462,17 +456,9 @@ export const IntroAnimation = ({
           }}
         >
           <span
-            className="text-[10px] tracking-[0.4em] uppercase"
+            className="text-[10px] tracking-[0.4em] uppercase text-white/30 hover:text-white/90 focus-visible:text-white/90 transition-colors duration-[400ms]"
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              color: "rgba(255,255,255,0.3)",
-              transition: "color 0.4s ease",
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.color = "rgba(255,255,255,0.9)";
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLElement).style.color = "rgba(255,255,255,0.3)";
             }}
           >
             {t.intro.skip}
