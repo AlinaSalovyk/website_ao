@@ -122,10 +122,10 @@ export const TeamShowcase = ({
   /* ── Avatar Dock (rendered in two places: mobile top, desktop bottom) ── */
   const renderAvatarDock = (dockClassName?: string) => (
     <div className={cn("w-full relative z-20", dockClassName)}>
-      <p className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-widest mb-3 md:mb-4 lg:hidden">
+      <p className="text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-widest mb-3 md:mb-4 lg:hidden">
         {t.teamShowcase.selectToView}
       </p>
-      <p className="hidden lg:block text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-widest mb-3 md:mb-4">
+      <p className="hidden lg:block text-[10px] md:text-xs text-gray-500 font-medium uppercase tracking-widest mb-3 md:mb-4">
         {t.teamShowcase.entireTeam}
       </p>
       <div className="bg-white border border-gray-100 shadow-[0_8px_30px_var(--color-shadow-card-alt)] p-2 md:p-3 rounded-3xl md:rounded-full flex flex-wrap gap-2 md:gap-4 items-center justify-center lg:justify-start max-w-3xl mx-auto lg:mx-0">
@@ -186,7 +186,10 @@ export const TeamShowcase = ({
       )}
     >
       {/* Soft creative background flare */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
+      <div
+        className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[100px] translate-x-1/3 -translate-y-1/3 pointer-events-none"
+        aria-hidden="true"
+      />
 
       <div className="flex flex-col max-w-7xl 2xl:max-w-screen-2xl mx-auto w-full px-4 md:px-9 relative z-10">
         {/* Header */}
