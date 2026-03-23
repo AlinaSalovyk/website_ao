@@ -35,7 +35,7 @@ export const AboutLaboratory = ({
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src="/images/EducationalPrograms/BachelorsDegree.webp"
-                alt="VR моделювання"
+                alt={t.laboratoryVr.about.imageAlts.vrModeling}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
@@ -67,7 +67,7 @@ export const AboutLaboratory = ({
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src="/images/EducationalPrograms/Magistracy.webp"
-                alt="Інфраструктура лабораторії"
+                alt={t.laboratoryVr.about.imageAlts.labInfrastructure}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
@@ -96,7 +96,7 @@ export const AboutLaboratory = ({
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src="/images/EducationalPrograms/PostgraduateStudies.webp"
-                alt="Дослідницькі проєкти"
+                alt={t.laboratoryVr.about.imageAlts.researchProjects}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"

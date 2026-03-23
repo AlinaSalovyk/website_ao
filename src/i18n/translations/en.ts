@@ -455,6 +455,11 @@ export const en: Translations = {
         "Visualization of large data sets and scientific results.",
         "Development of interactive 3D models for museums, architecture, and cultural heritage.",
       ],
+      imageAlts: {
+        vrModeling: "VR modeling",
+        labInfrastructure: "Laboratory infrastructure",
+        researchProjects: "Research projects",
+      },
     },
     leadership: {
       title: "Laboratory Leadership",

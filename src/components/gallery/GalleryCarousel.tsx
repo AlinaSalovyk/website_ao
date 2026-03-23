@@ -1,7 +1,11 @@
 import type { JSX, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useRef, useState } from "react";
 
-import { ArrowIcon, GalleryDialog, VideoUnavailableIcon } from "@/components/gallery/components";
+import {
+  ArrowIcon,
+  GalleryDialog,
+  VideoUnavailableIcon,
+} from "@/components/gallery/components";
 import type { GalleryCarouselProps } from "@/components/gallery/types";
 import { getTranslations } from "@/i18n";
 
@@ -22,7 +26,10 @@ export function GalleryCarousel({
   const openGallery = (index: number) => {
     // Pause and reset any playing preview video before opening the dialog
     const videos = containerRef.current?.querySelectorAll("video");
-    videos?.forEach((video) => { video.pause(); video.currentTime = 0; });
+    videos?.forEach((video) => {
+      video.pause();
+      video.currentTime = 0;
+    });
     setDialogIndex(index);
     setDialogOpen(true);
   };
@@ -143,7 +150,10 @@ export function GalleryCarousel({
               }}
               onMouseLeave={(e) => {
                 const video = e.currentTarget.querySelector("video");
-                if (video) { video.pause(); video.currentTime = 0; }
+                if (video) {
+                  video.pause();
+                  video.currentTime = 0;
+                }
               }}
             >
               {item.type === "video" ? (
@@ -157,7 +167,7 @@ export function GalleryCarousel({
                     src={item.src}
                     muted
                     playsInline
-                    preload="none"
+                    preload="metadata"
                     className="pointer-events-none h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     width={327}
                     height={199}

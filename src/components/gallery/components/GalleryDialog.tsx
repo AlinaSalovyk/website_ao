@@ -1,3 +1,13 @@
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Maximize,
+  Minimize,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type JSX } from "react";
 
 import { ToolbarButton } from "@/components/gallery/components/ToolbarButton";
@@ -16,16 +26,6 @@ import {
 import type { Locale } from "@/i18n";
 import { getTranslations } from "@/i18n";
 import { cn } from "@/lib/utils";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Maximize,
-  Minimize,
-  X,
-  ZoomIn,
-  ZoomOut,
-} from "lucide-react";
 
 type GalleryDialogProps = {
   items: GalleryItem[];
@@ -169,7 +169,7 @@ export function GalleryDialog({
           </div>
 
           {/* Main image area */}
-          <div className="relative flex flex-1 items-center justify-center overflow-hidden">
+          <div className="relative flex min-h-0 flex-1 items-center justify-center overflow-hidden">
             <button
               type="button"
               onClick={goPrev}
@@ -184,7 +184,9 @@ export function GalleryDialog({
                 currentItem?.id && videoErrors.has(currentItem.id) ? (
                   <div className="flex flex-col items-center justify-center gap-3 text-white/60">
                     <VideoUnavailableIcon size={48} />
-                    <span className="text-sm">{t.galleryUI.videoUnavailable}</span>
+                    <span className="text-sm">
+                      {t.galleryUI.videoUnavailable}
+                    </span>
                   </div>
                 ) : (
                   <video
@@ -197,7 +199,9 @@ export function GalleryDialog({
                     className="max-h-full max-w-full select-none object-contain"
                     onError={() => {
                       if (currentItem?.id) {
-                        setVideoErrors((prev) => new Set(prev).add(currentItem.id));
+                        setVideoErrors((prev) =>
+                          new Set(prev).add(currentItem.id),
+                        );
                       }
                     }}
                   />
@@ -264,7 +268,7 @@ export function GalleryDialog({
                         src={item.src}
                         muted
                         playsInline
-                        preload="none"
+                        preload="metadata"
                         className="h-16 w-24 object-cover"
                         onError={() => {
                           setThumbErrors((prev) => new Set(prev).add(item.id));
