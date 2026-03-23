@@ -1,14 +1,15 @@
 import { lazy, Suspense, useEffect, useRef, type JSX } from "react";
 
+import { ScrollReveal } from "@/components/effects/ScrollReveal";
+import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
+
 const ParticleCanvas = lazy(() =>
   import("@/components/effects/ParticleCanvas").then((m) => ({
     default: m.ParticleCanvas,
   })),
 );
-import { ScrollReveal } from "@/components/effects/ScrollReveal";
-import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
-import type { Locale } from "@/i18n";
-import { getTranslations } from "@/i18n";
 
 export const HeroWithAbout = ({ locale }: { locale?: Locale }): JSX.Element => {
   const t = getTranslations(locale);
