@@ -103,7 +103,7 @@ export const Hero = ({ locale }: { locale?: Locale }): JSX.Element => {
               <div className="w-full max-w-[400px] 2xl:max-w-[460px] h-auto aspect-[480/678] relative overflow-hidden rounded-[20px]">
                 <img
                   src="/images/Labs/laboratory-vr-hero-img.webp"
-                  alt="VR laboratory visualization"
+                  alt={t.laboratoryVr.hero.imageAlt}
                   className="w-full h-full object-cover mix-blend-lighten opacity-90"
                   loading="lazy"
                   decoding="async"

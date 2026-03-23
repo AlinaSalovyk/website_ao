@@ -35,7 +35,7 @@ export const AboutLaboratory = ({
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src="/images/EducationalPrograms/BachelorsDegree.webp"
-                alt="Abstract 3D Shape"
+                alt={t.laboratory.about.imageAlts.problems}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
@@ -67,7 +67,7 @@ export const AboutLaboratory = ({
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src="/images/EducationalPrograms/Magistracy.webp"
-                alt="Abstract Rings"
+                alt={t.laboratory.about.imageAlts.architecture}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
@@ -101,7 +101,7 @@ export const AboutLaboratory = ({
             <div className="aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
               <img
                 src="/images/EducationalPrograms/PostgraduateStudies.webp"
-                alt="Abstract Digital Block"
+                alt={t.laboratory.about.imageAlts.examples}
                 className="w-full h-full object-cover"
                 loading="lazy"
                 decoding="async"
