@@ -31,7 +31,9 @@ export const MainLayout = ({
     <div
       className={`overflow-hidden w-full min-h-screen flex justify-center ${variant === "light" ? "bg-pure-white" : "bg-layout-bg"}`}
     >
-      {isMenuOpen && <Menu onClose={() => setIsMenuOpen(false)} />}
+      {isMenuOpen && (
+        <Menu locale={locale} onClose={() => setIsMenuOpen(false)} />
+      )}
       <div className="flex w-full relative flex-col items-start min-h-screen">
         {/* Header */}
         <header
