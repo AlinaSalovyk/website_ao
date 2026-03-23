@@ -65,6 +65,10 @@ export const HeroWithAbout = ({ locale }: { locale?: Locale }): JSX.Element => {
           className="w-full h-full object-contain"
           alt="Element black chrome"
           src="/images/Home/3d-black-chrome-shape.webp"
+          width={800}
+          height={834}
+          fetchPriority="high"
+          decoding="async"
           style={{
             filter: "hue-rotate(-20deg) brightness(1.55) saturate(2.0)",
           }}

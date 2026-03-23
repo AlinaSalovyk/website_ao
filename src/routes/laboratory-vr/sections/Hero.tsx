@@ -40,8 +40,8 @@ export const Hero = ({ locale }: { locale?: Locale }): JSX.Element => {
           style={{ filter: "hue-rotate(-30deg) brightness(1.2) saturate(2.0)" }}
           decoding="async"
           fetchPriority="high"
-          width={1401}
-          height={1462}
+          width={800}
+          height={834}
         />
       </div>
 
