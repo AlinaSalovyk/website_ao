@@ -2,21 +2,28 @@ import type { JSX } from "react";
 
 import { ScientificActivity } from "@/components/sections/ScientificActivity";
 import type { ScientificActivityData } from "@/components/sections/scientific-activity.types";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 
-const scientificActivityData: ScientificActivityData = {
-  title: "Наукова діяльність",
-  headingVariant: "compact",
-  contentSpacing: "my",
-  image: {
-    src: "/images/logo-compact.webp",
-    alt: "Scientific activity",
-    width: 684,
-    height: 672,
-  },
-  description:
-    "Викладачі кафедри працюють над науково-дослідною темою «Математичні методи, моделі та інформаційні технології в освіті, науці, бізнесі», 0123U103522, доктор фізико-математичних наук, професор Нікітін Анатолій Володимирович.",
-};
+export const ITScientificActivity = ({
+  locale,
+}: {
+  locale?: Locale;
+}): JSX.Element => {
+  const t = getTranslations(locale);
 
-export const ITScientificActivity = (): JSX.Element => {
+  const scientificActivityData: ScientificActivityData = {
+    title: t.departmentPages.common.scientificActivity,
+    headingVariant: "compact",
+    contentSpacing: "my",
+    image: {
+      src: "/images/logo-compact.webp",
+      alt: t.departmentPages.common.scientificActivityAlt,
+      width: 684,
+      height: 672,
+    },
+    description: t.departmentPages.it.science.text,
+  };
+
   return <ScientificActivity data={scientificActivityData} />;
 };

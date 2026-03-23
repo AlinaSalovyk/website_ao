@@ -1,0 +1,47 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Header } from "@/components/layout/Header";
+import { MMHeroWithAbout } from "@/routes/departments/management-marketing/sections/MMHeroWithAbout";
+import { MMEducationalPrograms } from "@/routes/departments/management-marketing/sections/MMEducationalPrograms";
+import { MMDegreePrograms } from "@/routes/departments/management-marketing/sections/MMDegreePrograms";
+import { MMLeadership } from "@/routes/departments/management-marketing/sections/MMLeadership";
+import { MMScientificActivity } from "@/routes/departments/management-marketing/sections/MMScientificActivity";
+import { Footer } from "@/components/layout/Footer";
+import { getTranslations } from "@/i18n";
+import type { Locale } from "@/i18n";
+
+const locale: Locale = "en";
+const t = getTranslations(locale);
+---
+
+<Layout
+  title={t.meta.mmTitle}
+  description={t.meta.mmDescription}
+  ogImage="/images/Departments/dmm-hero.webp"
+  locale={locale}
+>
+  <div
+    class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg"
+  >
+    <div class="flex w-full relative flex-col items-start min-h-screen">
+      <Header
+        client:load
+        headerPosition="absolute"
+        locale={locale}
+        currentPath={Astro.url.pathname}
+      />
+      <main id="main-content" class="w-full">
+        <MMHeroWithAbout client:load locale={locale} />
+        <div
+          class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]"
+        >
+          <MMEducationalPrograms locale={locale} />
+        </div>
+        <MMDegreePrograms client:visible locale={locale} />
+        <MMLeadership locale={locale} />
+        <MMScientificActivity locale={locale} />
+      </main>
+      <Footer client:visible locale={locale} />
+    </div>
+  </div>
+</Layout>

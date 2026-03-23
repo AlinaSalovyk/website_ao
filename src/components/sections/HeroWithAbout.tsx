@@ -1,11 +1,13 @@
 import type { JSX } from "react";
-import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
-import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
 
-import type { HeroWithAboutData } from "./hero-with-about.types";
+import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
+import type { HeroWithAboutData } from "@/components/sections/hero-with-about.types";
+import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
+import type { Locale } from "@/i18n";
 
 interface HeroWithAboutProps {
   data: HeroWithAboutData;
+  locale?: Locale;
 }
 
 const defaultShapeImage = {
@@ -15,7 +17,10 @@ const defaultShapeImage = {
   height: 1456,
 };
 
-export const HeroWithAbout = ({ data }: HeroWithAboutProps): JSX.Element => {
+export const HeroWithAbout = ({
+  data,
+  locale,
+}: HeroWithAboutProps): JSX.Element => {
   const {
     heroTitle,
     heroDescription,
@@ -71,7 +76,7 @@ export const HeroWithAbout = ({ data }: HeroWithAboutProps): JSX.Element => {
             </h1>
           </div>
 
-          <InnovationsBadge className="mb-8" />
+          <InnovationsBadge locale={locale} className="mb-8" />
 
           <div className="w-full h-[0.9px] bg-pure-white/35 mb-10"></div>
 

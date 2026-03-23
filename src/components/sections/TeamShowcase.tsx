@@ -18,15 +18,18 @@
  *   <TeamShowcase members={members} />
  *   <TeamShowcase members={members} heading="Наша команда" badge="Команда" />
  */
-import { useState, useRef, type MouseEvent, type JSX } from "react";
+import { Mail } from "lucide-react";
 import {
-  motion,
   AnimatePresence,
+  motion,
   useMotionValue,
   useSpring,
   useTransform,
 } from "motion/react";
-import { Mail } from "lucide-react";
+import { useRef, useState, type JSX, type MouseEvent } from "react";
+
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 import { cn } from "@/lib/utils";
 
 /* ── Types ── */
@@ -69,17 +72,23 @@ export interface TeamShowcaseProps {
   className?: string;
   /** Default social links to show for every member (used if member.socials is undefined) */
   defaultSocials?: TeamMemberSocial[];
+  /** Locale for translations */
+  locale?: Locale;
 }
 
 /* ── Main component ── */
 export const TeamShowcase = ({
   members,
-  badge = "Наша команда",
-  heading = "Керівництво інституту",
+  badge,
+  heading,
   sectionId = "leadership",
   className,
   defaultSocials,
+  locale,
 }: TeamShowcaseProps) => {
+  const t = getTranslations(locale);
+  const displayBadge = badge ?? t.teamShowcase.badge;
+  const displayHeading = heading ?? t.teamShowcase.heading;
   const [currentIndex, setCurrentIndex] = useState(0);
   const currentMember = members[currentIndex];
 
@@ -114,10 +123,10 @@ export const TeamShowcase = ({
   const renderAvatarDock = (dockClassName?: string) => (
     <div className={cn("w-full relative z-20", dockClassName)}>
       <p className="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-widest mb-3 md:mb-4 lg:hidden">
-        Виберіть для перегляду
+        {t.teamShowcase.selectToView}
       </p>
       <p className="hidden lg:block text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-widest mb-3 md:mb-4">
-        Вся команда інституту
+        {t.teamShowcase.entireTeam}
       </p>
       <div className="bg-white border border-gray-100 shadow-[0_8px_30px_var(--color-shadow-card-alt)] p-2 md:p-3 rounded-3xl md:rounded-full flex flex-wrap gap-2 md:gap-4 items-center justify-center lg:justify-start max-w-3xl mx-auto lg:mx-0">
         {members.map((member, idx) => {
@@ -147,7 +156,7 @@ export const TeamShowcase = ({
                   "w-12 h-12 md:w-14 md:h-14 rounded-full overflow-hidden transition-all duration-300 border-[3px] border-transparent",
                   isActive
                     ? "opacity-100 scale-[0.85]"
-                    : "opacity-50 hover:opacity-100 hover:scale-[0.9] grayscale-[50%] hover:grayscale-0"
+                    : "opacity-50 hover:opacity-100 hover:scale-[0.9] grayscale-[50%] hover:grayscale-0",
                 )}
               >
                 <img
@@ -173,7 +182,7 @@ export const TeamShowcase = ({
       id={sectionId}
       className={cn(
         "w-full bg-pure-white py-12 md:py-24 min-h-[700px] lg:min-h-[900px] flex items-center relative overflow-hidden",
-        className
+        className,
       )}
     >
       {/* Soft creative background flare */}
@@ -184,16 +193,16 @@ export const TeamShowcase = ({
         <header className="flex flex-col items-center mb-6 lg:mb-16 w-full text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-semibold tracking-wide mb-3 lg:mb-5">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
-            {badge}
+            {displayBadge}
           </div>
           <h2 className="font-semibold text-pure-black text-3xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1]">
-            {heading}
+            {displayHeading}
           </h2>
         </header>
 
         {/* Mobile Only: Avatar Dock (Top) */}
         {renderAvatarDock(
-          "mb-2 md:mb-3 w-full flex flex-col items-center lg:hidden"
+          "mb-2 md:mb-3 w-full flex flex-col items-center lg:hidden",
         )}
 
         <div className="flex flex-col lg:flex-row gap-0 md:gap-4 lg:gap-24 items-center lg:items-stretch justify-center w-full max-w-5xl mx-auto">
@@ -286,7 +295,7 @@ export const TeamShowcase = ({
                     </div>
                     <div className="flex flex-col justify-center">
                       <span className="text-[10px] md:text-xs text-blue-600 font-semibold uppercase tracking-wider mb-0.5 md:mb-1">
-                        Електронна пошта
+                        {t.teamShowcase.emailLabel}
                       </span>
                       <a
                         href={`mailto:${currentMember.email}`}
@@ -302,7 +311,7 @@ export const TeamShowcase = ({
                       <div className="h-px w-full bg-gray-100" />
                       <div className="flex flex-col gap-2 text-left w-full mt-2">
                         <span className="text-[10px] md:text-xs text-blue-600 font-semibold uppercase tracking-wider">
-                          Соціальні мережі
+                          {t.teamShowcase.socialNetworks}
                         </span>
                         <div className="flex gap-4 items-center mt-1">
                           {memberSocials.map((social, idx) => (
@@ -325,7 +334,7 @@ export const TeamShowcase = ({
 
                 {/* Desktop Only: Avatar Dock (Bottom) */}
                 {renderAvatarDock(
-                  "mt-6 md:mt-8 w-full max-w-md mx-0 relative z-20 hidden lg:flex flex-col items-start"
+                  "mt-6 md:mt-8 w-full max-w-md mx-0 relative z-20 hidden lg:flex flex-col items-start",
                 )}
               </div>
             </div>

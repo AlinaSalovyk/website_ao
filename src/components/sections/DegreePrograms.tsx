@@ -1,13 +1,20 @@
 import { useState } from "react";
 
+import type { ProgramLevel } from "@/components/sections/degree-programs.types";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 import { cn } from "@/lib/utils";
-import type { ProgramLevel } from "./degree-programs.types";
 
 interface DegreeProgramsProps {
   programsData: ProgramLevel[];
+  locale?: Locale;
 }
 
-export const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
+export const DegreePrograms = ({
+  programsData,
+  locale,
+}: DegreeProgramsProps) => {
+  const t = getTranslations(locale);
   const [openItems, setOpenItems] = useState<string[]>(["01"]);
 
   const toggleItem = (id: string) => {
@@ -32,11 +39,7 @@ export const DegreePrograms = ({ programsData }: DegreeProgramsProps) => {
               id="degree-programs-heading"
               className="font-medium text-5xl md:text-6xl lg:text-7xl leading-[1.1] text-white"
             >
-              Наші
-              <br />
-              освітні
-              <br />
-              програми
+              {t.home.departments.heading}
             </h2>
           </div>
 

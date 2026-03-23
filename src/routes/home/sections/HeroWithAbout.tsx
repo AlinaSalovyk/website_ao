@@ -1,16 +1,17 @@
 import { useEffect, useRef, type JSX } from "react";
+
 import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 
-const tags = ["ІТ", "БІЗНЕС", "МЕНЕДЖМЕНТ", "ФІНАНСИ", "МАРКЕТИНГ"];
+export const HeroWithAbout = ({ locale }: { locale?: Locale }): JSX.Element => {
+  const t = getTranslations(locale);
 
-const ctaLine = ["Навчально-науковий", "інститут"];
-const titleLines = [
-  ["інформаційних", "технологій", "та", "бізнесу"],
-];
-
-export const HeroWithAbout = (): JSX.Element => {
+  const tags = t.home.hero.tags;
+  const ctaLine = t.home.hero.ctaLine;
+  const titleLines = [t.home.hero.titleLine];
   const shapeRef = useRef<HTMLDivElement>(null);
 
   /* Parallax effect on the 3D chrome shape — moves slower on scroll */
@@ -37,9 +38,7 @@ export const HeroWithAbout = (): JSX.Element => {
   return (
     <section className="relative w-full overflow-hidden">
       {/* Background Gradient */}
-      <div
-        className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient"
-      />
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient" />
 
       {/* Interactive Particle Canvas */}
       <div className="absolute inset-0 pointer-events-none z-[2]">
@@ -57,21 +56,27 @@ export const HeroWithAbout = (): JSX.Element => {
         ref={shapeRef}
         className="absolute -top-0 left-1/2 -translate-x-1/4 w-[400px] md:w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms] parallax-slow"
         style={{
-          maskImage: 'linear-gradient(to bottom, black 60%, transparent 90%)',
-          WebkitMaskImage: 'linear-gradient(to bottom, black 10%, transparent 90%)',
+          maskImage: "linear-gradient(to bottom, black 60%, transparent 90%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, black 10%, transparent 90%)",
         }}
       >
         <img
           className="w-full h-full object-contain"
           alt="Element black chrome"
           src="/images/Home/3d-black-chrome-shape.webp"
-          style={{ filter: 'hue-rotate(-20deg) brightness(1.55) saturate(2.0)' }}
+          style={{
+            filter: "hue-rotate(-20deg) brightness(1.55) saturate(2.0)",
+          }}
         />
       </div>
 
       {/* Hero Title — stagger-animated words */}
       <div className="relative min-h-[400px] md:min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end items-center pb-0 lg:pb-2 z-10">
-        <div className="relative z-10 pt-48 lg:pt-32 w-full flex flex-col items-center text-center" style={{ perspective: "600px" }}>
+        <div
+          className="relative z-10 pt-48 lg:pt-32 w-full flex flex-col items-center text-center"
+          style={{ perspective: "600px" }}
+        >
           {/* Main Call to Action Line */}
           <div className="flex justify-center items-baseline w-full flex-wrap gap-x-3 md:gap-x-4 gap-y-1 md:gap-y-2 mb-2 md:mb-4 lg:mb-4">
             {ctaLine.map((word) => {
@@ -123,7 +128,7 @@ export const HeroWithAbout = (): JSX.Element => {
               animation: `hero-word-enter 1s cubic-bezier(0.16,1,0.3,1) ${wordIndex * 120 + 200}ms forwards`,
             }}
           >
-            <InnovationsBadge />
+            <InnovationsBadge locale={locale} />
           </div>
         </div>
       </div>
@@ -145,7 +150,9 @@ export const HeroWithAbout = (): JSX.Element => {
                         {tag}
                       </span>
                     </span>
-                    <span className="text-pure-white mx-2 md:mx-4 text-xs">/</span>
+                    <span className="text-pure-white mx-2 md:mx-4 text-xs">
+                      /
+                    </span>
                   </div>
                 ))}
               </div>
@@ -157,19 +164,23 @@ export const HeroWithAbout = (): JSX.Element => {
             {/* Left Column - Text */}
             <div className="flex flex-col gap-6 md:gap-8 w-full border-l-[3px] border-brand-blue-light/30 pl-5 md:pl-8 py-2">
               <p className="text-pure-white/90 text-lg md:text-xl xl:text-2xl 2xl:text-3xl leading-[1.6] md:leading-[1.7] font-light tracking-wide">
-                Інститут інформаційних технологій та бізнесу — простір, де народжуються лідери цифрової ери. Ми поєднуємо технології, бізнес та інновації, щоб готувати фахівців, які не просто адаптуються до змін, а й створюють їх.
+                {t.home.hero.aboutParagraph1}
               </p>
               <p className="text-pure-white/90 text-lg md:text-xl xl:text-2xl 2xl:text-3xl leading-[1.6] md:leading-[1.7] font-light tracking-wide">
-                Наші студенти отримують актуальні знання та практичний досвід у IT, аналітиці, управлінні й підприємництві. Співпраця з провідними компаніями дає їм конкурентні переваги у світі технологій та бізнесу.
+                {t.home.hero.aboutParagraph2}
               </p>
             </div>
 
             {/* Right Column - Image with zoom effect */}
-            <ScrollReveal variant="fade-left" delay={300} className="hidden lg:flex justify-end">
+            <ScrollReveal
+              variant="fade-left"
+              delay={300}
+              className="hidden lg:flex justify-end"
+            >
               <div className="img-zoom-container rounded-2xl shadow-lg overflow-hidden">
                 <img
                   src="/images/Home/pexels-mikae.webp"
-                  alt="Students working"
+                  alt={t.home.hero.studentsWorking}
                   className="w-full xl:w-[300px] 2xl:w-[400px] aspect-[3/4] object-cover"
                 />
               </div>

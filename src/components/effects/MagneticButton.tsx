@@ -3,7 +3,7 @@
  * Element subtly moves toward the cursor on hover.
  * Uses CSS transforms for GPU-accelerated movement.
  */
-import { useRef, useCallback, type ReactNode, type JSX } from "react";
+import { useCallback, useRef, type JSX, type ReactNode } from "react";
 
 interface MagneticButtonProps {
   children: ReactNode;
@@ -30,7 +30,7 @@ export const MagneticButton = ({
       const y = e.clientY - rect.top - rect.height / 2;
       ref.current.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
     },
-    [strength]
+    [strength],
   );
 
   const handleMouseLeave = useCallback(() => {

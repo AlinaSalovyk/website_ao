@@ -1,8 +1,10 @@
 import { DegreePrograms } from "@/components/sections/DegreePrograms";
-import { getDepartmentPrograms } from "@/routes/departments/departments-programs";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
+import { getLocalizedDepartmentPrograms } from "@/routes/departments/departments-programs";
 
-const programsData = getDepartmentPrograms("it");
-
-export const ITDegreePrograms = () => {
-  return <DegreePrograms programsData={programsData} />;
+export const ITDegreePrograms = ({ locale }: { locale?: Locale }) => {
+  const t = getTranslations(locale);
+  const programsData = getLocalizedDepartmentPrograms("it", t);
+  return <DegreePrograms programsData={programsData} locale={locale} />;
 };

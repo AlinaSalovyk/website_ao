@@ -7,30 +7,41 @@ import { MICDegreePrograms } from "@/routes/departments/math-computing/sections/
 import { MICLeadership } from "@/routes/departments/math-computing/sections/MICLeadership";
 import { MICScientificActivity } from "@/routes/departments/math-computing/sections/MICScientificActivity";
 import { Footer } from "@/components/layout/Footer";
+import { getTranslations } from "@/i18n";
+import type { Locale } from "@/i18n";
+
+const locale: Locale = "uk";
+const t = getTranslations(locale);
 ---
 
 <Layout
-  title="Кафедра математики та інтелектуальних обчислень | НаУОА"
-  description="Кафедра математики та інтелектуальних обчислень — підготовка фахівців у сфері прикладної математики, математичного моделювання та інтелектуальних обчислювальних систем."
+  title={t.meta.micTitle}
+  description={t.meta.micDescription}
   ogImage="/images/Departments/dmc-hero.webp"
+  locale={locale}
 >
   <div
     class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg"
   >
     <div class="flex w-full relative flex-col items-start min-h-screen">
-      <Header client:load headerPosition="absolute" />
+      <Header
+        client:load
+        headerPosition="absolute"
+        locale={locale}
+        currentPath={Astro.url.pathname}
+      />
       <main id="main-content" class="w-full">
-        <MICHeroWithAbout client:load />
+        <MICHeroWithAbout client:load locale={locale} />
         <div
           class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]"
         >
-          <MICEducationalPrograms />
+          <MICEducationalPrograms locale={locale} />
         </div>
-        <MICDegreePrograms client:visible />
-        <MICLeadership />
-        <MICScientificActivity />
+        <MICDegreePrograms client:visible locale={locale} />
+        <MICLeadership locale={locale} />
+        <MICScientificActivity locale={locale} />
       </main>
-      <Footer client:visible />
+      <Footer client:visible locale={locale} />
     </div>
   </div>
 </Layout>

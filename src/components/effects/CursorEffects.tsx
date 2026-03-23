@@ -4,13 +4,12 @@
  * Renders an expanding tap ripple on touch (mobile/tablet) devices.
  * Uses CSS transforms for GPU-accelerated movement.
  */
-import { useEffect, useRef, useState } from "react";
-import type { JSX } from "react";
+import { useEffect, useRef, useState, type JSX } from "react";
 
 export const CursorEffects = (): JSX.Element | null => {
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
-  
+
   const [isPointerDevice, setIsPointerDevice] = useState(true);
   const [isHovering, setIsHovering] = useState(false);
   const [hasMoved, setHasMoved] = useState(false);
@@ -49,15 +48,15 @@ export const CursorEffects = (): JSX.Element | null => {
     let movedOnce = false;
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!currentIsPointer) return; 
-      
+      if (!currentIsPointer) return;
+
       if (!movedOnce) {
         movedOnce = true;
         setHasMoved(true);
         ringX = e.clientX;
         ringY = e.clientY;
       }
-      
+
       mouseX = e.clientX;
       mouseY = e.clientY;
 
@@ -70,7 +69,7 @@ export const CursorEffects = (): JSX.Element | null => {
       if (currentIsPointer) {
         ringX += (mouseX - ringX) * 0.15;
         ringY += (mouseY - ringY) * 0.15;
-        
+
         if (ringRef.current) {
           ringRef.current.style.transform = `translate(${ringX - 20}px, ${ringY - 20}px)`;
         }
@@ -88,7 +87,9 @@ export const CursorEffects = (): JSX.Element | null => {
       }
     };
 
-    document.addEventListener("touchstart", handleTouchStart, { passive: true });
+    document.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+    });
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseover", handleMouseOver);
     rafId = requestAnimationFrame(animateRing);
@@ -115,14 +116,17 @@ export const CursorEffects = (): JSX.Element | null => {
               top: tap.y - 25,
               width: 50,
               height: 50,
-              animation: "ripple-expand 0.6s cubic-bezier(0, 0, 0.2, 1) forwards",
+              animation:
+                "ripple-expand 0.6s cubic-bezier(0, 0, 0.2, 1) forwards",
             }}
           />
         ))}
 
       {/* PC Custom Cursor */}
       {isPointerDevice && (
-        <div style={{ opacity: hasMoved ? 1 : 0, transition: "opacity 0.2s ease" }}>
+        <div
+          style={{ opacity: hasMoved ? 1 : 0, transition: "opacity 0.2s ease" }}
+        >
           <div
             ref={dotRef}
             className="fixed top-0 left-0 z-[9999] pointer-events-none mix-blend-difference hidden md:block"
@@ -143,8 +147,11 @@ export const CursorEffects = (): JSX.Element | null => {
               height: isHovering ? 44 : 40,
               borderRadius: "50%",
               border: `1.5px solid rgba(255,255,255,${isHovering ? 0.6 : 0.4})`,
-              backgroundColor: isHovering ? "rgba(255,255,255,0.05)" : "transparent",
-              transition: "width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease",
+              backgroundColor: isHovering
+                ? "rgba(255,255,255,0.05)"
+                : "transparent",
+              transition:
+                "width 0.3s ease, height 0.3s ease, border-color 0.3s ease, background-color 0.3s ease",
             }}
             aria-hidden="true"
           />

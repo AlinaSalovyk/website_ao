@@ -5,8 +5,7 @@
  * Uses requestAnimationFrame for 60fps, GPU-accelerated via Canvas API.
  * Particle count adapts to viewport width (fewer on mobile).
  */
-import { useEffect, useRef, useCallback } from "react";
-import type { JSX } from "react";
+import { useEffect, useRef, useCallback, type JSX } from "react";
 
 interface Particle {
   x: number;
@@ -51,7 +50,7 @@ export const ParticleCanvas = ({
       const count = width < 768 ? Math.floor(maxParticles * 0.4) : maxParticles;
       const sCount = width < 768 ? Math.floor(starCount * 0.4) : starCount;
       const particles: Particle[] = [];
-      
+
       // Main constellation particles
       for (let i = 0; i < count; i++) {
         const x = Math.random() * width;
@@ -87,7 +86,7 @@ export const ParticleCanvas = ({
 
       particlesRef.current = particles;
     },
-    [maxParticles, starCount]
+    [maxParticles, starCount],
   );
 
   useEffect(() => {
@@ -182,7 +181,7 @@ export const ParticleCanvas = ({
           for (let j = i + 1; j < particles.length; j++) {
             const p2 = particles[j];
             if (p2.isStar) continue;
-            
+
             const cdx = p.x - p2.x;
             const cdy = p.y - p2.y;
             const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
@@ -191,7 +190,10 @@ export const ParticleCanvas = ({
               ctx.beginPath();
               ctx.moveTo(p.x, p.y);
               ctx.lineTo(p2.x, p2.y);
-              ctx.strokeStyle = lineColor.replace(/[\d.]+\)$/, `${alpha * 0.35})`);
+              ctx.strokeStyle = lineColor.replace(
+                /[\d.]+\)$/,
+                `${alpha * 0.35})`,
+              );
               ctx.lineWidth = 0.6;
               ctx.stroke();
             }
@@ -218,7 +220,14 @@ export const ParticleCanvas = ({
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleMouseLeave);
     };
-  }, [initParticles, particleColor, starColor, lineColor, connectionDistance, mouseRadius]);
+  }, [
+    initParticles,
+    particleColor,
+    starColor,
+    lineColor,
+    connectionDistance,
+    mouseRadius,
+  ]);
 
   return (
     <canvas

@@ -3,7 +3,7 @@
  * Wraps children with a relative container and spawns
  * expanding circles on click using CSS animations.
  */
-import { useCallback, useState, type ReactNode, type JSX } from "react";
+import { useCallback, useState, type JSX, type ReactNode } from "react";
 
 interface Ripple {
   id: number;
@@ -27,26 +27,26 @@ export const RippleEffect = ({
 }: RippleEffectProps): JSX.Element => {
   const [ripples, setRipples] = useState<Ripple[]>([]);
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      const rect = e.currentTarget.getBoundingClientRect();
-      const size = Math.max(rect.width, rect.height) * 2;
-      const x = e.clientX - rect.left - size / 2;
-      const y = e.clientY - rect.top - size / 2;
-      const id = ++rippleId;
+  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2;
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+    const id = ++rippleId;
 
-      setRipples((prev) => [...prev, { id, x, y, size }]);
+    setRipples((prev) => [...prev, { id, x, y, size }]);
 
-      // Remove ripple after animation
-      setTimeout(() => {
-        setRipples((prev) => prev.filter((r) => r.id !== id));
-      }, 600);
-    },
-    []
-  );
+    // Remove ripple after animation
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((r) => r.id !== id));
+    }, 600);
+  }, []);
 
   return (
-    <div className={`relative overflow-hidden ${className}`} onClick={handleClick}>
+    <div
+      className={`relative overflow-hidden ${className}`}
+      onClick={handleClick}
+    >
       {children}
       {ripples.map((ripple) => (
         <span

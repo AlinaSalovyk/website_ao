@@ -1,4 +1,4 @@
-export type ProgramLevelTitle = "Бакалаврат" | "Магістратура" | "Аспірантура";
+export type ProgramLevelTitle = string;
 
 export type ProgramType = "OPP" | "ONP";
 
@@ -6,6 +6,7 @@ export interface ProgramLevelProgram {
   programType: ProgramType;
   label: string;
   title: string;
+  titleKey?: string;
   link?: string;
 }
 

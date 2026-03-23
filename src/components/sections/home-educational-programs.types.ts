@@ -1,4 +1,4 @@
-export interface HomeEducationalSpecialty {
+export interface HomeEducationalSpeciality {
   name: string;
   link?: string;
 }
@@ -6,13 +6,13 @@ export interface HomeEducationalSpecialty {
 export interface HomeEducationalProgram {
   id: string;
   title: string;
-  specialties: HomeEducationalSpecialty[];
+  specialities: HomeEducationalSpeciality[];
   image: string;
 }
 
 export interface HomeEducationalProgramsData {
   sectionId?: string;
   title: string;
-  specialtiesLabel?: string;
+  specialitiesLabel?: string;
   programs: HomeEducationalProgram[];
 }

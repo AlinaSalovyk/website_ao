@@ -1,15 +1,19 @@
 import type { JSX, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useRef, useState } from "react";
 
-import { ArrowIcon, GalleryDialog } from "./components";
-import type { GalleryCarouselProps } from "./types";
+import { ArrowIcon, GalleryDialog } from "@/components/gallery/components";
+import type { GalleryCarouselProps } from "@/components/gallery/types";
+import { getTranslations } from "@/i18n";
 
 const SCROLL_EDGE_OFFSET = 5;
 
 export function GalleryCarousel({
   items,
-  title = "Галерея",
+  title,
+  locale,
 }: GalleryCarouselProps): JSX.Element {
+  const t = getTranslations(locale);
+  const displayTitle = title ?? t.galleryUI.title;
   const containerRef = useRef<HTMLDivElement>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogIndex, setDialogIndex] = useState(0);
@@ -69,13 +73,13 @@ export function GalleryCarousel({
   return (
     <section
       className="w-full bg-pure-white pt-20 pb-32 md:pb-48 text-pure-black"
-      aria-label="Галерея лабораторії"
+      aria-label={t.galleryUI.ariaLabel}
     >
       <div className="container mx-auto flex flex-col px-4 md:px-9">
         <header className="mx-auto mb-2 flex w-full flex-col">
           <div className="mb-10 flex w-full justify-center border-b border-pure-black pb-4">
             <h2 className="text-center text-4xl font-bold md:text-5xl lg:text-6xl">
-              {title}
+              {displayTitle}
             </h2>
           </div>
 
@@ -84,7 +88,7 @@ export function GalleryCarousel({
               <button
                 type="button"
                 onClick={() => scrollTo("left")}
-                aria-label="Прокрутити галерею ліворуч"
+                aria-label={t.galleryUI.scrollLeft}
                 className="group flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center p-0 hover:bg-transparent focus:outline-none"
               >
                 <div className="transition-transform duration-300 group-hover:-translate-x-1">
@@ -95,7 +99,7 @@ export function GalleryCarousel({
               <button
                 type="button"
                 onClick={() => scrollTo("right")}
-                aria-label="Прокрутити галерею праворуч"
+                aria-label={t.galleryUI.scrollRight}
                 className="group flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center p-0 hover:bg-transparent focus:outline-none"
               >
                 <div className="transition-transform duration-300 group-hover:translate-x-1">
@@ -111,7 +115,7 @@ export function GalleryCarousel({
           className="scrollbar-hide flex w-full max-w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-4 outline-none md:gap-6"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           role="region"
-          aria-roledescription="карусель"
+          aria-roledescription="carousel"
           tabIndex={0}
           onKeyDown={handleGalleryKeyDown}
         >
@@ -127,7 +131,7 @@ export function GalleryCarousel({
                   openGallery(index);
                 }
               }}
-              aria-label={`Відкрити зображення: ${item.alt}`}
+              aria-label={`${t.galleryUI.openImage}: ${item.alt}`}
               className="group h-[170px] w-[280px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[8px] bg-gray-100 sm:h-[199px] sm:w-[327px]"
             >
               <img
@@ -149,6 +153,7 @@ export function GalleryCarousel({
         open={dialogOpen}
         initialIndex={dialogIndex}
         onOpenChange={setDialogOpen}
+        locale={locale}
       />
     </section>
   );

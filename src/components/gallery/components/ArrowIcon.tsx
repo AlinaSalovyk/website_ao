@@ -1,4 +1,5 @@
 import type { JSX } from "react";
+
 import { cn } from "@/lib/utils";
 
 export function ArrowIcon({
@@ -23,11 +24,7 @@ export function ArrowIcon({
       aria-hidden="true"
     >
       <path
-        d={
-          isLeft
-            ? "M42 7H2M2 7L8 1M2 7L8 13"
-            : "M0 7H40M40 7L34 1M40 7L34 13"
-        }
+        d={isLeft ? "M42 7H2M2 7L8 1M2 7L8 13" : "M0 7H40M40 7L34 1M40 7L34 13"}
         stroke="currentColor"
         strokeWidth="2"
         strokeLinecap="round"

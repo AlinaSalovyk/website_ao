@@ -1,62 +1,68 @@
 import type { JSX } from "react";
 
-export const StudentLife = (): JSX.Element => {
-    return (
-        <section id="student-life" className="w-full bg-white py-24 overflow-hidden">
-            <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col">
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 
-                {/* Section Title */}
-                <div className="flex justify-end mb-16 md:mb-24 border-b border-black pb-4">
-                    <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl text-black text-right">
-                        Студентське життя
-                    </h2>
-                </div>
+export const StudentLife = ({ locale }: { locale?: Locale }): JSX.Element => {
+  const t = getTranslations(locale);
 
-                <div className="flex flex-col gap-8 lg:gap-12">
+  return (
+    <section
+      id="student-life"
+      className="w-full bg-white py-24 overflow-hidden"
+    >
+      <div className="max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col">
+        {/* Section Title */}
+        <div className="flex justify-end mb-16 md:mb-24 border-b border-black pb-4">
+          <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl text-black text-right">
+            {t.institute.studentLife.title}
+          </h2>
+        </div>
 
-                    {/* Row 1: Text Left, Image Right */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-                        <div className="order-2 lg:order-1 flex flex-col gap-6">
-                            <p className="text-base md:text-lg leading-relaxed text-gray-800">
-                                Студентське життя є найкращим періодом для огранювання себе як особистості та формування себе як фахівця. Ти маєш можливість взяти участь у спортивному та/або культурно-мистецькому житті університету, відстоювати свою соціальну позицію будучи учасником волонтерської програми, набувати комунікативні навички у обмінних міжнародних програмах. Це все є ти!
-                            </p>
-                        </div>
-                        <div className="order-1 lg:order-2 w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
-                            {/* Placeholder generic student image */}
-                            <img
-                                src="/images/TheInstitute/StudentLife.webp"
-                                alt="Students working together"
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                                decoding="async"
-                                width={4096}
-                                height={2731}
-                            />
-                        </div>
-                    </div>
-
-                    {/* Row 2: Image Left, Text Right */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-                        <div className="order-1 w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
-                            {/* Placeholder generic laptop image */}
-                            <img
-                                src="/images/TheInstitute/Pexels.webp"
-                                alt="Student working on laptop"
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                                decoding="async"
-                                width={4096}
-                                height={2731}
-                            />
-                        </div>
-                        <div className="order-2 flex flex-col gap-6">
-                            <p className="text-sm md:text-base leading-relaxed text-gray-800">
-                                Окрім цього, на факультеті існує студентське самоврядування, що є потужним органом, який долучається до організацї освітнього процесу. Представники студентської ради на чолі із студдеканом є членами ради інституту, де мають можливість брати участь у формуванні стратегії розвитку інституту, модернізації освітнього процесу та вирішенні поточних питань. Студенти мають всі можливості для реалізації себе!
-                            </p>
-                        </div>
-                    </div>
-                </div>
+        <div className="flex flex-col gap-8 lg:gap-12">
+          {/* Row 1: Text Left, Image Right */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            <div className="order-2 lg:order-1 flex flex-col gap-6">
+              <p className="text-base md:text-lg leading-relaxed text-gray-800">
+                {t.institute.studentLife.paragraph1}
+              </p>
             </div>
-        </section>
-    );
+            <div className="order-1 lg:order-2 w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
+              {/* Placeholder generic student image */}
+              <img
+                src="/images/TheInstitute/StudentLife.webp"
+                alt="Students working together"
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                width={4096}
+                height={2731}
+              />
+            </div>
+          </div>
+
+          {/* Row 2: Image Left, Text Right */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+            <div className="order-1 w-full h-[300px] md:h-[400px] rounded-lg overflow-hidden">
+              {/* Placeholder generic laptop image */}
+              <img
+                src="/images/TheInstitute/Pexels.webp"
+                alt="Student working on laptop"
+                className="w-full h-full object-cover"
+                loading="lazy"
+                decoding="async"
+                width={4096}
+                height={2731}
+              />
+            </div>
+            <div className="order-2 flex flex-col gap-6">
+              <p className="text-sm md:text-base leading-relaxed text-gray-800">
+                {t.institute.studentLife.paragraph2}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 };
