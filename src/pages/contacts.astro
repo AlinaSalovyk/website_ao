@@ -2,22 +2,30 @@
 import Layout from "@/layouts/Layout.astro";
 import { Header } from "@/components/layout/Header";
 import { ContactsPage } from "@/routes/contacts/ContactsPage";
+import { getTranslations } from "@/i18n";
+import type { Locale } from "@/i18n";
 
-const pageDescription =
-  "Зв'яжіться з нами — контактна інформація Інституту інформаційних технологій та бізнесу Національного університету «Острозька академія».";
+const locale: Locale = "uk";
+const t = getTranslations(locale);
 ---
 
 <Layout
-  title="Контакти | Інститут ІТ та бізнесу НаУОА"
-  description={pageDescription}
+  title={t.meta.contactsTitle}
+  description={t.meta.contactsDescription}
+  locale={locale}
 >
   <div
     class="overflow-hidden w-full min-h-screen flex justify-center bg-pure-white"
   >
     <div class="flex w-full relative flex-col items-start min-h-screen">
-      <Header client:load variant="light" />
+      <Header
+        client:load
+        variant="light"
+        locale={locale}
+        currentPath={Astro.url.pathname}
+      />
       <main id="main-content" class="w-full">
-        <ContactsPage client:idle />
+        <ContactsPage client:idle locale={locale} />
       </main>
     </div>
   </div>

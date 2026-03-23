@@ -1,16 +1,25 @@
 import type { JSX, KeyboardEvent as ReactKeyboardEvent } from "react";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import { ArrowIcon, GalleryDialog, VideoUnavailableIcon } from "@/components/gallery/components";
+import {
+  ArrowIcon,
+  GalleryDialog,
+  VideoUnavailableIcon,
+} from "@/components/gallery/components";
 import type { GalleryCarouselProps } from "@/components/gallery/types";
+import { getTranslations } from "@/i18n";
 
 const SCROLL_EDGE_OFFSET = 5;
 
 export function GalleryCarousel({
   items,
-  title = "Галерея",
+  title,
+  locale,
 }: GalleryCarouselProps): JSX.Element {
+  const t = getTranslations(locale);
+  const displayTitle = title ?? t.galleryUI.title;
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollAmountRef = useRef(0);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogIndex, setDialogIndex] = useState(0);
   const [videoErrors, setVideoErrors] = useState<Set<string>>(new Set());
@@ -18,21 +27,31 @@ export function GalleryCarousel({
   const openGallery = (index: number) => {
     // Pause and reset any playing preview video before opening the dialog
     const videos = containerRef.current?.querySelectorAll("video");
-    videos?.forEach((video) => { video.pause(); video.currentTime = 0; });
+    videos?.forEach((video) => {
+      video.pause();
+      video.currentTime = 0;
+    });
     setDialogIndex(index);
     setDialogOpen(true);
   };
 
-  const getScrollAmount = (container: HTMLDivElement): number => {
+  // Cache scroll amount on mount and resize to avoid layout thrashing on every click
+  const updateScrollAmount = useCallback(() => {
+    const container = containerRef.current;
+    if (!container) return;
     const firstItem = container.firstElementChild as HTMLDivElement | null;
-    if (!firstItem) return 0;
-
+    if (!firstItem) return;
     const itemWidth = firstItem.getBoundingClientRect().width;
     const styles = window.getComputedStyle(container);
     const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    scrollAmountRef.current = itemWidth + gap;
+  }, []);
 
-    return itemWidth + gap;
-  };
+  useEffect(() => {
+    updateScrollAmount();
+    window.addEventListener("resize", updateScrollAmount);
+    return () => window.removeEventListener("resize", updateScrollAmount);
+  }, [updateScrollAmount]);
 
   const scrollTo = (direction: "left" | "right") => {
     const container = containerRef.current;
@@ -41,7 +60,7 @@ export function GalleryCarousel({
     const maxScrollLeft = container.scrollWidth - container.clientWidth;
     if (maxScrollLeft <= 0) return;
 
-    const scrollAmount = getScrollAmount(container);
+    const scrollAmount = scrollAmountRef.current;
     if (scrollAmount <= 0) return;
 
     if (direction === "left") {
@@ -73,13 +92,13 @@ export function GalleryCarousel({
   return (
     <section
       className="w-full bg-pure-white pt-20 pb-32 md:pb-48 text-pure-black"
-      aria-label="Галерея лабораторії"
+      aria-label={t.galleryUI.ariaLabel}
     >
       <div className="container mx-auto flex flex-col px-4 md:px-9">
         <header className="mx-auto mb-2 flex w-full flex-col">
           <div className="mb-10 flex w-full justify-center border-b border-pure-black pb-4">
             <h2 className="text-center text-4xl font-bold md:text-5xl lg:text-6xl">
-              {title}
+              {displayTitle}
             </h2>
           </div>
 
@@ -88,7 +107,7 @@ export function GalleryCarousel({
               <button
                 type="button"
                 onClick={() => scrollTo("left")}
-                aria-label="Прокрутити галерею ліворуч"
+                aria-label={t.galleryUI.scrollLeft}
                 className="group flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center p-0 hover:bg-transparent focus:outline-none"
               >
                 <div className="transition-transform duration-300 group-hover:-translate-x-1">
@@ -99,7 +118,7 @@ export function GalleryCarousel({
               <button
                 type="button"
                 onClick={() => scrollTo("right")}
-                aria-label="Прокрутити галерею праворуч"
+                aria-label={t.galleryUI.scrollRight}
                 className="group flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center p-0 hover:bg-transparent focus:outline-none"
               >
                 <div className="transition-transform duration-300 group-hover:translate-x-1">
@@ -115,7 +134,7 @@ export function GalleryCarousel({
           className="scrollbar-hide flex w-full max-w-full snap-x snap-mandatory gap-4 overflow-x-auto pb-4 outline-none md:gap-6"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           role="region"
-          aria-roledescription="карусель"
+          aria-roledescription={t.galleryUI.carousel}
           tabIndex={0}
           onKeyDown={handleGalleryKeyDown}
         >
@@ -131,7 +150,7 @@ export function GalleryCarousel({
                   openGallery(index);
                 }
               }}
-              aria-label={`Відкрити ${item.type === "video" ? "відео" : "зображення"}: ${item.alt}`}
+              aria-label={`${item.type === "video" ? t.galleryUI.openVideo : t.galleryUI.openImage}: ${item.alt}`}
               className="group h-[170px] w-[280px] shrink-0 cursor-pointer snap-start overflow-hidden rounded-[8px] bg-gray-100 sm:h-[199px] sm:w-[327px]"
               onMouseEnter={(e) => {
                 const video = e.currentTarget.querySelector("video");
@@ -139,21 +158,24 @@ export function GalleryCarousel({
               }}
               onMouseLeave={(e) => {
                 const video = e.currentTarget.querySelector("video");
-                if (video) { video.pause(); video.currentTime = 0; }
+                if (video) {
+                  video.pause();
+                  video.currentTime = 0;
+                }
               }}
             >
               {item.type === "video" ? (
                 videoErrors.has(item.id) ? (
                   <span className="flex flex-col items-center justify-center h-full w-full text-gray-400 text-xs gap-1">
                     <VideoUnavailableIcon />
-                    <span>Відео недоступне</span>
+                    <span>{t.galleryUI.videoUnavailable}</span>
                   </span>
                 ) : (
                   <video
                     src={item.src}
                     muted
                     playsInline
-                    preload="none"
+                    preload="metadata"
                     className="pointer-events-none h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     width={327}
                     height={199}
@@ -183,6 +205,7 @@ export function GalleryCarousel({
         open={dialogOpen}
         initialIndex={dialogIndex}
         onOpenChange={setDialogOpen}
+        locale={locale}
       />
     </section>
   );

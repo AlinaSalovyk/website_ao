@@ -1,6 +1,6 @@
 import { execFileSync } from "child_process";
 import ffmpegPath from "ffmpeg-static";
-import { readdirSync } from "fs";
+import { readdirSync, unlinkSync } from "fs";
 import { join } from "path";
 
 const dir = join(process.cwd(), "public", "images", "Labs", "robo");
@@ -21,6 +21,8 @@ for (const file of movFiles) {
     "-y",
     output,
   ], { stdio: "inherit" });
+  unlinkSync(input);
+  console.log(`Deleted original ${file}`);
 }
 
 console.log("Done! All .MOV files converted to .mp4");

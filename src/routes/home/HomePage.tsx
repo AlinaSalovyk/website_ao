@@ -1,40 +1,49 @@
 import type { JSX } from "react";
-import { MainLayout } from "@/layouts/MainLayout";
-import { HeroWithAbout } from "./sections/HeroWithAbout";
-import { EducationalPrograms } from "./sections/EducationalPrograms";
-import { Departments } from "./sections/Departments";
-import { InstituteLeadership } from "./sections/InstituteLeadership";
-import { InnovativeEducation } from "./sections/InnovativeEducation";
-import { NewsAndEvents } from "./sections/NewsAndEvents";
+
 import { Footer } from "@/components/layout/Footer";
+import type { Locale } from "@/i18n";
+import { LocaleProvider } from "@/i18n/LocaleContext";
+import { MainLayout } from "@/layouts/MainLayout";
+import { Departments } from "@/routes/home/sections/Departments";
+import { EducationalPrograms } from "@/routes/home/sections/EducationalPrograms";
+import { HeroWithAbout } from "@/routes/home/sections/HeroWithAbout";
+import { InnovativeEducation } from "@/routes/home/sections/InnovativeEducation";
+import { InstituteLeadership } from "@/routes/home/sections/InstituteLeadership";
+import { NewsAndEvents } from "@/routes/home/sections/NewsAndEvents";
 
-export const HomePage = (): JSX.Element => {
-    return (
-        <MainLayout headerPosition="absolute">
-            {/* Section 1: Hero with About */}
-            <HeroWithAbout />
+interface HomePageProps {
+  locale?: Locale;
+}
 
-            {/* Section 2: Educational Programs */}
-            <section className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-                <EducationalPrograms />
-            </section>
+export const HomePage = ({ locale = "uk" }: HomePageProps): JSX.Element => {
+  return (
+    <LocaleProvider locale={locale}>
+      <MainLayout headerPosition="absolute" locale={locale}>
+        {/* Section 1: Hero with About */}
+        <HeroWithAbout locale={locale} />
 
-            {/* Section 3: Departments */}
-            <section className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-                <Departments />
-            </section>
+        {/* Section 2: Educational Programs */}
+        <section className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
+          <EducationalPrograms locale={locale} />
+        </section>
 
-            {/* Section 4: Institute Leadership */}
-            <InstituteLeadership />
+        {/* Section 3: Departments */}
+        <section className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
+          <Departments locale={locale} />
+        </section>
 
-            {/* Section 5: Innovative Education */}
-            <InnovativeEducation />
+        {/* Section 4: Institute Leadership */}
+        <InstituteLeadership locale={locale} />
 
-            {/* Section 6: News and Events */}
-            <NewsAndEvents />
+        {/* Section 5: Innovative Education */}
+        <InnovativeEducation locale={locale} />
 
-            {/* Footer */}
-            <Footer />
-        </MainLayout>
-    );
+        {/* Section 6: News and Events */}
+        <NewsAndEvents locale={locale} />
+
+        {/* Footer */}
+        <Footer locale={locale} />
+      </MainLayout>
+    </LocaleProvider>
+  );
 };

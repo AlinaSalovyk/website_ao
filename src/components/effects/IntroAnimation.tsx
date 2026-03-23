@@ -8,11 +8,20 @@
  * - Fade-out sequencing is event-driven, not timer-based from mount
  * - Visibility API pauses timers when tab is hidden
  */
-import { useEffect, useRef, useState, useCallback, useMemo, type JSX } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type JSX,
+} from "react";
+
+import "@fontsource/cormorant-garamond/500-italic.css";
+import "@fontsource/montserrat/300.css";
+import { getTranslations, type Locale } from "@/i18n";
 
 const STORAGE_KEY = "itb_intro_seen";
-const LINE_1 = "Навчально-науковий інститут";
-const LINE_2 = "інформаційних технологій та бізнесу".toUpperCase();
 
 const LINE_DRAW_DURATION = 3000;
 const LINE_2_DELAY = 1800;
@@ -22,27 +31,48 @@ const FADE_OUT = 1400;
 
 /* ───── Individual animated line ───── */
 const HandwrittenLine = ({
-  text, y, delay, completed, fontsReady, svgFontSize,
-  fontFamily, fontStyle = "normal", fontWeight = 400,
-  letterSpacing = "normal", opacity = 1,
+  text,
+  y,
+  delay,
+  completed,
+  fontsReady,
+  svgFontSize,
+  fontFamily,
+  fontStyle = "normal",
+  fontWeight = 400,
+  letterSpacing = "normal",
+  opacity = 1,
   onDrawComplete,
 }: {
-  text: string; y: number; delay: number; completed: boolean;
-  fontsReady: boolean; svgFontSize: number; fontFamily: string;
-  fontStyle?: string; fontWeight?: number; letterSpacing?: string;
-  opacity?: number; onDrawComplete?: () => void;
+  text: string;
+  y: number;
+  delay: number;
+  completed: boolean;
+  fontsReady: boolean;
+  svgFontSize: number;
+  fontFamily: string;
+  fontStyle?: string;
+  fontWeight?: number;
+  letterSpacing?: string;
+  opacity?: number;
+  onDrawComplete?: () => void;
 }) => {
   const chars = text.split("");
   const charCount = chars.length;
   const tspanRefs = useRef<(SVGTSpanElement | null)[]>([]);
-  const [animState, setAnimState] = useState<"idle" | "stroking" | "filling" | "done">("idle");
+  const [animState, setAnimState] = useState<
+    "idle" | "stroking" | "filling" | "done"
+  >("idle");
   const rafRef = useRef(0);
   const startRef = useRef(0);
   const charPathLength = svgFontSize * 5;
 
   // Only start when fonts are ready
   useEffect(() => {
-    if (completed) { setAnimState("done"); return; }
+    if (completed) {
+      setAnimState("done");
+      return;
+    }
     if (!fontsReady) return;
     const t = setTimeout(() => {
       setAnimState("stroking");
@@ -83,14 +113,27 @@ const HandwrittenLine = ({
   const isFilling = animState === "filling";
 
   return (
-    <text x="50%" y={y} textAnchor="middle"
+    <text
+      x="50%"
+      y={y}
+      textAnchor="middle"
       style={{
-        fontFamily, fontStyle, fontWeight,
-        fontSize: `${svgFontSize}px`, letterSpacing,
-        fill: isDone || isFilling ? "url(#animated-silver-gradient)" : "transparent",
+        fontFamily,
+        fontStyle,
+        fontWeight,
+        fontSize: `${svgFontSize}px`,
+        letterSpacing,
+        fill:
+          isDone || isFilling
+            ? "url(#animated-silver-gradient)"
+            : "transparent",
         stroke: isDone ? "transparent" : "#ffffff",
-        strokeWidth: isDone ? 0 : 1.5, opacity,
-        filter: isDone || isFilling ? "url(#glow)" : "drop-shadow(0 0 8px rgba(255,255,255,0.7))",
+        strokeWidth: isDone ? 0 : 1.5,
+        opacity,
+        filter:
+          isDone || isFilling
+            ? "url(#glow)"
+            : "drop-shadow(0 0 8px rgba(255,255,255,0.7))",
         transition: isFilling
           ? `fill ${FILL_DURATION}ms ease-out, stroke-width ${FILL_DURATION}ms ease, filter ${FILL_DURATION}ms ease`
           : "none",
@@ -98,19 +141,32 @@ const HandwrittenLine = ({
       }}
     >
       {chars.map((char, i) => (
-        <tspan key={i} ref={(el) => { tspanRefs.current[i] = el; }}
+        <tspan
+          key={i}
+          ref={(el) => {
+            tspanRefs.current[i] = el;
+          }}
           style={{
             strokeDasharray: charPathLength,
             strokeDashoffset: isDone || isFilling ? 0 : charPathLength,
           }}
-        >{char}</tspan>
+        >
+          {char}
+        </tspan>
       ))}
     </text>
   );
 };
 
 /* ───── Main component ───── */
-export const IntroAnimation = (): JSX.Element => {
+export const IntroAnimation = ({
+  locale,
+}: {
+  locale?: Locale;
+}): JSX.Element => {
+  const t = getTranslations(locale);
+  const LINE_1 = t.intro.line1;
+  const LINE_2 = t.intro.line2.toUpperCase();
   const [shouldShow, setShouldShow] = useState<boolean | null>(null);
   const [completed, setCompleted] = useState(false);
   const [fontsReady, setFontsReady] = useState(false);
@@ -136,18 +192,32 @@ export const IntroAnimation = (): JSX.Element => {
   // Check localStorage
   useEffect(() => {
     try {
-      const isBot = typeof navigator !== "undefined" && /bot|googlebot|crawler|spider|robot|crawling|lighthouse|chrome-lighthouse/i.test(navigator.userAgent);
-      
-      if (typeof window !== "undefined" && !localStorage.getItem(STORAGE_KEY) && !isBot) {
+      const isBot =
+        typeof navigator !== "undefined" &&
+        /bot|googlebot|crawler|spider|robot|crawling|lighthouse|chrome-lighthouse/i.test(
+          navigator.userAgent,
+        );
+
+      if (
+        typeof window !== "undefined" &&
+        !localStorage.getItem(STORAGE_KEY) &&
+        !isBot
+      ) {
         setShouldShow(true);
         document.body.style.overflow = "hidden";
       } else {
         setShouldShow(false);
-        document.documentElement.classList.remove('intro-active', 'intro-transitioning');
+        document.documentElement.classList.remove(
+          "intro-active",
+          "intro-transitioning",
+        );
       }
     } catch {
       setShouldShow(false);
-      document.documentElement.classList.remove('intro-active', 'intro-transitioning');
+      document.documentElement.classList.remove(
+        "intro-active",
+        "intro-transitioning",
+      );
     }
   }, []);
 
@@ -157,19 +227,14 @@ export const IntroAnimation = (): JSX.Element => {
 
     const loadFonts = async () => {
       try {
-        // Inject font links if not already present
-        if (!document.querySelector('link[href*="Cormorant+Garamond"]')) {
-          const link = document.createElement('link');
-          link.rel = 'stylesheet';
-          link.href = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500&family=Montserrat:wght@300&display=swap';
-          document.head.appendChild(link);
-        }
-        // Wait for all fonts to load (with timeout fallback)
+        // Wait for self-hosted fonts to load (with timeout fallback)
         await Promise.race([
           document.fonts.ready,
-          new Promise(resolve => setTimeout(resolve, 3000)),
+          new Promise((resolve) => setTimeout(resolve, 3000)),
         ]);
-      } catch { /* proceed anyway */ }
+      } catch {
+        /* proceed anyway */
+      }
       setFontsReady(true);
     };
 
@@ -190,7 +255,10 @@ export const IntroAnimation = (): JSX.Element => {
 
     if (line2Done) {
       // Normal completion: wait fill + pause then fade
-      const t = setTimeout(() => setFading(true), FILL_DURATION + PAUSE_BEFORE_FADE);
+      const t = setTimeout(
+        () => setFading(true),
+        FILL_DURATION + PAUSE_BEFORE_FADE,
+      );
       return () => clearTimeout(t);
     }
   }, [completed, fading, line2Done]);
@@ -199,47 +267,66 @@ export const IntroAnimation = (): JSX.Element => {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (shouldShow) {
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      const scrollbarWidth =
+        window.innerWidth - document.documentElement.clientWidth;
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     } else {
       document.body.style.paddingRight = "";
-      document.documentElement.classList.remove('intro-active', 'intro-transitioning');
+      document.documentElement.classList.remove(
+        "intro-active",
+        "intro-transitioning",
+      );
     }
-    return () => { document.body.style.paddingRight = ""; };
+    return () => {
+      document.body.style.paddingRight = "";
+    };
   }, [shouldShow]);
 
   // Fade-out: cleanup and mark as seen
   useEffect(() => {
     if (!fading) return;
-    document.documentElement.classList.remove('intro-active');
-    document.documentElement.classList.add('intro-transitioning');
+    document.documentElement.classList.remove("intro-active");
+    document.documentElement.classList.add("intro-transitioning");
     const showSiteTimer = setTimeout(() => {
-      document.documentElement.classList.remove('intro-transitioning');
+      document.documentElement.classList.remove("intro-transitioning");
     }, FADE_OUT + 1000);
 
     const t = setTimeout(() => {
-      try { localStorage.setItem(STORAGE_KEY, "1"); } catch { /* noop */ }
+      try {
+        localStorage.setItem(STORAGE_KEY, "1");
+      } catch {
+        /* noop */
+      }
       setHidden(true);
       setShouldShow(false);
     }, FADE_OUT + 50);
 
-    return () => { clearTimeout(t); clearTimeout(showSiteTimer); };
+    return () => {
+      clearTimeout(t);
+      clearTimeout(showSiteTimer);
+    };
   }, [fading]);
 
   // Skip on user interaction
   useEffect(() => {
     if (shouldShow !== true || completed) return;
-    const events = ["click", "scroll", "keydown", "touchstart", "wheel"] as const;
+    const events = [
+      "click",
+      "scroll",
+      "keydown",
+      "touchstart",
+      "wheel",
+    ] as const;
     const handler = () => skip();
-    events.forEach((e) => window.addEventListener(e, handler, { once: true, passive: true }));
-    return () => { events.forEach((e) => window.removeEventListener(e, handler)); };
+    events.forEach((e) =>
+      window.addEventListener(e, handler, { once: true, passive: true }),
+    );
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, handler));
+    };
   }, [shouldShow, completed, skip]);
 
-  const seo = (
-    <h1 className="sr-only">
-      Навчально-науковий інститут інформаційних технологій та бізнесу
-    </h1>
-  );
+  const seo = <h1 className="sr-only">{t.intro.srTitle}</h1>;
 
   if (shouldShow === false || shouldShow === null || hidden) return <>{seo}</>;
 
@@ -268,7 +355,8 @@ export const IntroAnimation = (): JSX.Element => {
         <div
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[600px] pointer-events-none"
           style={{
-            background: "radial-gradient(ellipse, rgba(255,255,255,0.05) 0%, transparent 60%)",
+            background:
+              "radial-gradient(ellipse, rgba(255,255,255,0.05) 0%, transparent 60%)",
             filter: "blur(90px)",
           }}
         />
@@ -277,13 +365,18 @@ export const IntroAnimation = (): JSX.Element => {
           <div
             key={p.id}
             className="absolute rounded-full bg-white pointer-events-none"
-            style={{
-              left: p.left, top: p.top,
-              width: `${p.size}px`, height: `${p.size}px`,
-              '--max-opacity': p.opacity, opacity: 0,
-              boxShadow: "0 0 10px 2px rgba(255,255,255,0.6)",
-              animation: `float-up ${p.duration}s linear ${p.delay}s infinite`,
-            } as React.CSSProperties}
+            style={
+              {
+                left: p.left,
+                top: p.top,
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                "--max-opacity": p.opacity,
+                opacity: 0,
+                boxShadow: "0 0 10px 2px rgba(255,255,255,0.6)",
+                animation: `float-up ${p.duration}s linear ${p.delay}s infinite`,
+              } as React.CSSProperties
+            }
           />
         ))}
 
@@ -294,14 +387,30 @@ export const IntroAnimation = (): JSX.Element => {
           aria-hidden="true"
         >
           <defs>
-            <linearGradient id="animated-silver-gradient" x1="0%" y1="0%" x2="200%" y2="0%">
+            <linearGradient
+              id="animated-silver-gradient"
+              x1="0%"
+              y1="0%"
+              x2="200%"
+              y2="0%"
+            >
               <stop offset="0%" stopColor="#ffffff" />
               <stop offset="25%" stopColor="#c5d0e0" />
               <stop offset="50%" stopColor="#ffffff" />
               <stop offset="75%" stopColor="#c5d0e0" />
               <stop offset="100%" stopColor="#ffffff" />
-              <animate attributeName="x1" values="0%;-100%" dur="8s" repeatCount="indefinite" />
-              <animate attributeName="x2" values="200%;100%" dur="8s" repeatCount="indefinite" />
+              <animate
+                attributeName="x1"
+                values="0%;-100%"
+                dur="8s"
+                repeatCount="indefinite"
+              />
+              <animate
+                attributeName="x2"
+                values="200%;100%"
+                dur="8s"
+                repeatCount="indefinite"
+              />
             </linearGradient>
 
             <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
@@ -311,20 +420,28 @@ export const IntroAnimation = (): JSX.Element => {
           </defs>
 
           <HandwrittenLine
-            text={LINE_1} y={120} delay={300}
-            completed={completed} fontsReady={fontsReady}
+            text={LINE_1}
+            y={120}
+            delay={300}
+            completed={completed}
+            fontsReady={fontsReady}
             svgFontSize={86}
             fontFamily="'Cormorant Garamond', serif"
-            fontStyle="italic" fontWeight={500}
+            fontStyle="italic"
+            fontWeight={500}
             letterSpacing="0.02em"
           />
 
           <HandwrittenLine
-            text={LINE_2} y={210} delay={LINE_2_DELAY}
-            completed={completed} fontsReady={fontsReady}
+            text={LINE_2}
+            y={210}
+            delay={LINE_2_DELAY}
+            completed={completed}
+            fontsReady={fontsReady}
             svgFontSize={28}
             fontFamily="'Montserrat', sans-serif"
-            fontWeight={300} letterSpacing="0.35em"
+            fontWeight={300}
+            letterSpacing="0.35em"
             opacity={0.85}
             onDrawComplete={() => setLine2Done(true)}
           />
@@ -339,20 +456,18 @@ export const IntroAnimation = (): JSX.Element => {
           }}
         >
           <span
-            className="text-[10px] tracking-[0.4em] uppercase"
+            className="text-[10px] tracking-[0.4em] uppercase text-white/30 hover:text-white/90 focus-visible:text-white/90 transition-colors duration-[400ms]"
             style={{
               fontFamily: "'Montserrat', sans-serif",
-              color: "rgba(255,255,255,0.3)",
-              transition: "color 0.4s ease",
             }}
-            onMouseEnter={(e) => { (e.target as HTMLElement).style.color = "rgba(255,255,255,0.9)"; }}
-            onMouseLeave={(e) => { (e.target as HTMLElement).style.color = "rgba(255,255,255,0.3)"; }}
           >
-            пропустити
+            {t.intro.skip}
           </span>
-          <div className="w-10 h-[1px] mx-auto mt-3"
+          <div
+            className="w-10 h-[1px] mx-auto mt-3"
             style={{
-              background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
+              background:
+                "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)",
             }}
           />
         </button>

@@ -2,23 +2,27 @@ import type { JSX } from "react";
 
 import { EducationalPrograms } from "@/components/sections/EducationalPrograms";
 import type { EducationalProgramsData } from "@/components/sections/educational-programs.types";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 
-const educationalProgramsData: EducationalProgramsData = {
-  sectionId: "general-info",
-  title: "Загальна інформація",
-  titleAlign: "right",
-  image: {
-    src: "/images/Departments/dfb-info.webp",
-    alt: "Finance and business",
-  },
-  introText:
-    "Ми готуємо висококваліфікованих фахівців у сфері фінансів, обліку, банківської справи, підприємництва та бізнес-аналітики. Наші студенти не лише опановують фундаментальні економічні теорії, а й здобувають практичні навички, працюючи над реальними кейсами, фінансовими розрахунками, бізнес-проєктами та аналітичними дослідженнями.",
-  columns: [
-    "Кафедра забезпечує викладання дисциплін професійної підготовки у сфері фінансів, обліку та банківської справи, серед яких: фінанси, податкова система, бюджетна система, гроші і кредит, фінансовий ринок, фінансова діяльність суб’єктів господарювання, фінанси підприємств, банківська система, бухгалтерський облік та фінансовий облік.",
-    "Також кафедра охоплює напрямки страхування і страховий менеджмент, міжнародні фінанси, антикризові моделі управління підприємством, управлінський облік, облік у бюджетних установах та банках, підприємництво та основи бізнесу, бізнес-планування, фінансова звітність та аналіз, інвестування та інвестиційний аналіз, фінансова обізнаність, проєктний та фінансовий менеджмент, аналітика в управлінні публічними фінансами, стратегічний управлінський облік та інші суміжні дисципліни.",
-  ],
-};
+export const FBEducationalPrograms = ({
+  locale,
+}: {
+  locale?: Locale;
+}): JSX.Element => {
+  const t = getTranslations(locale);
 
-export const FBEducationalPrograms = (): JSX.Element => {
+  const educationalProgramsData: EducationalProgramsData = {
+    sectionId: "general-info",
+    title: t.departmentPages.common.generalInfo,
+    titleAlign: "right",
+    image: {
+      src: "/images/Departments/dfb-info.webp",
+      alt: t.departmentPages.fb.info.imageAlt,
+    },
+    introText: t.departmentPages.fb.info.introText,
+    columns: [...t.departmentPages.fb.info.columns],
+  };
+
   return <EducationalPrograms data={educationalProgramsData} />;
 };

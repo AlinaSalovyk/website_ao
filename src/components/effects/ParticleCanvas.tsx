@@ -5,8 +5,7 @@
  * Uses requestAnimationFrame for 60fps, GPU-accelerated via Canvas API.
  * Particle count adapts to viewport width (fewer on mobile).
  */
-import { useEffect, useRef, useCallback } from "react";
-import type { JSX } from "react";
+import { useEffect, useRef, useCallback, type JSX } from "react";
 
 interface Particle {
   x: number;
@@ -44,6 +43,7 @@ export const ParticleCanvas = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -9999, y: -9999 });
   const particlesRef = useRef<Particle[]>([]);
+  const coreEndRef = useRef<number>(0);
   const animFrameRef = useRef<number>(0);
 
   const initParticles = useCallback(
@@ -51,7 +51,7 @@ export const ParticleCanvas = ({
       const count = width < 768 ? Math.floor(maxParticles * 0.4) : maxParticles;
       const sCount = width < 768 ? Math.floor(starCount * 0.4) : starCount;
       const particles: Particle[] = [];
-      
+
       // Main constellation particles
       for (let i = 0; i < count; i++) {
         const x = Math.random() * width;
@@ -85,9 +85,11 @@ export const ParticleCanvas = ({
         });
       }
 
+      // Core particles are added first, then stars.
+      coreEndRef.current = count;
       particlesRef.current = particles;
     },
-    [maxParticles, starCount]
+    [maxParticles, starCount],
   );
 
   useEffect(() => {
@@ -131,15 +133,19 @@ export const ParticleCanvas = ({
       ctx.clearRect(0, 0, width, height);
       const particles = particlesRef.current;
       const mouse = mouseRef.current;
+      const mouseRadiusSq = mouseRadius * mouseRadius;
+      const connectionDistSq = connectionDistance * connectionDistance;
+      const coreEnd = Math.min(coreEndRef.current, particles.length);
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Mouse repulsion — strong push away
+        // Mouse repulsion — use squared distance to avoid sqrt
         const dx = p.x - mouse.x;
         const dy = p.y - mouse.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < mouseRadius && dist > 0) {
+        const distSq = dx * dx + dy * dy;
+        if (distSq < mouseRadiusSq && distSq > 0) {
+          const dist = Math.sqrt(distSq);
           const force = ((mouseRadius - dist) / mouseRadius) * 1.2;
           p.vx += (dx / dist) * force * 0.5;
           p.vy += (dy / dist) * force * 0.5;
@@ -177,21 +183,23 @@ export const ParticleCanvas = ({
         }
         ctx.fill();
 
-        // Draw connections only if it's not a loose star
-        if (!p.isStar) {
-          for (let j = i + 1; j < particles.length; j++) {
+        // Draw connections — only between core particles, use squared distance first
+        if (i < coreEnd) {
+          for (let j = i + 1; j < coreEnd; j++) {
             const p2 = particles[j];
-            if (p2.isStar) continue;
-            
             const cdx = p.x - p2.x;
             const cdy = p.y - p2.y;
-            const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
-            if (cdist < connectionDistance) {
+            const cdistSq = cdx * cdx + cdy * cdy;
+            if (cdistSq < connectionDistSq) {
+              const cdist = Math.sqrt(cdistSq);
               const alpha = 1 - cdist / connectionDistance;
               ctx.beginPath();
               ctx.moveTo(p.x, p.y);
               ctx.lineTo(p2.x, p2.y);
-              ctx.strokeStyle = lineColor.replace(/[\d.]+\)$/, `${alpha * 0.35})`);
+              ctx.strokeStyle = lineColor.replace(
+                /[\d.]+\)$/,
+                `${alpha * 0.35})`,
+              );
               ctx.lineWidth = 0.6;
               ctx.stroke();
             }
@@ -218,7 +226,14 @@ export const ParticleCanvas = ({
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleMouseLeave);
     };
-  }, [initParticles, particleColor, starColor, lineColor, connectionDistance, mouseRadius]);
+  }, [
+    initParticles,
+    particleColor,
+    starColor,
+    lineColor,
+    connectionDistance,
+    mouseRadius,
+  ]);
 
   return (
     <canvas

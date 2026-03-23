@@ -1,8 +1,7 @@
 import type { JSX } from "react";
 
+import type { ScientificActivityData } from "@/components/sections/scientific-activity.types";
 import { Separator } from "@/components/ui/separator";
-
-import type { ScientificActivityData } from "./scientific-activity.types";
 
 interface ScientificActivityProps {
   data: ScientificActivityData;

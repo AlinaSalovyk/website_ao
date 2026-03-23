@@ -1,0 +1,47 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Header } from "@/components/layout/Header";
+import { ITHeroWithAbout } from "@/routes/departments/it-analytics/sections/ITHeroWithAbout";
+import { ITEducationalPrograms } from "@/routes/departments/it-analytics/sections/ITEducationalPrograms";
+import { ITDegreePrograms } from "@/routes/departments/it-analytics/sections/ITDegreePrograms";
+import { ITLeadership } from "@/routes/departments/it-analytics/sections/ITLeadership";
+import { ITScientificActivity } from "@/routes/departments/it-analytics/sections/ITScientificActivity";
+import { Footer } from "@/components/layout/Footer";
+import { getTranslations } from "@/i18n";
+import type { Locale } from "@/i18n";
+
+const locale: Locale = "en";
+const t = getTranslations(locale);
+---
+
+<Layout
+  title={t.meta.itTitle}
+  description={t.meta.itDescription}
+  ogImage="/images/IT/pexels-thisisengineer.webp"
+  locale={locale}
+>
+  <div
+    class="overflow-hidden w-full min-h-screen flex justify-center bg-layout-bg"
+  >
+    <div class="flex w-full relative flex-col items-start min-h-screen">
+      <Header
+        client:load
+        headerPosition="absolute"
+        locale={locale}
+        currentPath={Astro.url.pathname}
+      />
+      <main id="main-content" class="w-full">
+        <ITHeroWithAbout client:load locale={locale} />
+        <div
+          class="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]"
+        >
+          <ITEducationalPrograms locale={locale} />
+        </div>
+        <ITDegreePrograms client:visible locale={locale} />
+        <ITLeadership locale={locale} />
+        <ITScientificActivity locale={locale} />
+      </main>
+      <Footer client:visible locale={locale} />
+    </div>
+  </div>
+</Layout>

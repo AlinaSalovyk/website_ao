@@ -1,2 +1,2 @@
 export { GalleryCarousel } from "./GalleryCarousel";
-export type { GalleryItem, GalleryCarouselProps } from "./types";
+export type { GalleryCarouselProps, GalleryItem } from "./types";

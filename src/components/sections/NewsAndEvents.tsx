@@ -1,11 +1,10 @@
-import type { JSX } from "react";
 import { ArrowRightIcon } from "lucide-react";
+import type { JSX } from "react";
 
+import type { NewsAndEventsData } from "@/components/sections/news-and-events.types";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
-import type { NewsAndEventsData } from "./news-and-events.types";
 
 interface NewsAndEventsProps {
   data: NewsAndEventsData;

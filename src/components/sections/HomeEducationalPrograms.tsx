@@ -1,10 +1,9 @@
 import type { JSX } from "react";
 
+import type { HomeEducationalProgramsData } from "@/components/sections/home-educational-programs.types";
 import { PartnersCarousel } from "@/components/sections/PartnersCarousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
-import type { HomeEducationalProgramsData } from "./home-educational-programs.types";
 
 interface HomeEducationalProgramsProps {
   data: HomeEducationalProgramsData;
@@ -16,7 +15,7 @@ export const HomeEducationalPrograms = ({
   const {
     sectionId = "educational-programs",
     title,
-    specialtiesLabel = "Перелік спеціальностей",
+    specialitiesLabel = "Перелік спеціальностей",
     programs,
   } = data;
 
@@ -51,25 +50,25 @@ export const HomeEducationalPrograms = ({
                     <div className="flex flex-col items-end justify-between pr-0 lg:pr-10">
                       <div className="flex flex-col items-start w-full max-w-md ml-auto lg:mr-12">
                         <p className="font-normal text-pure-black text-sm tracking-[0] leading-6 mb-2">
-                          {specialtiesLabel}
+                          {specialitiesLabel}
                         </p>
                         <ul className="list-disc pl-5 space-y-1">
-                          {program.specialties.map((specialty) => (
+                          {program.specialities.map((speciality) => (
                             <li
-                              key={`${program.id}-${specialty.name}`}
+                              key={`${program.id}-${speciality.name}`}
                               className="font-normal text-pure-black text-sm tracking-[0] leading-6"
                             >
-                              {specialty.link ? (
+                              {speciality.link ? (
                                 <a
-                                  href={specialty.link}
+                                  href={speciality.link}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="hover:underline hover:text-blue-600 transition-colors"
                                 >
-                                  {specialty.name}
+                                  {speciality.name}
                                 </a>
                               ) : (
-                                <span>{specialty.name}</span>
+                                <span>{speciality.name}</span>
                               )}
                             </li>
                           ))}

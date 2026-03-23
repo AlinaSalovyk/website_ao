@@ -3,11 +3,12 @@
  * Supports numeric targets with suffix (e.g., "500+" → counts to 500, then shows "+").
  */
 import { useEffect, useState, type JSX } from "react";
+
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 interface AnimatedCounterProps {
-  value: string;        // e.g. "500+", "#1", "30+"
-  duration?: number;    // animation duration in ms
+  value: string; // e.g. "500+", "#1", "30+"
+  duration?: number; // animation duration in ms
   className?: string;
 }
 

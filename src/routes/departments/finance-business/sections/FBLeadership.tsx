@@ -1,29 +1,29 @@
 import type { JSX } from "react";
+
 import { Leadership } from "@/components/sections/Leadership";
 import type { LeadershipData } from "@/components/sections/leadership.types";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 
-const leadershipData: LeadershipData = {
-  title: "Керівництво кафедри",
-  members: [
-    {
-      id: 1,
-      name: "Шулик Юлія Віталіївна",
-      role: "Завідувач кафедри, кандидат економічних наук, доцент кафедри фінансів та бізнесу",
-      email: "yulia.shulyk@oa.edu.ua",
-      officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/InstituteManagement/shulyk.webp",
-    },
-    {
-      id: 2,
-      name: "Гонтар Мирослава Валеріївна",
-      role: "Методист кафедри",
-      email: "kafedra.finansiv@oa.edu.ua",
-      officeHours: "понеділок - п'ятниця: 8.30 – 16.30",
-      image: "/images/InstituteManagement/hontar.webp",
-    },
-  ],
-};
+const memberImages = [
+  "/images/InstituteManagement/shulyk.webp",
+  "/images/InstituteManagement/hontar.webp",
+];
 
-export const FBLeadership = (): JSX.Element => {
+export const FBLeadership = ({ locale }: { locale?: Locale }): JSX.Element => {
+  const t = getTranslations(locale);
+
+  const leadershipData: LeadershipData = {
+    title: t.departmentPages.common.departmentLeadership,
+    members: t.departmentPages.fb.leadership.map((m, i) => ({
+      id: i + 1,
+      name: m.name,
+      role: m.role,
+      email: m.email,
+      officeHours: m.officeHours,
+      image: memberImages[i],
+    })),
+  };
+
   return <Leadership data={leadershipData} />;
 };

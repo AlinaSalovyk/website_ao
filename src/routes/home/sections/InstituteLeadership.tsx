@@ -1,79 +1,86 @@
-import { TeamShowcase, type TeamMember, type TeamMemberSocial } from "@/components/sections/TeamShowcase";
 import { FacebookIcon } from "@/components/icons/social/FacebookIcon";
 import { InstagramIcon } from "@/components/icons/social/InstagramIcon";
 import { LinkedInIcon } from "@/components/icons/social/LinkedInIcon";
+import {
+  TeamShowcase,
+  type TeamMember,
+  type TeamMemberSocial,
+} from "@/components/sections/TeamShowcase";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 
 const defaultSocials: TeamMemberSocial[] = [
-    {
-        icon: <FacebookIcon iconSize="w-10 h-10 md:w-14 md:h-14" iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors" borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors" />,
-        href: "#",
-        label: "Facebook",
-    },
-    {
-        icon: <InstagramIcon iconSize="w-10 h-10 md:w-14 md:h-14" iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors" borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors" />,
-        href: "#",
-        label: "Instagram",
-    },
-    {
-        icon: <LinkedInIcon iconSize="w-10 h-10 md:w-14 md:h-14" iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors" borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors" />,
-        href: "#",
-        label: "LinkedIn",
-    },
+  {
+    icon: (
+      <FacebookIcon
+        iconSize="w-10 h-10 md:w-14 md:h-14"
+        iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors"
+        borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors"
+      />
+    ),
+    href: "#",
+    label: "Facebook",
+  },
+  {
+    icon: (
+      <InstagramIcon
+        iconSize="w-10 h-10 md:w-14 md:h-14"
+        iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors"
+        borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors"
+      />
+    ),
+    href: "#",
+    label: "Instagram",
+  },
+  {
+    icon: (
+      <LinkedInIcon
+        iconSize="w-10 h-10 md:w-14 md:h-14"
+        iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors"
+        borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors"
+      />
+    ),
+    href: "#",
+    label: "LinkedIn",
+  },
 ];
 
-const leadershipData: TeamMember[] = [
-    {
-        id: 1,
-        name: "Новоселецький Олександр Миколайович",
-        role: "Директор Інституту ІТ та бізнесу, кандидат економічних наук, доцент кафедри інформаційних технологій та аналітики даних",
-        email: "oleksandr.novoseletskyi@oa.edu.ua",
-        image: "/images/InstituteManagement/novoseletskyy.webp",
-    },
-    {
-        id: 2,
-        name: "Шулик Юлія Віталіївна",
-        role: "Заступник директора з навчально-наукової роботи, кандидат економічних наук, доцент, завідувач кафедри фінансів та бізнесу",
-        email: "yulia.shulyk@oa.edu.ua",
-        image: "/images/InstituteManagement/shulyk.webp",
-    },
-    {
-        id: 3,
-        name: "Чернявський Андрій Володимирович",
-        role: "Заступник директора з навчально-виховної роботи, викладач кафедри інформаційних технологій та аналітики даних",
-        email: "andrii.cherniavskyi@oa.edu.ua",
-        image: "/images/InstituteManagement/cherniavskyi.webp",
-    },
-    {
-        id: 4,
-        name: "Козак Людмила Василівна",
-        role: "Заступник директора з питань якості освіти, доктор економічних наук, доцент кафедри менеджменту та маркетингу",
-        email: "lyudmyla.kozak@oa.edu.ua",
-        image: "/images/InstituteManagement/Kozak.webp",
-    },
-    {
-        id: 5,
-        name: "Новак Анна Федорівна",
-        role: "Заступник директора з профорієнтаційної роботи, викладач кафедри фінансів та бізнесу",
-        email: "anna.novak@oa.edu.ua",
-        image: "/images/InstituteManagement/novak.webp",
-    },
-    {
-        id: 6,
-        name: "Галецька Тамара Володимирівна",
-        role: "Старший лаборант",
-        email: "dekanat.ekonomichnyi@oa.edu.ua",
-        image: "/images/InstituteManagement/haletska.webp",
-    },
+const MEMBER_IMAGES = [
+  "/images/InstituteManagement/novoseletskyy.webp",
+  "/images/InstituteManagement/shulyk.webp",
+  "/images/InstituteManagement/cherniavskyi.webp",
+  "/images/InstituteManagement/Kozak.webp",
+  "/images/InstituteManagement/novak.webp",
+  "/images/InstituteManagement/haletska.webp",
 ];
 
-export const InstituteLeadership = () => {
-    return (
-        <TeamShowcase
-            members={leadershipData}
-            defaultSocials={defaultSocials}
-            badge="Наша команда"
-            heading="Керівництво інституту"
-            sectionId="leadership"
-        />
-    );
+const MEMBER_EMAILS = [
+  "oleksandr.novoseletskyi@oa.edu.ua",
+  "yulia.shulyk@oa.edu.ua",
+  "andrii.cherniavskyi@oa.edu.ua",
+  "lyudmyla.kozak@oa.edu.ua",
+  "anna.novak@oa.edu.ua",
+  "dekanat.ekonomichnyi@oa.edu.ua",
+];
+
+export const InstituteLeadership = ({ locale }: { locale?: Locale }) => {
+  const t = getTranslations(locale);
+
+  const leadershipData: TeamMember[] = t.instituteLeadership.map((m, i) => ({
+    id: i + 1,
+    name: m.name,
+    role: m.role,
+    email: MEMBER_EMAILS[i],
+    image: MEMBER_IMAGES[i],
+  }));
+  return (
+    <TeamShowcase
+      members={leadershipData}
+      defaultSocials={defaultSocials}
+      badge={t.home.leadership.badge}
+      heading={t.home.leadership.heading}
+      sectionId="leadership"
+      locale={locale}
+    />
+  );
 };

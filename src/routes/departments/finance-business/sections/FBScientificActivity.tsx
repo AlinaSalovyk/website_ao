@@ -1,36 +1,42 @@
 import type { JSX } from "react";
+
 import { ScientificActivity } from "@/components/sections/ScientificActivity";
 import type { ScientificActivityData } from "@/components/sections/scientific-activity.types";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 
-const scientificActivityData: ScientificActivityData = {
-  title: "Наукова діяльність",
-  headingVariant: "compact",
-  contentSpacing: "my",
-  image: {
-    src: "/images/logo-compact.webp",
-    alt: "Scientific activity",
-    width: 684,
-    height: 672,
-  },
-  description: (
-    <>
-      Кафедра виконує науково-дослідну роботу на тему «Фінансове забезпечення
-      сталого розвитку територіальних громад України» (номер державної
-      реєстрації: 0125U003922). Видає Науковий журнал{" "}
-      <a
-        href="https://ecj.oa.edu.ua/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline hover:text-leadership-link transition-colors"
-      >
-        «Наукові записки Національного університету «Острозька академія» серія
-        «Економіка»
-      </a>
-      .
-    </>
-  ),
-};
+export const FBScientificActivity = ({
+  locale,
+}: {
+  locale?: Locale;
+}): JSX.Element => {
+  const t = getTranslations(locale);
 
-export const FBScientificActivity = (): JSX.Element => {
+  const scientificActivityData: ScientificActivityData = {
+    title: t.departmentPages.common.scientificActivity,
+    headingVariant: "compact",
+    contentSpacing: "my",
+    image: {
+      src: "/images/logo-compact.webp",
+      alt: t.departmentPages.common.scientificActivityAlt,
+      width: 684,
+      height: 672,
+    },
+    description: (
+      <>
+        {t.departmentPages.fb.science.text}{" "}
+        <a
+          href="https://ecj.oa.edu.ua/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline hover:text-leadership-link transition-colors"
+        >
+          {t.departmentPages.fb.science.linkText}
+        </a>
+        .
+      </>
+    ),
+  };
+
   return <ScientificActivity data={scientificActivityData} />;
 };

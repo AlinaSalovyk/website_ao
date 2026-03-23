@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useState, type RefObject } from "react";
 
-export function useFullscreen(
-  targetRef: RefObject<HTMLElement | null>,
-) {
+export function useFullscreen(targetRef: RefObject<HTMLElement | null>) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
@@ -18,7 +16,8 @@ export function useFullscreen(
         .then(() => setIsFullscreen(true))
         .catch(() => {});
     } else {
-      document.exitFullscreen()
+      document
+        .exitFullscreen()
         .then(() => setIsFullscreen(false))
         .catch(() => {});
     }

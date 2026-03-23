@@ -2,8 +2,12 @@
  * ScrollReveal — wrapper component for scroll-triggered animations.
  * Supports multiple animation variants with configurable delays.
  */
-import type { ReactNode, JSX, CSSProperties } from "react";
-import { useScrollReveal, type ScrollRevealOptions } from "@/hooks/useScrollReveal";
+import type { CSSProperties, JSX, ReactNode } from "react";
+
+import {
+  useScrollReveal,
+  type ScrollRevealOptions,
+} from "@/hooks/useScrollReveal";
 
 export type RevealVariant =
   | "fade-up"
@@ -22,7 +26,10 @@ interface ScrollRevealProps extends ScrollRevealOptions {
   as?: keyof JSX.IntrinsicElements;
 }
 
-const VARIANT_STYLES: Record<RevealVariant, { hidden: CSSProperties; visible: CSSProperties }> = {
+const VARIANT_STYLES: Record<
+  RevealVariant,
+  { hidden: CSSProperties; visible: CSSProperties }
+> = {
   "fade-up": {
     hidden: { opacity: 0, transform: "translateY(40px)" },
     visible: { opacity: 1, transform: "translateY(0)" },
@@ -48,8 +55,14 @@ const VARIANT_STYLES: Record<RevealVariant, { hidden: CSSProperties; visible: CS
     visible: { opacity: 1, transform: "scale(1)" },
   },
   "flip-up": {
-    hidden: { opacity: 0, transform: "perspective(600px) rotateX(15deg) translateY(20px)" },
-    visible: { opacity: 1, transform: "perspective(600px) rotateX(0deg) translateY(0)" },
+    hidden: {
+      opacity: 0,
+      transform: "perspective(600px) rotateX(15deg) translateY(20px)",
+    },
+    visible: {
+      opacity: 1,
+      transform: "perspective(600px) rotateX(0deg) translateY(0)",
+    },
   },
 };
 
@@ -63,7 +76,12 @@ export const ScrollReveal = ({
   rootMargin,
   once = true,
 }: ScrollRevealProps): JSX.Element => {
-  const { ref, isRevealed } = useScrollReveal({ threshold, rootMargin, once, delay });
+  const { ref, isRevealed } = useScrollReveal({
+    threshold,
+    rootMargin,
+    once,
+    delay,
+  });
   const styles = VARIANT_STYLES[variant];
 
   return (

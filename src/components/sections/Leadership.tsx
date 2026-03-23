@@ -1,8 +1,7 @@
 import type { JSX } from "react";
 
+import type { LeadershipData } from "@/components/sections/leadership.types";
 import { Separator } from "@/components/ui/separator";
-
-import type { LeadershipData } from "./leadership.types";
 
 interface LeadershipProps {
   data: LeadershipData;

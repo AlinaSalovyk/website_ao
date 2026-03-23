@@ -13,6 +13,23 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-
-  integrations: [react(), sitemap()]
+  i18n: {
+    defaultLocale: 'uk',
+    locales: ['uk', 'en'],
+    routing: {
+      prefixDefaultLocale: false,
+    },
+    fallback: {
+      en: 'uk',
+    },
+  },
+  integrations: [
+    react(),
+    sitemap({
+      i18n: {
+        defaultLocale: 'uk',
+        locales: { uk: 'uk-UA', en: 'en-US' },
+      },
+    }),
+  ],
 });

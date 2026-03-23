@@ -1,10 +1,9 @@
 import type { JSX } from "react";
 
+import type { EducationalProgramsData } from "@/components/sections/educational-programs.types";
 import { PartnersCarousel } from "@/components/sections/PartnersCarousel";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-
-import type { EducationalProgramsData } from "./educational-programs.types";
 
 interface EducationalProgramsProps {
   data: EducationalProgramsData;

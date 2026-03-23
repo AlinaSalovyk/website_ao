@@ -9,66 +9,80 @@
  *   <DepartmentSelector departments={DEPARTMENTS} />
  *   <DepartmentSelector departments={DEPARTMENTS} defaultDepartmentId="finance" />
  */
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { ArrowRight, ChevronDown, Sparkles } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, useState } from "react";
+
+import type { Locale } from "@/i18n";
+import { getLocalizedPath, getTranslations } from "@/i18n";
 import { cn } from "@/lib/utils";
-import { Sparkles, ChevronDown, ArrowRight } from "lucide-react";
-import type { DepartmentData, DepartmentId } from "@/routes/departments/departments-programs";
+import type {
+  DepartmentData,
+  DepartmentId,
+} from "@/routes/departments/departments-programs";
+import type { ProgramLevelProgram } from "@/components/sections/degree-programs.types";
 
 /* ── Sub-component: Single program level (Бакалаврат / Магістратура / etc.) ── */
 const ProgramLevel = ({
   title,
   items,
   parentId,
+  locale,
 }: {
   title: string;
-  items: any[];
+  items: ProgramLevelProgram[];
   parentId: string;
-}) => (
-  <div className="space-y-5">
-    <h3 className="text-sm md:text-base font-semibold text-blue-400 uppercase tracking-[0.15em]">
-      {title}
-    </h3>
-    <ul className="space-y-3 relative">
-      {items.map((program, idx) => {
-        const programPrefix =
-          program.programType === "OPP" ? "ОПП" : "ОНП";
-        const programText = `${programPrefix} ${program.title}`;
+  locale?: Locale;
+}) => {
+  const t = getTranslations(locale);
+  return (
+    <div className="space-y-5">
+      <h3 className="text-sm md:text-base font-semibold text-blue-400 uppercase tracking-[0.15em]">
+        {title}
+      </h3>
+      <ul className="space-y-3 relative">
+        {items.map((program, idx) => {
+          const programPrefix =
+            program.programType === "OPP"
+              ? t.educationLevels.opp
+              : t.educationLevels.onp;
+          const programText = `${programPrefix} ${program.title}`;
 
-        return (
-          <motion.li
-            key={`${parentId}-${program.title}`}
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.1 + idx * 0.05,
-              duration: 0.4,
-              ease: [0.25, 0.1, 0.25, 1],
-            }}
-            className="group flex items-start gap-3 w-full"
-          >
-            <div className="mt-2 w-[1.5px] h-3 bg-white/20 group-hover:bg-blue-400 group-hover:shadow-[0_0_8px_var(--color-indicator-glow)] transition-all duration-300 shrink-0 rounded-full" />
+          return (
+            <motion.li
+              key={`${parentId}-${program.title}`}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{
+                delay: 0.1 + idx * 0.05,
+                duration: 0.4,
+                ease: [0.25, 0.1, 0.25, 1],
+              }}
+              className="group flex items-start gap-3 w-full"
+            >
+              <div className="mt-2 w-[1.5px] h-3 bg-white/20 group-hover:bg-blue-400 group-hover:shadow-[0_0_8px_var(--color-indicator-glow)] transition-all duration-300 shrink-0 rounded-full" />
 
-            {program.link ? (
-              <a
-                href={program.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted-light text-base md:text-lg font-light leading-relaxed hover:text-white transition-colors duration-300"
-              >
-                {programText}
-              </a>
-            ) : (
-              <span className="text-text-muted-light text-base md:text-lg font-light leading-relaxed group-hover:text-white transition-colors duration-300">
-                {programText}
-              </span>
-            )}
-          </motion.li>
-        );
-      })}
-    </ul>
-  </div>
-);
+              {program.link ? (
+                <a
+                  href={program.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-text-muted-light text-base md:text-lg font-light leading-relaxed hover:text-white transition-colors duration-300"
+                >
+                  {programText}
+                </a>
+              ) : (
+                <span className="text-text-muted-light text-base md:text-lg font-light leading-relaxed group-hover:text-white transition-colors duration-300">
+                  {programText}
+                </span>
+              )}
+            </motion.li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+};
 
 /* ── Props ── */
 export interface DepartmentSelectorProps {
@@ -82,18 +96,23 @@ export interface DepartmentSelectorProps {
   showDepartmentLink?: boolean;
   /** Extra class names for the root wrapper */
   className?: string;
+  /** Locale for translations */
+  locale?: Locale;
 }
 
 /* ── Main component ── */
 export const DepartmentSelector = ({
   departments,
   defaultDepartmentId,
-  heading = "Наші освітні програми",
+  heading,
   showDepartmentLink = true,
   className,
+  locale,
 }: DepartmentSelectorProps) => {
+  const t = getTranslations(locale);
+  const resolvedHeading = heading ?? t.home.departments.heading;
   const [activeId, setActiveId] = useState<DepartmentId>(
-    defaultDepartmentId ?? departments[0]?.id ?? ("it" as DepartmentId)
+    defaultDepartmentId ?? departments[0]?.id ?? ("it" as DepartmentId),
   );
   const activeDepartment = departments.find((d) => d.id === activeId);
 
@@ -128,7 +147,7 @@ export const DepartmentSelector = ({
             <ChevronDown
               className={cn(
                 "w-5 h-5 text-blue-400 transition-transform duration-300 shrink-0",
-                isDropdownOpen && "rotate-180"
+                isDropdownOpen && "rotate-180",
               )}
             />
           </button>
@@ -153,7 +172,7 @@ export const DepartmentSelector = ({
                       "w-full text-left p-4 rounded-xl transition-colors duration-200 text-sm md:text-base",
                       activeId === dept.id
                         ? "bg-blue-500/15 text-white shadow-[inset_0_0_0_1px_var(--color-indicator-active-border)]"
-                        : "text-separator-gray hover:bg-white/5 hover:text-white"
+                        : "text-separator-gray hover:bg-white/5 hover:text-white",
                     )}
                   >
                     {dept.title}
@@ -179,7 +198,7 @@ export const DepartmentSelector = ({
                     "relative z-10 text-xl font-light transition-colors duration-400 tracking-wide",
                     isActive
                       ? "text-white drop-shadow-[0_0_8px_var(--color-glass-light-border)]"
-                      : "text-separator-gray group-hover:text-white"
+                      : "text-separator-gray group-hover:text-white",
                   )}
                 >
                   {dept.title}
@@ -188,8 +207,7 @@ export const DepartmentSelector = ({
                 <div
                   className={cn(
                     "absolute inset-0 bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-                    isActive &&
-                    "opacity-100 bg-white/[0.04] backdrop-blur-sm"
+                    isActive && "opacity-100 bg-white/[0.04] backdrop-blur-sm",
                   )}
                 />
 
@@ -224,7 +242,7 @@ export const DepartmentSelector = ({
             >
               <Sparkles className="w-5 h-5 text-blue-400" />
               <h2 className="text-base md:text-lg font-medium text-white/80 tracking-wide">
-                {heading}
+                {resolvedHeading}
               </h2>
             </motion.div>
 
@@ -248,23 +266,26 @@ export const DepartmentSelector = ({
                         title={level.title}
                         items={level.programs}
                         parentId={activeDepartment.id}
+                        locale={locale}
                       />
                     ))}
                   </div>
 
                   {/* Link to department page */}
-                  {showDepartmentLink &&
-                    activeDepartment?.departmentLink && (
-                      <div className="mt-4 pt-6 border-t border-white/10 w-full flex justify-end">
-                        <a
-                          href={activeDepartment.departmentLink}
-                          className="group flex items-center gap-2 text-sm md:text-base font-medium text-blue-400 hover:text-blue-300 transition-colors"
-                        >
-                          Дізнатися більше про кафедру
-                          <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transform group-hover:translate-x-1 transition-transform" />
-                        </a>
-                      </div>
-                    )}
+                  {showDepartmentLink && activeDepartment?.departmentLink && (
+                    <div className="mt-4 pt-6 border-t border-white/10 w-full flex justify-end">
+                      <a
+                        href={getLocalizedPath(
+                          activeDepartment.departmentLink,
+                          locale ?? "uk",
+                        )}
+                        className="group flex items-center gap-2 text-sm md:text-base font-medium text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        {t.departments.learnMoreAbout}
+                        <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transform group-hover:translate-x-1 transition-transform" />
+                      </a>
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
