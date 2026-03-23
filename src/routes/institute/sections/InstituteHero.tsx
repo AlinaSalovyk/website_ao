@@ -1,6 +1,10 @@
-import type { JSX } from "react";
+import { lazy, Suspense, type JSX } from "react";
 
-import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
+const ParticleCanvas = lazy(() =>
+  import("@/components/effects/ParticleCanvas").then((m) => ({
+    default: m.ParticleCanvas,
+  })),
+);
 import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
 import type { Locale } from "@/i18n";
 import { getTranslations } from "@/i18n";
@@ -15,13 +19,15 @@ export const InstituteHero = ({ locale }: { locale?: Locale }): JSX.Element => {
 
       {/* Interactive Particle Canvas */}
       <div className="absolute inset-0 pointer-events-none z-[2]">
-        <ParticleCanvas
-          particleColor="rgba(100, 160, 255, 0.5)"
-          lineColor="rgba(100, 160, 255, 0.12)"
-          maxParticles={120}
-          connectionDistance={140}
-          mouseRadius={180}
-        />
+        <Suspense fallback={null}>
+          <ParticleCanvas
+            particleColor="rgba(100, 160, 255, 0.5)"
+            lineColor="rgba(100, 160, 255, 0.12)"
+            maxParticles={120}
+            connectionDistance={140}
+            mouseRadius={180}
+          />
+        </Suspense>
       </div>
 
       <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col pt-70 lg:pt-90 pb-10 lg:pb-16">

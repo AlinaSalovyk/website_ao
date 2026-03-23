@@ -1,6 +1,10 @@
-import { useEffect, useRef, type JSX } from "react";
+import { lazy, Suspense, useEffect, useRef, type JSX } from "react";
 
-import { ParticleCanvas } from "@/components/effects/ParticleCanvas";
+const ParticleCanvas = lazy(() =>
+  import("@/components/effects/ParticleCanvas").then((m) => ({
+    default: m.ParticleCanvas,
+  })),
+);
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
 import type { Locale } from "@/i18n";
@@ -42,13 +46,15 @@ export const HeroWithAbout = ({ locale }: { locale?: Locale }): JSX.Element => {
 
       {/* Interactive Particle Canvas */}
       <div className="absolute inset-0 pointer-events-none z-[2]">
-        <ParticleCanvas
-          particleColor="rgba(100, 160, 255, 0.5)"
-          lineColor="rgba(100, 160, 255, 0.12)"
-          maxParticles={120}
-          connectionDistance={140}
-          mouseRadius={180}
-        />
+        <Suspense fallback={null}>
+          <ParticleCanvas
+            particleColor="rgba(100, 160, 255, 0.5)"
+            lineColor="rgba(100, 160, 255, 0.12)"
+            maxParticles={120}
+            connectionDistance={140}
+            mouseRadius={180}
+          />
+        </Suspense>
       </div>
 
       {/* 3D Chrome Shape — with parallax effect */}
