@@ -43,6 +43,7 @@ export const ParticleCanvas = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: -9999, y: -9999 });
   const particlesRef = useRef<Particle[]>([]);
+  const coreEndRef = useRef<number>(0);
   const animFrameRef = useRef<number>(0);
 
   const initParticles = useCallback(
@@ -84,6 +85,8 @@ export const ParticleCanvas = ({
         });
       }
 
+      // Core particles are added first, then stars.
+      coreEndRef.current = count;
       particlesRef.current = particles;
     },
     [maxParticles, starCount],
@@ -132,15 +135,7 @@ export const ParticleCanvas = ({
       const mouse = mouseRef.current;
       const mouseRadiusSq = mouseRadius * mouseRadius;
       const connectionDistSq = connectionDistance * connectionDistance;
-
-      // Pre-compute index where stars begin (core particles first)
-      let coreEnd = particles.length;
-      for (let i = 0; i < particles.length; i++) {
-        if (particles[i].isStar) {
-          coreEnd = i;
-          break;
-        }
-      }
+      const coreEnd = Math.min(coreEndRef.current, particles.length);
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
