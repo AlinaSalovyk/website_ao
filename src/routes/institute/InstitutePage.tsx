@@ -20,14 +20,14 @@ export const InstitutePage = ({
 }: InstitutePageProps): JSX.Element => {
   return (
     <LocaleProvider locale={locale}>
-      <MainLayout>
-        <InstituteHero />
-        <GeneralInfo />
-        <Education />
-        <StudentLife />
-        <ScientificActivity />
-        <InstituteLeadership />
-        <Footer />
+      <MainLayout locale={locale}>
+        <InstituteHero locale={locale} />
+        <GeneralInfo locale={locale} />
+        <Education locale={locale} />
+        <StudentLife locale={locale} />
+        <ScientificActivity locale={locale} />
+        <InstituteLeadership locale={locale} />
+        <Footer locale={locale} />
       </MainLayout>
     </LocaleProvider>
   );

@@ -20,29 +20,29 @@ export const HomePage = ({ locale = "uk" }: HomePageProps): JSX.Element => {
     <LocaleProvider locale={locale}>
       <MainLayout headerPosition="absolute" locale={locale}>
         {/* Section 1: Hero with About */}
-        <HeroWithAbout />
+        <HeroWithAbout locale={locale} />
 
         {/* Section 2: Educational Programs */}
         <section className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:600ms]">
-          <EducationalPrograms />
+          <EducationalPrograms locale={locale} />
         </section>
 
         {/* Section 3: Departments */}
         <section className="relative w-full translate-y-[-1rem] animate-fade-in opacity-0 [--animation-delay:400ms]">
-          <Departments />
+          <Departments locale={locale} />
         </section>
 
         {/* Section 4: Institute Leadership */}
-        <InstituteLeadership />
+        <InstituteLeadership locale={locale} />
 
         {/* Section 5: Innovative Education */}
-        <InnovativeEducation />
+        <InnovativeEducation locale={locale} />
 
         {/* Section 6: News and Events */}
-        <NewsAndEvents />
+        <NewsAndEvents locale={locale} />
 
         {/* Footer */}
-        <Footer />
+        <Footer locale={locale} />
       </MainLayout>
     </LocaleProvider>
   );
