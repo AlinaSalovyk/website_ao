@@ -129,7 +129,8 @@ const alternateUrl = toAbsoluteUrl(
       /* Check intro state instantly before body parses to prevent flash */
       if (typeof window !== "undefined") {
         try {
-          if (!localStorage.getItem("itb_intro_seen")) {
+          var isHome = window.location.pathname === "/" || window.location.pathname === "/en/";
+          if (isHome && !localStorage.getItem("itb_intro_seen")) {
             document.documentElement.classList.add("intro-active");
           }
         } catch (e) {}
