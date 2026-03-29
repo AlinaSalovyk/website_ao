@@ -65,7 +65,7 @@ const ProgramLevel = ({
                   href={program.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex w-full items-start gap-3 rounded-xl border border-white/8 bg-black/10 px-4 py-3 text-left transition-all duration-300 hover:border-[var(--color-brand-blue-soft)] hover:bg-[rgba(14,82,255,0.08)] hover:shadow-[0_0_24px_rgba(14,82,255,0.16)]"
+                  className="flex w-full items-start gap-3 rounded-xl border border-white/10 bg-black/10 px-4 py-3 text-left transition-all duration-300 hover:border-[var(--color-brand-blue-soft)] hover:bg-[rgba(14,82,255,0.08)] hover:shadow-[0_0_24px_rgba(14,82,255,0.16)]"
                 >
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-400/75 transition-transform duration-300 group-hover:scale-125 group-hover:bg-[var(--color-brand-blue-light)]" />
                   <span className="min-w-0 text-sm font-light leading-relaxed text-white/88 transition-colors duration-300 group-hover:text-white md:text-base">
@@ -73,7 +73,7 @@ const ProgramLevel = ({
                   </span>
                 </a>
               ) : (
-                <span className="flex w-full items-start gap-3 rounded-xl border border-white/8 bg-black/10 px-4 py-3 text-left">
+                <span className="flex w-full items-start gap-3 rounded-xl border border-white/10 bg-black/10 px-4 py-3 text-left">
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-white/35" />
                   <span className="min-w-0 text-sm font-light leading-relaxed text-white/88 md:text-base">
                     {programText}
