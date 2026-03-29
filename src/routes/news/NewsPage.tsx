@@ -2,8 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
-import { Footer } from "@/components/layout/Footer";
-import { getArticles, formatArticleDate } from "@/data/articles";
+import { formatArticleDate, getSortedArticles } from "@/data/articles";
 import type { Article } from "@/data/articles";
 import type { Locale, Translations } from "@/i18n";
 import { getLocalizedPath, getTranslations } from "@/i18n";
@@ -136,58 +135,54 @@ const ArticleRow = ({
 
 export const NewsPage = ({ locale = "uk" }: NewsPageProps): JSX.Element => {
   const t = getTranslations(locale);
-  const articles = getArticles();
+  const articles = getSortedArticles();
   const [featured, ...rest] = articles;
 
   return (
-    <>
-      <section className="w-full bg-pure-white pt-32 md:pt-40 pb-16 md:pb-24 relative overflow-hidden z-10">
-        <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 relative z-10">
-          {/* Header */}
-          <ScrollReveal variant="fade-up">
-            <header className="flex flex-col items-start gap-4 mb-12 md:mb-16">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold tracking-wide">
-                <span className="w-1.5 h-1.5 rounded-full bg-gray-700 animate-pulse" />
-                {t.newsPage.badge}
-              </div>
-              <h1 className="font-semibold text-pure-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.1]">
-                {t.newsPage.title}
-              </h1>
-              <p className="text-gray-500 text-lg md:text-xl max-w-2xl">
-                {t.newsPage.subtitle}
-              </p>
-            </header>
-          </ScrollReveal>
+    <section className="w-full bg-pure-white pt-32 md:pt-40 pb-16 md:pb-24 relative overflow-hidden z-10">
+      <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 relative z-10">
+        {/* Header */}
+        <ScrollReveal variant="fade-up">
+          <header className="flex flex-col items-start gap-4 mb-12 md:mb-16">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold tracking-wide">
+              <span className="w-1.5 h-1.5 rounded-full bg-gray-700 animate-pulse" />
+              {t.newsPage.badge}
+            </div>
+            <h1 className="font-semibold text-pure-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tight leading-[1.1]">
+              {t.newsPage.title}
+            </h1>
+            <p className="text-gray-500 text-lg md:text-xl max-w-2xl">
+              {t.newsPage.subtitle}
+            </p>
+          </header>
+        </ScrollReveal>
 
-          {/* Featured Article */}
-          {featured && (
-            <div className="mb-12 md:mb-16">
-              <FeaturedArticle
-                article={featured}
+        {/* Featured Article */}
+        {featured && (
+          <div className="mb-12 md:mb-16">
+            <FeaturedArticle
+              article={featured}
+              locale={locale}
+              t={t}
+            />
+          </div>
+        )}
+
+        {/* Article List */}
+        {rest.length > 0 && (
+          <div className="flex flex-col">
+            {rest.map((article, index) => (
+              <ArticleRow
+                key={article.slug}
+                article={article}
                 locale={locale}
                 t={t}
+                index={index}
               />
-            </div>
-          )}
-
-          {/* Article List */}
-          {rest.length > 0 && (
-            <div className="flex flex-col">
-              {rest.map((article, index) => (
-                <ArticleRow
-                  key={article.slug}
-                  article={article}
-                  locale={locale}
-                  t={t}
-                  index={index}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <Footer locale={locale} />
-    </>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 };

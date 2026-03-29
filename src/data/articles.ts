@@ -121,8 +121,24 @@ export const articles: Article[] = [
   },
 ];
 
+function parseArticleDate(dateStr: string): Date {
+  const [yearStr, monthStr, dayStr] = dateStr.split("-");
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  const day = Number(dayStr);
+
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
 export function getArticles(): Article[] {
   return articles;
+}
+
+export function getSortedArticles(): Article[] {
+  return [...articles].sort(
+    (a, b) =>
+      parseArticleDate(b.date).getTime() - parseArticleDate(a.date).getTime(),
+  );
 }
 
 export function getArticleBySlug(slug: string): Article | undefined {
@@ -130,16 +146,15 @@ export function getArticleBySlug(slug: string): Article | undefined {
 }
 
 export function getLatestArticles(count: number): Article[] {
-  return [...articles]
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    .slice(0, count);
+  return getSortedArticles().slice(0, count);
 }
 
 export function formatArticleDate(dateStr: string, locale: Locale): string {
-  const date = new Date(dateStr);
+  const date = parseArticleDate(dateStr);
   return date.toLocaleDateString(locale === "uk" ? "uk-UA" : "en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: "UTC",
   });
 }
