@@ -15,6 +15,7 @@ const SLUG_MAP: Record<string, string> = {
     "/mathematics-and-intelligent-computing",
   "/laboratory": "/laboratory",
   "/laboratory-vr": "/laboratory-vr",
+  "/news": "/news",
 };
 
 /** OG locale strings */
