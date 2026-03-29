@@ -538,6 +538,8 @@ export const en: Translations = {
       generalInfo: "General Information",
       generalInfoAbout: "General Information about the Department",
       emailPrefix: "e-mail:",
+      contactInfo: "Contact Information:",
+      officeHours: "Office Hours:",
     },
     fb: {
       hero: {

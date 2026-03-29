@@ -536,6 +536,8 @@ export const uk = {
       generalInfo: "Загальна інформація",
       generalInfoAbout: "Загальна інформація про кафедру",
       emailPrefix: "e-mail:",
+      contactInfo: "Контактна інформація:",
+      officeHours: "Офісні години:",
     },
     fb: {
       hero: {
