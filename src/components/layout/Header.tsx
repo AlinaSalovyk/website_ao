@@ -82,9 +82,11 @@ export const Header = ({
 
   const bgClass = isSticky
     ? variant === "light"
-      ? "bg-pure-white/80 backdrop-blur-md shadow-sm"
+      ? "bg-pure-white/80 backdrop-blur-md shadow-sm border-b border-gray-200"
       : "bg-layout-bg/80 backdrop-blur-md shadow-sm"
-    : "";
+    : variant === "light"
+      ? "border-b border-gray-200"
+      : "";
 
   return (
     <>
