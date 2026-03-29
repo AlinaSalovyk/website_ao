@@ -803,7 +803,6 @@ export const uk = {
     selectToView: "Виберіть для перегляду",
     entireTeam: "Вся команда інституту",
     emailLabel: "Електронна пошта",
-    socialNetworks: "Соціальні мережи",
   },
 
   menuAriaLabel: "Навігаційне меню",

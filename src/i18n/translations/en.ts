@@ -806,7 +806,6 @@ export const en: Translations = {
     selectToView: "Select to view",
     entireTeam: "Entire institute team",
     emailLabel: "Email",
-    socialNetworks: "Social Networks",
   },
 
   menuAriaLabel: "Navigation menu",
