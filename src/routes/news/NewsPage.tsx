@@ -139,7 +139,7 @@ export const NewsPage = ({ locale = "uk" }: NewsPageProps): JSX.Element => {
   const [featured, ...rest] = articles;
 
   return (
-    <section className="w-full bg-pure-white pt-32 md:pt-40 pb-16 md:pb-24 relative overflow-hidden z-10">
+    <section className="w-full bg-pure-white pt-32 md:pt-40 pb-16 md:pb-24 relative overflow-hidden">
       <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 relative z-10">
         {/* Header */}
         <ScrollReveal variant="fade-up">
@@ -170,7 +170,7 @@ export const NewsPage = ({ locale = "uk" }: NewsPageProps): JSX.Element => {
 
         {/* Article List */}
         {rest.length > 0 && (
-          <div className="flex flex-col">
+          <div className="flex flex-col bg-pure-white">
             {rest.map((article, index) => (
               <ArticleRow
                 key={article.slug}
