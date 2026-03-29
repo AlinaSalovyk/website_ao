@@ -3,7 +3,6 @@ import { motion } from "motion/react";
 import type { JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
-import { Footer } from "@/components/layout/Footer";
 import type { Article } from "@/data/articles";
 import { formatArticleDate, getLatestArticles } from "@/data/articles";
 import type { Locale } from "@/i18n";
@@ -19,9 +18,9 @@ export const ArticlePage = ({
   locale = "uk",
 }: ArticlePageProps): JSX.Element => {
   const t = getTranslations(locale);
-  const relatedArticles = getLatestArticles(3).filter(
-    (a) => a.slug !== article.slug,
-  ).slice(0, 2);
+  const relatedArticles = getLatestArticles(3)
+    .filter((a) => a.slug !== article.slug)
+    .slice(0, 2);
 
   return (
     <>
@@ -147,8 +146,6 @@ export const ArticlePage = ({
           </div>
         </section>
       )}
-
-      <Footer locale={locale} />
     </>
   );
 };
