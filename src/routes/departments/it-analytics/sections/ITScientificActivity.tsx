@@ -12,12 +12,17 @@ export const ITScientificActivity = ({
 }): JSX.Element => {
   const t = getTranslations(locale);
 
+  const logoSrc =
+    locale === "en"
+      ? "/images/logo/logo-icon-eng.webp"
+      : "/images/logo-compact.webp";
+
   const scientificActivityData: ScientificActivityData = {
     title: t.departmentPages.common.scientificActivity,
     headingVariant: "compact",
     contentSpacing: "my",
     image: {
-      src: "/images/logo-compact.webp",
+      src: logoSrc,
       alt: t.departmentPages.common.scientificActivityAlt,
       width: 684,
       height: 672,
