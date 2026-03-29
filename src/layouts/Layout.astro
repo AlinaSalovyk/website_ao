@@ -13,8 +13,10 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  ogType?: "website" | "article";
   canonicalUrl?: string;
   locale?: Locale;
+  jsonLdExtra?: Record<string, unknown>;
 }
 
 const locale = (Astro.props.locale ?? DEFAULT_LOCALE) as Locale;
@@ -24,7 +26,9 @@ const {
   title = t.meta.defaultTitle,
   description = t.meta.defaultDescription,
   ogImage = "/images/Home/og-default.webp",
+  ogType = "website",
   canonicalUrl,
+  jsonLdExtra,
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString()?.replace(/\/$/, "") ?? "";
@@ -82,7 +86,7 @@ const alternateUrl = toAbsoluteUrl(
     />
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={currentUrl} />
@@ -124,6 +128,13 @@ const alternateUrl = toAbsoluteUrl(
         },
       })}
     />
+
+    {jsonLdExtra && (
+      <script
+        type="application/ld+json"
+        set:html={JSON.stringify(jsonLdExtra)}
+      />
+    )}
 
     <script is:inline>
       /* Check intro state instantly before body parses to prevent flash */
