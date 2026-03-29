@@ -42,9 +42,11 @@ const ProgramLevel = ({
       </h3>
       <ul className="space-y-3 relative">
         {items.map((program, idx) => {
-          const programPrefix = program.programType === "OPP" ? "ОПП" : "ОНП";
-          const prefixClassName =
-            "shrink-0 text-sm font-light leading-relaxed text-white/88 transition-colors duration-300 group-hover:text-white md:text-base";
+          const programPrefix =
+            program.programType === "OPP"
+              ? t.educationLevels.opp
+              : t.educationLevels.onp;
+          const programText = `${programPrefix} ${program.title}`;
 
           return (
             <motion.li
@@ -66,17 +68,15 @@ const ProgramLevel = ({
                   className="flex w-full items-start gap-3 rounded-xl border border-white/8 bg-black/10 px-4 py-3 text-left transition-all duration-300 hover:border-[var(--color-brand-blue-soft)] hover:bg-[rgba(14,82,255,0.08)] hover:shadow-[0_0_24px_rgba(14,82,255,0.16)]"
                 >
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-blue-400/75 transition-transform duration-300 group-hover:scale-125 group-hover:bg-[var(--color-brand-blue-light)]" />
-                  <span className={prefixClassName}>{programPrefix}</span>
                   <span className="min-w-0 text-sm font-light leading-relaxed text-white/88 transition-colors duration-300 group-hover:text-white md:text-base">
-                    {program.title}
+                    {programText}
                   </span>
                 </a>
               ) : (
                 <span className="flex w-full items-start gap-3 rounded-xl border border-white/8 bg-black/10 px-4 py-3 text-left">
                   <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-white/35" />
-                  <span className={prefixClassName}>{programPrefix}</span>
                   <span className="min-w-0 text-sm font-light leading-relaxed text-white/88 md:text-base">
-                    {program.title}
+                    {programText}
                   </span>
                 </span>
               )}
