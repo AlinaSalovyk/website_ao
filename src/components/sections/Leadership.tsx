@@ -2,18 +2,22 @@ import type { JSX } from "react";
 
 import type { LeadershipData } from "@/components/sections/leadership.types";
 import { Separator } from "@/components/ui/separator";
+import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
 
 interface LeadershipProps {
   data: LeadershipData;
+  locale?: Locale;
 }
 
-export const Leadership = ({ data }: LeadershipProps): JSX.Element => {
+export const Leadership = ({ data, locale }: LeadershipProps): JSX.Element => {
+  const t = getTranslations(locale);
   const {
     sectionId,
     title,
     members,
-    contactLabel = "Контактна інформація:",
-    officeHoursLabel = "Офісні години:",
+    contactLabel = t.departmentPages.common.contactInfo,
+    officeHoursLabel = t.departmentPages.common.officeHours,
   } = data;
 
   return (

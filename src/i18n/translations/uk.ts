@@ -77,7 +77,6 @@ export const uk = {
 
   programTitles: {
     robotics: '"Робототехніка та машинне навчання"',
-    ai: '"Штучний інтелект та аналітика даних"',
     cs: '"Комп\'ютерні науки"',
     cybernetics: '"Економічна кібернетика"',
     projectManagement: '"Управління проєктами"',
@@ -107,13 +106,14 @@ export const uk = {
 
   footer: {
     aboutBadge: "Про інститут",
-    aboutHeading: "Розвиток та Інновації в ІТ та Бізнесі",
+    aboutHeadingLines: ["Розвиток та Інновації", "в ІТ та Бізнесі"],
     aboutDescription:
       "Бізнес й аналітика, Комп\u2019ютерні науки, Фінанси та банківська справа, Маркетинг, Менеджмент, Прикладна математика",
     ctaBadge: "Давай тримати контакт",
-    ctaHeading: "Нумо змінювати світ разом з нами!",
+    ctaHeadingLines: ["Нумо змінювати світ разом", "з нами!"],
     ctaDecoration: "Start\nStudying",
     navigation: "Навігація",
+    navAriaLabel: "Навігація у підвалі",
     contactsLabel: "Контакти",
     address: "Адреса",
     socials: "Соцмережі",
@@ -537,6 +537,8 @@ export const uk = {
       generalInfo: "Загальна інформація",
       generalInfoAbout: "Загальна інформація про кафедру",
       emailPrefix: "e-mail:",
+      contactInfo: "Контактна інформація:",
+      officeHours: "Офісні години:",
     },
     fb: {
       hero: {
@@ -803,7 +805,6 @@ export const uk = {
     selectToView: "Виберіть для перегляду",
     entireTeam: "Вся команда інституту",
     emailLabel: "Електронна пошта",
-    socialNetworks: "Соціальні мережи",
   },
 
   menuAriaLabel: "Навігаційне меню",

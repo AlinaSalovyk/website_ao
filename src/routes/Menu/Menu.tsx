@@ -70,7 +70,7 @@ export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
   const footerLinksRight = [
     {
       label: "Facebook",
-      href: "https://www.facebook.com/share/16TZiemvDA/",
+      href: "https://www.facebook.com/share/1HFdWWQbxD/",
       isExternal: true,
     },
     {

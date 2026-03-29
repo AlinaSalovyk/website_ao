@@ -11,9 +11,53 @@ import { Footer } from "@/components/layout/Footer";
 import { LazyIntroAnimation } from "@/components/effects/LazyIntroAnimation";
 import { getTranslations } from "@/i18n";
 import type { Locale } from "@/i18n";
+import { getDepartments } from "@/routes/departments/departments-programs";
 
 const locale: Locale = "uk";
 const t = getTranslations(locale);
+const siteUrl = Astro.site?.toString()?.replace(/\/$/, "") ?? Astro.url.origin;
+
+const coursesJsonLd = getDepartments(t).flatMap((dept) =>
+  dept.programs.flatMap((level) =>
+    level.programs.map((prog) => ({
+      "@type": "Course",
+      name: `${prog.label} ${prog.title}`,
+      description: `${level.title} — ${dept.title}`,
+      provider: {
+        "@type": "EducationalOrganization",
+        name: t.jsonLd.name,
+        url: siteUrl,
+      },
+      ...(prog.link ? { url: prog.link } : {}),
+    }))
+  )
+);
+
+const organizationJsonLd = {
+  "@type": "EducationalOrganization",
+  name: t.jsonLd.name,
+  alternateName: t.jsonLd.alternateName,
+  description: t.jsonLd.description,
+  url: siteUrl,
+  parentOrganization: {
+    "@type": "CollegeOrUniversity",
+    name: t.jsonLd.parentOrgName,
+    url: "https://www.oa.edu.ua",
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: t.jsonLd.streetAddress,
+    addressLocality: t.jsonLd.city,
+    postalCode: "35800",
+    addressCountry: "UA",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+380678792526",
+    email: "press@oa.edu.ua",
+    contactType: "main",
+  },
+};
 ---
 
 <Layout
@@ -21,6 +65,13 @@ const t = getTranslations(locale);
   description={t.meta.homeDescription}
   locale={locale}
 >
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [organizationJsonLd, ...coursesJsonLd],
+    })}
+  />
   <!-- First-visit intro animation (typewriter effect) -->
   <LazyIntroAnimation client:load locale={locale} />
 

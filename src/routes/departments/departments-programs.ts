@@ -30,13 +30,6 @@ export const DEPARTMENTS: DepartmentData[] = [
           {
             programType: "OPP",
             label: "освітньо-професійна програма",
-            titleKey: "ai",
-            title: '"Штучний інтелект та аналітика даних"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/122_shtuchnyi_intelekt_ta_analityka_danykh/",
-          },
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
             titleKey: "cs",
             title: '"Комп\'ютерні науки"',
             link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/f3_kompiuterni_nauky/",
@@ -220,7 +213,10 @@ const LEVEL_TITLE_KEY: Record<string, keyof Translations["educationLevels"]> = {
 export function getDepartments(t: Translations): DepartmentData[] {
   return DEPARTMENTS.map((dept) => ({
     ...dept,
-    title: t.departments[dept.id as keyof typeof t.departments] as string,
+    title:
+      (dept.id in t.departments
+        ? t.departments[dept.id as keyof typeof t.departments]
+        : dept.title) as string,
     programs: dept.programs.map((level) => ({
       ...level,
       title: t.educationLevels[LEVEL_TITLE_KEY[level.title] ?? "bachelor"],
@@ -230,9 +226,11 @@ export function getDepartments(t: Translations): DepartmentData[] {
           prog.programType === "OPP"
             ? t.educationLevels.opp
             : t.educationLevels.onp,
-        title: prog.titleKey
-          ? t.programTitles[prog.titleKey as keyof typeof t.programTitles]
-          : prog.title,
+        title:
+          prog.titleKey &&
+          prog.titleKey in t.programTitles
+            ? t.programTitles[prog.titleKey as keyof typeof t.programTitles]
+            : prog.title,
       })),
     })),
   }));

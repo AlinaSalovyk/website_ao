@@ -33,11 +33,16 @@ export const Header = ({
   variant = "default",
   headerPosition = "relative",
   customLogo,
-  logoSrc = "/images/logo/logo-icon.webp",
+  logoSrc,
   locale = "uk",
   currentPath = "/",
 }: HeaderProps): JSX.Element => {
   const t = getTranslations(locale);
+  const resolvedLogoSrc =
+    logoSrc ??
+    (locale === "en"
+      ? "/images/logo/logo-icon-eng-transparent.webp"
+      : "/images/logo/logo-icon.webp");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollState, setScrollState] = useState<"top" | "hidden" | "visible">(
     "top",
@@ -120,9 +125,9 @@ export const Header = ({
             className="inline-block cursor-pointer opacity-90 hover:opacity-100 transition-opacity"
           >
             {customLogo ??
-              (logoSrc ? (
+              (resolvedLogoSrc ? (
                 <img
-                  src={logoSrc}
+                  src={resolvedLogoSrc}
                   alt={t.common.logoAlt}
                   loading="eager"
                   decoding="async"

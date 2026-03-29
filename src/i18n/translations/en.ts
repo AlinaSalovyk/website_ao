@@ -82,7 +82,6 @@ export const en: Translations = {
 
   programTitles: {
     robotics: '"Robotics and Machine Learning"',
-    ai: '"Artificial Intelligence and Data Analytics"',
     cs: '"Computer Science"',
     cybernetics: '"Economic Cybernetics"',
     projectManagement: '"Project Management"',
@@ -112,13 +111,14 @@ export const en: Translations = {
 
   footer: {
     aboutBadge: "About the Institute",
-    aboutHeading: "Development & Innovation in IT and Business",
+    aboutHeadingLines: ["Development & Innovation", "in IT and Business"],
     aboutDescription:
       "Business & Analytics, Computer Science, Finance & Banking, Marketing, Management, Applied Mathematics",
     ctaBadge: "Let's stay in touch",
-    ctaHeading: "Let's change the world together!",
+    ctaHeadingLines: ["Let's change the world", "together!"],
     ctaDecoration: "Start\nStudying",
     navigation: "Navigation",
+    navAriaLabel: "Footer navigation",
     contactsLabel: "Contacts",
     address: "Address",
     socials: "Social Media",
@@ -539,6 +539,8 @@ export const en: Translations = {
       generalInfo: "General Information",
       generalInfoAbout: "General Information about the Department",
       emailPrefix: "e-mail:",
+      contactInfo: "Contact Information:",
+      officeHours: "Office Hours:",
     },
     fb: {
       hero: {
@@ -806,7 +808,6 @@ export const en: Translations = {
     selectToView: "Select to view",
     entireTeam: "Entire institute team",
     emailLabel: "Email",
-    socialNetworks: "Social Networks",
   },
 
   menuAriaLabel: "Navigation menu",

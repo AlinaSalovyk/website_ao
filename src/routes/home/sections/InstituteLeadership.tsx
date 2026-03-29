@@ -1,49 +1,9 @@
-import { FacebookIcon } from "@/components/icons/social/FacebookIcon";
-import { InstagramIcon } from "@/components/icons/social/InstagramIcon";
-import { LinkedInIcon } from "@/components/icons/social/LinkedInIcon";
 import {
   TeamShowcase,
   type TeamMember,
-  type TeamMemberSocial,
 } from "@/components/sections/TeamShowcase";
 import type { Locale } from "@/i18n";
 import { getTranslations } from "@/i18n";
-
-const defaultSocials: TeamMemberSocial[] = [
-  {
-    icon: (
-      <FacebookIcon
-        iconSize="w-10 h-10 md:w-14 md:h-14"
-        iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors"
-        borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors"
-      />
-    ),
-    href: "#",
-    label: "Facebook",
-  },
-  {
-    icon: (
-      <InstagramIcon
-        iconSize="w-10 h-10 md:w-14 md:h-14"
-        iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors"
-        borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors"
-      />
-    ),
-    href: "#",
-    label: "Instagram",
-  },
-  {
-    icon: (
-      <LinkedInIcon
-        iconSize="w-10 h-10 md:w-14 md:h-14"
-        iconColor="fill-blue-600 group-hover/social:fill-blue-700 transition-colors"
-        borderColor="fill-blue-100 group-hover/social:fill-blue-200 transition-colors"
-      />
-    ),
-    href: "#",
-    label: "LinkedIn",
-  },
-];
 
 const MEMBER_IMAGES = [
   "/images/InstituteManagement/novoseletskyy.webp",
@@ -76,7 +36,6 @@ export const InstituteLeadership = ({ locale }: { locale?: Locale }) => {
   return (
     <TeamShowcase
       members={leadershipData}
-      defaultSocials={defaultSocials}
       badge={t.home.leadership.badge}
       heading={t.home.leadership.heading}
       sectionId="leadership"

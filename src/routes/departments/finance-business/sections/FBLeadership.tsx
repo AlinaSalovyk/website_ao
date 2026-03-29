@@ -25,5 +25,5 @@ export const FBLeadership = ({ locale }: { locale?: Locale }): JSX.Element => {
     })),
   };
 
-  return <Leadership data={leadershipData} />;
+  return <Leadership data={leadershipData} locale={locale} />;
 };
