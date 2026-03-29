@@ -53,6 +53,9 @@ export const en: Translations = {
     micTitle: "Department of Mathematics and Intelligent Computing | NaUOA",
     micDescription:
       "Department of Mathematics and Intelligent Computing — training specialists in applied mathematics and intelligent systems.",
+    newsTitle: "News & Events | Institute of IT and Business, NaUOA",
+    newsDescription:
+      "Latest news, events, and announcements from the Institute of Information Technologies and Business at the National University of Ostroh Academy.",
   },
 
   nav: {
@@ -186,6 +189,16 @@ export const en: Translations = {
       readTime: "MIN READ",
       readMore: "Learn more",
     },
+  },
+
+  newsPage: {
+    title: "News & Events",
+    badge: "Latest",
+    subtitle: "Stay up to date with the latest events, achievements, and announcements from the institute.",
+    backToNews: "Back to news",
+    minRead: "min read",
+    shareArticle: "Share",
+    relatedArticles: "Related news",
   },
 
   institute: {

@@ -73,7 +73,7 @@ export const Footer = ({
     },
     {
       label: t.footer.navNews,
-      href: getLocalizedPath("/", locale) + "#news",
+      href: getLocalizedPath("/news", locale),
     },
   ];
 

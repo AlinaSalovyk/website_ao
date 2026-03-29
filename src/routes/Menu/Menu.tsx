@@ -53,7 +53,7 @@ export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
   ];
 
   const footerLinksLeft = [
-    { label: t.nav.news, href: lp("/") + "#news" },
+    { label: t.nav.news, href: lp("/news") },
     { label: t.nav.leadership, href: lp("/") + "#leadership" },
     {
       label: t.nav.admission,
