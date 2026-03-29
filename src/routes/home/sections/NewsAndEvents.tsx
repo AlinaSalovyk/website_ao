@@ -3,70 +3,37 @@ import { motion } from "motion/react";
 import type { JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
+import type { Article } from "@/data/articles";
+import { formatArticleDate, getLatestArticles } from "@/data/articles";
 import type { Locale, Translations } from "@/i18n";
-import { getTranslations } from "@/i18n";
+import { getLocalizedPath, getTranslations } from "@/i18n";
 import { cn } from "@/lib/utils";
 
-const newsItems = [
-  {
-    id: 1,
-    badgeKey: "weeklyBadge" as const,
-    date: "Feb 19",
-    title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
-    readTimeKey: "readTime" as const,
-    backgroundImage: "/images/Home/news-background.webp",
-    linkKey: "readMore" as const,
-  },
-  {
-    id: 2,
-    badgeKey: "weeklyBadge" as const,
-    date: "Feb 19",
-    title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
-    readTimeKey: "readTime" as const,
-    backgroundImage: "/images/Home/news-background-1.webp",
-    linkKey: "readMore" as const,
-  },
-  {
-    id: 3,
-    badgeKey: "weeklyBadge" as const,
-    date: "Feb 19",
-    title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
-    readTimeKey: "readTime" as const,
-    backgroundImage: "/images/Home/news-background-2.webp",
-    linkKey: "readMore" as const,
-  },
-  {
-    id: 4,
-    badgeKey: "weeklyBadge" as const,
-    date: "Feb 19",
-    title: "When an Award-Winning\nWebsite Pays for Itself\n(Twice)",
-    readTimeKey: "readTime" as const,
-    backgroundImage: "/images/Home/news-background-3.webp",
-    linkKey: "readMore" as const,
-  },
-];
-
 const BentoCard = ({
-  item,
+  article,
+  index,
   className,
   isLarge = false,
   t,
+  locale,
 }: {
-  item: (typeof newsItems)[0];
+  article: Article;
+  index: number;
   className?: string;
   isLarge?: boolean;
   t: Translations;
+  locale: Locale;
 }) => {
   return (
     <div className={cn("w-full h-full flex flex-col", className)}>
       <ScrollReveal
         variant="fade-up"
-        delay={item.id * 100}
+        delay={(index + 1) * 100}
         className="w-full h-full flex-1"
       >
         <motion.a
-          href="#"
-          aria-label={`${t.home.news[item.linkKey]}: ${item.title}`}
+          href={getLocalizedPath(`/news/${article.slug}`, locale)}
+          aria-label={`${t.home.news.readMore}: ${article.title[locale]}`}
           whileHover="hover"
           className={cn(
             "relative flex flex-col justify-end w-full h-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group cursor-pointer border border-black/5 flex-1 shadow-xl bg-gray-900 isolate",
@@ -75,17 +42,8 @@ const BentoCard = ({
               : "min-h-[220px] md:min-h-full",
           )}
         >
-          {/* Background Image */}
-          <div
-            className="absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat z-0"
-            style={{ backgroundImage: `url(${item.backgroundImage})` }}
-          />
-
-          {/* Gradient Overlays for Readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 z-10 opacity-80 group-hover:opacity-90 transition-opacity duration-500" />
-
-          {/* Subtle Hover Glow */}
-          <div className="absolute inset-0 bg-blue-500/20 opacity-0 group-hover:opacity-100 mix-blend-overlay z-10 transition-opacity duration-500 pointer-events-none" />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
           {/* Content */}
           <div className="relative z-20 p-5 md:p-8 flex flex-col h-full w-full justify-between">
@@ -93,17 +51,16 @@ const BentoCard = ({
             <div className="flex flex-wrap items-center justify-between gap-3 w-full mb-auto mt-1 md:mt-2">
               <div className="backdrop-blur-md bg-white/10 border border-white/20 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full shrink-0">
                 <span className="text-white text-[9px] md:text-[10px] lg:text-xs font-semibold tracking-wider uppercase">
-                  {t.home.news[item.badgeKey]}
+                  {t.home.news.weeklyBadge}
                 </span>
               </div>
               <div className="backdrop-blur-md bg-black/30 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5 md:gap-2 shrink-0">
-                <span className="text-white/80 text-[9px] md:text-[10px] lg:text-xs font-medium tracking-wider uppercase">
-                  {item.date}
-                </span>
-                <span className="w-1 h-1 rounded-full bg-white/50" />
-                <span className="text-white/80 text-[9px] md:text-[10px] lg:text-xs font-medium tracking-wider uppercase">
-                  {t.home.news[item.readTimeKey]}
-                </span>
+                <time
+                  dateTime={article.date}
+                  className="text-white/80 text-[9px] md:text-[10px] lg:text-xs font-medium tracking-wider uppercase"
+                >
+                  {formatArticleDate(article.date, locale)}
+                </time>
               </div>
             </div>
 
@@ -117,7 +74,7 @@ const BentoCard = ({
                     : "text-lg md:text-2xl lg:text-3xl leading-snug",
                 )}
               >
-                {item.title}
+                {article.title[locale]}
               </h3>
 
               <div className="flex items-center gap-2.5 md:gap-3 mt-1 md:mt-4">
@@ -125,7 +82,7 @@ const BentoCard = ({
                   <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-black group-hover:text-white transition-colors" />
                 </div>
                 <span className="text-sm md:text-base font-medium text-white/90 group-hover:text-white relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-white group-hover:after:w-full after:transition-all after:duration-300">
-                  {t.home.news[item.linkKey]}
+                  {t.home.news.readMore}
                 </span>
               </div>
             </div>
@@ -138,6 +95,8 @@ const BentoCard = ({
 
 export const NewsAndEvents = ({ locale }: { locale?: Locale }): JSX.Element => {
   const t = getTranslations(locale);
+  const currentLocale = locale ?? "uk";
+  const articles = getLatestArticles(4);
   return (
     <section
       id="news"
@@ -161,7 +120,7 @@ export const NewsAndEvents = ({ locale }: { locale?: Locale }): JSX.Element => {
             </div>
 
             <a
-              href="#"
+              href={getLocalizedPath("/news", currentLocale)}
               className="group flex items-center justify-center gap-3 bg-pure-black text-white px-6 py-3.5 rounded-full font-medium text-sm md:text-base hover:bg-gray-800 transition-colors duration-300 w-full md:w-max"
             >
               {t.home.news.allNews}
@@ -171,27 +130,43 @@ export const NewsAndEvents = ({ locale }: { locale?: Locale }): JSX.Element => {
         </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6 auto-rows-auto md:auto-rows-[350px]">
-          <BentoCard
-            item={newsItems[0]}
-            isLarge={true}
-            className="col-span-1 md:col-span-2 md:row-span-2"
-            t={t}
-          />
-          <BentoCard
-            item={newsItems[1]}
-            className="col-span-1 row-span-1"
-            t={t}
-          />
-          <BentoCard
-            item={newsItems[2]}
-            className="col-span-1 row-span-1"
-            t={t}
-          />
-          <BentoCard
-            item={newsItems[3]}
-            className="col-span-1 md:col-span-2 lg:col-span-3 row-span-1"
-            t={t}
-          />
+          {articles[0] && (
+            <BentoCard
+              article={articles[0]}
+              index={0}
+              isLarge={true}
+              className="col-span-1 md:col-span-2 md:row-span-2"
+              t={t}
+              locale={currentLocale}
+            />
+          )}
+          {articles[1] && (
+            <BentoCard
+              article={articles[1]}
+              index={1}
+              className="col-span-1 row-span-1"
+              t={t}
+              locale={currentLocale}
+            />
+          )}
+          {articles[2] && (
+            <BentoCard
+              article={articles[2]}
+              index={2}
+              className="col-span-1 row-span-1"
+              t={t}
+              locale={currentLocale}
+            />
+          )}
+          {articles[3] && (
+            <BentoCard
+              article={articles[3]}
+              index={3}
+              className="col-span-1 md:col-span-2 lg:col-span-3 row-span-1"
+              t={t}
+              locale={currentLocale}
+            />
+          )}
         </div>
       </div>
     </section>
