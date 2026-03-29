@@ -12,6 +12,12 @@ export default defineConfig({
   site: 'https://website-ao.vercel.app',
   vite: {
     plugins: [tailwindcss()],
+    ssr: {
+      noExternal: ['motion', 'framer-motion'],
+    },
+    optimizeDeps: {
+      include: ['motion', 'motion/react', 'framer-motion'],
+    },
   },
   i18n: {
     defaultLocale: 'uk',
