@@ -42,11 +42,9 @@ const ProgramLevel = ({
       </h3>
       <ul className="space-y-3 relative">
         {items.map((program, idx) => {
-          const programPrefix =
-            program.programType === "OPP"
-              ? t.educationLevels.opp
-              : t.educationLevels.onp;
-          const programText = `${programPrefix} ${program.title}`;
+          const programPrefix = program.programType === "OPP" ? "ОПП" : "ОНП";
+          const badgeClassName =
+            "inline whitespace-normal break-normal [box-decoration-break:clone] rounded-md border border-white/10 bg-[var(--color-footer-bg)] px-2 py-0.5 text-white transition-all duration-300 hover:border-[var(--color-brand-blue-soft)] hover:text-[var(--color-brand-blue-light)] hover:shadow-[0_0_18px_rgba(14,82,255,0.22)]";
 
           return (
             <motion.li
@@ -58,7 +56,7 @@ const ProgramLevel = ({
                 duration: 0.4,
                 ease: [0.25, 0.1, 0.25, 1],
               }}
-              className="group flex items-start gap-3 w-full"
+              className="group flex min-w-0 items-start gap-3 w-full"
             >
               <div className="mt-2 w-[1.5px] h-3 bg-white/20 group-hover:bg-blue-400 group-hover:shadow-[0_0_8px_var(--color-indicator-glow)] transition-all duration-300 shrink-0 rounded-full" />
 
@@ -67,13 +65,17 @@ const ProgramLevel = ({
                   href={program.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-text-muted-light text-base md:text-lg font-light leading-relaxed hover:text-white transition-colors duration-300"
+                  className="inline-block max-w-full align-top text-text-muted-light text-base md:text-lg font-light leading-relaxed transition-colors duration-300 hover:text-white"
                 >
-                  {programText}
+                  <span className={badgeClassName}>
+                    {programPrefix} {program.title}
+                  </span>
                 </a>
               ) : (
-                <span className="text-text-muted-light text-base md:text-lg font-light leading-relaxed group-hover:text-white transition-colors duration-300">
-                  {programText}
+                <span className="inline-block max-w-full align-top text-text-muted-light text-base md:text-lg font-light leading-relaxed group-hover:text-white transition-colors duration-300">
+                  <span className={cn("rounded-md border border-white/10 bg-[var(--color-footer-bg)] px-2 py-0.5 text-white transition-colors duration-300")}>
+                    {programPrefix} {program.title}
+                  </span>
                 </span>
               )}
             </motion.li>
@@ -134,7 +136,7 @@ export const DepartmentSelector = ({
 
   return (
     <div className={cn("w-full", className)}>
-      <div className="flex flex-col md:flex-row gap-8 md:gap-16 lg:gap-24 items-start relative w-full">
+      <div className="flex flex-col md:flex-row gap-8 md:gap-10 lg:gap-14 items-start relative w-full">
         {/* Mobile Dropdown Menu (< md) */}
         <div className="w-full md:hidden relative z-50" ref={dropdownRef}>
           <button
@@ -184,7 +186,7 @@ export const DepartmentSelector = ({
         </div>
 
         {/* Desktop Sidebar (md and up)  */}
-        <div className="hidden md:flex flex-col w-[350px] lg:w-[450px] shrink-0 border-l border-white/5 relative self-start">
+        <div className="hidden md:flex flex-col w-[320px] lg:w-[390px] shrink-0 border-l border-white/5 relative self-start">
           {departments.map((dept) => {
             const isActive = activeId === dept.id;
             return (
@@ -259,7 +261,7 @@ export const DepartmentSelector = ({
                   }}
                   className="w-full flex flex-col"
                 >
-                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-x-12 gap-y-10 xl:gap-16 w-full mb-8">
+                  <div className="grid grid-cols-1 2xl:grid-cols-2 gap-x-8 gap-y-10 2xl:gap-x-12 w-full mb-8">
                     {activeDepartment?.programs.map((level) => (
                       <ProgramLevel
                         key={level.id}

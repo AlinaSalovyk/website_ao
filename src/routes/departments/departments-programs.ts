@@ -30,13 +30,6 @@ export const DEPARTMENTS: DepartmentData[] = [
           {
             programType: "OPP",
             label: "освітньо-професійна програма",
-            titleKey: "ai",
-            title: '"Штучний інтелект та аналітика даних"',
-            link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/122_shtuchnyi_intelekt_ta_analityka_danykh/",
-          },
-          {
-            programType: "OPP",
-            label: "освітньо-професійна програма",
             titleKey: "cs",
             title: '"Комп\'ютерні науки"',
             link: "https://www.oa.edu.ua/ua/osvita/ects/info_prog/bachelor/itb/f3_kompiuterni_nauky/",

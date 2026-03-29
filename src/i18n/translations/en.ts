@@ -82,7 +82,6 @@ export const en: Translations = {
 
   programTitles: {
     robotics: '"Robotics and Machine Learning"',
-    ai: '"Artificial Intelligence and Data Analytics"',
     cs: '"Computer Science"',
     cybernetics: '"Economic Cybernetics"',
     projectManagement: '"Project Management"',
