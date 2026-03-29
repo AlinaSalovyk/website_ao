@@ -13,10 +13,10 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     ssr: {
-      noExternal: ['motion', 'framer-motion'],
+      noExternal: ['motion'],
     },
     optimizeDeps: {
-      include: ['motion', 'motion/react', 'framer-motion'],
+      include: ['motion', 'motion/react'],
     },
   },
   i18n: {
