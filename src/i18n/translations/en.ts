@@ -111,13 +111,14 @@ export const en: Translations = {
 
   footer: {
     aboutBadge: "About the Institute",
-    aboutHeading: "Development & Innovation in IT and Business",
+    aboutHeadingLines: ["Development & Innovation", "in IT and Business"],
     aboutDescription:
       "Business & Analytics, Computer Science, Finance & Banking, Marketing, Management, Applied Mathematics",
     ctaBadge: "Let's stay in touch",
-    ctaHeading: "Let's change the world together!",
+    ctaHeadingLines: ["Let's change the world", "together!"],
     ctaDecoration: "Start\nStudying",
     navigation: "Navigation",
+    navAriaLabel: "Footer navigation",
     contactsLabel: "Contacts",
     address: "Address",
     socials: "Social Media",

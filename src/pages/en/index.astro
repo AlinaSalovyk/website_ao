@@ -32,6 +32,32 @@ const coursesJsonLd = getDepartments(t).flatMap((dept) =>
     }))
   )
 );
+
+const organizationJsonLd = {
+  "@type": "EducationalOrganization",
+  name: t.jsonLd.name,
+  alternateName: t.jsonLd.alternateName,
+  description: t.jsonLd.description,
+  url: siteUrl,
+  parentOrganization: {
+    "@type": "CollegeOrUniversity",
+    name: t.jsonLd.parentOrgName,
+    url: "https://www.oa.edu.ua",
+  },
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: t.jsonLd.streetAddress,
+    addressLocality: t.jsonLd.city,
+    postalCode: "35800",
+    addressCountry: "UA",
+  },
+  contactPoint: {
+    "@type": "ContactPoint",
+    telephone: "+380678792526",
+    email: "press@oa.edu.ua",
+    contactType: "main",
+  },
+};
 ---
 
 <Layout
@@ -43,7 +69,7 @@ const coursesJsonLd = getDepartments(t).flatMap((dept) =>
     type="application/ld+json"
     set:html={JSON.stringify({
       "@context": "https://schema.org",
-      "@graph": coursesJsonLd,
+      "@graph": [organizationJsonLd, ...coursesJsonLd],
     })}
   />
   <!-- First-visit intro animation (typewriter effect) -->

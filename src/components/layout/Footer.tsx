@@ -62,22 +62,18 @@ export const Footer = ({
     {
       label: t.footer.navHome,
       href: getLocalizedPath("/", locale),
-      isActive: true,
     },
     {
       label: t.footer.navAbout,
       href: getLocalizedPath("/institute", locale),
-      isActive: false,
     },
     {
       label: t.footer.navPrograms,
       href: getLocalizedPath("/", locale) + "#educational-programs",
-      isActive: false,
     },
     {
       label: t.footer.navNews,
       href: getLocalizedPath("/", locale) + "#news",
-      isActive: false,
     },
   ];
 
@@ -110,7 +106,7 @@ export const Footer = ({
   useGooeyParticles(particleContainerRef, 60);
 
   return (
-    <section
+    <div
       className="w-full relative bg-transparent"
       style={{ overflowX: "clip", overflowY: "visible" }}
     >
@@ -174,26 +170,27 @@ export const Footer = ({
               <ScrollReveal variant="fade-up">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 w-full">
                   {/* Card 1: About */}
-                  <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-10 flex flex-col justify-between min-h-[280px] md:min-h-[340px] hover:bg-white/15 transition-colors duration-500 shadow-xl">
+                  <a
+                    href={getLocalizedPath("/institute", locale)}
+                    className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-10 flex flex-col justify-between min-h-[280px] md:min-h-[340px] hover:bg-white/15 transition-colors duration-500 shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                  >
                     <div>
                       <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-white text-[10px] md:text-xs font-semibold tracking-widest uppercase mb-6">
                         {t.footer.aboutBadge}
                       </div>
-                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
-                        {t.footer.aboutHeading
-                          .split(/\s(?=в\s|in\s)/i)
-                          .map((part, i) => (
-                            <span key={i}>
-                              {i > 0 && <br className="hidden md:block" />}
-                              {part}
-                            </span>
-                          ))}
-                      </h2>
+                      <p className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
+                        {t.footer.aboutHeadingLines.map((line, i) => (
+                          <span key={i}>
+                            {i > 0 && <br className="hidden md:block" />}
+                            {line}
+                          </span>
+                        ))}
+                      </p>
                     </div>
                     <p className="text-white/80 text-sm leading-relaxed mt-10 md:mt-12 font-medium">
                       {t.footer.aboutDescription}
                     </p>
-                  </div>
+                  </a>
 
                   {/* Card 2: Contact CTA */}
                   <div className="bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-10 flex flex-col justify-between min-h-[280px] md:min-h-[340px] hover:border-white/40 transition-colors duration-500 group shadow-xl relative overflow-hidden isolate">
@@ -203,29 +200,28 @@ export const Footer = ({
                       <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-white text-[10px] md:text-xs font-semibold tracking-widest uppercase mb-6">
                         {t.footer.ctaBadge}
                       </div>
-                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
-                        {t.footer.ctaHeading
-                          .split(/\s(?=з\s|together)/i)
-                          .map((part, i) => (
-                            <span key={i}>
-                              {i > 0 && <br className="hidden md:block" />}
-                              {part}
-                            </span>
-                          ))}
-                      </h2>
+                      <p className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white tracking-tight leading-tight">
+                        {t.footer.ctaHeadingLines.map((line, i) => (
+                          <span key={i}>
+                            {i > 0 && <br className="hidden md:block" />}
+                            {line}
+                          </span>
+                        ))}
+                      </p>
                     </div>
 
                     <div className="flex flex-row items-end justify-between mt-10 md:mt-12">
                       <span
                         className="text-5xl md:text-6xl lg:text-7xl font-normal text-white/40 tracking-tighter select-none"
                         style={{ whiteSpace: "pre-line" }}
+                        aria-hidden="true"
                       >
                         {t.footer.ctaDecoration}
                       </span>
                       <a
                         href={getLocalizedPath("/contacts", locale)}
                         aria-label={t.common.contactUs}
-                        className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-blue-600 hover:scale-105 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-xl shrink-0"
+                        className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-blue-600 hover:scale-105 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-xl shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
                       >
                         <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8" />
                       </a>
@@ -239,7 +235,7 @@ export const Footer = ({
             <div className="flex flex-col w-full">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-8 justify-between w-full">
                 {/* Nav */}
-                <div className="flex flex-col gap-4">
+                <nav aria-label={t.footer.navAriaLabel} className="flex flex-col gap-4">
                   <p className="text-white/50 font-semibold text-[10px] md:text-xs uppercase tracking-widest">
                     {t.footer.navigation}
                   </p>
@@ -254,7 +250,7 @@ export const Footer = ({
                       </a>
                     ))}
                   </div>
-                </div>
+                </nav>
 
                 {/* Contacts */}
                 <div className="flex flex-col gap-4">
@@ -274,9 +270,12 @@ export const Footer = ({
                     >
                       press@oa.edu.ua
                     </a>
-                    <span className="text-white text-sm font-medium">
+                    <a
+                      href="tel:+380678792526"
+                      className="text-white hover:text-brand-blue-soft text-sm font-medium transition-colors duration-300 w-fit"
+                    >
                       +38 067 879 2526
-                    </span>
+                    </a>
                   </div>
                 </div>
 
@@ -286,7 +285,7 @@ export const Footer = ({
                     {t.footer.address}
                   </p>
                   <a
-                    href="https://www.google.com/maps/place/...Острог"
+                    href="https://maps.google.com/?q=35800+Ostroh+2+Seminarska+St"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-brand-blue-soft text-sm font-medium leading-relaxed transition-colors duration-300 w-fit"
@@ -343,6 +342,6 @@ export const Footer = ({
           </div>
         </footer>
       </div>
-    </section>
+    </div>
   );
 };

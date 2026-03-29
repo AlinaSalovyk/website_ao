@@ -106,13 +106,14 @@ export const uk = {
 
   footer: {
     aboutBadge: "Про інститут",
-    aboutHeading: "Розвиток та Інновації в ІТ та Бізнесі",
+    aboutHeadingLines: ["Розвиток та Інновації", "в ІТ та Бізнесі"],
     aboutDescription:
       "Бізнес й аналітика, Комп\u2019ютерні науки, Фінанси та банківська справа, Маркетинг, Менеджмент, Прикладна математика",
     ctaBadge: "Давай тримати контакт",
-    ctaHeading: "Нумо змінювати світ разом з нами!",
+    ctaHeadingLines: ["Нумо змінювати світ разом", "з нами!"],
     ctaDecoration: "Start\nStudying",
     navigation: "Навігація",
+    navAriaLabel: "Навігація у підвалі",
     contactsLabel: "Контакти",
     address: "Адреса",
     socials: "Соцмережі",
