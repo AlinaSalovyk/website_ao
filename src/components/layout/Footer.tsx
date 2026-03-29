@@ -193,7 +193,10 @@ export const Footer = ({
                   </a>
 
                   {/* Card 2: Contact CTA */}
-                  <div className="bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-10 flex flex-col justify-between min-h-[280px] md:min-h-[340px] hover:border-white/40 transition-colors duration-500 group shadow-xl relative overflow-hidden isolate">
+                  <a
+                    href={getLocalizedPath("/contacts", locale)}
+                    className="bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-10 flex flex-col justify-between min-h-[280px] md:min-h-[340px] hover:border-white/40 transition-colors duration-500 group shadow-xl relative overflow-hidden isolate no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                  >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-[60px] pointer-events-none -z-10 group-hover:bg-white/20 transition-colors duration-700" />
 
                     <div>
@@ -218,15 +221,14 @@ export const Footer = ({
                       >
                         {t.footer.ctaDecoration}
                       </span>
-                      <a
-                        href={getLocalizedPath("/contacts", locale)}
-                        aria-label={t.common.contactUs}
-                        className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-blue-600 hover:scale-105 hover:bg-blue-600 hover:text-white transition-all duration-300 shadow-xl shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                      <span
+                        aria-hidden="true"
+                        className="flex items-center justify-center w-12 h-12 md:w-16 md:h-16 rounded-full bg-white text-blue-600 group-hover:scale-105 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-xl shrink-0"
                       >
                         <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8" />
-                      </a>
+                      </span>
                     </div>
-                  </div>
+                  </a>
                 </div>
               </ScrollReveal>
             )}
