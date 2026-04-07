@@ -13,7 +13,8 @@ import type { Locale } from "@/i18n";
 import { LocaleProvider, useTranslation } from "@/i18n/LocaleContext";
 import * as Accordion from "@radix-ui/react-accordion";
 
-const RECIPIENT_ID = "93e01c640924de638e41437f227fc24e";
+const RECIPIENT_EMAIL = "itb@oa.edu.ua";
+const CC_EMAIL = "denys.matsevych@oa.edu.ua";
 
 const showToast = async (type: "success" | "error", message: string) => {
   const { toast } = await import("sonner");
@@ -57,7 +58,7 @@ const ContactsPageContent = (): JSX.Element => {
     const message = formData.get("message") as string;
 
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${RECIPIENT_ID}`, {
+      const res = await fetch(`https://formsubmit.co/ajax/${RECIPIENT_EMAIL}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,6 +67,7 @@ const ContactsPageContent = (): JSX.Element => {
         body: JSON.stringify({
           _subject: "Нове повідомлення з сайту Інституту ІТ та бізнесу",
           _template: "box",
+          _cc: CC_EMAIL,
           "Ім'я": `${firstName} ${lastName}`,
           "Email відправника": email,
           Повідомлення: message,
