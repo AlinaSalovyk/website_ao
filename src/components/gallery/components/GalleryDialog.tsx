@@ -279,6 +279,8 @@ export function GalleryDialog({
                     <img
                       src={item.src}
                       alt=""
+                      role="presentation"
+                      aria-hidden="true"
                       className="h-16 w-24 object-cover"
                       loading="lazy"
                       draggable={false}

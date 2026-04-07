@@ -72,6 +72,8 @@ export const NewsAndEvents = ({ data }: NewsAndEventsProps): JSX.Element => {
                     <img
                       src={item.backgroundImage}
                       alt=""
+                      role="presentation"
+                      aria-hidden="true"
                       className="w-full h-full object-cover"
                       loading="lazy"
                       decoding="async"

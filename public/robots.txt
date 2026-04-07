@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://website-ao.vercel.app/sitemap-index.xml
+Sitemap: https://www.itb.oa.edu.ua/sitemap-index.xml
