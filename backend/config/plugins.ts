@@ -45,7 +45,9 @@ const config = ({ env }: Core.Config.Shared.ConfigParams) => {
       };
 
   return {
-    upload: uploadProvider,
+    upload: {
+      config: uploadProvider,
+    },
   };
 };
 
