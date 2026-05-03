@@ -5,6 +5,7 @@ export interface Article {
   date: string;
   image: string;
   thumbnail?: string;
+  coverImageUrl?: string;
   title: Record<Locale, string>;
   summary: Record<Locale, string>;
   content: Record<Locale, string[]>;

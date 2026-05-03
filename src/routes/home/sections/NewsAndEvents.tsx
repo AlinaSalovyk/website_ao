@@ -42,6 +42,13 @@ const BentoCard = ({
               ? "min-h-[280px] md:min-h-full"
               : "min-h-[220px] md:min-h-full",
           )}
+          style={{
+            backgroundImage: article.coverImageUrl 
+              ? `url('${article.coverImageUrl}')` 
+              : 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%)',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
           {/* Gradient Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
