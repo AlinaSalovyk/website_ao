@@ -28,18 +28,9 @@ export const ArticlePage = ({
   return (
     <>
       {/* Hero */}
-      <section 
-        className="relative w-full overflow-hidden bg-gray-900"
-        style={{
-          backgroundImage: article.coverImageUrl 
-            ? `url('${article.coverImageUrl}')` 
-            : 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%)',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {/* Subtle gradient for depth so text is readable over image */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/90 via-gray-900/60 to-black/90 pointer-events-none" />
+      <section className="relative w-full overflow-hidden bg-gray-900">
+        {/* Subtle gradient for depth */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black pointer-events-none" />
 
         <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 pt-32 md:pt-44 pb-16 md:pb-24">
           <ScrollReveal variant="fade-up">
@@ -117,13 +108,6 @@ export const ArticlePage = ({
                     aria-label={`${t.home.news.readMore}: ${related.title[locale]}`}
                     whileHover="hover"
                     className="relative flex flex-col justify-end w-full h-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group cursor-pointer border border-black/5 shadow-xl bg-gray-900 isolate"
-                    style={{
-                      backgroundImage: related.coverImageUrl 
-                        ? `url('${related.coverImageUrl}')` 
-                        : 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%)',
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
