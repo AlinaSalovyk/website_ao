@@ -45,22 +45,9 @@ const config: Core.Config.Middlewares = [
   {
     name: 'strapi::cors',
     config: {
-      // Allow requests from: Vercel frontend, Strapi admin itself, local dev
-      origin: (ctx: { request: { header: { origin?: string } } }) => {
-        const origin = ctx.request.header.origin ?? '';
-        const allowed = [
-          // Production frontend on Vercel
-          process.env['FRONTEND_URL'] ?? '',
-          // Strapi admin panel (same host)
-          `http://localhost:${process.env['PORT'] ?? 1337}`,
-          `http://127.0.0.1:${process.env['PORT'] ?? 1337}`,
-          // Local Astro dev server
-          'http://localhost:4321',
-          'http://127.0.0.1:4321',
-        ].filter(Boolean);
-
-        return allowed.includes(origin) ? origin : false;
-      },
+      origin: [
+        '*', // Allows all origins temporarily to ensure admin panel loads correctly
+      ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
       headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
       keepHeaderOnError: true,
