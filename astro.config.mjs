@@ -10,6 +10,14 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.itb.oa.edu.ua',
+  image: {
+    domains: [
+      'localhost',
+      '127.0.0.1',
+      'strapi-production-c58f.up.railway.app',
+      'res.cloudinary.com',
+    ],
+  },
   vite: {
     plugins: [tailwindcss()],
     ssr: {
