@@ -56,6 +56,18 @@ const DEFAULT_GRADIENT =
   'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%)';
 
 /**
+ * Robustly handles both absolute (Cloudinary) and relative (local fallback) URLs.
+ */
+function resolveImageUrl(url?: string): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith('http')) return url;
+  
+  // Fallback: prepend the Strapi backend URL if Cloudinary failed and it saved locally
+  const backendUrl = import.meta.env.STRAPI_URL || 'https://strapi-production-c58f.up.railway.app';
+  return `${backendUrl.replace(/\/$/, '')}${url}`;
+}
+
+/**
  * Maps a raw Strapi API document to the canonical Article domain object.
  *
  * Guarantees:
@@ -63,12 +75,14 @@ const DEFAULT_GRADIENT =
  *  - Never throws — invalid input returns a safe empty object
  */
 export function mapStrapiArticle(raw: StrapiArticleRaw): Article {
+  const imageUrl = resolveImageUrl(raw.cover_image?.url);
+
   return {
     slug: raw.slug ?? '',
     date: raw.date ?? '',
-    coverImageUrl: raw.cover_image?.url ?? undefined,
-    // Use the Cloudinary URL as card background if available, else gradient
-    image: raw.cover_image?.url ?? DEFAULT_GRADIENT,
+    coverImageUrl: imageUrl,
+    // Use the resolved URL as card background if available, else gradient
+    image: imageUrl ?? DEFAULT_GRADIENT,
     title: {
       uk: raw.title_uk ?? '',
       en: raw.title_en ?? '',
