@@ -6,24 +6,35 @@ export default ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
 
   if (client === 'postgres') {
     const databaseUrl = env('DATABASE_URL', '');
-    
-    // When DATABASE_URL is provided, we must pass ONLY connectionString and ssl.
-    // If we pass 'host' or 'port', the pg driver will try to connect to localhost and fail.
-    // We cast to `any` to bypass Strapi's strict TypeScript types that require host/port.
-    const postgresConnection: any = databaseUrl 
-      ? {
-          connectionString: databaseUrl,
-          ssl: { rejectUnauthorized: false },
-        }
-      : {
-          host: env('DATABASE_HOST', 'localhost'),
-          port: env.int('DATABASE_PORT', 5432),
-          database: env('DATABASE_NAME', 'strapi'),
-          user: env('DATABASE_USERNAME', 'strapi'),
-          password: env('DATABASE_PASSWORD', ''),
-          ssl: env.bool('DATABASE_SSL', false) ? { rejectUnauthorized: false } : false,
-          schema: env('DATABASE_SCHEMA', 'public'),
-        };
+    let postgresConnection: any = {};
+
+    console.log('[DATABASE CONFIG] CLIENT: postgres');
+    console.log('[DATABASE CONFIG] DATABASE_URL IS:', databaseUrl ? 'PRESENT' : 'EMPTY!');
+
+    if (databaseUrl) {
+      // Manually parse the URL to avoid any connectionString bugs in knex/pg
+      const url = new URL(databaseUrl);
+      postgresConnection = {
+        host: url.hostname,
+        port: url.port ? parseInt(url.port, 10) : 5432,
+        database: url.pathname.replace(/^\//, ''),
+        user: url.username,
+        password: url.password,
+        ssl: { rejectUnauthorized: false },
+        schema: env('DATABASE_SCHEMA', 'public'),
+      };
+      console.log(`[DATABASE CONFIG] Parsed Host: ${url.hostname}, Port: ${postgresConnection.port}, DB: ${postgresConnection.database}`);
+    } else {
+      postgresConnection = {
+        host: env('DATABASE_HOST', 'localhost'),
+        port: env.int('DATABASE_PORT', 5432),
+        database: env('DATABASE_NAME', 'strapi'),
+        user: env('DATABASE_USERNAME', 'strapi'),
+        password: env('DATABASE_PASSWORD', ''),
+        ssl: env.bool('DATABASE_SSL', false) ? { rejectUnauthorized: false } : false,
+        schema: env('DATABASE_SCHEMA', 'public'),
+      };
+    }
 
     return {
       connection: {
