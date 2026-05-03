@@ -26,3 +26,12 @@ pnpm-debug.log*
 # large video files (upload manually to server)
 public/images/Labs/robo/interview.mp4
 public/images/Labs/robo/Tetris.mp4
+
+# Strapi backend (виключаємо все, крім коду моделей)
+backend/node_modules/
+backend/.tmp/
+backend/build/
+backend/.cache/
+backend/exports/
+backend/dist/
+backend/.env

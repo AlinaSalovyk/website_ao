@@ -12,10 +12,19 @@ import { LazyIntroAnimation } from "@/components/effects/LazyIntroAnimation";
 import { getTranslations } from "@/i18n";
 import type { Locale } from "@/i18n";
 import { getDepartments } from "@/routes/departments/departments-programs";
+import { fetchLatestArticles } from "@/lib/strapi";
+import { getLatestArticles } from "@/data/articles";
 
 const locale: Locale = "en";
+
 const t = getTranslations(locale);
 const siteUrl = Astro.site?.toString()?.replace(/\/$/, "") ?? Astro.url.origin;
+
+let latestNews = await fetchLatestArticles(4);
+if (latestNews.length === 0) {
+  latestNews = getLatestArticles(4);
+}
+
 
 const coursesJsonLd = getDepartments(t).flatMap((dept) =>
   dept.programs.flatMap((level) =>
@@ -95,7 +104,8 @@ const organizationJsonLd = {
         </section>
         <InstituteLeadership client:visible locale={locale} />
         <InnovativeEducation client:visible locale={locale} />
-        <NewsAndEvents client:visible locale={locale} />
+        <NewsAndEvents client:visible locale={locale} articles={latestNews} />
+
         <Footer client:visible locale={locale} />
       </main>
     </div>

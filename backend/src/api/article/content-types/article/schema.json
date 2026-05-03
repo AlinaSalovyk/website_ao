@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "articles",
+  "info": {
+    "singularName": "article",
+    "pluralName": "articles",
+    "displayName": "Article",
+    "description": "News articles with bilingual content (Ukrainian + English)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "slug": {
+      "type": "uid",
+      "targetField": "title_uk",
+      "required": true
+    },
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "title_uk": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "title_en": {
+      "type": "string",
+      "required": true,
+      "maxLength": 255
+    },
+    "summary_uk": {
+      "type": "text",
+      "required": true,
+      "maxLength": 500
+    },
+    "summary_en": {
+      "type": "text",
+      "required": true,
+      "maxLength": 500
+    },
+    "content_uk": {
+      "type": "blocks",
+      "required": true
+    },
+    "content_en": {
+      "type": "blocks",
+      "required": true
+    },
+    "cover_image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

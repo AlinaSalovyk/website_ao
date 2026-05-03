@@ -39,7 +39,8 @@ export const HomePage = ({ locale = "uk" }: HomePageProps): JSX.Element => {
         <InnovativeEducation locale={locale} />
 
         {/* Section 6: News and Events */}
-        <NewsAndEvents locale={locale} />
+        <NewsAndEvents locale={locale} articles={[]} />
+
 
         {/* Footer */}
         <Footer locale={locale} />

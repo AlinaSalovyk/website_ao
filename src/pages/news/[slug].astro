@@ -5,12 +5,20 @@ import { Header } from "@/components/layout/Header";
 import { ArticlePage } from "@/routes/news/ArticlePage";
 import { getTranslations } from "@/i18n";
 import type { Locale } from "@/i18n";
+import { articleRepository } from "@/lib/strapi/index";
+import type { Article } from "@/lib/strapi/types";
 import { getArticles, getArticleBySlug } from "@/data/articles";
 
-export function getStaticPaths() {
-  const articles = getArticles();
+export async function getStaticPaths() {
+  // Strapi first; fall back to static data when Strapi is unavailable
+  let articles: Article[] = await articleRepository.findAll();
+  if (articles.length === 0) {
+    articles = getArticles() as Article[];
+  }
+
   return articles.map((article) => ({
     params: { slug: article.slug },
+    props: { article },
   }));
 }
 
@@ -18,11 +26,20 @@ const locale: Locale = "uk";
 const t = getTranslations(locale);
 
 const { slug } = Astro.params;
-const article = getArticleBySlug(slug as string);
+let article: Article | undefined = Astro.props.article;
+
+if (!article) {
+  article =
+    (await articleRepository.findBySlug(slug as string)) ??
+    (getArticleBySlug(slug as string) as Article | undefined);
+}
 
 if (!article) {
   return Astro.redirect("/news");
 }
+
+// Related articles fetched via repository (encapsulated logic)
+const relatedArticles = await articleRepository.findRelated(article.slug, 2);
 
 const siteUrl = Astro.site?.toString()?.replace(/\/$/, "") ?? Astro.url.origin;
 const articleUrl = `${siteUrl}/news/${article.slug}/`;
@@ -63,7 +80,12 @@ const articleJsonLd = {
         currentPath={Astro.url.pathname}
       />
       <main id="main-content" class="w-full">
-        <ArticlePage client:visible article={article} locale={locale} />
+        <ArticlePage
+          client:visible
+          article={article}
+          relatedArticles={relatedArticles}
+          locale={locale}
+        />
       </main>
       <Footer client:visible locale={locale} />
     </div>

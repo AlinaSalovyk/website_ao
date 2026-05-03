@@ -2,14 +2,17 @@ import { ArrowUpRight } from "lucide-react";
 import type { JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
-import { formatArticleDate, getSortedArticles } from "@/data/articles";
+import { formatArticleDate } from "@/data/articles";
 import type { Article } from "@/data/articles";
 import type { Locale, Translations } from "@/i18n";
 import { getLocalizedPath, getTranslations } from "@/i18n";
 
 interface NewsPageProps {
   locale?: Locale;
+  /** Articles pre-fetched by the Astro page (from Strapi or static fallback) */
+  articles: Article[];
 }
+
 
 const SHOW_THUMBNAILS = false;
 
@@ -135,10 +138,10 @@ const ArticleRow = ({
   </ScrollReveal>
 );
 
-export const NewsPage = ({ locale = "uk" }: NewsPageProps): JSX.Element => {
+export const NewsPage = ({ locale = "uk", articles }: NewsPageProps): JSX.Element => {
   const t = getTranslations(locale);
-  const articles = getSortedArticles();
   const [featured, ...rest] = articles;
+
 
   return (
     <section className="w-full bg-pure-white pt-32 md:pt-40 pb-16 md:pb-24 relative overflow-hidden">

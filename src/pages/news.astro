@@ -5,9 +5,17 @@ import { Header } from "@/components/layout/Header";
 import { NewsPage } from "@/routes/news/NewsPage";
 import { getTranslations } from "@/i18n";
 import type { Locale } from "@/i18n";
+import { fetchAllArticles } from "@/lib/strapi";
+import { getSortedArticles } from "@/data/articles";
 
 const locale: Locale = "uk";
 const t = getTranslations(locale);
+
+// Fetch from Strapi (already sorted desc by date); fall back to static data
+let articles = await fetchAllArticles();
+if (articles.length === 0) {
+  articles = getSortedArticles();
+}
 ---
 
 <Layout
@@ -27,7 +35,7 @@ const t = getTranslations(locale);
         currentPath={Astro.url.pathname}
       />
       <main id="main-content" class="w-full">
-        <NewsPage client:visible locale={locale} />
+        <NewsPage client:visible articles={articles} locale={locale} />
       </main>
       <Footer client:visible locale={locale} />
     </div>

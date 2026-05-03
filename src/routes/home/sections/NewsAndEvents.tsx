@@ -4,10 +4,11 @@ import type { JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import type { Article } from "@/data/articles";
-import { formatArticleDate, getLatestArticles } from "@/data/articles";
+import { formatArticleDate } from "@/data/articles";
 import type { Locale, Translations } from "@/i18n";
 import { getLocalizedPath, getTranslations } from "@/i18n";
 import { cn } from "@/lib/utils";
+
 
 const BentoCard = ({
   article,
@@ -93,10 +94,17 @@ const BentoCard = ({
   );
 };
 
-export const NewsAndEvents = ({ locale }: { locale?: Locale }): JSX.Element => {
+export const NewsAndEvents = ({
+  locale,
+  articles,
+}: {
+  locale?: Locale;
+  /** Latest articles pre-fetched by the Astro page */
+  articles: Article[];
+}): JSX.Element => {
   const t = getTranslations(locale);
   const currentLocale = locale ?? "uk";
-  const articles = getLatestArticles(4);
+
   return (
     <section
       id="news"

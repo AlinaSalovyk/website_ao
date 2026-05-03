@@ -4,23 +4,26 @@ import type { JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import type { Article } from "@/data/articles";
-import { formatArticleDate, getLatestArticles } from "@/data/articles";
+import { formatArticleDate } from "@/data/articles";
 import type { Locale } from "@/i18n";
 import { getLocalizedPath, getTranslations } from "@/i18n";
 
 interface ArticlePageProps {
   article: Article;
   locale?: Locale;
+  /** Related articles pre-fetched by the Astro page */
+  relatedArticles?: Article[];
 }
+
 
 export const ArticlePage = ({
   article,
   locale = "uk",
+  relatedArticles: relatedArticlesProp,
 }: ArticlePageProps): JSX.Element => {
   const t = getTranslations(locale);
-  const relatedArticles = getLatestArticles(3)
-    .filter((a) => a.slug !== article.slug)
-    .slice(0, 2);
+  const relatedArticles = relatedArticlesProp ?? [];
+
 
   return (
     <>
