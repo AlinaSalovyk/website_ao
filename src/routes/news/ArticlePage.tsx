@@ -28,71 +28,92 @@ export const ArticlePage = ({
   return (
     <>
       {/* Hero */}
-      <section 
-        className="relative w-full overflow-hidden bg-gray-900"
-        style={{
-          backgroundImage: article.coverImageUrl 
-            ? `url('${article.coverImageUrl}')` 
-            : 'linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #1e40af 100%)',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
-        {/* Dark overlay so text remains readable */}
-        <div className="absolute inset-0 bg-black/50 z-0 pointer-events-none" />
-        {/* Subtle gradient for depth, made semi-transparent */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/80 via-black/60 to-black/90 pointer-events-none z-0" />
+      <section className="relative w-full overflow-hidden bg-[#0a0a0a]">
+        {/* Abstract shapes to fill the void gracefully */}
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[100%] bg-blue-600/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[100%] bg-indigo-500/20 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-[#0a0a0a] pointer-events-none z-0" />
 
-        <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 pt-32 md:pt-44 pb-16 md:pb-24">
+        <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 pt-28 md:pt-32 pb-10 md:pb-14">
           <ScrollReveal variant="fade-up">
             <a
               href={getLocalizedPath("/news", locale)}
-              className="inline-flex items-center gap-2 text-white/80 hover:text-white text-sm font-medium transition-colors mb-8 group"
+              className="inline-flex items-center gap-2 text-white/70 hover:text-white text-sm font-medium transition-colors mb-6 md:mb-8 group"
             >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10 group-hover:bg-white/20 transition-colors">
+                <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              </div>
               {t.newsPage.backToNews}
             </a>
 
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <div className="backdrop-blur-md bg-white/10 border border-white/20 px-3 py-1.5 rounded-full">
-                <span className="text-white text-[10px] md:text-xs font-semibold tracking-wider uppercase">
+            <div className="flex flex-wrap items-center gap-3 mb-4 md:mb-5">
+              <div className="backdrop-blur-md bg-white/10 border border-white/10 px-4 py-1.5 rounded-full shadow-lg">
+                <span className="text-white/90 text-xs font-bold tracking-widest uppercase">
                   {t.home.news.weeklyBadge}
                 </span>
               </div>
-              <div className="backdrop-blur-md bg-black/30 px-3 py-1.5 rounded-full flex items-center gap-2">
+              <div className="backdrop-blur-md bg-white/5 border border-white/5 px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2">
                 <time
                   dateTime={article.date}
-                  className="text-white/80 text-[10px] md:text-xs font-medium tracking-wider uppercase"
+                  className="text-white/70 text-xs font-semibold tracking-widest uppercase"
                 >
                   {formatArticleDate(article.date, locale)}
                 </time>
               </div>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-white tracking-tight leading-[1.1] max-w-4xl">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight leading-[1.15] max-w-4xl text-balance">
               {article.title[locale]}
             </h1>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Article Content */}
-      <section className="w-full bg-pure-white py-12 md:py-20 relative overflow-hidden z-10">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      {/* Article Content & Image */}
+      <section className="w-full bg-pure-white py-16 md:py-24 relative overflow-hidden z-10">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-50/50 rounded-full blur-[120px] translate-x-1/3 -translate-y-1/3 pointer-events-none" />
 
-        <div className="w-full max-w-3xl mx-auto px-4 md:px-9 relative z-10">
-          <ScrollReveal variant="fade-up">
-            <div className="prose prose-lg prose-gray max-w-none">
-              {article.content[locale].map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="text-gray-700 text-base md:text-lg leading-relaxed mb-6 last:mb-0"
-                >
-                  {paragraph}
-                </p>
-              ))}
+        <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
+            
+            {/* Text Content */}
+            <div className="lg:col-span-7 xl:col-span-7 order-2 lg:order-1">
+              <ScrollReveal variant="fade-up">
+                <div className="prose prose-lg md:prose-xl prose-gray max-w-none">
+                  {article.content[locale].map((paragraph, i) => (
+                    <p
+                      key={i}
+                      className="text-gray-700 text-base md:text-lg leading-relaxed mb-6 last:mb-0"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
+              </ScrollReveal>
             </div>
-          </ScrollReveal>
+
+            {/* Image Content - Sticky on desktop */}
+            <div className="lg:col-span-5 xl:col-span-5 order-1 lg:order-2 lg:sticky lg:top-32">
+              <ScrollReveal variant="fade-up" delay={200}>
+                {article.coverImageUrl ? (
+                  <div className="relative w-full rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl bg-gray-50 border border-gray-100 group">
+                    <img 
+                      src={article.coverImageUrl} 
+                      alt={article.title[locale]} 
+                      className="w-full h-auto max-h-[70vh] object-contain md:object-cover object-center transition-transform duration-700 group-hover:scale-[1.03]"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 rounded-2xl md:rounded-[2rem] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.05)] pointer-events-none" />
+                  </div>
+                ) : (
+                  <div className="relative w-full aspect-[4/3] rounded-2xl md:rounded-[2rem] overflow-hidden shadow-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border border-gray-200">
+                    <div className="text-gray-400 font-medium tracking-widest uppercase text-sm">No Image</div>
+                  </div>
+                )}
+              </ScrollReveal>
+            </div>
+
+          </div>
         </div>
       </section>
 
