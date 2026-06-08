@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { CursorEffects } from "@/components/effects/CursorEffects";
+import ChatWidget from "@/components/Chat/ChatWidget";
 import {
   DEFAULT_LOCALE,
   OG_LOCALES,
@@ -158,6 +159,8 @@ const alternateUrl = toAbsoluteUrl(
       <slot />
     </div>
     <CursorEffects client:idle />
+    <!-- AI Chat Assistant Widget (Global) -->
+    <ChatWidget client:load />
   </body>
 </html>
 
