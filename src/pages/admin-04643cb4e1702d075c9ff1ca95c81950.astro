@@ -1,0 +1,32 @@
+---
+/**
+ * Admin Panel — mounted at the hidden, unpredictable URL.
+ *
+ * SECURITY: The path segment is derived from SHA256(ADMIN_TOKEN)[:16 bytes].
+ * For ADMIN_TOKEN="dev-test-token-32chars-longenough":
+ *   segment = 04643cb4e1702d075c9ff1ca95c81950
+ *
+ * To change the admin URL: update ADMIN_TOKEN in .env and recompute
+ * PUBLIC_ADMIN_PATH = hex(SHA256(ADMIN_TOKEN)[:16]).
+ *
+ * noindex, nofollow: admin page must never be indexed by search engines.
+ */
+import "../styles/global.css";
+import AdminPanel from "@/components/Admin/AdminPanel";
+---
+
+<html lang="uk" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin Panel — University Chatbot</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="m-0 p-0 bg-layout-bg min-h-screen">
+    <AdminPanel client:only="react" />
+  </body>
+</html>
