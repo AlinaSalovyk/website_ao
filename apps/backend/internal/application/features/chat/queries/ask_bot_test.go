@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -66,11 +67,14 @@ func (m *mockLLM) StreamAnswer(_ context.Context, _, _, _ string, _ domain.Langu
 
 // mockAnalyticsRepo implements the AnalyticsRepository interface for testing purposes.
 type mockAnalyticsRepo struct {
+	mu       sync.Mutex
 	Recorded []domain.QueryRecord
 }
 
 // Record records a query. 
 func (r *mockAnalyticsRepo) Record(_ context.Context, rec domain.QueryRecord) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
 	r.Recorded = append(r.Recorded, rec)
 	return nil
 }
@@ -156,10 +160,11 @@ func TestHandle_SuccessPath(t *testing.T) {
 	}
 
 	time.Sleep(50 * time.Millisecond)
+	analytics.mu.Lock()
+	defer analytics.mu.Unlock()
 	if len(analytics.Recorded) == 0 {
 		t.Error("expected analytics to be recorded")
-	}
-	if analytics.Recorded[0].IsBlocked {
+	} else if analytics.Recorded[0].IsBlocked {
 		t.Error("analytics IsBlocked should be false for successful query")
 	}
 }
