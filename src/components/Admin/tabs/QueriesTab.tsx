@@ -2,8 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { MessageCircle, ThumbsUp, ThumbsDown, Shield, Clock } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import { fetchQueries, type QueryRow } from "./api";
-import { AnimatedSection, GlassCard, Badge, TabLoader, EmptyState } from "./ui";
+import { fetchQueries, type QueryRow } from "../api";
+import { AnimatedSection, GlassCard, Badge, TabLoader, EmptyState, PageGuide } from "../ui";
 import { cn } from "@/lib/utils";
 
 /**
@@ -55,23 +55,23 @@ export function QueriesTab() {
     <div className="space-y-6">
       <AnimatedSection i={0} className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">Запити користувачів</h2>
-          <p className="mt-0.5 text-xs text-zinc-600">{queries.length} запитів за останні {days} днів</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Запити користувачів</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">{queries.length} запитів за останні {days} днів</p>
         </div>
-        <div className="flex items-center gap-1 rounded-xl bg-white/[0.03] p-1 ring-1 ring-white/[0.06]">
+        <div className="flex items-center gap-1 rounded-xl bg-muted/60 p-1 border border-border">
           {[7, 14, 30, 90].map((d) => (
             <button
               key={d}
               onClick={() => { setDays(d); setPage(0); }}
               className={cn(
-                "relative rounded-lg px-3 py-1.5 text-xs font-medium transition-all",
-                days === d ? "text-white" : "text-zinc-500 hover:text-zinc-300",
+                "relative rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer",
+                days === d ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {days === d && (
                 <motion.div
                   layoutId="queries-period"
-                  className="absolute inset-0 rounded-lg bg-blue-500/20 ring-1 ring-blue-500/30"
+                  className="absolute inset-0 rounded-lg bg-card shadow-sm border border-border"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
@@ -83,37 +83,42 @@ export function QueriesTab() {
 
       {/* Info Block */}
       <AnimatedSection i={0.5}>
-        <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 text-[13px] leading-relaxed text-blue-100/80">
-          <strong className="text-blue-300">Як користуватися цією сторінкою:</strong> Це детальний журнал усіх звернень до вашого бота. 
-          Кожен рядок — це окремий запит. Ви можете перевірити швидкість відповіді (Час), кількість використаних джерел та залишений відгук.
-          Особливу увагу звертайте на запити з дизлайком (👎) — це означає, що користувач не отримав бажаної відповіді, і, можливо, вам варто завантажити додаткові документи з цієї теми.
-        </div>
+        <PageGuide
+          title="Як користуватися цією сторінкою"
+          summary="Детальний журнал звернень до вашого бота, перевірка часу відповідей та дизлайків (👎)"
+          items={[
+            { title: "Журнал запитів", desc: "Кожен рядок — це окреме запитання користувача до чат-бота." },
+            { title: "Швидкість та Джерела", desc: "Показує час формування відповіді (Час) та кількість використаних документів." },
+            { title: "Аналіз дизлайків (👎)", desc: "Позначає відповіді, які не задовольнили користувача (сигнал додати нові документи)." },
+            { title: "Заблоковано", desc: "Запити, відхилені фільтрами безпеки або офф-топік перевіркою." }
+          ]}
+        />
       </AnimatedSection>
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <AnimatedSection i={1}>
-          <div className="rounded-xl border border-white/[0.06] bg-[#14171a]/80 p-3.5 text-center">
-            <div className="text-lg font-bold text-white tabular-nums">{queries.length}</div>
-            <div className="text-[10px] font-medium text-zinc-600">Всього</div>
+          <div className="rounded-xl border border-border bg-card p-3.5 text-center shadow-sm">
+            <div className="text-lg font-bold text-foreground tabular-nums">{queries.length}</div>
+            <div className="text-[10px] font-medium text-muted-foreground">Всього</div>
           </div>
         </AnimatedSection>
         <AnimatedSection i={2}>
-          <div className="rounded-xl border border-white/[0.06] bg-[#14171a]/80 p-3.5 text-center">
-            <div className="text-lg font-bold text-emerald-400 tabular-nums">{positive}</div>
-            <div className="text-[10px] font-medium text-zinc-600">Позитивних</div>
+          <div className="rounded-xl border border-border bg-card p-3.5 text-center shadow-sm">
+            <div className="text-lg font-bold text-emerald-500 tabular-nums">{positive}</div>
+            <div className="text-[10px] font-medium text-muted-foreground">Позитивних</div>
           </div>
         </AnimatedSection>
         <AnimatedSection i={3}>
-          <div className="rounded-xl border border-white/[0.06] bg-[#14171a]/80 p-3.5 text-center">
-            <div className="text-lg font-bold text-red-400 tabular-nums">{negative}</div>
-            <div className="text-[10px] font-medium text-zinc-600">Негативних</div>
+          <div className="rounded-xl border border-border bg-card p-3.5 text-center shadow-sm">
+            <div className="text-lg font-bold text-rose-500 tabular-nums">{negative}</div>
+            <div className="text-[10px] font-medium text-muted-foreground">Негативних</div>
           </div>
         </AnimatedSection>
         <AnimatedSection i={4}>
-          <div className="rounded-xl border border-white/[0.06] bg-[#14171a]/80 p-3.5 text-center">
-            <div className="text-lg font-bold text-amber-400 tabular-nums">{blocked}</div>
-            <div className="text-[10px] font-medium text-zinc-600">Заблоковано</div>
+          <div className="rounded-xl border border-border bg-card p-3.5 text-center shadow-sm">
+            <div className="text-lg font-bold text-amber-500 tabular-nums">{blocked}</div>
+            <div className="text-[10px] font-medium text-muted-foreground">Заблоковано</div>
           </div>
         </AnimatedSection>
       </div>
@@ -128,7 +133,7 @@ export function QueriesTab() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-white/[0.06] text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-600">
+                  <tr className="border-b border-border text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
                     <th className="px-3 py-2.5">Запит</th>
                     <th className="px-3 py-2.5">Мова</th>
                     <th className="px-3 py-2.5">
@@ -147,18 +152,18 @@ export function QueriesTab() {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: i * 0.02 }}
-                      className="border-b border-white/[0.03] transition-colors hover:bg-white/[0.02]"
+                      className="border-b border-border/40 transition-colors hover:bg-muted/50"
                     >
                       <td className="px-3 py-2.5">
-                        <div className="font-medium text-zinc-300 max-w-[200px] truncate" title={q.query_text}>{q.query_text || q.query_hash}</div>
+                        <div className="font-medium text-foreground max-w-[200px] truncate" title={q.query_text}>{q.query_text || q.query_hash}</div>
                       </td>
                       <td className="px-3 py-2.5">{q.language === "uk" ? "🇺🇦" : "🇬🇧"}</td>
-                      <td className="px-3 py-2.5 text-xs text-zinc-400 tabular-nums">{(q.response_ms / 1000).toFixed(1)}с</td>
-                      <td className="px-3 py-2.5 text-xs text-zinc-500 tabular-nums">{q.sources_cnt}</td>
+                      <td className="px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{(q.response_ms / 1000).toFixed(1)}с</td>
+                      <td className="px-3 py-2.5 text-xs text-muted-foreground tabular-nums">{q.sources_cnt}</td>
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-1.5">
                            <FeedbackIcon value={q.feedback} />
-                           <span className="text-xs text-zinc-400">
+                           <span className="text-xs text-muted-foreground">
                              {q.feedback === 1 ? "Добре" : q.feedback === -1 ? "Погано" : "Немає"}
                            </span>
                         </div>
@@ -169,7 +174,7 @@ export function QueriesTab() {
                           : <Badge color="green">Чисто</Badge>
                         }
                       </td>
-                      <td className="px-3 py-2.5 text-xs text-zinc-600">{new Date(q.created_at).toLocaleString("uk-UA")}</td>
+                      <td className="px-3 py-2.5 text-xs text-muted-foreground opacity-80">{new Date(q.created_at).toLocaleString("uk-UA")}</td>
                     </motion.tr>
                   ))}
                 </tbody>

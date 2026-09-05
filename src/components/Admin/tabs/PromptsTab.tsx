@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from "react";
 import { MessageSquareDashed, Plus, Edit2, Play, Square, Loader2, Trash2, AlertTriangle, MoreVertical } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { fetchPrompts, createPrompt, togglePromptActive, updatePrompt, deletePrompt, type PromptVariant } from "./api";
+import { fetchPrompts, createPrompt, togglePromptActive, updatePrompt, deletePrompt, type PromptVariant } from "../api";
 import { toast } from "sonner";
-import { AnimatedSection, GlassCard, Badge, TabLoader } from "./ui";
+import { AnimatedSection, GlassCard, Badge, TabLoader, PageGuide } from "../ui";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 /**
@@ -124,8 +124,8 @@ export function PromptsTab() {
     <div className="space-y-6">
       <AnimatedSection i={0} className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">A/B Промпти</h2>
-          <p className="mt-0.5 text-xs text-zinc-400">Керуйте системними інструкціями для чат-бота</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">A/B Промпти</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">Керуйте системними інструкціями для чат-бота</p>
         </div>
 
         <Dialog>
@@ -134,30 +134,30 @@ export function PromptsTab() {
               <Plus size={16} /> <span>Створити</span>
             </button>
           </DialogTrigger>
-          <DialogContent className="border-white/10 bg-[#0e1114] sm:max-w-[550px] shadow-2xl shadow-blue-900/10 backdrop-blur-3xl">
+          <DialogContent className="border-border bg-card text-card-foreground sm:max-w-[550px] shadow-2xl backdrop-blur-3xl">
             <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
-                <MessageSquareDashed className="text-blue-400" size={20} />
+              <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+                <MessageSquareDashed className="text-primary" size={20} />
                 Новий Промпт
               </DialogTitle>
             </DialogHeader>
             <div className="grid gap-5 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Назва варіанту</label>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Назва варіанту</label>
                   <input
                     value={newPrompt.name}
                     onChange={(e) => setNewPrompt({ ...newPrompt, name: e.target.value })}
                     placeholder="e.g. friendly_bot_v2"
-                    className="rounded-xl border border-white/10 bg-black/50 px-4 py-2.5 text-sm font-medium text-white placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all"
+                    className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all shadow-sm"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Мова</label>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Мова</label>
                   <select
                     value={newPrompt.language}
                     onChange={(e) => setNewPrompt({ ...newPrompt, language: e.target.value })}
-                    className="rounded-xl border border-white/10 bg-black/50 px-4 py-2.5 text-sm font-medium text-white focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all appearance-none cursor-pointer"
+                    className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all appearance-none cursor-pointer shadow-sm"
                   >
                     <option value="uk">🇺🇦 Українська</option>
                     <option value="en">🇬🇧 English</option>
@@ -165,18 +165,18 @@ export function PromptsTab() {
                 </div>
               </div>
               <div className="grid gap-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Текст Промпту (Системна інструкція)</label>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Текст Промпту (Системна інструкція)</label>
                 <textarea
                   value={newPrompt.prompt_text}
                   onChange={(e) => setNewPrompt({ ...newPrompt, prompt_text: e.target.value })}
-                  className="min-h-[160px] resize-y rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-zinc-300 placeholder:text-zinc-600 focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition-all leading-relaxed"
+                  className="min-h-[160px] resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all leading-relaxed shadow-sm"
                   placeholder="Напишіть детальну інструкцію для штучного інтелекту..."
                 />
               </div>
               <button 
                 onClick={handleCreate} 
                 disabled={isCreating || !newPrompt.name || !newPrompt.prompt_text} 
-                className="mt-2 inline-flex w-full cursor-pointer justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-3 text-sm font-medium text-white shadow-lg shadow-blue-600/20 transition-all hover:from-blue-500 hover:to-blue-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="mt-2 inline-flex w-full cursor-pointer justify-center items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isCreating ? <Loader2 className="animate-spin" size={18} /> : "Зберегти промпт"}
               </button>
@@ -186,11 +186,16 @@ export function PromptsTab() {
       </AnimatedSection>
 
       <AnimatedSection i={0.5}>
-        <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 text-[13px] leading-relaxed text-blue-100/80">
-          <strong className="text-blue-300">Як користуватися цією сторінкою:</strong> Ця вкладка дозволяє експериментувати з налаштуваннями характеру бота (A/B тестування).
-          Створюйте різні варіанти системних переконань (наприклад, "Будь дуже лаконічним" або "Будь завжди веселим і використовуй емодзі"). 
-          Увімкніть кілька промптів одночасно, і система буде випадковим чином показувати їх різним користувачам. На основі лайків/дизлайків бот вирахує "Рейтинг" кожного промпту, щоб ви могли залишити найкращий!
-        </div>
+        <PageGuide
+          title="Як користуватися цією сторінкою"
+          summary="A/B тестування характеру та системних інструкцій для штучного інтелекту"
+          items={[
+            { title: "A/B Тестування", desc: "Створюйте та порівнюйте різні варіанти характеру й ролі бота." },
+            { title: "Системна інструкція", desc: "Визначає tone of voice, лаконічність та поведінкові правила штучного інтелекту." },
+            { title: "Випадковий вибір", desc: "Увімкніть кілька варіантів одночасно для автоматичного розподілу між студентами." },
+            { title: "Оцінка рейтингу", desc: "Аналізуйте середній бал (Avg Score) на основі лайків для вибору переможця." }
+          ]}
+        />
       </AnimatedSection>
       
       <AnimatedSection i={1}>
@@ -198,7 +203,7 @@ export function PromptsTab() {
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-left text-sm whitespace-nowrap">
               <thead>
-                <tr className="border-b border-white/[0.04] text-xs font-bold uppercase tracking-wider text-zinc-500">
+                <tr className="border-b border-border text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   <th className="pb-3 pr-4">Варіант</th>
                   <th className="pb-3 pr-4">Мова</th>
                   <th className="pb-3 pr-4 text-center">Статус</th>
@@ -207,12 +212,12 @@ export function PromptsTab() {
                   <th className="pb-3 pl-4 text-right">Дії</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.02]">
+              <tbody className="divide-y divide-border/40">
                 {prompts.map((p) => (
-                  <tr key={p.id} className="group transition-colors hover:bg-white/[0.02]">
+                  <tr key={p.id} className="group transition-colors hover:bg-muted/50">
                     <td className="py-4 pr-4">
-                      <div className="font-semibold text-zinc-200">{p.name}</div>
-                      <div className="mt-1 line-clamp-1 max-w-[280px] whitespace-normal text-xs text-zinc-500 leading-tight" title={p.prompt_text}>
+                      <div className="font-semibold text-foreground">{p.name}</div>
+                      <div className="mt-1 line-clamp-1 max-w-[280px] whitespace-normal text-xs text-muted-foreground leading-tight" title={p.prompt_text}>
                         {p.prompt_text}
                       </div>
                     </td>
@@ -226,8 +231,8 @@ export function PromptsTab() {
                         onClick={() => handleToggleActive(p.id, p.is_active)}
                         className={`inline-flex cursor-pointer select-none items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-bold transition-all hover:scale-105 active:scale-95 ${
                           p.is_active 
-                          ? "bg-emerald-500/10 text-emerald-400 ring-1 ring-inset ring-emerald-500/20 hover:bg-emerald-500/20" 
-                          : "bg-zinc-800/80 text-zinc-500 ring-1 ring-inset ring-zinc-700/50 hover:bg-zinc-700 hover:text-zinc-300"
+                          ? "bg-emerald-500/10 text-emerald-500 ring-1 ring-inset ring-emerald-500/20 hover:bg-emerald-500/20" 
+                          : "bg-muted text-muted-foreground ring-1 ring-inset ring-border hover:bg-muted/80 hover:text-foreground"
                         }`}
                       >
                         {p.is_active ? <Play size={10} className="fill-current" /> : <Square size={10} className="fill-current" />}
@@ -249,7 +254,7 @@ export function PromptsTab() {
                     <td className="py-4 pl-4 text-right">
                       <DropdownMenu.Root>
                         <DropdownMenu.Trigger asChild>
-                          <button className="rounded-lg p-1.5 text-zinc-500 transition-all hover:bg-white/10 hover:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 data-[state=open]:bg-white/10 data-[state=open]:text-zinc-200">
+                          <button className="rounded-lg p-1.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer">
                             <MoreVertical size={16} />
                           </button>
                         </DropdownMenu.Trigger>
@@ -258,21 +263,21 @@ export function PromptsTab() {
                           <DropdownMenu.Content
                             sideOffset={5}
                             align="end"
-                            className="z-50 min-w-[180px] overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80 p-1.5 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.8)] backdrop-blur-2xl ring-1 ring-white/5 origin-top-right will-change-transform data-[state=open]:fade-in data-[state=closed]:fade-out data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
+                            className="z-50 min-w-[180px] overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-2xl backdrop-blur-2xl text-card-foreground origin-top-right will-change-transform data-[state=open]:fade-in data-[state=closed]:fade-out data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
                           >
                             <DropdownMenu.Item
                               onSelect={() => setTimeout(() => openEditModal(p), 0)}
-                              className="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-zinc-300 outline-none transition-colors data-[highlighted]:bg-amber-500/15 data-[highlighted]:text-amber-400"
+                              className="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-foreground outline-none transition-colors data-[highlighted]:bg-amber-500/15 data-[highlighted]:text-amber-500"
                             >
                               <Edit2 size={15} />
                               Редагувати
                             </DropdownMenu.Item>
                             
-                            <DropdownMenu.Separator className="my-1.5 h-px w-full bg-white/10" />
+                            <DropdownMenu.Separator className="my-1.5 h-px w-full bg-border" />
                             
                             <DropdownMenu.Item
                               onSelect={() => setTimeout(() => openDeleteModal(p), 0)}
-                              className="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-red-400 outline-none transition-colors data-[highlighted]:bg-red-500/15 data-[highlighted]:text-red-300"
+                              className="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-destructive outline-none transition-colors data-[highlighted]:bg-destructive/15 data-[highlighted]:text-destructive"
                             >
                               <Trash2 size={15} />
                               Видалити
@@ -297,33 +302,33 @@ export function PromptsTab() {
       </AnimatedSection>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="border-white/10 bg-[#0e1114] sm:max-w-[550px] shadow-2xl backdrop-blur-3xl">
+        <DialogContent className="border-border bg-card text-card-foreground sm:max-w-[550px] shadow-2xl backdrop-blur-3xl">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-white flex items-center gap-2">
-              <Edit2 className="text-amber-400" size={20} />
+            <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
+              <Edit2 className="text-amber-500" size={20} />
               Редагування Промпту "{editTarget?.name}"
             </DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Текст Промпту</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Текст Промпту</label>
               <textarea
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
-                className="min-h-[160px] resize-y rounded-xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-zinc-300 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 focus:outline-none transition-all leading-relaxed"
+                className="min-h-[160px] resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none transition-all leading-relaxed shadow-sm"
               />
             </div>
             <div className="flex justify-end gap-3 mt-2">
               <button 
                 onClick={() => setEditOpen(false)}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium text-zinc-400 hover:text-white hover:bg-white/5 transition-colors"
+                className="px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               >
                 Скасувати
               </button>
               <button 
                 onClick={handleSaveEdit} 
                 disabled={editLoading || !editText.trim()} 
-                className="inline-flex min-w-[120px] justify-center items-center gap-2 rounded-xl bg-amber-500/10 text-amber-400 px-4 py-2.5 text-sm font-bold border border-amber-500/20 transition-all hover:bg-amber-500/20 hover:text-amber-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex min-w-[120px] justify-center items-center gap-2 rounded-xl bg-amber-500/10 text-amber-500 px-4 py-2.5 text-sm font-bold border border-amber-500/20 transition-all hover:bg-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {editLoading ? <Loader2 className="animate-spin" size={16} /> : "Зберегти зміни"}
               </button>
@@ -333,30 +338,30 @@ export function PromptsTab() {
       </Dialog>
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="border-red-500/20 bg-[#0e1114] sm:max-w-[400px] shadow-2xl shadow-rose-900/10 backdrop-blur-3xl">
+        <DialogContent className="border-destructive/20 bg-card text-card-foreground sm:max-w-[400px] shadow-2xl backdrop-blur-3xl">
           <DialogHeader className="mb-2">
-            <DialogTitle className="text-xl font-bold flex flex-col items-center gap-3 text-center text-rose-500">
-              <div className="w-12 h-12 rounded-full bg-rose-500/10 flex items-center justify-center">
-                <AlertTriangle size={24} className="text-rose-500" />
+            <DialogTitle className="text-xl font-bold flex flex-col items-center gap-3 text-center text-destructive">
+              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
+                <AlertTriangle size={24} className="text-destructive" />
               </div>
               Підтвердження видалення
             </DialogTitle>
           </DialogHeader>
-          <div className="text-center text-sm text-zinc-400 mb-6">
-            Ви впевнені, що хочете безповоротно видалити варіант <span className="font-bold text-zinc-200">"{deleteTarget?.name}"</span>? 
+          <div className="text-center text-sm text-muted-foreground mb-6">
+            Ви впевнені, що хочете безповоротно видалити варіант <span className="font-bold text-foreground">"{deleteTarget?.name}"</span>? 
             Вся статистика по ньому буде втрачена.
           </div>
           <div className="flex gap-3">
             <button 
               onClick={() => setDeleteOpen(false)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium text-zinc-400 bg-zinc-800/50 hover:text-white hover:bg-zinc-800 transition-colors"
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium text-muted-foreground bg-muted hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer"
             >
               Скасувати
             </button>
             <button 
               onClick={confirmDelete} 
               disabled={deleteLoading} 
-              className="flex-1 inline-flex justify-center items-center gap-2 rounded-xl bg-rose-500 text-white px-4 py-2.5 text-sm font-bold shadow-lg shadow-rose-500/20 transition-all hover:bg-rose-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 inline-flex justify-center items-center gap-2 rounded-xl bg-destructive text-white px-4 py-2.5 text-sm font-bold shadow-sm transition-all hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {deleteLoading ? <Loader2 className="animate-spin" size={16} /> : "Видалити"}
             </button>

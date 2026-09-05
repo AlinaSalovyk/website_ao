@@ -15,6 +15,12 @@ import (
 // retry attempts have been exhausted.
 var ErrLLMOverloaded = errors.New("llm_overloaded")
 
+var (
+	ErrOAuthStateNotFound = errors.New("oauth_state_not_found")
+	ErrOAuthStateConsumed = errors.New("oauth_state_consumed")
+	ErrOAuthStateExpired  = errors.New("oauth_state_expired")
+)
+
 // Language represents the ISO 639-1 language code used throughout the system
 // for prompt selection, response formatting, and analytics segmentation.
 type Language string
@@ -153,6 +159,11 @@ var (
 	ErrDocumentNotFound   = errors.New("document not found")                      // Error for document not found.
 	ErrAdminAlreadyExists = errors.New("admin user already exists")               // Error for admin user already exists.
 	ErrAdminNotFound      = errors.New("admin user not found")                    // Error for admin user not found.
+	ErrInviteNotFound     = errors.New("invitation not found")
+	ErrInvitePending      = errors.New("pending invitation already exists")
+	ErrInviteExpired      = errors.New("invitation has expired")
+	ErrInviteRevoked      = errors.New("invitation has been revoked")
+	ErrInviteAlreadyUsed  = errors.New("invitation has already been accepted")
 )
 
 // AdminAction is a typed string enumerating all auditable admin operations.
@@ -171,6 +182,14 @@ const (
 	ActionViewAuditLog    AdminAction = "view_audit_log"   // Admin view audit log action.
 	ActionAddAdmin        AdminAction = "add_admin"        // Admin add admin action.
 	ActionRemoveAdmin     AdminAction = "remove_admin"     // Admin remove admin action.
+
+	// News Category Actions
+	ActionCreateCategory      AdminAction = "create_category"
+	ActionUpdateCategory      AdminAction = "update_category"
+	ActionDeleteCategory      AdminAction = "delete_category"
+	ActionRestoreCategory     AdminAction = "restore_category"
+	ActionReorderCategories   AdminAction = "reorder_categories"
+	ActionUploadCategoryCover AdminAction = "upload_category_cover"
 )
 
 // AuditEntry records a single admin action for compliance and monitoring.
@@ -196,13 +215,60 @@ type DocumentRecord struct {
 	UploadedAt time.Time `json:"uploaded_at"`       // Timestamp when the document was uploaded.
 }
 
-// AdminUser represents a registered admin. TokenVersion is excluded from JSON.
+// Role defines administrative access levels.
+type Role string
+
+const (
+	RoleSuperAdmin   Role = "super_admin"
+	RoleNewsEditor   Role = "news_editor"
+	RoleChatbotAdmin Role = "chatbot_admin"
+)
+
+// AdminStatus defines admin account status.
+type AdminStatus string
+
+const (
+	AdminStatusActive   AdminStatus = "active"
+	AdminStatusDisabled AdminStatus = "disabled"
+	AdminStatusPending  AdminStatus = "pending"
+)
+
+// AdminUser represents a registered admin with role and status.
 type AdminUser struct {
-	ID           int64     `json:"id"`       // Unique identifier for the admin user.
-	Email        string    `json:"email"`    // Email of the admin user.
-	AddedBy      string    `json:"added_by"` // Admin who added the admin user.
-	AddedAt      time.Time `json:"added_at"` // Timestamp when the admin user was added.
-	TokenVersion int       `json:"-"`        // Incremented on logout to invalidate tokens.
+	ID           int64       `json:"id"`
+	Email        string      `json:"email"`
+	Role         Role        `json:"role"`
+	Status       AdminStatus `json:"status"`
+	AddedBy      string      `json:"added_by"`
+	AddedAt      time.Time   `json:"added_at"`
+	UpdatedAt    time.Time   `json:"updated_at"`
+	LastLoginAt  *time.Time  `json:"last_login_at,omitempty"`
+	PasswordHash string      `json:"-"`
+	TokenVersion int         `json:"-"`
+}
+
+// DeliveryStatus defines the email dispatch state of an invitation.
+type DeliveryStatus string
+
+const (
+	DeliveryStatusPending        DeliveryStatus = "pending"
+	DeliveryStatusSent           DeliveryStatus = "sent"
+	DeliveryStatusDeliveryFailed DeliveryStatus = "delivery_failed"
+)
+
+// AdminInvitation represents an invitation sent to a potential admin.
+type AdminInvitation struct {
+	ID               string         `json:"id"`
+	Email            string         `json:"email"`
+	Role             Role           `json:"role"`
+	TokenHash        string         `json:"-"`
+	InvitedByAdminID string         `json:"invited_by_admin_id"`
+	CreatedAt        time.Time      `json:"created_at"`
+	ExpiresAt        time.Time      `json:"expires_at"`
+	AcceptedAt       *time.Time     `json:"accepted_at,omitempty"`
+	RevokedAt        *time.Time     `json:"revoked_at,omitempty"`
+	LastSentAt       *time.Time     `json:"last_sent_at,omitempty"`
+	DeliveryStatus   DeliveryStatus `json:"delivery_status"`
 }
 
 // TopQuery is a leaderboard entry for the most frequently asked questions.

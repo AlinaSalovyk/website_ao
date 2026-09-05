@@ -7,8 +7,8 @@ import { motion } from "motion/react";
 import {
   fetchSummary, fetchDaily, fetchTopQueries, fetchFeedback, fetchAudit,
   type AnalyticsSummary, type DailyStat, type TopQuery, type FeedbackStat, type AuditResponse,
-} from "./api";
-import { AnimatedSection, StatCard, GlassCard, Badge, TabLoader } from "./ui";
+} from "../api";
+import { AnimatedSection, StatCard, GlassCard, Badge, TabLoader, PageGuide } from "../ui";
 import { cn } from "@/lib/utils";
 
 /**
@@ -72,41 +72,46 @@ export function OverviewTab() {
     <div className="space-y-6">
       <AnimatedSection i={0} className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-white">Аналітика</h2>
-          <p className="mt-0.5 text-xs text-zinc-600">Статистика використання чат-бота</p>
+          <h2 className="text-2xl font-bold tracking-tight text-foreground">Аналітика</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">Статистика використання чат-бота</p>
         </div>
-        <div className="flex items-center gap-1 rounded-xl bg-white/[0.03] p-1 ring-1 ring-white/[0.06]">
+        <div className="flex items-center gap-1 rounded-xl bg-muted/60 p-1 border border-border">
           {[7, 14, 30].map((d) => (
             <button
               key={d}
               onClick={() => setDays(d)}
               className={cn(
-                "relative rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all",
-                days === d ? "text-white" : "text-zinc-500 hover:text-zinc-300",
+                "relative rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all cursor-pointer",
+                days === d ? "text-primary font-semibold" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {days === d && (
                 <motion.div
                   layoutId="period-active"
-                  className="absolute inset-0 rounded-lg bg-blue-500/20 ring-1 ring-blue-500/30"
+                  className="absolute inset-0 rounded-lg bg-card shadow-sm border border-border"
                   transition={{ type: "spring", stiffness: 400, damping: 30 }}
                 />
               )}
               <span className="relative z-10">{d}д</span>
             </button>
           ))}
-          <button onClick={load} className="ml-1.5 rounded-lg p-1.5 text-zinc-600 transition-colors hover:bg-white/[0.04] hover:text-zinc-300" title="Оновити">
+          <button onClick={load} className="ml-1.5 rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground cursor-pointer" title="Оновити">
             <RefreshCw size={14} />
           </button>
         </div>
       </AnimatedSection>
 
       <AnimatedSection i={0.5}>
-        <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 text-[13px] leading-relaxed text-blue-100/80">
-          <strong className="text-blue-300">Як користуватися цією сторінкою:</strong> Тут зібрана загальна статистика роботи чат-бота. 
-          Ви можете перевірити популярність бота (кількість запитів), його швидкість та оцінки користувачів (лайки 👍 / дизлайки 👎). 
-          Гістограма відображає активність по днях, а блок «Топ запити» допоможе зрозуміти, що найчастіше цікавить ваших абітурієнтів чи студентів.
-        </div>
+        <PageGuide
+          title="Як користуватися цією сторінкою"
+          summary="Загальна статистика роботи чат-бота, швидкість відповідей та оцінки користувачів"
+          items={[
+            { title: "Аналітика запитів", desc: "Перевірка кількості звернень, швидкості відповідей та загальної популярності чат-бота." },
+            { title: "Гістограма по днях", desc: "Відображає динаміку звернень користувачів за вибраний період (7, 14 або 30 днів)." },
+            { title: "Топ запити", desc: "Лідерборд найчастіших питань для аналізу популярних тем серед абітурієнтів." },
+            { title: "Задоволеність (👍/👎)", desc: "Відсоток успішних відповідей бота на основі зворотного зв'язку читачів." }
+          ]}
+        />
       </AnimatedSection>
 
       {summary && (
@@ -150,21 +155,21 @@ export function OverviewTab() {
                     style={{ transformOrigin: "bottom" }}
                   >
                     <div className="pointer-events-none absolute -top-14 z-30 hidden flex-col items-center group-hover:flex">
-                      <div className="rounded-lg border border-white/10 bg-zinc-900/90 px-3 py-2 text-center shadow-xl backdrop-blur-md">
-                        <div className="text-[10px] font-medium text-zinc-400">{d.date}</div>
-                        <div className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">{d.total_queries} запитів</div>
+                      <div className="rounded-lg border border-border bg-card px-3 py-2 text-center shadow-xl backdrop-blur-md text-card-foreground">
+                        <div className="text-[10px] font-medium text-muted-foreground">{d.date}</div>
+                        <div className="text-sm font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-400">{d.total_queries} запитів</div>
                       </div>
-                      <div className="mt-[-4px] h-2 w-2 rotate-45 border-r border-b border-white/10 bg-zinc-900/90" />
+                      <div className="mt-[-4px] h-2 w-2 rotate-45 border-r border-b border-border bg-card" />
                     </div>
 
                     <div
-                      className="w-full max-w-[28px] rounded-t border-t border-white/20 bg-gradient-to-t from-indigo-900/40 via-blue-600/70 to-cyan-400/90 transition-all duration-300 group-hover:from-indigo-600/60 group-hover:via-blue-500/80 group-hover:to-cyan-300 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.5)]"
+                      className="w-full max-w-[28px] rounded-t border-t border-primary/30 bg-gradient-to-t from-blue-600/40 via-blue-500/70 to-cyan-400/90 transition-all duration-300 group-hover:from-blue-600 group-hover:via-blue-500 group-hover:to-cyan-400 group-hover:shadow-[0_0_15px_rgba(34,211,238,0.5)]"
                       style={{ height: `${Math.max(pct, 2)}%` }}
                     />
                     <div className="absolute bottom-0 w-full h-[2px] bg-cyan-400/0 transition-all duration-300 group-hover:bg-cyan-400/50" />
                     
                     {i % Math.max(1, Math.floor(daily.length / 7)) === 0 && (
-                      <span className="absolute -bottom-6 mt-3 text-[10px] font-medium text-zinc-500 group-hover:text-zinc-300 transition-colors">{d.date.slice(5)}</span>
+                      <span className="absolute -bottom-6 mt-3 text-[10px] font-medium text-muted-foreground group-hover:text-foreground transition-colors">{d.date.slice(5)}</span>
                     )}
                   </motion.div>
                 );
@@ -181,9 +186,9 @@ export function OverviewTab() {
             <GlassCard title="Топ запити" icon={Users}>
               <div className="space-y-0">
                 {topQ.slice(0, 6).map((q, i) => (
-                  <div key={q.query_text} className="flex items-center gap-3 border-b border-white/[0.04] py-2.5 last:border-0">
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-zinc-800/80 text-[10px] font-bold text-zinc-500">{i + 1}</span>
-                    <span className="flex-1 truncate font-medium text-[13px] text-zinc-300" title={q.query_text}>{q.query_text}</span>
+                  <div key={q.query_text} className="flex items-center gap-3 border-b border-border/50 py-2.5 last:border-0">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-muted text-[10px] font-bold text-muted-foreground border border-border">{i + 1}</span>
+                    <span className="flex-1 truncate font-medium text-[13px] text-foreground" title={q.query_text}>{q.query_text}</span>
                     <Badge>{q.count}×</Badge>
                   </div>
                 ))}
@@ -202,7 +207,7 @@ export function OverviewTab() {
                       initial={{ width: 0 }}
                       animate={{ width: `${fb.ratio * 100}%` }}
                       transition={{ duration: 1, ease: "easeOut" }}
-                      className="flex items-center justify-center bg-gradient-to-r from-emerald-600 to-emerald-400 text-white"
+                      className="flex items-center justify-center bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold"
                       style={{ minWidth: 40 }}
                     >
                       {(fb.ratio * 100).toFixed(0)}% 👍
@@ -211,13 +216,13 @@ export function OverviewTab() {
                       initial={{ width: 0 }}
                       animate={{ width: `${(1 - fb.ratio) * 100}%` }}
                       transition={{ duration: 1, ease: "easeOut", delay: 0.1 }}
-                      className="flex items-center justify-center bg-gradient-to-r from-red-600 to-red-400 text-white"
+                      className="flex items-center justify-center bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold"
                       style={{ minWidth: 40 }}
                     >
                       {((1 - fb.ratio) * 100).toFixed(0)}% 👎
                     </motion.div>
                   </div>
-                  <div className="flex justify-between text-[11px] text-zinc-600">
+                  <div className="flex justify-between text-[11px] text-muted-foreground">
                     <span>Позитивних: {fb.positive}</span>
                     <span>Негативних: {fb.negative}</span>
                   </div>
@@ -231,10 +236,10 @@ export function OverviewTab() {
               <GlassCard title="Лог адміністратора" icon={Shield}>
                 <div className="space-y-0">
                   {audit.entries.slice(0, 5).map((e) => (
-                    <div key={e.id} className="flex items-center gap-2 border-b border-white/[0.03] py-2 last:border-0 text-xs">
+                    <div key={e.id} className="flex items-center gap-2 border-b border-border/40 py-2 last:border-0 text-xs">
                       <Badge color="purple">{e.action}</Badge>
-                      <span className="flex-1 truncate text-zinc-500">{e.admin_email}</span>
-                      <span className="text-[10px] text-zinc-700">{new Date(e.created_at).toLocaleDateString("uk-UA")}</span>
+                      <span className="flex-1 truncate text-muted-foreground">{e.admin_email}</span>
+                      <span className="text-[10px] text-muted-foreground opacity-75">{new Date(e.created_at).toLocaleDateString("uk-UA")}</span>
                     </div>
                   ))}
                 </div>

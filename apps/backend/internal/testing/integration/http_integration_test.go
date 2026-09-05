@@ -91,7 +91,7 @@ func buildTestRouter(t *testing.T) http.Handler {
 
 	r.With(chathttp.RateLimitMiddleware(rl)).Post("/api/v1/chat/stream", chatHandler.StreamChat)
 
-	r.With(chathttp.DualAuthMiddleware(jwtSvc, "test-legacy-token", []string{"test@example.com"}, nil)).Get("/admin-test/protected", func(w http.ResponseWriter, r *http.Request) {
+	r.With(chathttp.DualAuthMiddleware(jwtSvc, "test-legacy-token", true, []string{"test@example.com"}, nil, nil)).Get("/admin-test/protected", func(w http.ResponseWriter, r *http.Request) {
 		email := chathttp.AdminEmailFromCtx(r.Context())
 		w.WriteHeader(http.StatusOK)
 		_, _ = w.Write([]byte(email))

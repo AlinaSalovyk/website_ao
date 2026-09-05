@@ -1,0 +1,515 @@
+package sqlite_test
+
+import (
+	"context"
+	"os"
+	"strings"
+	"testing"
+	"time"
+
+	"university-chatbot/backend/internal/domain"
+	"university-chatbot/backend/internal/infrastructure/sqlite"
+)
+
+// openTestDB creates a temporary SQLite database with all migrations applied.
+// The returned cleanup function removes the temp file.
+func openTestDB(t *testing.T) (*sqlite.NewsRepo, func()) {
+	t.Helper()
+	f, err := os.CreateTemp("", "news_test_*.db")
+	if err != nil {
+		t.Fatalf("create temp file: %v", err)
+	}
+	f.Close()
+
+	db, err := sqlite.InitDB(f.Name())
+	if err != nil {
+		os.Remove(f.Name())
+		t.Fatalf("InitDB: %v", err)
+	}
+	repo := sqlite.NewNewsRepo(db)
+	return repo, func() {
+		db.Close()
+		os.Remove(f.Name())
+	}
+}
+
+// makeArticle builds a minimal valid NewsArticle for insertion tests.
+func makeArticle(ukSlug, enSlug string) *domain.NewsArticle {
+	return &domain.NewsArticle{
+		Status:     domain.NewsStatusDraft,
+		CategoryID: "cat-news",
+		Author:     domain.NewsAuthor{Name: "Test Author"},
+		CreatedBy:  "test@example.com",
+		Locales: map[domain.Language]domain.NewsLocale{
+			domain.LangUk: {Locale: domain.LangUk, Title: "Тестова Новина", Slug: ukSlug, Description: "Короткий опис"},
+			domain.LangEn: {Locale: domain.LangEn, Title: "Test Article", Slug: enSlug, Description: "Short desc"},
+		},
+	}
+}
+
+func TestNewsRepo_CreateAndGetByID(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("testova-novyna", "test-article")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+	if article.ID == "" {
+		t.Fatal("ID was not assigned")
+	}
+	if article.PreviewToken == "" {
+		t.Fatal("PreviewToken was not assigned")
+	}
+
+	got, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID: %v", err)
+	}
+	if got.ID != article.ID {
+		t.Errorf("ID: got %q, want %q", got.ID, article.ID)
+	}
+	if got.Status != domain.NewsStatusDraft {
+		t.Errorf("Status: got %q, want %q", got.Status, domain.NewsStatusDraft)
+	}
+	ukLoc := got.Locales[domain.LangUk]
+	if ukLoc.Title != "Тестова Новина" {
+		t.Errorf("UK title: got %q", ukLoc.Title)
+	}
+	enLoc := got.Locales[domain.LangEn]
+	if enLoc.Slug != "test-article" {
+		t.Errorf("EN slug: got %q", enLoc.Slug)
+	}
+}
+
+func TestNewsRepo_GetByID_NotFound(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	_, err := repo.GetByID(context.Background(), "nonexistent-id")
+	if err != domain.ErrNewsNotFound {
+		t.Errorf("expected ErrNewsNotFound, got %v", err)
+	}
+}
+
+func TestNewsRepo_List_Empty(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+
+	articles, total, err := repo.List(context.Background(), domain.NewsListOptions{Limit: 12})
+	if err != nil {
+		t.Fatalf("List: %v", err)
+	}
+	if total != 0 {
+		t.Errorf("total: got %d, want 0", total)
+	}
+	if len(articles) != 0 {
+		t.Errorf("articles: got %d, want 0", len(articles))
+	}
+}
+
+func TestNewsRepo_Publish_SetsPublishedAt(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("novyna-pub", "article-pub")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	if err := repo.SetStatus(ctx, article.ID, domain.NewsStatusPublished); err != nil {
+		t.Fatalf("SetStatus: %v", err)
+	}
+
+	got, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID after publish: %v", err)
+	}
+	if got.Status != domain.NewsStatusPublished {
+		t.Errorf("Status: got %q, want published", got.Status)
+	}
+	if got.PublishedAt == nil {
+		t.Error("PublishedAt should be set after first publish")
+	}
+}
+
+func TestNewsRepo_SoftDeleteAndRestore(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("del-novyna", "del-article")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	// List should return 1 before delete.
+	_, total, err := repo.List(ctx, domain.NewsListOptions{Limit: 12})
+	if err != nil {
+		t.Fatalf("List: %v", err)
+	}
+	if total != 1 {
+		t.Errorf("total before delete: got %d, want 1", total)
+	}
+
+	// Soft delete.
+	if err := repo.Delete(ctx, article.ID); err != nil {
+		t.Fatalf("Delete: %v", err)
+	}
+
+	// List should return 0 (deleted articles excluded by default).
+	_, total, err = repo.List(ctx, domain.NewsListOptions{Limit: 12})
+	if err != nil {
+		t.Fatalf("List after delete: %v", err)
+	}
+	if total != 0 {
+		t.Errorf("total after delete: got %d, want 0", total)
+	}
+
+	// List with IncludeDeleted should return 1.
+	_, total, err = repo.List(ctx, domain.NewsListOptions{Limit: 12, IncludeDeleted: true})
+	if err != nil {
+		t.Fatalf("List IncludeDeleted: %v", err)
+	}
+	if total != 1 {
+		t.Errorf("total IncludeDeleted: got %d, want 1", total)
+	}
+
+	// Restore.
+	if err := repo.Restore(ctx, article.ID); err != nil {
+		t.Fatalf("Restore: %v", err)
+	}
+
+	// List should return 1 again.
+	_, total, err = repo.List(ctx, domain.NewsListOptions{Limit: 12})
+	if err != nil {
+		t.Fatalf("List after restore: %v", err)
+	}
+	if total != 1 {
+		t.Errorf("total after restore: got %d, want 1", total)
+	}
+}
+
+func TestNewsRepo_GetBySlug_Current(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("poshuk-slug", "search-slug")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	got, redirected, err := repo.GetBySlug(ctx, domain.LangUk, "poshuk-slug")
+	if err != nil {
+		t.Fatalf("GetBySlug: %v", err)
+	}
+	if redirected {
+		t.Error("wasRedirected should be false for a current slug")
+	}
+	if got.ID != article.ID {
+		t.Errorf("ID mismatch: got %q, want %q", got.ID, article.ID)
+	}
+}
+
+func TestNewsRepo_GetBySlug_NotFound(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+
+	_, _, err := repo.GetBySlug(context.Background(), domain.LangUk, "nema-takoi-statti")
+	if err != domain.ErrNewsNotFound {
+		t.Errorf("expected ErrNewsNotFound, got %v", err)
+	}
+}
+
+func TestNewsRepo_SlugConflict(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	a1 := makeArticle("odyn-slug", "one-slug")
+	if err := repo.Create(ctx, a1); err != nil {
+		t.Fatalf("Create first: %v", err)
+	}
+
+	// Second article with same UK slug → must fail.
+	a2 := makeArticle("odyn-slug", "two-slug-en")
+	err := repo.Create(ctx, a2)
+	if err != domain.ErrNewsSlugConflict {
+		t.Errorf("expected ErrNewsSlugConflict, got %v", err)
+	}
+}
+
+func TestNewsRepo_SlugHistory_Redirect(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("staryy-slug", "old-slug-en")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	// Update with a new UK slug.
+	article.Locales[domain.LangUk] = domain.NewsLocale{
+		Locale: domain.LangUk, Title: "Нова Назва", Slug: "novyy-slug",
+	}
+	article.Locales[domain.LangEn] = domain.NewsLocale{
+		Locale: domain.LangEn, Title: "New Title", Slug: "old-slug-en",
+	}
+	if err := repo.Update(ctx, article); err != nil {
+		t.Fatalf("Update: %v", err)
+	}
+
+	// Querying old slug should return wasRedirected=true.
+	got, redirected, err := repo.GetBySlug(ctx, domain.LangUk, "staryy-slug")
+	if err != nil {
+		t.Fatalf("GetBySlug old slug: %v", err)
+	}
+	if !redirected {
+		t.Error("wasRedirected should be true for a historic slug")
+	}
+	if got.ID != article.ID {
+		t.Errorf("ID mismatch after redirect")
+	}
+}
+
+func TestNewsRepo_GetByPreviewToken(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("preview-uk", "preview-en")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	got, err := repo.GetByPreviewToken(ctx, article.PreviewToken)
+	if err != nil {
+		t.Fatalf("GetByPreviewToken: %v", err)
+	}
+	if got.ID != article.ID {
+		t.Errorf("ID mismatch: got %q, want %q", got.ID, article.ID)
+	}
+}
+
+func TestNewsRepo_GetByPreviewToken_IncludesDeleted(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("del-preview-uk", "del-preview-en")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+	if err := repo.Delete(ctx, article.ID); err != nil {
+		t.Fatalf("Delete: %v", err)
+	}
+
+	// Preview must still work after soft delete.
+	got, err := repo.GetByPreviewToken(ctx, article.PreviewToken)
+	if err != nil {
+		t.Fatalf("GetByPreviewToken after delete: %v", err)
+	}
+	if got.ID != article.ID {
+		t.Errorf("ID mismatch")
+	}
+}
+
+func TestNewsRepo_GetCategories(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+
+	cats, err := repo.GetCategories(context.Background())
+	if err != nil {
+		t.Fatalf("GetCategories: %v", err)
+	}
+	// 5 seed categories from migration v9.
+	if len(cats) != 5 {
+		t.Errorf("expected 5 categories, got %d", len(cats))
+	}
+}
+
+func TestNewsRepo_EnsureTag(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	tag, err := repo.EnsureTag(ctx, "olympiad", "Олімпіада")
+	if err != nil {
+		t.Fatalf("EnsureTag first call: %v", err)
+	}
+	if tag.ID == "" {
+		t.Error("tag ID not assigned")
+	}
+
+	// Second call with same slug must return the same tag.
+	tag2, err := repo.EnsureTag(ctx, "olympiad", "Олімпіада")
+	if err != nil {
+		t.Fatalf("EnsureTag second call: %v", err)
+	}
+	if tag2.ID != tag.ID {
+		t.Errorf("IDs differ: %q vs %q", tag.ID, tag2.ID)
+	}
+}
+
+func TestNewsRepo_ScheduledPublish_NotInPublicList(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	future := time.Now().Add(24 * time.Hour)
+	article := makeArticle("zaplenov-uk", "scheduled-en")
+	article.Status = domain.NewsStatusPublished
+	article.PublishAt = &future
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	// Public query (status=published, publish_at <= now) should exclude future article.
+	_, total, err := repo.List(ctx, domain.NewsListOptions{
+		Status: domain.NewsStatusPublished,
+		Limit:  12,
+	})
+	if err != nil {
+		t.Fatalf("List: %v", err)
+	}
+	if total != 0 {
+		t.Errorf("scheduled article should not appear in public list, total=%d", total)
+	}
+}
+
+func TestNewsRepo_GetAllPublishedSlugs(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	a := makeArticle("pub-slug-uk", "pub-slug-en")
+	if err := repo.Create(ctx, a); err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+	if err := repo.SetStatus(ctx, a.ID, domain.NewsStatusPublished); err != nil {
+		t.Fatalf("SetStatus: %v", err)
+	}
+
+	slugs, err := repo.GetAllPublishedSlugs(ctx)
+	if err != nil {
+		t.Fatalf("GetAllPublishedSlugs: %v", err)
+	}
+	// One article × 2 locales = 2 entries.
+	if len(slugs) != 2 {
+		t.Errorf("expected 2 slug entries, got %d", len(slugs))
+	}
+}
+
+func TestNewsRepo_MediaFieldsPersistence(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("media-test-uk", "media-test-en")
+	article.CoverPosition = "50% 35%"
+	article.Gallery = []string{"/news-images/1.webp", "/news-images/2.webp"}
+	article.VideoURL = "https://www.youtube.com/embed/dQw4w9WgXcQ"
+	article.VideoPoster = "/news-images/poster.webp"
+
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create media article: %v", err)
+	}
+
+	got, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID media article: %v", err)
+	}
+
+	if got.CoverPosition != "50% 35%" {
+		t.Errorf("CoverPosition: got %q, want %q", got.CoverPosition, "50% 35%")
+	}
+	if len(got.Gallery) != 2 || got.Gallery[0] != "/news-images/1.webp" || got.Gallery[1] != "/news-images/2.webp" {
+		t.Errorf("Gallery: got %v, want 2 items", got.Gallery)
+	}
+	if got.VideoURL != "https://www.youtube.com/embed/dQw4w9WgXcQ" {
+		t.Errorf("VideoURL: got %q, want %q", got.VideoURL, "https://www.youtube.com/embed/dQw4w9WgXcQ")
+	}
+	if got.VideoPoster != "/news-images/poster.webp" {
+		t.Errorf("VideoPoster: got %q, want %q", got.VideoPoster, "/news-images/poster.webp")
+	}
+
+	// Test Update
+	got.CoverPosition = "top"
+	got.Gallery = []string{"/news-images/3.webp"}
+	got.VideoURL = "https://www.youtube.com/embed/abc12345678"
+
+	if err := repo.Update(ctx, got); err != nil {
+		t.Fatalf("Update media article: %v", err)
+	}
+
+	updated, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID updated media article: %v", err)
+	}
+	if updated.CoverPosition != "top" {
+		t.Errorf("Updated CoverPosition: got %q, want top", updated.CoverPosition)
+	}
+	if len(updated.Gallery) != 1 || updated.Gallery[0] != "/news-images/3.webp" {
+		t.Errorf("Updated Gallery: got %v, want 1 item", updated.Gallery)
+	}
+	if updated.VideoURL != "https://www.youtube.com/embed/abc12345678" {
+		t.Errorf("Updated VideoURL: got %q, want embed URL", updated.VideoURL)
+	}
+}
+
+func TestNewsRepo_PublishPreservesMediaAndFields(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("publish-preserve-uk", "publish-preserve-en")
+	article.ImageURL = "/news-images/cover.webp"
+	article.CoverPosition = "50% 35%"
+	article.Gallery = []string{"/news-images/g1.webp", "/news-images/g2.webp", "/news-images/g3.webp"}
+	article.VideoURL = "https://www.youtube.com/embed/dQw4w9WgXcQ"
+	article.VideoPoster = "/news-images/poster.webp"
+
+	ukLoc := article.Locales[domain.LangUk]
+	ukLoc.Content = `<p>Test</p><img src="/news-images/inline.webp" alt="test" />`
+	article.Locales[domain.LangUk] = ukLoc
+
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create article: %v", err)
+	}
+
+	// Publish via SetStatus
+	if err := repo.SetStatus(ctx, article.ID, domain.NewsStatusPublished); err != nil {
+		t.Fatalf("SetStatus(published): %v", err)
+	}
+
+	published, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID published article: %v", err)
+	}
+
+	if published.Status != domain.NewsStatusPublished {
+		t.Errorf("Status: got %q, want %q", published.Status, domain.NewsStatusPublished)
+	}
+	if published.ImageURL != "/news-images/cover.webp" {
+		t.Errorf("ImageURL lost on publish: got %q", published.ImageURL)
+	}
+	if published.CoverPosition != "50% 35%" {
+		t.Errorf("CoverPosition lost on publish: got %q", published.CoverPosition)
+	}
+	if len(published.Gallery) != 3 {
+		t.Errorf("Gallery lost on publish: got %d items", len(published.Gallery))
+	}
+	if published.VideoURL != "https://www.youtube.com/embed/dQw4w9WgXcQ" {
+		t.Errorf("VideoURL lost on publish: got %q", published.VideoURL)
+	}
+	if published.VideoPoster != "/news-images/poster.webp" {
+		t.Errorf("VideoPoster lost on publish: got %q", published.VideoPoster)
+	}
+	if !strings.Contains(published.Locales[domain.LangUk].Content, `<img src="/news-images/inline.webp"`) {
+		t.Errorf("Inline image lost from Content on publish: got %q", published.Locales[domain.LangUk].Content)
+	}
+}
+

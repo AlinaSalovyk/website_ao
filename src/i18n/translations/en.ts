@@ -199,6 +199,18 @@ export const en: Translations = {
     minRead: "min read",
     shareArticle: "Share",
     relatedArticles: "Related news",
+    searchPlaceholder: "Search news…",
+    searchLabel: "Search news",
+    filterAll: "All",
+    noResults: "No articles found",
+    clearFilters: "Clear filters",
+    pagination: "Pagination",
+    prevPage: "Previous page",
+    nextPage: "Next page",
+    loading: "Loading…",
+    clearSearch: "Clear search",
+    noContent: "Article content is not available.",
+    copied: "Copied!",
   },
 
   institute: {

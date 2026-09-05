@@ -1,0 +1,21 @@
+---
+import "../../../styles/global.css";
+import { AcceptInvitePage as AcceptInviteComponent } from "@/components/Admin/AcceptInvitePage";
+---
+
+<html lang="uk" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Прийняти запрошення — Admin Panel</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="m-0 p-0 bg-background text-foreground min-h-screen">
+    <AcceptInviteComponent client:only="react" />
+  </body>
+</html>

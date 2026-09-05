@@ -18,6 +18,7 @@ interface Props {
   canonicalUrl?: string;
   locale?: Locale;
   jsonLdExtra?: Record<string, unknown>;
+  noIndex?: boolean;
 }
 
 const locale = (Astro.props.locale ?? DEFAULT_LOCALE) as Locale;
@@ -30,6 +31,7 @@ const {
   ogType = "website",
   canonicalUrl,
   jsonLdExtra,
+  noIndex = false,
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString()?.replace(/\/$/, "") ?? "";
@@ -76,6 +78,7 @@ const alternateUrl = toAbsoluteUrl(
     </noscript>
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="description" content={description} />
     <link rel="canonical" href={currentUrl} />
     <link rel="alternate" hreflang={locale} href={currentUrl} />

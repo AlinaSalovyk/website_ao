@@ -8,32 +8,40 @@ import {
   refreshAccessToken,
   logout as apiLogout,
 } from "./api";
+import { fetchMe } from "./services/general.api";
+import type { AdminUser, Role } from "./types/api.types";
 import { LoginScreen } from "./LoginScreen";
 import { Sidebar, type Tab } from "./Sidebar";
-import { OverviewTab } from "./OverviewTab";
-import { DocumentsTab } from "./DocumentsTab";
-import { QueriesTab } from "./QueriesTab";
-import { PromptsTab } from "./PromptsTab";
-import { AuditTab } from "./AuditTab";
-import { AdminsTab } from "./AdminsTab";
+import { OverviewTab } from "./tabs/OverviewTab";
+import { DocumentsTab } from "./tabs/DocumentsTab";
+import { NewsTab } from "./tabs/NewsTab";
+import { QueriesTab } from "./tabs/QueriesTab";
+import { PromptsTab } from "./tabs/PromptsTab";
+import { AuditTab } from "./tabs/AuditTab";
+import { AdminsTab } from "./tabs/AdminsTab";
 import { RefreshCw } from "lucide-react";
+import { getSavedTheme, applyTheme, listenToSystemTheme } from "./theme";
 
-/**
- * Root admin panel component. Handles the full authentication state machine:
- *
- * 1. On mount: extracts JWT from URL hash/query (post-OAuth redirect) → stores in memory
- * 2. Attempts silent refresh via the `refresh_token` HttpOnly cookie
- * 3. While checking auth: shows a full-screen spinner
- * 4. Unauthenticated: renders {@link LoginScreen}
- * 5. Authenticated: renders the two-column layout (Sidebar + tabbed content area)
- *
- * Tabs: overview | documents | queries | prompts | audit | admins
- * Tab transitions are animated with Framer Motion `AnimatePresence`.
- */
 export default function AdminPanel() {
   const [tab, setTab] = useState<Tab>("overview");
   const [authed, setAuthed] = useState(false);
   const [ready, setReady] = useState(false);
+  const [user, setUser] = useState<AdminUser | null>(null);
+
+  const loadUserProfile = async () => {
+    try {
+      const profile = await fetchMe();
+      setUser(profile);
+      if (profile.role === "news_editor") {
+        setTab("news");
+      } else if (profile.role === "chatbot_admin") {
+        setTab("overview");
+      }
+      return profile;
+    } catch {
+      return null;
+    }
+  };
 
   useEffect(() => {
     async function initAuth() {
@@ -57,11 +65,21 @@ export default function AdminPanel() {
         await refreshAccessToken();
       }
 
-      setAuthed(!!getToken());
+      const isAuthenticated = !!getToken();
+      setAuthed(isAuthenticated);
+      
+      if (isAuthenticated) {
+        await loadUserProfile();
+      }
+
       setReady(true);
+      applyTheme(getSavedTheme());
     }
 
     initAuth();
+    
+    const unsubscribeTheme = listenToSystemTheme(() => {});
+    return () => unsubscribeTheme();
   }, []);
 
   const handleLogout = async () => {
@@ -71,17 +89,18 @@ export default function AdminPanel() {
       clearToken();
     }
     setAuthed(false);
+    setUser(null);
     toast.success("Ви вийшли з системи");
   };
 
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0a0c0f]">
+      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
         >
-          <RefreshCw size={28} className="text-zinc-600" />
+          <RefreshCw size={28} className="text-muted-foreground" />
         </motion.div>
       </div>
     );
@@ -91,32 +110,49 @@ export default function AdminPanel() {
     return (
       <>
         <Toaster
-          theme="dark"
-          toastOptions={{ classNames: { toast: "!bg-zinc-900 !border-zinc-800 !text-zinc-200" } }}
+          toastOptions={{
+            style: {
+              background: "var(--card)",
+              color: "var(--card-foreground)",
+              borderColor: "var(--border)",
+            },
+          }}
         />
-        <LoginScreen onAuth={() => setAuthed(true)} />
+        <LoginScreen onAuth={async () => {
+          setAuthed(true);
+          await loadUserProfile();
+        }} />
       </>
     );
   }
 
+  const role: Role = user?.role || "super_admin";
+
   return (
-    <div className="flex min-h-screen bg-[#0a0c0f] font-[Roboto,system-ui,sans-serif] text-zinc-300 antialiased">
+    <div className="flex min-h-screen bg-background font-[Roboto,system-ui,sans-serif] text-foreground antialiased transition-colors duration-200">
       <Toaster
-        theme="dark"
-        toastOptions={{ classNames: { toast: "!bg-zinc-900 !border-zinc-800 !text-zinc-200" } }}
+        toastOptions={{
+          style: {
+            background: "var(--card)",
+            color: "var(--card-foreground)",
+            borderColor: "var(--border)",
+          },
+        }}
       />
 
       <Sidebar
         active={tab}
         onChange={setTab}
         onLogout={handleLogout}
+        role={role}
+        userEmail={user?.email}
       />
 
       {/* Main content area */}
       <main className="ml-[220px] flex-1 overflow-y-auto p-6 md:ml-[240px] md:p-8">
-        <div className="mx-auto max-w-[1100px]">
+        <div className="mx-auto max-w-[1400px]">
           {/* Animated tab content transitions */}
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={tab}
               initial={{ opacity: 0, y: 8 }}
@@ -124,12 +160,13 @@ export default function AdminPanel() {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25 }}
             >
-              {tab === "overview" && <OverviewTab />}
-              {tab === "documents" && <DocumentsTab />}
-              {tab === "queries" && <QueriesTab />}
-              {tab === "prompts" && <PromptsTab />}
-              {tab === "audit" && <AuditTab />}
-              {tab === "admins" && <AdminsTab />}
+              {tab === "overview" && (role === "super_admin" || role === "chatbot_admin") && <OverviewTab />}
+              {tab === "documents" && (role === "super_admin" || role === "chatbot_admin") && <DocumentsTab />}
+              {tab === "news" && (role === "super_admin" || role === "news_editor") && <NewsTab />}
+              {tab === "queries" && (role === "super_admin" || role === "chatbot_admin") && <QueriesTab />}
+              {tab === "prompts" && (role === "super_admin" || role === "chatbot_admin") && <PromptsTab />}
+              {tab === "audit" && role === "super_admin" && <AuditTab />}
+              {tab === "admins" && role === "super_admin" && <AdminsTab currentUser={user} />}
             </motion.div>
           </AnimatePresence>
         </div>

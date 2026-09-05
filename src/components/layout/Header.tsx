@@ -1,6 +1,4 @@
 import {
-  Suspense,
-  lazy,
   useCallback,
   useEffect,
   useRef,
@@ -13,10 +11,7 @@ import { Logo } from "@/components/icons/Logo";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import type { Locale } from "@/i18n";
 import { getLocalizedPath, getTranslations } from "@/i18n";
-
-const Menu = lazy(() =>
-  import("@/routes/Menu/Menu").then((m) => ({ default: m.Menu })),
-);
+import { Menu } from "@/routes/Menu/Menu";
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -49,7 +44,20 @@ export const Header = ({
   );
   const lastScrollY = useRef(0);
 
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   const handleScroll = useCallback(() => {
+    if (isMenuOpen) return;
     const currentScrollY = window.scrollY;
 
     const next: "top" | "hidden" | "visible" =
@@ -61,7 +69,7 @@ export const Header = ({
 
     setScrollState((prev) => (prev === next ? prev : next));
     lastScrollY.current = currentScrollY;
-  }, []);
+  }, [isMenuOpen]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -91,12 +99,10 @@ export const Header = ({
   return (
     <>
       {isMenuOpen && (
-        <Suspense fallback={null}>
-          <Menu onClose={() => setIsMenuOpen(false)} locale={locale} />
-        </Suspense>
+        <Menu onClose={() => setIsMenuOpen(false)} locale={locale} />
       )}
       <header
-        className={`${positionClass} ${bgClass} w-full flex justify-between items-center px-4 md:px-9 py-0 z-50 transition-transform duration-300`}
+        className={`${positionClass} ${bgClass} w-full flex justify-between items-center px-4 md:px-9 py-5 z-50 transition-transform duration-300`}
       >
         <button
           onClick={() => setIsMenuOpen(true)}

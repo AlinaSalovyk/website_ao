@@ -23,6 +23,15 @@ export function LanguageSwitcher({
   currentPath,
   variant = "default",
 }: LanguageSwitcherProps) {
+  let effectivePath = currentPath;
+  if (
+    typeof window !== "undefined" &&
+    window.location.search &&
+    !effectivePath.includes("?")
+  ) {
+    effectivePath = effectivePath + window.location.search;
+  }
+
   const borderColor =
     variant === "light" ? "border-pure-black/80" : "border-white/80";
   const textColor = variant === "light" ? "text-pure-black" : "text-white";
@@ -60,7 +69,7 @@ export function LanguageSwitcher({
           ) : (
             <DropdownMenuItem key={loc} asChild>
               <a
-                href={getAlternatePath(currentPath, loc)}
+                href={getAlternatePath(effectivePath, loc)}
                 className="cursor-pointer"
               >
                 {LOCALE_LABELS[loc]}

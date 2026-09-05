@@ -60,11 +60,37 @@ export function getLocalizedPath(path: string, locale: Locale): string {
 
 /**
  * Get the path in the other locale (for the language switcher).
+ * Preserves query parameters and handles preview routes specially.
  */
 export function getAlternatePath(
   currentPath: string,
   targetLocale: Locale,
 ): string {
+  if (
+    currentPath.includes("/preview/") ||
+    currentPath.includes("preview_session=")
+  ) {
+    const hashIdx = currentPath.indexOf("#");
+    const hash = hashIdx >= 0 ? currentPath.slice(hashIdx) : "";
+    const pathNoHash =
+      hashIdx >= 0 ? currentPath.slice(0, hashIdx) : currentPath;
+
+    const queryIdx = pathNoHash.indexOf("?");
+    const basePath =
+      queryIdx >= 0 ? pathNoHash.slice(0, queryIdx) : pathNoHash;
+    const queryString = queryIdx >= 0 ? pathNoHash.slice(queryIdx + 1) : "";
+
+    const params = new URLSearchParams(queryString);
+    if (targetLocale === DEFAULT_LOCALE) {
+      params.delete("locale");
+    } else {
+      params.set("locale", targetLocale);
+    }
+    const newQuery = params.toString();
+    const cleanBasePath = basePath.replace(/^\/(uk|en)(\/|$)/, "/");
+    return `${cleanBasePath}${newQuery ? "?" + newQuery : ""}${hash}`;
+  }
+
   // Strip existing locale prefix to get the canonical path
   const cleaned = currentPath.replace(/^\/(uk|en)(\/|$)/, "/");
   return getLocalizedPath(cleaned, targetLocale);

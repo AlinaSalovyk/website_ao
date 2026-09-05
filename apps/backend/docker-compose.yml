@@ -17,6 +17,34 @@ services:
       retries: 5
     restart: unless-stopped
 
+  # ── LibreTranslate Service ──────────────────────────────────────────────────
+  libretranslate:
+    image: libretranslate/libretranslate:v1.9.6
+    container_name: chatbot-libretranslate
+    ports:
+      - "5000:5000"
+    environment:
+      - LT_LOAD_ONLY=uk,en
+      - LT_UPDATE_MODELS=true
+    volumes:
+      - libretranslate_models:/home/libretranslate/.local
+    healthcheck:
+      test: ["CMD-SHELL", "./venv/bin/python scripts/healthcheck.py"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  # ── Mailpit Local Mail Catcher ──────────────────────────────────────────────
+  mailpit:
+    image: axllent/mailpit:v1.27
+    container_name: chatbot-mailpit
+    ports:
+      - "1025:1025"   # SMTP server
+      - "8025:8025"   # Web UI
+    restart: unless-stopped
+
   # ── Go Backend ───────────────────────────────────────────────────────────────
   backend:
     build:
@@ -24,18 +52,22 @@ services:
       dockerfile: Dockerfile
     container_name: chatbot-backend
     ports:
-      - "8080:8080"
+      - "8280:8280"
     env_file:
       - .env
     environment:
       - QDRANT_URL=qdrant
+      - LIBRETRANSLATE_URL=http://libretranslate:5000
     volumes:
       - backend_data:/app/data
     depends_on:
       qdrant:
+        condition: service_healthy
+      libretranslate:
         condition: service_healthy
     restart: unless-stopped
 
 volumes:
   qdrant_storage:
   backend_data:
+  libretranslate_models:

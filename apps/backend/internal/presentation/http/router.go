@@ -27,15 +27,18 @@ type RouterDeps struct {
 	ChatHandler      *ChatHandler                           // Chat handler
 	AdminHandler     *AdminHandler                          // Admin panel handler
 	IndexHandler     *IndexHandler                          // Document indexing handler
+	NewsHandler      *NewsHandler                           // News module handler
 	RateLimiter      *security.RateLimiter                  // Public API rate limiter.
 	AdminRateLimiter *security.RateLimiter                  // Admin panel rate limiter.
 	AuditRepo        domain.AuditRepo                       // Audit repository
 	JWTService       *auth.JWTService                       // JWT service
 	AdminToken       string                                 // Static admin token for X-Admin-Token auth.
+	LegacyAdminToken bool                                   // Feature flag: set true to enable static token auth.
 	AllowedOrigins   []string                               // CORS allowed origins.
 	AllowedEmails    []string                               // Admin email whitelist.
 	DB               *sql.DB                                // Database connection
 	AdminSettings    *sqlite.AdminSettingsRepo              // Admin settings repository
+	AdminUsersRepo   domain.AdminUsersRepo                  // Admin users repository
 	AdminPathSegment string                                 // Hashed admin URL segment.
 	MetricsToken     string                                 // Bearer token for /metrics endpoint.
 	HealthChecks     map[string]func(context.Context) error // Named health check functions.
@@ -47,7 +50,7 @@ type RouterDeps struct {
 //   - POST /api/v1/chat/feedback — feedback submission
 //   - GET  /api/v1/chat/suggestions — suggested questions
 //   - /admin-{hash}/* — admin panel (OAuth, analytics, documents, prompts)
-//   - GET  /health — deep health check
+//   - GET  /healthz — deep health check
 //   - GET  /metrics — Prometheus metrics (token-protected)
 func NewRouter(deps RouterDeps) *chi.Mux {
 	r := chi.NewRouter()
@@ -60,7 +63,9 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 
 	r.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if strings.HasSuffix(r.URL.Path, "/documents/upload") {
+			// Exclude multipart upload endpoints from the global 1 MB body limit.
+			if strings.HasSuffix(r.URL.Path, "/documents/upload") ||
+				(strings.Contains(r.URL.Path, "/news/") && strings.HasSuffix(r.URL.Path, "/image")) {
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -144,6 +149,16 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 
 		if deps.AdminHandler != nil {
 			r.Get("/suggestions", deps.AdminHandler.HandleListSuggestions)
+			r.Get("/invitations/validate", deps.AdminHandler.HandleValidateInviteToken)
+			r.Post("/invitations/accept", deps.AdminHandler.HandleAcceptInvite)
+		}
+
+		if deps.NewsHandler != nil {
+			r.Get("/news", deps.NewsHandler.HandlePublicList)
+			r.Get("/news/sitemap", deps.NewsHandler.HandlePublicSitemap)
+			r.Get("/news/categories", deps.NewsHandler.HandlePublicCategories)
+			r.Get("/news/preview/{token}", deps.NewsHandler.HandlePreview)
+			r.Get("/news/{slug}", deps.NewsHandler.HandlePublicBySlug)
 		}
 	})
 
@@ -159,7 +174,7 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 	}
 
 	r.Route(adminPrefix, func(r chi.Router) {
-		r.Use(DualAuthMiddleware(deps.JWTService, deps.AdminToken, deps.AllowedEmails, deps.AdminSettings))
+		r.Use(DualAuthMiddleware(deps.JWTService, deps.AdminToken, deps.LegacyAdminToken, deps.AllowedEmails, deps.AdminSettings, deps.AdminUsersRepo))
 		if deps.AdminRateLimiter != nil {
 			r.Use(RateLimitMiddleware(deps.AdminRateLimiter))
 		}
@@ -169,38 +184,97 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 		}
 
 		if deps.AdminHandler != nil {
+			r.Get("/me", deps.AdminHandler.HandleGetMe)
 			r.Post("/auth/logout", deps.AdminHandler.HandleLogout)
 		}
-		if deps.IndexHandler != nil {
-			r.Post("/documents/upload", deps.IndexHandler.HandleAdminUpload)
-			r.Get("/documents/jobs/{job_id}", deps.IndexHandler.GetJobStatus)
-			r.Delete("/documents/{document_id}", deps.IndexHandler.HandleDeleteDocument)
-			r.Post("/documents/{document_id}/reindex", deps.IndexHandler.HandleReindexDocument)
-			r.Post("/documents/reindex-all", deps.IndexHandler.HandleReindexAll)
-		}
 
-		if deps.AdminHandler != nil {
-			r.Get("/documents", deps.AdminHandler.HandleListDocuments)
-			r.Get("/documents/{id}/download", deps.AdminHandler.HandleDownloadDocument)
-			r.Patch("/documents/{id}/rename", deps.AdminHandler.HandleRenameDocument)
-			r.Get("/analytics/summary", deps.AdminHandler.HandleAnalyticsSummary)
-			r.Get("/analytics/daily", deps.AdminHandler.HandleDailyStats)
-			r.Get("/analytics/top-queries", deps.AdminHandler.HandleTopQueries)
-			r.Get("/analytics/feedback", deps.AdminHandler.HandleFeedbackStats)
-			r.Get("/analytics/export/csv", deps.AdminHandler.HandleExportCSV)
-			r.Get("/queries", deps.AdminHandler.HandleRecentQueries)
-			r.Get("/audit", deps.AdminHandler.HandleAuditLog)
-			r.Get("/prompts", deps.AdminHandler.HandleListPrompts)
-			r.Post("/prompts", deps.AdminHandler.HandleCreatePrompt)
-			r.Patch("/prompts/{id}/active", deps.AdminHandler.HandleTogglePromptActive)
-			r.Patch("/prompts/{id}", deps.AdminHandler.HandleUpdatePrompt)
-			r.Delete("/prompts/{id}", deps.AdminHandler.HandleDeletePrompt)
-			r.Get("/suggestions", deps.AdminHandler.HandleListSuggestions)
-			r.Post("/suggestions", deps.AdminHandler.HandleCreateSuggestion)
-			r.Get("/admins", deps.AdminHandler.HandleListAdmins)
-			r.Post("/admins", deps.AdminHandler.HandleAddAdmin)
-			r.Delete("/admins/{email}", deps.AdminHandler.HandleRemoveAdmin)
-		}
+		// ─── Chatbot Admin Endpoints ───
+		r.Group(func(r chi.Router) {
+			r.Use(RequireRole(domain.RoleChatbotAdmin))
+
+			if deps.IndexHandler != nil {
+				r.Post("/documents/upload", deps.IndexHandler.HandleAdminUpload)
+				r.Get("/documents/jobs/{job_id}", deps.IndexHandler.GetJobStatus)
+				r.Delete("/documents/{document_id}", deps.IndexHandler.HandleDeleteDocument)
+				r.Post("/documents/{document_id}/reindex", deps.IndexHandler.HandleReindexDocument)
+				r.Post("/documents/reindex-all", deps.IndexHandler.HandleReindexAll)
+			}
+
+			if deps.AdminHandler != nil {
+				r.Get("/documents", deps.AdminHandler.HandleListDocuments)
+				r.Get("/documents/{id}/download", deps.AdminHandler.HandleDownloadDocument)
+				r.Patch("/documents/{id}/rename", deps.AdminHandler.HandleRenameDocument)
+				r.Get("/analytics/summary", deps.AdminHandler.HandleAnalyticsSummary)
+				r.Get("/analytics/daily", deps.AdminHandler.HandleDailyStats)
+				r.Get("/analytics/top-queries", deps.AdminHandler.HandleTopQueries)
+				r.Get("/analytics/feedback", deps.AdminHandler.HandleFeedbackStats)
+				r.Get("/analytics/export/csv", deps.AdminHandler.HandleExportCSV)
+				r.Get("/queries", deps.AdminHandler.HandleRecentQueries)
+				r.Get("/prompts", deps.AdminHandler.HandleListPrompts)
+				r.Post("/prompts", deps.AdminHandler.HandleCreatePrompt)
+				r.Patch("/prompts/{id}/active", deps.AdminHandler.HandleTogglePromptActive)
+				r.Patch("/prompts/{id}", deps.AdminHandler.HandleUpdatePrompt)
+				r.Delete("/prompts/{id}", deps.AdminHandler.HandleDeletePrompt)
+				r.Get("/suggestions", deps.AdminHandler.HandleListSuggestions)
+				r.Post("/suggestions", deps.AdminHandler.HandleCreateSuggestion)
+			}
+		})
+
+		// ─── News CMS Endpoints ───
+		r.Group(func(r chi.Router) {
+			r.Use(RequireRole(domain.RoleNewsEditor))
+
+			if deps.NewsHandler != nil {
+				r.Get("/news", deps.NewsHandler.HandleAdminList)
+				r.Post("/news", deps.NewsHandler.HandleCreate)
+				
+				// Draft Preview APIs
+				r.Post("/news/drafts/{session_id}", deps.NewsHandler.HandleSaveDraft)
+				r.Get("/news/drafts/{session_id}", deps.NewsHandler.HandleGetDraft)
+
+				r.Get("/news/categories", deps.NewsHandler.HandleAdminCategories)
+				r.Post("/news/categories", deps.NewsHandler.HandleAdminCreateCategory)
+				r.Patch("/news/categories/reorder", deps.NewsHandler.HandleAdminReorderCategories)
+				r.Put("/news/categories/{id}", deps.NewsHandler.HandleAdminUpdateCategory)
+				r.Delete("/news/categories/{id}", deps.NewsHandler.HandleAdminDeleteCategory)
+				r.Post("/news/categories/{id}/restore", deps.NewsHandler.HandleAdminRestoreCategory)
+				r.Post("/news/categories/{id}/image", deps.NewsHandler.HandleAdminCategoryUploadImage)
+				
+				r.Get("/news/tags", deps.NewsHandler.HandleAdminTags)
+				r.Get("/news/slug-check", deps.NewsHandler.HandleSlugCheck)
+				r.Post("/news/upload-image", deps.NewsHandler.HandleUploadInlineImage)
+				r.Post("/news/upload-video", deps.NewsHandler.HandleUploadVideo)
+				r.Post("/news/video-upload-url", deps.NewsHandler.HandlePresignVideoUpload)
+				r.Post("/news/video-confirm", deps.NewsHandler.HandleConfirmVideoUpload)
+				r.Post("/news/translate", deps.NewsHandler.HandleTranslate)
+
+				r.Get("/news/{id}", deps.NewsHandler.HandleGetByID)
+				r.Put("/news/{id}", deps.NewsHandler.HandleUpdate)
+				r.Patch("/news/{id}/status", deps.NewsHandler.HandleSetStatus)
+				r.Delete("/news/{id}", deps.NewsHandler.HandleDelete)
+				r.Post("/news/{id}/restore", deps.NewsHandler.HandleRestore)
+				r.Post("/news/{id}/image", deps.NewsHandler.HandleUploadImage)
+			}
+		})
+
+		// ─── Super Admin Only Endpoints (Admins, Invitations, Audit) ───
+		r.Group(func(r chi.Router) {
+			r.Use(RequireRole(domain.RoleSuperAdmin))
+
+			if deps.AdminHandler != nil {
+				r.Get("/audit", deps.AdminHandler.HandleAuditLog)
+				r.Get("/admins", deps.AdminHandler.HandleListAdmins)
+				r.Post("/admins", deps.AdminHandler.HandleAddAdmin)
+				r.Patch("/admins/{email}/role", deps.AdminHandler.HandleUpdateAdminRole)
+				r.Patch("/admins/{email}/status", deps.AdminHandler.HandleUpdateAdminStatus)
+				r.Delete("/admins/{email}", deps.AdminHandler.HandleRemoveAdmin)
+
+				r.Get("/invitations", deps.AdminHandler.HandleListInvitations)
+				r.Post("/invitations", deps.AdminHandler.HandleCreateInvitation)
+				r.Post("/invitations/{id}/resend", deps.AdminHandler.HandleResendInvitation)
+				r.Post("/invitations/{id}/revoke", deps.AdminHandler.HandleRevokeInvitation)
+			}
+		})
 	})
 
 	return r

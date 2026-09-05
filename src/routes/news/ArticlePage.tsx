@@ -1,15 +1,23 @@
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { motion } from "motion/react";
-import type { JSX } from "react";
+import { Calendar, Film, ImageIcon, Tag, User } from "lucide-react";
+import { useEffect, useState, type JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
-import type { Article } from "@/data/articles";
-import { formatArticleDate, getLatestArticles } from "@/data/articles";
+import { RelatedCard } from "@/components/news/RelatedCard";
 import type { Locale } from "@/i18n";
-import { getLocalizedPath, getTranslations } from "@/i18n";
+import { getTranslations } from "@/i18n";
+import {
+  articleDescription,
+  articleTitle,
+  buildImageSrcSet,
+  categoryName,
+  formatNewsDate,
+  getFullImageUrl,
+  fetchNewsList,
+  type NewsArticle,
+} from "@/lib/news-api";
 
 interface ArticlePageProps {
-  article: Article;
+  article: NewsArticle;
   locale?: Locale;
 }
 
@@ -18,134 +26,236 @@ export const ArticlePage = ({
   locale = "uk",
 }: ArticlePageProps): JSX.Element => {
   const t = getTranslations(locale);
-  const relatedArticles = getLatestArticles(3)
-    .filter((a) => a.slug !== article.slug)
-    .slice(0, 2);
+  const [relatedArticles, setRelatedArticles] = useState<NewsArticle[]>([]);
+
+  const title = articleTitle(article, locale);
+  const description = articleDescription(article, locale);
+  const rawDate = article.published_at || article.publish_at || article.created_at || article.updated_at;
+  const date = (rawDate && !rawDate.startsWith("0001")) ? rawDate : (article.created_at || article.updated_at || new Date().toISOString());
+  const localeContent =
+    article.locales?.[locale]?.content ?? article.locales?.["uk"]?.content ?? "";
+
+  const srcSet = article.image_url ? buildImageSrcSet(article.image_url) : "";
+
+  // Sanitize content & ensure attributes
+  const cleanContent = localeContent;
+
+  // Fetch related articles from same category or latest
+  useEffect(() => {
+    let isMounted = true;
+    async function loadRelated() {
+      try {
+        const res = await fetchNewsList({
+          locale,
+          limit: 4,
+          category: article.category_id || undefined,
+        });
+        if (isMounted && res.articles) {
+          setRelatedArticles(
+            res.articles.filter((a: NewsArticle) => a.id !== article.id).slice(0, 3)
+          );
+        }
+      } catch (e) {
+        console.error("Failed to load related articles", e);
+      }
+    }
+    loadRelated();
+    return () => {
+      isMounted = false;
+    };
+  }, [article.id, article.category_id, locale]);
+
+  // Format YouTube embed URL helper
+  const getEmbedUrl = (url: string) => {
+    if (!url) return "";
+    if (url.includes("youtube.com/embed/")) return url;
+    const match = url.match(
+      /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/
+    );
+    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+  };
+
+  const coverPositionStyle = article.cover_position
+    ? { objectPosition: article.cover_position }
+    : undefined;
 
   return (
-    <>
-      {/* Hero */}
-      <section className="relative w-full overflow-hidden bg-gray-900">
-        {/* Subtle gradient for depth */}
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black pointer-events-none" />
+    <article className="w-full bg-slate-50 text-slate-900 pt-28 md:pt-36 pb-20 relative overflow-hidden">
+      <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8 relative z-10">
 
-        <div className="relative z-10 w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 pt-32 md:pt-44 pb-16 md:pb-24">
+        {/* ── Article Header ── */}
+        <header className="flex flex-col gap-6 mb-8 md:mb-12">
           <ScrollReveal variant="fade-up">
-            <a
-              href={getLocalizedPath("/news", locale)}
-              className="inline-flex items-center gap-2 text-white/80 hover:text-white text-sm font-medium transition-colors mb-8 group"
-            >
-              <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              {t.newsPage.backToNews}
-            </a>
-
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <div className="backdrop-blur-md bg-white/10 border border-white/20 px-3 py-1.5 rounded-full">
-                <span className="text-white text-[10px] md:text-xs font-semibold tracking-wider uppercase">
-                  {t.home.news.weeklyBadge}
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              {article.category && (
+                <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold tracking-wider uppercase">
+                  {categoryName(article.category, locale)}
                 </span>
-              </div>
-              <div className="backdrop-blur-md bg-black/30 px-3 py-1.5 rounded-full flex items-center gap-2">
-                <time
-                  dateTime={article.date}
-                  className="text-white/80 text-[10px] md:text-xs font-medium tracking-wider uppercase"
-                >
-                  {formatArticleDate(article.date, locale)}
-                </time>
+              )}
+              <div className="flex items-center gap-1.5 text-slate-500 text-xs font-medium bg-white border border-slate-200 px-3 py-1 rounded-full shadow-xs">
+                <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                <time dateTime={date}>{formatNewsDate(date, locale)}</time>
               </div>
             </div>
 
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-white tracking-tight leading-[1.1] max-w-4xl">
-              {article.title[locale]}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-[2.65rem] font-serif font-bold text-slate-900 tracking-tight leading-[1.18] mb-5">
+              {title}
             </h1>
+
+            {description && (
+              <p className="text-slate-600 text-lg md:text-xl leading-relaxed font-normal max-w-3xl mb-6 border-l-2 border-blue-600 pl-4 py-1">
+                {description}
+              </p>
+            )}
+
+            {/* Author Block */}
+            {article.author?.name && (
+              <div className="flex items-center gap-3.5 pt-4 border-t border-slate-200">
+                <div className="w-10 h-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 font-bold text-sm shrink-0">
+                  {article.author.name.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="text-slate-900 text-sm font-bold">
+                    {article.author.name}
+                  </p>
+                  {article.author.position && (
+                    <p className="text-slate-500 text-xs">
+                      {article.author.position}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </ScrollReveal>
-        </div>
-      </section>
 
-      {/* Article Content */}
-      <section className="w-full bg-pure-white py-12 md:py-20 relative overflow-hidden z-10">
-        <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-blue-50 rounded-full blur-[120px] translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-
-        <div className="w-full max-w-3xl mx-auto px-4 md:px-9 relative z-10">
-          <ScrollReveal variant="fade-up">
-            <div className="prose prose-lg prose-gray max-w-none">
-              {article.content[locale].map((paragraph, i) => (
-                <p
-                  key={i}
-                  className="text-gray-700 text-base md:text-lg leading-relaxed mb-6 last:mb-0"
-                >
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* Related Articles */}
-      {relatedArticles.length > 0 && (
-        <section className="w-full bg-gray-50 py-16 md:py-24 relative overflow-hidden z-10">
-          <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 relative z-10">
-            <ScrollReveal variant="fade-up">
-              <h2 className="font-semibold text-pure-black text-2xl md:text-3xl lg:text-4xl tracking-tight mb-10 md:mb-14">
-                {t.newsPage.relatedArticles}
-              </h2>
+          {/* Cover Media */}
+          {article.image_url && (
+            <ScrollReveal variant="fade-up" delay={50} className="w-full mt-4">
+              <div className="w-full max-w-4xl mx-auto aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm bg-slate-100 relative">
+                <img
+                  src={getFullImageUrl(article.image_url)}
+                  srcSet={srcSet || getFullImageUrl(article.image_url)}
+                  sizes="(min-width: 1024px) 1024px, 100vw"
+                  alt={title}
+                  style={coverPositionStyle}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
             </ScrollReveal>
+          )}
+        </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 auto-rows-[280px] md:auto-rows-[320px]">
-              {relatedArticles.map((related, index) => (
-                <ScrollReveal
-                  key={related.slug}
-                  variant="fade-up"
-                  delay={index * 100}
-                  className="w-full h-full"
-                >
-                  <motion.a
-                    href={getLocalizedPath(`/news/${related.slug}`, locale)}
-                    aria-label={`${t.home.news.readMore}: ${related.title[locale]}`}
-                    whileHover="hover"
-                    className="relative flex flex-col justify-end w-full h-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group cursor-pointer border border-black/5 shadow-xl bg-gray-900 isolate"
+        {/* ── Main Article Body Content (Optimal 65-75 char reading measure) ── */}
+        <section className="w-full max-w-3xl mx-auto py-4">
+          <ScrollReveal variant="fade-up">
+            {cleanContent ? (
+              <div
+                className="prose article-content prose-slate max-w-none text-slate-800"
+                dangerouslySetInnerHTML={{ __html: cleanContent }}
+              />
+            ) : (
+              <p className="italic text-slate-500">{t.newsPage.noContent}</p>
+            )}
+          </ScrollReveal>
+
+          {/* ── Video Section ── */}
+          {article.video_url && (
+            <ScrollReveal variant="fade-up" delay={50} className="mt-10 md:mt-14">
+              <div className="flex items-center gap-2 mb-3 font-serif font-bold text-xl text-slate-900">
+                <Film className="w-5 h-5 text-blue-600" />
+                <span>Відео матеріали</span>
+              </div>
+              <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-xs border border-slate-200 bg-slate-900 flex items-center justify-center">
+                {article.video_type === "external" ||
+                article.video_url.includes("youtube.com") ||
+                article.video_url.includes("youtu.be") ||
+                article.video_url.includes("vimeo.com") ? (
+                  <iframe
+                    src={getEmbedUrl(article.video_url)}
+                    title="Article Video"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full border-0"
+                  />
+                ) : (
+                  <video
+                    src={getFullImageUrl(article.video_url)}
+                    controls
+                    preload="metadata"
+                    playsInline
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
+            </ScrollReveal>
+          )}
+
+          {/* ── Gallery Section ── */}
+          {article.gallery && article.gallery.length > 0 && (
+            <ScrollReveal variant="fade-up" delay={50} className="mt-10 md:mt-14">
+              <div className="flex items-center gap-2 mb-4 font-serif font-bold text-xl text-slate-900">
+                <ImageIcon className="w-5 h-5 text-blue-600" />
+                <span>Фотогалерея</span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {article.gallery.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="aspect-[4/3] rounded-xl overflow-hidden border border-slate-200/80 shadow-xs bg-slate-100 group"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-t from-white/5 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                    <img
+                      src={getFullImageUrl(item)}
+                      alt={`Gallery ${idx + 1}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+          )}
 
-                    <div className="relative z-20 p-5 md:p-8 flex flex-col h-full w-full justify-between">
-                      <div className="flex flex-wrap items-center justify-between gap-3 w-full mb-auto mt-1 md:mt-2">
-                        <div className="backdrop-blur-md bg-white/10 border border-white/20 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full shrink-0">
-                          <span className="text-white text-[9px] md:text-[10px] lg:text-xs font-semibold tracking-wider uppercase">
-                            {t.home.news.weeklyBadge}
-                          </span>
-                        </div>
-                        <div className="backdrop-blur-md bg-black/30 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full shrink-0">
-                          <time
-                            dateTime={related.date}
-                            className="text-white/80 text-[9px] md:text-[10px] lg:text-xs font-medium tracking-wider uppercase"
-                          >
-                            {formatArticleDate(related.date, locale)}
-                          </time>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col gap-2 md:gap-4 mt-6 md:mt-8">
-                        <h3 className="text-lg md:text-2xl lg:text-3xl font-semibold text-white tracking-tight text-balance leading-snug">
-                          {related.title[locale]}
-                        </h3>
-                        <div className="flex items-center gap-2.5 md:gap-3 mt-1 md:mt-4">
-                          <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors duration-300">
-                            <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-black group-hover:text-white transition-colors" />
-                          </div>
-                          <span className="text-sm md:text-base font-medium text-white/90 group-hover:text-white relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-white group-hover:after:w-full after:transition-all after:duration-300">
-                            {t.home.news.readMore}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.a>
-                </ScrollReveal>
+          {/* Tags */}
+          {article.tags && article.tags.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 mt-10 pt-6 border-t border-slate-200">
+              <Tag className="w-4 h-4 text-blue-600 shrink-0" />
+              {article.tags.map((tag) => (
+                <span
+                  key={tag.id}
+                  className="px-3 py-1 rounded-full bg-slate-200/70 border border-slate-300/60 text-slate-700 text-xs font-semibold"
+                >
+                  #{tag.slug}
+                </span>
               ))}
             </div>
-          </div>
+          )}
         </section>
-      )}
-    </>
+
+        {/* ── Related News Section ── */}
+        {relatedArticles.length > 0 && (
+          <section className="mt-14 md:mt-20 pt-10 border-t border-slate-200">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
+              <h3 className="text-2xl font-serif font-bold text-slate-900 tracking-tight">
+                Схожі матеріали
+              </h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedArticles.map((relArticle, idx) => (
+                <RelatedCard
+                  key={relArticle.id}
+                  article={relArticle}
+                  locale={locale}
+                  index={idx}
+                />
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </article>
   );
 };

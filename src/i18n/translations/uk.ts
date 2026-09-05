@@ -194,6 +194,18 @@ export const uk = {
     minRead: "хв читання",
     shareArticle: "Поділитися",
     relatedArticles: "Інші новини",
+    searchPlaceholder: "Пошук новин…",
+    searchLabel: "Пошук новин",
+    filterAll: "Усі",
+    noResults: "Статей не знайдено",
+    clearFilters: "Скинути фільтри",
+    pagination: "Пагінація",
+    prevPage: "Попередня сторінка",
+    nextPage: "Наступна сторінка",
+    loading: "Завантаження…",
+    clearSearch: "Очистити пошук",
+    noContent: "Вміст статті відсутній.",
+    copied: "Скопійовано!",
   },
 
   institute: {
