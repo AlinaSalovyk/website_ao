@@ -159,22 +159,3 @@ export const saveDraft = (sessionId: string, data: any) => api<unknown>(`${ADMIN
   body: JSON.stringify(data),
 });
 
-export const translateAdminNews = (ukData: {
-  title: string;
-  description: string;
-  content: string;
-  seo_title: string;
-  seo_description: string;
-}): Promise<{
-  title: string;
-  description: string;
-  content: string;
-  seo_title: string;
-  seo_description: string;
-  slug: string;
-}> =>
-  api(`${ADMIN_BASE}/news/translate`, {
-    method: "POST",
-    body: JSON.stringify(ukData),
-  });
-

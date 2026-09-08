@@ -8,7 +8,6 @@ import {
   createAdminNews,
   uploadAdminNewsImage,
   uploadAdminInlineImage,
-  translateAdminNews,
   type AdminNewsCategory,
 } from "../../api";
 import { usePreviewSync } from "@/lib/preview-sync";
@@ -25,8 +24,6 @@ export function useArticleForm(
   const [saving, setSaving] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "dirty" | "saving" | "error">("saved");
   const [isDirty, setIsDirty] = useState(false);
-  const [translating, setTranslating] = useState(false);
-  const [showTranslateConfirm, setShowTranslateConfirm] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [imageHistory, setImageHistory] = useState<string[]>([]);
   const [currentArticle, setCurrentArticle] = useState<AdminNewsArticle | null>(null);
@@ -294,69 +291,11 @@ export function useArticleForm(
     toast.success("SEO та Slug автозаповнено");
   };
 
-  const executeTranslation = async () => {
-    setTranslating(true);
-    setShowTranslateConfirm(false);
-    try {
-      const res = await translateAdminNews({
-        title: form.locales.uk.title.trim(),
-        description: form.locales.uk.description.trim(),
-        content: form.locales.uk.content,
-        seo_title: "",       // Explicitly omit SEO from translation
-        seo_description: "", // Explicitly omit SEO from translation
-      });
-
-      updateForm((prev) => ({
-        ...prev,
-        locales: {
-          ...prev.locales,
-          en: {
-            ...prev.locales.en,
-            title: res.title,
-            description: res.description,
-            content: res.content,
-            // Keep manual SEO values completely separate from translation
-            seo_title: prev.locales.en.seo_title,
-            seo_description: prev.locales.en.seo_description,
-            slug: prev.locales.en.slug || res.slug,
-          },
-        },
-      }));
-      toast.success("Переклад створено");
-      setActiveLocale("en");
-    } catch (err: any) {
-      toast.error(err?.message || "Не вдалося створити переклад. Спробуйте ще раз.");
-    } finally {
-      setTranslating(false);
-    }
-  };
-
-  const handleTranslateRequest = () => {
-    if (!form.locales.uk.title.trim()) {
-      toast.error("Спочатку заповніть українську версію статті");
-      return;
-    }
-    const hasEnContent =
-      form.locales.en.title.trim() !== "" ||
-      form.locales.en.content.trim() !== "" ||
-      form.locales.en.description.trim() !== "";
-
-    if (hasEnContent) {
-      setShowTranslateConfirm(true);
-    } else {
-      executeTranslation();
-    }
-  };
-
   return {
     form, setForm: updateForm,
     activeLocale, setActiveLocale,
     loading, saving,
     isDirty, autoSaveStatus,
-    translating,
-    showTranslateConfirm, setShowTranslateConfirm,
-    handleTranslateRequest,
-    executeTranslation,
     imageUploading,
     imageHistory, setImageHistory,
     currentArticle, setCurrentArticle,

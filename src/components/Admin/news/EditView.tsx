@@ -26,11 +26,6 @@ export const EditView = ({
     setActiveLocale,
     loading,
     saving,
-    translating,
-    showTranslateConfirm,
-    setShowTranslateConfirm,
-    handleTranslateRequest,
-    executeTranslation,
     imageUploading,
     imageHistory,
     setImageHistory,
@@ -111,7 +106,7 @@ export const EditView = ({
             summary="Підказки щодо заповнення полів (UK / EN, SEO, обкладинка, категорія, закріплення)"
             items={[
               { title: "Українська версія", desc: "Спочатку повністю заповніть українську версію: Заголовок, Короткий опис, Основний текст. Українська версія є базою для подальшого перекладу англійською." },
-              { title: "Англійська версія", desc: "Після заповнення UK використайте кнопку перекладу. Після автоматичного перекладу: перегляньте заголовок, перевірте опис та основний текст, за потреби виправте переклад вручну." },
+              { title: "Англійська версія", desc: "Title EN, Description EN та Content EN заповнюються редактором вручну. Переконайтеся, що англійська версія відповідає змісту української перед публікацією." },
               { title: "Slug", desc: "Slug — це частина адреси сторінки (наприклад: /news/nova-stattia). Для нової статті він формується автоматично. Для існуючої/опублікованої статті не рекомендується змінювати slug без необхідності, тому що це змінює URL." },
               { title: "SEO", desc: "SEO Title та SEO Description допомагають керувати тим, як сторінка описується для пошукових систем. Їх можна: залишити порожніми, заповнити автоматично кнопкою «🪄 Автозаповнити SEO та Slug» (вона заповнює лише порожні поля), або змінити вручну." },
               { title: "SEO Preview", desc: "\"Попередній перегляд у пошуку\" дозволяє приблизно побачити Title, URL та Description до публікації. Фактичний вигляд у пошуковій системі може відрізнятися." },
@@ -143,21 +138,6 @@ export const EditView = ({
                     </button>
                   ))}
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleTranslateRequest}
-                  disabled={translating}
-                  className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold shadow-sm transition-colors cursor-pointer disabled:opacity-50"
-                  title="Автоматично перекласти українську версію на англійську через DeepL"
-                >
-                  {translating ? (
-                    <RefreshCw size={13} className="animate-spin" />
-                  ) : (
-                    <Sparkles size={13} />
-                  )}
-                  <span>{translating ? "Перекладаємо..." : "✨ Перекласти UK → EN"}</span>
-                </button>
               </div>
 
               <LocalePanel
@@ -192,37 +172,6 @@ export const EditView = ({
           />
         </div>
       </div>
-
-      {/* Confirmation modal for overwriting EN content */}
-      {showTranslateConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl flex flex-col gap-4">
-            <div className="flex items-center gap-2 text-foreground font-semibold text-base">
-              <Sparkles className="w-5 h-5 text-indigo-500" />
-              <h3>Замінити англійський текст?</h3>
-            </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Англійська версія вже містить дані. Перекласти українську версію заново та замінити англійський текст?
-            </p>
-            <div className="flex items-center justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowTranslateConfirm(false)}
-                className="px-4 py-2 text-xs font-medium rounded-xl border border-border text-foreground hover:bg-muted transition-colors cursor-pointer"
-              >
-                Скасувати
-              </button>
-              <button
-                type="button"
-                onClick={executeTranslation}
-                className="px-4 py-2 text-xs font-medium rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-colors cursor-pointer font-semibold shadow-sm"
-              >
-                Перекласти та замінити
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

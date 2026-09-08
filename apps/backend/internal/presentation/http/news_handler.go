@@ -23,7 +23,6 @@ import (
 	"university-chatbot/backend/internal/infrastructure/imageproc"
 	"university-chatbot/backend/internal/infrastructure/slugify"
 	"university-chatbot/backend/internal/infrastructure/storage"
-	"university-chatbot/backend/internal/infrastructure/translation"
 )
 
 // NewsHandler serves both the public news API and the admin news management API.
@@ -37,7 +36,6 @@ type NewsHandler struct {
 	resolver   storage.MediaURLResolver       // Public media URL resolver; may be nil.
 	sanitize   func(string) string            // HTML sanitizer for article content.
 	cache      domain.CacheStore              // Cache for Live Preview Drafts.
-	translator translation.TranslationProvider // LibreTranslate provider for UK -> EN translation.
 }
 
 // NewNewsHandler creates a NewsHandler with required dependencies.
@@ -61,12 +59,6 @@ func NewNewsHandler(
 	policy.AllowAttrs("class", "style", "data-youtube-video").OnElements("p", "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "ul", "ol", "li", "span", "div", "figure", "figcaption")
 	policy.RequireNoFollowOnLinks(false)
 
-	ltURL := strings.TrimSpace(os.Getenv("LIBRETRANSLATE_URL"))
-	var translator translation.TranslationProvider
-	if ltURL != "" {
-		translator = translation.NewLibreTranslateProvider(ltURL)
-	}
-
 	if resolver == nil {
 		mediaBase := strings.TrimSpace(os.Getenv("MEDIA_PUBLIC_BASE_URL"))
 		if mediaBase != "" {
@@ -81,7 +73,6 @@ func NewNewsHandler(
 		storage:    store,
 		resolver:   resolver,
 		cache:      cache,
-		translator: translator,
 		sanitize: func(html string) string {
 			return policy.Sanitize(html)
 		},
@@ -1203,101 +1194,3 @@ func NormalizeVideoURL(raw string) string {
 	}
 	return raw
 }
-
-type TranslateRequest struct {
-	Title          string `json:"title"`
-	Description    string `json:"description"`
-	Content        string `json:"content"`
-	SEOTitle       string `json:"seo_title"`
-	SEODescription string `json:"seo_description"`
-}
-
-type TranslateResponse struct {
-	Title          string `json:"title"`
-	Description    string `json:"description"`
-	Content        string `json:"content"`
-	SEOTitle       string `json:"seo_title"`
-	SEODescription string `json:"seo_description"`
-	Slug           string `json:"slug"`
-}
-
-// HandleTranslate executes structure-preserving DeepL UK -> EN translation
-// POST /admin-.../news/translate
-func (h *NewsHandler) HandleTranslate(w http.ResponseWriter, r *http.Request) {
-	if h.translator == nil {
-		jsonError(w, "translation_not_configured", "Автоматичний переклад наразі не налаштований.", http.StatusServiceUnavailable)
-		return
-	}
-
-	var req TranslateRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonError(w, "invalid_request", "Invalid JSON request payload", http.StatusBadRequest)
-		return
-	}
-
-	if req.Title == "" && req.Content == "" {
-		jsonError(w, "validation_error", "Title or Content required for translation", http.StatusBadRequest)
-		return
-	}
-
-	plainTexts := []string{
-		req.Title,
-		req.Description,
-		req.SEOTitle,
-		req.SEODescription,
-	}
-
-	translatedPlain, err := h.translator.TranslateBatch(r.Context(), plainTexts, "uk", "en", "text")
-	if err != nil {
-		slog.Error("HandleTranslate plain texts failed", "error", err)
-		if errors.Is(err, translation.ErrServiceUnavailable) {
-			jsonError(w, "service_unavailable", "Сервіс автоматичного перекладу тимчасово недоступний.", http.StatusServiceUnavailable)
-			return
-		}
-		if errors.Is(err, translation.ErrLanguageUnavailable) {
-			jsonError(w, "language_unavailable", "Українсько-англійський переклад наразі недоступний.", http.StatusServiceUnavailable)
-			return
-		}
-		jsonError(w, "translation_failed", "Не вдалося створити переклад. Спробуйте ще раз.", http.StatusInternalServerError)
-		return
-	}
-
-	var translatedContent string
-	if req.Content != "" {
-		htmlTexts := []string{req.Content}
-		translatedHTML, err := h.translator.TranslateBatch(r.Context(), htmlTexts, "uk", "en", "html")
-		if err != nil {
-			slog.Error("HandleTranslate content HTML failed", "error", err)
-			if errors.Is(err, translation.ErrServiceUnavailable) {
-				jsonError(w, "service_unavailable", "Сервіс автоматичного перекладу тимчасово недоступний.", http.StatusServiceUnavailable)
-				return
-			}
-			if errors.Is(err, translation.ErrLanguageUnavailable) {
-				jsonError(w, "language_unavailable", "Українсько-англійський переклад наразі недоступний.", http.StatusServiceUnavailable)
-				return
-			}
-			jsonError(w, "translation_failed", "Не вдалося створити переклад. Спробуйте ще раз.", http.StatusInternalServerError)
-			return
-		}
-		translatedContent = translatedHTML[0]
-	}
-
-	enTitle := translatedPlain[0]
-	enDesc := translatedPlain[1]
-	enSEOTitle := translatedPlain[2]
-	enSEODesc := translatedPlain[3]
-	enContent := h.sanitize(translatedContent)
-
-	enSlug := slugify.Generate(enTitle)
-
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(TranslateResponse{
-		Title:          enTitle,
-		Description:    enDesc,
-		Content:        enContent,
-		SEOTitle:       enSEOTitle,
-		SEODescription: enSEODesc,
-		Slug:           enSlug,
-	})
-}
-

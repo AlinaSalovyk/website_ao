@@ -246,7 +246,6 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 				r.Post("/news/upload-video", deps.NewsHandler.HandleUploadVideo)
 				r.Post("/news/video-upload-url", deps.NewsHandler.HandlePresignVideoUpload)
 				r.Post("/news/video-confirm", deps.NewsHandler.HandleConfirmVideoUpload)
-				r.Post("/news/translate", deps.NewsHandler.HandleTranslate)
 
 				r.Get("/news/{id}", deps.NewsHandler.HandleGetByID)
 				r.Put("/news/{id}", deps.NewsHandler.HandleUpdate)
