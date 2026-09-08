@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { emptyForm, type ArticleForm } from "../types";
+import { emptyForm, type ArticleForm, slugify } from "../types";
 import {
   type AdminNewsArticle,
   fetchAdminNewsById,
@@ -12,6 +12,7 @@ import {
   type AdminNewsCategory,
 } from "../../api";
 import { usePreviewSync } from "@/lib/preview-sync";
+import { normalizeText, extractArticleSummary, computeAutoFillSEO } from "@/utils/seo";
 
 export function useArticleForm(
   articleId: string | null,
@@ -31,6 +32,9 @@ export function useArticleForm(
   const [currentArticle, setCurrentArticle] = useState<AdminNewsArticle | null>(null);
 
   const [sessionId] = useState(() => Math.random().toString(36).substring(2, 12));
+
+  // SEO Assistant State
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState<{ uk: boolean; en: boolean }>({ uk: false, en: false });
 
   // Adapter to convert form state into a valid NewsArticle structure for Live Preview
   const previewData = {
@@ -129,7 +133,6 @@ export function useArticleForm(
               content: a.locales?.uk?.content ?? "",
               seo_title: a.locales?.uk?.seo_title ?? "",
               seo_description: a.locales?.uk?.seo_description ?? "",
-              keywords: a.locales?.uk?.keywords ?? "",
             },
             en: {
               title: a.locales?.en?.title ?? "",
@@ -138,10 +141,15 @@ export function useArticleForm(
               content: a.locales?.en?.content ?? "",
               seo_title: a.locales?.en?.seo_title ?? "",
               seo_description: a.locales?.en?.seo_description ?? "",
-              keywords: a.locales?.en?.keywords ?? "",
             },
           },
         });
+        
+        setIsSlugManuallyEdited({
+          uk: !!(a.locales?.uk?.slug?.trim()),
+          en: !!(a.locales?.en?.slug?.trim()),
+        });
+
         setIsDirty(false);
         setAutoSaveStatus("saved");
       })
@@ -246,16 +254,56 @@ export function useArticleForm(
     }
   };
 
+  const handleAutoFillSEO = (locale: "uk" | "en") => {
+    const locForm = form.locales[locale];
+    if (normalizeText(locForm.title) === "") {
+      if (locale === "en") {
+        toast.error("Спочатку створіть або перекладіть англійську версію статті.");
+      } else {
+        toast.error("Введіть заголовок статті.");
+      }
+      return;
+    }
+
+    updateForm((prev) => {
+      const prevLoc = prev.locales[locale];
+      const { next, filled } = computeAutoFillSEO(
+        prevLoc.title,
+        prevLoc.slug,
+        prevLoc.seo_title,
+        prevLoc.seo_description,
+        prevLoc.description,
+        prevLoc.content,
+        slugify
+      );
+
+      if (filled && normalizeText(prevLoc.slug) === "") {
+        // Setting to true ensures this explicitly autofilled slug is now protected
+        setIsSlugManuallyEdited((flags) => ({ ...flags, [locale]: true }));
+      }
+
+      return {
+        ...prev,
+        locales: {
+          ...prev.locales,
+          [locale]: { ...prevLoc, ...next },
+        },
+      };
+    });
+
+    toast.success("SEO та Slug автозаповнено");
+  };
+
   const executeTranslation = async () => {
     setTranslating(true);
     setShowTranslateConfirm(false);
     try {
       const res = await translateAdminNews({
-        title: form.locales.uk.title,
-        description: form.locales.uk.description,
+        title: form.locales.uk.title.trim(),
+        description: form.locales.uk.description.trim(),
         content: form.locales.uk.content,
-        seo_title: form.locales.uk.seo_title,
-        seo_description: form.locales.uk.seo_description,
+        seo_title: "",       // Explicitly omit SEO from translation
+        seo_description: "", // Explicitly omit SEO from translation
       });
 
       updateForm((prev) => ({
@@ -267,8 +315,9 @@ export function useArticleForm(
             title: res.title,
             description: res.description,
             content: res.content,
-            seo_title: res.seo_title,
-            seo_description: res.seo_description,
+            // Keep manual SEO values completely separate from translation
+            seo_title: prev.locales.en.seo_title,
+            seo_description: prev.locales.en.seo_description,
             slug: prev.locales.en.slug || res.slug,
           },
         },
@@ -314,6 +363,9 @@ export function useArticleForm(
     sessionId,
     handleSave,
     handleImageFile,
+    isSlugManuallyEdited,
+    setIsSlugManuallyEdited,
+    handleAutoFillSEO,
   };
 }
 

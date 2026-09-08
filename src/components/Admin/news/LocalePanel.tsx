@@ -1,7 +1,8 @@
-import { Check, RefreshCw, X } from "lucide-react";
+import { Check, RefreshCw, X, Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { JSX } from "react";
 
+import { getEffectiveSeoPreview } from "@/utils/seo";
 import { checkAdminNewsSlug } from "../api";
 import { type LocaleForm, slugify } from "./types";
 import { RichTextEditor } from "../ui/RichTextEditor";
@@ -11,11 +12,17 @@ export const LocalePanel = ({
   value,
   onChange,
   articleId,
+  isSlugManuallyEdited,
+  setIsSlugManuallyEdited,
+  onAutoFill,
 }: {
   locale: "uk" | "en";
   value: LocaleForm;
   onChange: (updated: LocaleForm) => void;
   articleId?: string;
+  isSlugManuallyEdited: { uk: boolean; en: boolean };
+  setIsSlugManuallyEdited: React.Dispatch<React.SetStateAction<{ uk: boolean; en: boolean }>>;
+  onAutoFill: () => void;
 }): JSX.Element => {
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugOk, setSlugOk] = useState<boolean | null>(null);
@@ -25,8 +32,13 @@ export const LocalePanel = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const updated = { ...value, [key]: e.target.value };
-    // Auto-fill slug from title on UK locale
-    if (key === "title" && locale === "uk" && !value.slug) {
+    
+    if (key === "slug") {
+      setIsSlugManuallyEdited((prev) => ({ ...prev, [locale]: true }));
+    }
+
+    // Auto-fill slug from title if not manually edited
+    if (key === "title" && !isSlugManuallyEdited[locale]) {
       updated.slug = slugify(e.target.value);
     }
     onChange(updated);
@@ -119,32 +131,110 @@ export const LocalePanel = ({
         />
       </div>
 
-      <details className="group">
-        <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors list-none flex items-center gap-1.5">
-          <span className="transition-transform group-open:rotate-90">▶</span>
-          SEO ({locale.toUpperCase()})
-        </summary>
-        <div className="mt-3 flex flex-col gap-3">
-          <input
-            value={value.seo_title}
-            onChange={field("seo_title")}
-            placeholder="SEO Title"
-            className={inputCls}
-          />
-          <input
-            value={value.seo_description}
-            onChange={field("seo_description")}
-            placeholder="SEO Description"
-            className={inputCls}
-          />
-          <input
-            value={value.keywords}
-            onChange={field("keywords")}
-            placeholder="Keywords (через кому)"
-            className={inputCls}
-          />
+      <div className="border border-border/60 rounded-xl bg-card overflow-hidden mt-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/30 px-5 py-4 border-b border-border/60">
+          <div>
+            <h3 className="font-semibold text-foreground">SEO ({locale.toUpperCase()})</h3>
+            <p className="text-xs text-muted-foreground mt-1">Налаштування відображення у пошуку</p>
+          </div>
+          <button
+            type="button"
+            onClick={onAutoFill}
+            aria-label="Автозаповнити SEO та Slug"
+            className="flex-shrink-0 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+          >
+            <Sparkles size={16} aria-hidden="true" focusable="false" />
+            <span>Автозаповнити SEO та Slug</span>
+          </button>
         </div>
-      </details>
+        
+        <div className="px-5 py-3 bg-indigo-500/5 border-b border-indigo-500/10">
+          <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+            💡 Автоматично заповнить лише порожні SEO-поля та Slug.
+          </p>
+        </div>
+
+        <div className="p-5 flex flex-col gap-5">
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              SEO Title
+            </label>
+            <input
+              value={value.seo_title}
+              onChange={field("seo_title")}
+              placeholder="SEO Title"
+              className={inputCls}
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground ml-1">
+              {value.seo_title.length} символів (рекомендовано ~60)
+            </p>
+          </div>
+          <div>
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              SEO Description
+            </label>
+            <textarea
+              rows={2}
+              value={value.seo_description}
+              onChange={field("seo_description")}
+              placeholder="SEO Description"
+              className={inputCls}
+            />
+            <p className="mt-1 text-[11px] text-muted-foreground ml-1">
+              {value.seo_description.length} символів (рекомендовано ~160)
+            </p>
+          </div>
+
+          <div className="mt-2 pt-5 border-t border-border/60">
+            <h4 className="text-sm font-medium mb-3 text-foreground">Попередній перегляд у пошуку</h4>
+            
+            <div className="p-4 bg-background border border-border/60 rounded-lg shadow-sm">
+              <div className="flex items-center gap-2 text-[12px] text-muted-foreground mb-1 break-all">
+                <span>{typeof window !== 'undefined' ? window.location.host : 'example.com'}{locale === 'uk' ? '/news/' : '/en/news/'}</span>
+                <span className="text-foreground font-medium">{value.slug || "slug"}</span>
+              </div>
+              <h3 className="text-lg leading-tight font-medium text-blue-700 dark:text-blue-400 mb-1 truncate">
+                {(() => {
+                  const preview = getEffectiveSeoPreview({
+                    title: value.title,
+                    description: value.description,
+                    content: value.content,
+                    seoTitle: value.seo_title,
+                    seoDescription: value.seo_description,
+                    fallbackTitle: "Заголовок статті",
+                    fallbackDescription: "Опис статті з'явиться тут після заповнення."
+                  });
+                  return preview.effectiveTitle;
+                })()}
+              </h3>
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {(() => {
+                  const preview = getEffectiveSeoPreview({
+                    title: value.title,
+                    description: value.description,
+                    content: value.content,
+                    seoTitle: value.seo_title,
+                    seoDescription: value.seo_description,
+                    fallbackTitle: "Заголовок статті",
+                    fallbackDescription: "Опис статті з'явиться тут після заповнення."
+                  });
+                  return preview.effectiveDescription;
+                })()}
+              </p>
+            </div>
+            {locale === 'en' && (
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Примітка: публічний EN-роутинг ще знаходиться в розробці. Фактичний вигляд у пошуковій системі може відрізнятися.
+              </p>
+            )}
+            {locale === 'uk' && (
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Фактичний вигляд у пошуковій системі може відрізнятися.
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

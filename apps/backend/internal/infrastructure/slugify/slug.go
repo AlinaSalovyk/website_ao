@@ -17,8 +17,8 @@ import (
 // Implemented by domain.NewsRepo.SlugExists in production and by a test stub in tests.
 type SlugChecker func(ctx context.Context, slug string, excludeID string) (bool, error)
 
-// maxSlugLen is the maximum byte length of a generated slug.
-const maxSlugLen = 80
+// maxAutoSlugLength is the maximum byte length of an auto-generated slug.
+const maxAutoSlugLength = 100
 
 // cyrillic is the ДСТУ 9112:2021 Cyrillic → Latin transliteration table.
 // Covers lowercase Ukrainian alphabet plus shared Ukrainian/Russian letters.
@@ -65,16 +65,40 @@ func Generate(title string) string {
 	}
 	slug = strings.Trim(slug, "-")
 
-	if len(slug) > maxSlugLen {
-		// Truncate at a hyphen boundary to avoid cutting a word mid-way.
-		slug = slug[:maxSlugLen]
-		if idx := strings.LastIndex(slug, "-"); idx > 0 {
-			slug = slug[:idx]
-		}
-		slug = strings.Trim(slug, "-")
+	return wordBoundaryTruncate(slug, maxAutoSlugLength)
+}
+
+func wordBoundaryTruncate(slug string, limit int) string {
+	if len(slug) <= limit {
+		return slug
 	}
 
-	return slug
+	tokens := strings.Split(slug, "-")
+	var finalSlug string
+
+	for _, token := range tokens {
+		additionLength := len(token)
+		if len(finalSlug) > 0 {
+			additionLength += 1 // For the hyphen
+		}
+		if len(finalSlug)+additionLength > limit {
+			break
+		}
+		if len(finalSlug) == 0 {
+			finalSlug = token
+		} else {
+			finalSlug += "-" + token
+		}
+	}
+
+	if len(finalSlug) == 0 && len(tokens) > 0 {
+		finalSlug = tokens[0]
+		if len(finalSlug) > limit {
+			finalSlug = finalSlug[:limit]
+		}
+	}
+
+	return finalSlug
 }
 
 // Unique returns a slug that is guaranteed to be unique according to checker.
@@ -98,7 +122,13 @@ func Unique(ctx context.Context, title string, excludeID string, checker SlugChe
 		if !exists {
 			return candidate, nil
 		}
-		candidate = fmt.Sprintf("%s-%d", base, i)
+		
+		suffix := fmt.Sprintf("-%d", i)
+		allowedBaseLen := maxAutoSlugLength - len(suffix)
+		if allowedBaseLen < 1 {
+			allowedBaseLen = 1
+		}
+		candidate = wordBoundaryTruncate(base, allowedBaseLen) + suffix
 	}
 
 	return "", fmt.Errorf("slugify: could not find unique slug for %q after 100 attempts", base)

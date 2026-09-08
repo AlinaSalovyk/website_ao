@@ -16,6 +16,7 @@ import { Header } from "@/components/layout/Header";
 import { ArticlePage } from "@/routes/news/ArticlePage";
 import { getTranslations } from "@/i18n";
 import type { Locale } from "@/i18n";
+import { normalizeText, extractArticleSummary, getEffectiveSeoPreview } from "@/utils/seo";
 
 // ─── Type definitions ─────────────────────────────────────────────────────────
 
@@ -27,7 +28,6 @@ interface NewsLocale {
   content: string;
   seo_title: string;
   seo_description: string;
-  keywords: string;
 }
 
 interface NewsCategory {
@@ -118,11 +118,18 @@ if (!article) {
 // ─── Derived metadata ──────────────────────────────────────────────────────────
 
 const localePart = article.locales?.[locale] ?? article.locales?.["uk"];
-const title = localePart?.seo_title || localePart?.title || t.meta.newsTitle;
-const description =
-  localePart?.seo_description ||
-  localePart?.description ||
-  t.meta.newsDescription;
+const preview = getEffectiveSeoPreview({
+  title: localePart?.title ?? "",
+  description: localePart?.description ?? "",
+  content: localePart?.content ?? "",
+  seoTitle: localePart?.seo_title ?? "",
+  seoDescription: localePart?.seo_description ?? "",
+  fallbackTitle: t.meta.newsTitle,
+  fallbackDescription: t.meta.newsDescription,
+});
+
+const title = preview.effectiveTitle;
+const description = preview.effectiveDescription;
 
 const siteUrl =
   Astro.site?.toString()?.replace(/\/$/, "") ?? Astro.url.origin;

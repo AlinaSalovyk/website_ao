@@ -17,7 +17,6 @@ export interface NewsLocale {
   content: string;
   seo_title: string;
   seo_description: string;
-  keywords: string;
 }
 
 export interface NewsTag {

@@ -89,7 +89,6 @@ type NewsLocale struct {
 	Content        string   `json:"content"`         // Full article body (sanitized HTML).
 	SEOTitle       string   `json:"seo_title"`       // <title> override; empty falls back to Title.
 	SEODescription string   `json:"seo_description"` // <meta name="description">.
-	Keywords       string   `json:"keywords"`        // Comma-separated meta keywords.
 }
 
 // NewsArticle is the root aggregate for the News domain.

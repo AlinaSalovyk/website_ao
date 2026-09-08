@@ -118,7 +118,6 @@ export interface AdminNewsLocale {
   content: string;
   seo_title: string;
   seo_description: string;
-  keywords: string;
 }
 
 export interface AdminNewsTag {

@@ -1089,7 +1089,7 @@ func scanArticleRow(r rowScanner) (*domain.NewsArticle, error) {
 // loadLocales loads both locale translations into article.Locales.
 func (r *NewsRepo) loadLocales(ctx context.Context, article *domain.NewsArticle) error {
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT locale, title, slug, description, content, seo_title, seo_description, keywords
+		`SELECT locale, title, slug, description, content, seo_title, seo_description
 		 FROM news_translations WHERE article_id=?`, article.ID,
 	)
 	if err != nil {
@@ -1102,7 +1102,7 @@ func (r *NewsRepo) loadLocales(ctx context.Context, article *domain.NewsArticle)
 		var loc domain.NewsLocale
 		var locale string
 		if err := rows.Scan(&locale, &loc.Title, &loc.Slug, &loc.Description,
-			&loc.Content, &loc.SEOTitle, &loc.SEODescription, &loc.Keywords); err != nil {
+			&loc.Content, &loc.SEOTitle, &loc.SEODescription); err != nil {
 			return fmt.Errorf("load locales scan: %w", err)
 		}
 		loc.Locale = domain.Language(locale)
@@ -1149,7 +1149,7 @@ func (r *NewsRepo) batchLoadLocales(ctx context.Context, articles []domain.NewsA
 	ph = ph[:len(ph)-1]
 
 	rows, err := r.db.QueryContext(ctx,
-		`SELECT article_id, locale, title, slug, description, content, seo_title, seo_description, keywords
+		`SELECT article_id, locale, title, slug, description, content, seo_title, seo_description
 		 FROM news_translations WHERE article_id IN (`+ph+`)`, ids...)
 	if err != nil {
 		return fmt.Errorf("batch load locales: %w", err)
@@ -1164,7 +1164,7 @@ func (r *NewsRepo) batchLoadLocales(ctx context.Context, articles []domain.NewsA
 		var articleID, locale string
 		var loc domain.NewsLocale
 		if err := rows.Scan(&articleID, &locale, &loc.Title, &loc.Slug, &loc.Description,
-			&loc.Content, &loc.SEOTitle, &loc.SEODescription, &loc.Keywords); err != nil {
+			&loc.Content, &loc.SEOTitle, &loc.SEODescription); err != nil {
 			return fmt.Errorf("batch load locales scan: %w", err)
 		}
 		loc.Locale = domain.Language(locale)
@@ -1219,11 +1219,11 @@ func insertTranslations(ctx context.Context, tx *sql.Tx, articleID string, local
 	for lang, loc := range locales {
 		_, err := tx.ExecContext(ctx, `
 			INSERT INTO news_translations
-				(article_id, locale, title, slug, description, content, seo_title, seo_description, keywords)
-			VALUES (?,?,?,?,?,?,?,?,?)`,
+				(article_id, locale, title, slug, description, content, seo_title, seo_description)
+			VALUES (?,?,?,?,?,?,?,?)`,
 			articleID, string(lang),
 			loc.Title, strings.TrimSpace(loc.Slug), loc.Description, loc.Content,
-			loc.SEOTitle, loc.SEODescription, loc.Keywords,
+			loc.SEOTitle, loc.SEODescription,
 		)
 		if err != nil {
 			return fmt.Errorf("insert translation %s: %w", lang, err)

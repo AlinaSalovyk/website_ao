@@ -437,6 +437,13 @@ var migrations = []migration{
 		CREATE INDEX IF NOT EXISTS idx_invitations_token ON admin_invitations(token_hash);
 		`,
 	},
+	{
+		Version:     20,
+		Description: "drop keywords column from news_translations",
+		SQL: `
+		ALTER TABLE news_translations DROP COLUMN keywords;
+		`,
+	},
 }
 
 // runMigrations creates the schema_version table if absent, then iterates

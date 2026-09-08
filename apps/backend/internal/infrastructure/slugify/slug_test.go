@@ -54,9 +54,14 @@ func TestGenerate(t *testing.T) {
 			want:  "",
 		},
 		{
-			name:  "long title truncated at word boundary",
-			input: "Дуже довгий заголовок який перевищує вісімдесят символів і повинен бути скорочений на межі слова",
-			want:  func() string { s := slugify.Generate("Дуже довгий заголовок який перевищує вісімдесят символів і повинен бути скорочений на межі слова"); return s }(),
+			name:  "UK long title with soft token truncation",
+			input: "Першокурсникам Острозької академії розповіли про бібліотечно-інформаційні ресурси й сервіси університетської бібліотеки",
+			want:  "pershokursnykam-ostrozkoi-akademii-rozpovily-pro-bibliotechno-informatsiini-resursy-i-servisy",
+		},
+		{
+			name:  "EN long title with soft token truncation",
+			input: "The freshmen of the Ostrom Academy told me about library information and university library services",
+			want:  "the-freshmen-of-the-ostrom-academy-told-me-about-library-information-and-university-library-services",
 		},
 	}
 
@@ -69,16 +74,7 @@ func TestGenerate(t *testing.T) {
 				}
 				return
 			}
-			if tt.name == "long title truncated at word boundary" {
-				if len(got) > 80 {
-					t.Errorf("Generate(%q) length=%d, want <=80", tt.input, len(got))
-				}
-				if got != tt.want {
-					// Both should be the same since tt.want uses Generate itself.
-					t.Errorf("Generate inconsistent: got %q, want %q", got, tt.want)
-				}
-				return
-			}
+
 			if got != tt.want {
 				t.Errorf("Generate(%q)\n  got  %q\n  want %q", tt.input, got, tt.want)
 			}
@@ -94,8 +90,8 @@ func TestGenerate_MaxLength(t *testing.T) {
 		title += long
 	}
 	got := slugify.Generate(title)
-	if len(got) > 80 {
-		t.Errorf("slug length %d exceeds 80 chars: %q", len(got), got)
+	if len(got) > 100 {
+		t.Errorf("slug length %d exceeds 100 chars: %q", len(got), got)
 	}
 }
 
