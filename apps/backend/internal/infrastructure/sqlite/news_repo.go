@@ -312,6 +312,7 @@ func (r *NewsRepo) GetByID(ctx context.Context, id string) (*domain.NewsArticle,
 // GetBySlug finds an article by its locale-specific slug.
 // Returns wasRedirected=true when the slug was found in news_slug_history or matched another locale's slug.
 func (r *NewsRepo) GetBySlug(ctx context.Context, locale domain.Language, slug string) (*domain.NewsArticle, bool, error) {
+	slug = strings.TrimSpace(slug)
 	// Try current slug with exact locale first.
 	row := r.db.QueryRowContext(ctx,
 		articleBaseQuery+`
@@ -483,7 +484,7 @@ func (r *NewsRepo) List(ctx context.Context, opts domain.NewsListOptions) ([]dom
 
 	// Data query.
 	dataQ := articleBaseQuery + whereClause +
-		" ORDER BY " + sortCol + " " + opts.SortDir +
+		" ORDER BY a.is_pinned DESC, " + sortCol + " " + opts.SortDir +
 		", a.created_at DESC" +
 		" LIMIT ? OFFSET ?"
 	dataArgs := append(args, opts.Limit, opts.Offset)
@@ -1221,7 +1222,7 @@ func insertTranslations(ctx context.Context, tx *sql.Tx, articleID string, local
 				(article_id, locale, title, slug, description, content, seo_title, seo_description, keywords)
 			VALUES (?,?,?,?,?,?,?,?,?)`,
 			articleID, string(lang),
-			loc.Title, loc.Slug, loc.Description, loc.Content,
+			loc.Title, strings.TrimSpace(loc.Slug), loc.Description, loc.Content,
 			loc.SEOTitle, loc.SEODescription, loc.Keywords,
 		)
 		if err != nil {

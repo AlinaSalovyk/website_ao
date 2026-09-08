@@ -1,5 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import type { Locale } from "@/i18n";
@@ -12,6 +12,7 @@ import {
   getFullImageUrl,
   type NewsArticle,
 } from "@/lib/news-api";
+import { NewsFallbackCover } from "./NewsFallbackCover";
 
 interface CompactStoryCardProps {
   article: NewsArticle;
@@ -29,6 +30,9 @@ export const CompactStoryCard = ({
   const slug = articleSlug(article, locale);
   const date = article.published_at ?? article.created_at;
   const href = getLocalizedPath(`/news/${slug}`, locale);
+  const [imgError, setImgError] = useState(false);
+
+  const hasImage = Boolean(article.image_url) && !imgError;
 
   return (
     <ScrollReveal variant="fade-up" delay={index * 40}>
@@ -38,25 +42,22 @@ export const CompactStoryCard = ({
         className="group flex items-center gap-4 p-3 sm:p-3.5 rounded-xl bg-white border border-slate-200/80 hover:border-slate-300 hover:shadow-xs transition-all duration-200 cursor-pointer"
       >
         {/* Cover Thumbnail */}
-        {article.image_url ? (
+        {hasImage ? (
           <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-slate-100 shrink-0 border border-slate-200/60">
             <img
-              src={`${getFullImageUrl(article.image_url)}-320w.webp`}
+              src={getFullImageUrl(article.image_url)}
               alt={title}
               width={120}
               height={120}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
               loading="lazy"
               decoding="async"
+              onError={() => setImgError(true)}
             />
           </div>
         ) : (
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-slate-100 border border-slate-200/60 shrink-0 flex items-center justify-center p-2">
-            {article.category && (
-              <span className="text-[9px] font-bold text-blue-700 uppercase tracking-widest text-center leading-tight">
-                {categoryName(article.category, locale)}
-              </span>
-            )}
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0">
+            <NewsFallbackCover article={article} variant="thumb" locale={locale} />
           </div>
         )}
 

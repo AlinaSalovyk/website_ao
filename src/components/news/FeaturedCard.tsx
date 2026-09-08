@@ -1,5 +1,5 @@
 import { ArrowUpRight, Calendar, User } from "lucide-react";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import type { Locale } from "@/i18n";
@@ -8,12 +8,12 @@ import {
   articleDescription,
   articleSlug,
   articleTitle,
-  buildImageSrcSet,
   categoryName,
   formatNewsDate,
   getFullImageUrl,
   type NewsArticle,
 } from "@/lib/news-api";
+import { NewsFallbackCover } from "./NewsFallbackCover";
 
 interface FeaturedCardProps {
   article: NewsArticle;
@@ -29,8 +29,10 @@ export const FeaturedCard = ({
   const description = articleDescription(article, locale);
   const slug = articleSlug(article, locale);
   const date = article.published_at ?? article.created_at;
-  const srcSet = article.image_url ? buildImageSrcSet(article.image_url) : "";
   const href = getLocalizedPath(`/news/${slug}`, locale);
+  const [imgError, setImgError] = useState(false);
+
+  const hasImage = Boolean(article.image_url) && !imgError;
 
   return (
     <ScrollReveal variant="fade-up" className="w-full">
@@ -41,25 +43,20 @@ export const FeaturedCard = ({
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-0">
           {/* Cover Media */}
-          {article.image_url ? (
+          {hasImage ? (
             <div className="lg:col-span-7 relative w-full aspect-[16/10] lg:aspect-auto overflow-hidden bg-slate-100 border-b lg:border-b-0 lg:border-r border-slate-200/60 min-h-[260px]">
               <img
-                src={`${getFullImageUrl(article.image_url)}-1024w.webp`}
-                srcSet={srcSet}
-                sizes="(min-width: 1024px) 60vw, 100vw"
+                src={getFullImageUrl(article.image_url)}
                 alt={title}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                 loading="eager"
                 decoding="async"
+                onError={() => setImgError(true)}
               />
             </div>
           ) : (
-            <div className="lg:col-span-7 relative w-full aspect-[16/10] lg:aspect-auto bg-slate-100 border-b lg:border-b-0 lg:border-r border-slate-200/60 flex items-center justify-center p-8 min-h-[260px]">
-              {article.category && (
-                <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold tracking-wider uppercase border border-blue-200/80">
-                  {categoryName(article.category, locale)}
-                </span>
-              )}
+            <div className="lg:col-span-7 relative w-full aspect-[16/10] lg:aspect-auto border-b lg:border-b-0 lg:border-r border-slate-200/60 overflow-hidden min-h-[260px]">
+              <NewsFallbackCover article={article} variant="hero" locale={locale} />
             </div>
           )}
 

@@ -1,5 +1,5 @@
 import { ArrowUpRight, Calendar, User } from "lucide-react";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import type { Locale } from "@/i18n";
@@ -8,12 +8,12 @@ import {
   articleDescription,
   articleSlug,
   articleTitle,
-  buildImageSrcSet,
   categoryName,
   formatNewsDate,
   getFullImageUrl,
   type NewsArticle,
 } from "@/lib/news-api";
+import { NewsFallbackCover } from "./NewsFallbackCover";
 
 interface ArticleCardProps {
   article: NewsArticle;
@@ -31,8 +31,10 @@ export const ArticleCard = ({
   const description = articleDescription(article, locale);
   const slug = articleSlug(article, locale);
   const date = article.published_at ?? article.created_at;
-  const srcSet = article.image_url ? buildImageSrcSet(article.image_url) : "";
   const href = getLocalizedPath(`/news/${slug}`, locale);
+  const [imgError, setImgError] = useState(false);
+
+  const hasImage = Boolean(article.image_url) && !imgError;
 
   return (
     <ScrollReveal variant="fade-up" delay={index * 30} className="h-full">
@@ -42,18 +44,17 @@ export const ArticleCard = ({
         className="group flex flex-col h-full rounded-xl overflow-hidden bg-white border border-slate-200/90 hover:border-slate-300 hover:shadow-md transition-all duration-300 cursor-pointer isolate shadow-xs"
       >
         {/* Cover Thumbnail */}
-        {article.image_url ? (
+        {hasImage ? (
           <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100 border-b border-slate-100">
             <img
-              src={`${getFullImageUrl(article.image_url)}-640w.webp`}
-              srcSet={srcSet}
-              sizes="(min-width: 1024px) 384px, (min-width: 768px) 50vw, 100vw"
+              src={getFullImageUrl(article.image_url)}
               alt={title}
               width={640}
               height={400}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
               loading="lazy"
               decoding="async"
+              onError={() => setImgError(true)}
             />
             {article.category && (
               <div className="absolute top-3 left-3 z-10">
@@ -64,13 +65,7 @@ export const ArticleCard = ({
             )}
           </div>
         ) : (
-          <div className="relative w-full aspect-[16/10] bg-slate-100 border-b border-slate-200/60 flex items-center justify-center p-6">
-            {article.category && (
-              <span className="px-2.5 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold tracking-wider uppercase border border-blue-200/80">
-                {categoryName(article.category, locale)}
-              </span>
-            )}
-          </div>
+          <NewsFallbackCover article={article} variant="card" locale={locale} />
         )}
 
         {/* Content Body */}

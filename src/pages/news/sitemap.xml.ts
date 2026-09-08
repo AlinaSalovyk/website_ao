@@ -27,7 +27,7 @@ function escapeXml(str: string): string {
 }
 
 export const GET: APIRoute = async ({ site, url }) => {
-  const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8080";
+  const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8280";
   const siteUrl = site?.toString()?.replace(/\/$/, "") ?? url.origin;
 
   let entries: NewsSlugEntry[] = [];

@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -468,8 +469,12 @@ func runMigrations(db *sql.DB) error {
 		}
 
 		if _, err := tx.Exec(m.SQL); err != nil {
-			_ = tx.Rollback()
-			return fmt.Errorf("migration v%d (%s): %w", m.Version, m.Description, err)
+			if strings.Contains(err.Error(), "duplicate column name") {
+				slog.Warn("Migration column already exists, proceeding", "version", m.Version, "error", err)
+			} else {
+				_ = tx.Rollback()
+				return fmt.Errorf("migration v%d (%s): %w", m.Version, m.Description, err)
+			}
 		}
 
 		if _, err := tx.Exec(

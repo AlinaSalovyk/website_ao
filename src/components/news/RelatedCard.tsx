@@ -1,5 +1,5 @@
 import { ArrowUpRight, Calendar } from "lucide-react";
-import type { JSX } from "react";
+import { useState, type JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import type { Locale } from "@/i18n";
@@ -7,12 +7,12 @@ import { getLocalizedPath, getTranslations } from "@/i18n";
 import {
   articleSlug,
   articleTitle,
-  buildImageSrcSet,
   categoryName,
   formatNewsDate,
   getFullImageUrl,
   type NewsArticle,
 } from "@/lib/news-api";
+import { NewsFallbackCover } from "./NewsFallbackCover";
 
 interface RelatedCardProps {
   article: NewsArticle;
@@ -29,8 +29,10 @@ export const RelatedCard = ({
   const title = articleTitle(article, locale);
   const slug = articleSlug(article, locale);
   const date = article.published_at ?? article.created_at;
-  const srcSet = article.image_url ? buildImageSrcSet(article.image_url) : "";
   const href = getLocalizedPath(`/news/${slug}`, locale);
+  const [imgError, setImgError] = useState(false);
+
+  const hasImage = Boolean(article.image_url) && !imgError;
 
   return (
     <ScrollReveal
@@ -44,26 +46,19 @@ export const RelatedCard = ({
         className="flex flex-col w-full h-full rounded-xl overflow-hidden group cursor-pointer border border-slate-200/90 hover:border-slate-300 bg-white shadow-xs hover:shadow-md transition-all duration-300"
       >
         {/* Cover image */}
-        {article.image_url ? (
+        {hasImage ? (
           <div className="relative w-full aspect-[16/10] overflow-hidden bg-slate-100">
             <img
-              src={`${getFullImageUrl(article.image_url)}-320w.webp`}
-              srcSet={srcSet}
-              sizes="(min-width: 768px) 33vw, 100vw"
+              src={getFullImageUrl(article.image_url)}
               alt={title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               loading="lazy"
               decoding="async"
+              onError={() => setImgError(true)}
             />
           </div>
         ) : (
-          <div className="relative w-full aspect-[16/10] bg-slate-100 flex items-center justify-center p-4">
-            {article.category && (
-              <span className="text-xs font-bold text-blue-700 uppercase">
-                {categoryName(article.category, locale)}
-              </span>
-            )}
-          </div>
+          <NewsFallbackCover article={article} variant="card" locale={locale} />
         )}
 
         <div className="p-5 flex flex-col flex-1 justify-between">

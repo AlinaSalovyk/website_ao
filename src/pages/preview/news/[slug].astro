@@ -22,7 +22,7 @@ if (!sessionId) {
   return new Response("Missing preview_session", { status: 400 });
 }
 
-const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8080";
+const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8280";
 const ADMIN_PATH = import.meta.env.PUBLIC_ADMIN_PATH ?? "panel";
 const ADMIN_BASE = `/admin-${ADMIN_PATH}`;
 
