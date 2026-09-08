@@ -37,9 +37,7 @@ export default defineConfig({
     routing: {
       prefixDefaultLocale: false,
     },
-    fallback: {
-      en: 'uk',
-    },
+    
   },
   integrations: [
     react(),
