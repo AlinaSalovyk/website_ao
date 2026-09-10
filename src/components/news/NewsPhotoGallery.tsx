@@ -8,7 +8,7 @@ import {
   type NewsArticle,
   type NewsGalleryImage,
 } from "@/lib/news-api";
-import { ImageExpansionSlider, type GalleryImage } from "@/components/ui/image-expansion";
+import { ImageExpansionSlider, type GalleryImage } from "@/components/ui/related-expansion-slider";
 
 interface NewsPhotoGalleryProps {
   article: NewsArticle;
@@ -25,40 +25,39 @@ export function NewsPhotoGallery({
 }: NewsPhotoGalleryProps) {
   const t = getTranslations(locale);
 
-  if (!images || images.length === 0) {
-    return null;
-  }
-
   const titleUK = articleTitle(article, "uk") || "Фотографія новини";
   const titleEN = articleTitle(article, "en") || titleUK || "News photo";
 
   // Map backend NewsGalleryImage records to UI primitive GalleryImage with locale fallbacks
-  const galleryItems: GalleryImage[] = images.map((img) => {
-    let alt = "";
-    let caption = "";
+  const hasRealImages = Boolean(images && images.length > 0);
+  const galleryItems: GalleryImage[] = hasRealImages
+    ? images!.map((img) => {
+        let alt = "";
+        let caption = "";
 
-    if (locale === "en") {
-      alt = img.alt_en?.trim() || img.alt_uk?.trim() || titleEN;
-      caption = img.caption_en?.trim() || img.caption_uk?.trim() || "";
-    } else {
-      alt = img.alt_uk?.trim() || titleUK;
-      caption = img.caption_uk?.trim() || "";
-    }
+        if (locale === "en") {
+          alt = img.alt_en?.trim() || img.alt_uk?.trim() || titleEN;
+          caption = img.caption_en?.trim() || img.caption_uk?.trim() || "";
+        } else {
+          alt = img.alt_uk?.trim() || titleUK;
+          caption = img.caption_uk?.trim() || "";
+        }
 
-    const rawSrc = img.url || `/api/v1/news/${img.news_id || article.id}/gallery/${img.id}/file`;
-    const fullSrc = getFullImageUrl(rawSrc);
+        const rawSrc = img.url || `/api/v1/news/${img.news_id || article.id}/gallery/${img.id}/file`;
+        const fullSrc = getFullImageUrl(rawSrc);
 
-    return {
-      id: img.id,
-      src: fullSrc,
-      thumbnailSrc: img.thumbnail_url ? getFullImageUrl(img.thumbnail_url) : fullSrc,
-      largeSrc: img.large_url ? getFullImageUrl(img.large_url) : fullSrc,
-      alt,
-      caption,
-      width: img.width,
-      height: img.height,
-    };
-  });
+        return {
+          id: img.id,
+          src: fullSrc,
+          thumbnailSrc: img.thumbnail_url ? getFullImageUrl(img.thumbnail_url) : fullSrc,
+          largeSrc: img.large_url ? getFullImageUrl(img.large_url) : fullSrc,
+          alt,
+          caption,
+          width: img.width,
+          height: img.height,
+        };
+      })
+    : DEMO_GALLERY;
 
   return (
     <div className={`w-full mt-10 md:mt-14 ${className}`}>
