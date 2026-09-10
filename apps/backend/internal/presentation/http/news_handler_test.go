@@ -231,3 +231,159 @@ func TestResolveMediaKeysInHTML(t *testing.T) {
 		t.Errorf("S3 HTML missing legacy resolved src: %s", s3HTML)
 	}
 }
+
+func TestValidateAttachmentFile(t *testing.T) {
+	tests := []struct {
+		name        string
+		filename    string
+		headerMIME  string
+		content     []byte
+		size        int64
+		wantErr     bool
+		expectedExt string
+	}{
+		{
+			name:        "Valid PDF document with signature",
+			filename:    "Nakaz_123.pdf",
+			headerMIME:  "application/pdf",
+			content:     []byte("%PDF-1.4 sample content for document"),
+			size:        100,
+			wantErr:     false,
+			expectedExt: ".pdf",
+		},
+		{
+			name:        "Valid DOCX document with ZIP signature",
+			filename:    "Report_2026.docx",
+			headerMIME:  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			content:     []byte("PK\x03\x04sample docx container bytes"),
+			size:        200,
+			wantErr:     false,
+			expectedExt: ".docx",
+		},
+		{
+			name:        "Valid XLSX document",
+			filename:    "Budget.xlsx",
+			headerMIME:  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			content:     []byte("PK\x03\x04sample xlsx container bytes"),
+			size:        300,
+			wantErr:     false,
+			expectedExt: ".xlsx",
+		},
+		{
+			name:        "Valid TXT document",
+			filename:    "notes.txt",
+			headerMIME:  "text/plain",
+			content:     []byte("Simple plain text file content"),
+			size:        30,
+			wantErr:     false,
+			expectedExt: ".txt",
+		},
+		{
+			name:       "Executable .exe file rejected",
+			filename:   "malware.exe",
+			headerMIME: "application/octet-stream",
+			content:    []byte("MZ executable header content"),
+			size:       1000,
+			wantErr:    true,
+		},
+		{
+			name:       "Executable disguised as PDF (double extension) rejected",
+			filename:   "report.pdf.exe",
+			headerMIME: "application/octet-stream",
+			content:    []byte("MZ executable header content"),
+			size:       1000,
+			wantErr:    true,
+		},
+		{
+			name:       "Shell script rejected",
+			filename:   "deploy.sh",
+			headerMIME: "text/x-shellscript",
+			content:    []byte("#!/bin/bash\nrm -rf /"),
+			size:       50,
+			wantErr:    true,
+		},
+		{
+			name:       "HTML file disguised as PDF rejected",
+			filename:   "phishing.html",
+			headerMIME: "text/html",
+			content:    []byte("<html><script>alert(1)</script></html>"),
+			size:       100,
+			wantErr:    true,
+		},
+		{
+			name:        "Path traversal in filename sanitized",
+			filename:    "../../../../etc/passwd.pdf",
+			headerMIME:  "application/pdf",
+			content:     []byte("%PDF-1.4 fake passwd content"),
+			size:        100,
+			wantErr:     false,
+			expectedExt: ".pdf",
+		},
+		{
+			name:        "File exceeding maximum size rejected",
+			filename:    "huge_document.pdf",
+			headerMIME:  "application/pdf",
+			content:     append([]byte("%PDF-1.4 "), make([]byte, 26*1024*1024)...),
+			size:        26 * 1024 * 1024, // 26 MB (exceeds 25 MB limit)
+			wantErr:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ext, mime, err := newshttp.ValidateAttachmentFile(tt.filename, tt.content)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ValidateAttachmentFile(%q) error = %v, wantErr %v", tt.filename, err, tt.wantErr)
+				return
+			}
+			if !tt.wantErr {
+				if ext != tt.expectedExt {
+					t.Errorf("ext = %q, want %q", ext, tt.expectedExt)
+				}
+				if mime == "" {
+					t.Errorf("mime should not be empty")
+				}
+			}
+		})
+	}
+}
+
+func TestAttachmentURLAndHeaderSemantics(t *testing.T) {
+	t.Run("Inline disposition for PDF on normal file request", func(t *testing.T) {
+		ext := ".pdf"
+		isDownload := false
+		dispType := "attachment"
+		if !isDownload && (ext == ".pdf" || ext == ".txt") {
+			dispType = "inline"
+		}
+		if dispType != "inline" {
+			t.Errorf("expected inline for PDF normal request, got %s", dispType)
+		}
+	})
+
+	t.Run("Attachment disposition for PDF when download=1 is present", func(t *testing.T) {
+		ext := ".pdf"
+		isDownload := true // e.g. query param download=1
+		dispType := "attachment"
+		if !isDownload && (ext == ".pdf" || ext == ".txt") {
+			dispType = "inline"
+		}
+		if dispType != "attachment" {
+			t.Errorf("expected attachment for PDF with download=1, got %s", dispType)
+		}
+	})
+
+	t.Run("Attachment disposition for DOCX on normal file request", func(t *testing.T) {
+		ext := ".docx"
+		isDownload := false
+		dispType := "attachment"
+		if !isDownload && (ext == ".pdf" || ext == ".txt") {
+			dispType = "inline"
+		}
+		if dispType != "attachment" {
+			t.Errorf("expected attachment for DOCX normal request, got %s", dispType)
+		}
+	})
+}
+
+

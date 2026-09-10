@@ -65,7 +65,8 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// Exclude multipart upload endpoints from the global 1 MB body limit.
 			if strings.HasSuffix(r.URL.Path, "/documents/upload") ||
-				(strings.Contains(r.URL.Path, "/news/") && strings.HasSuffix(r.URL.Path, "/image")) {
+				strings.Contains(r.URL.Path, "/attachments") ||
+				(strings.Contains(r.URL.Path, "/news/") && (strings.HasSuffix(r.URL.Path, "/image") || strings.HasSuffix(r.URL.Path, "/upload-video"))) {
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -157,6 +158,10 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 			r.Get("/news", deps.NewsHandler.HandlePublicList)
 			r.Get("/news/sitemap", deps.NewsHandler.HandlePublicSitemap)
 			r.Get("/news/categories", deps.NewsHandler.HandlePublicCategories)
+			r.Get("/news/{id}/attachments/{attachmentId}/file", deps.NewsHandler.HandlePublicServeAttachment)
+			r.Get("/news/{id}/attachments/{attachmentId}/download", deps.NewsHandler.HandlePublicServeAttachment)
+			r.Get("/news/attachments/{attachmentId}/file", deps.NewsHandler.HandlePublicServeAttachment)
+			r.Get("/news/attachments/{attachmentId}/download", deps.NewsHandler.HandlePublicServeAttachment)
 			r.Get("/news/preview/{token}", deps.NewsHandler.HandlePreview)
 			r.Get("/news/{slug}", deps.NewsHandler.HandlePublicBySlug)
 		}
@@ -253,6 +258,12 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 				r.Delete("/news/{id}", deps.NewsHandler.HandleDelete)
 				r.Post("/news/{id}/restore", deps.NewsHandler.HandleRestore)
 				r.Post("/news/{id}/image", deps.NewsHandler.HandleUploadImage)
+
+				r.Get("/news/{id}/attachments", deps.NewsHandler.HandleGetAttachments)
+				r.Post("/news/{id}/attachments", deps.NewsHandler.HandleUploadAttachment)
+				r.Patch("/news/{id}/attachments/reorder", deps.NewsHandler.HandleReorderAttachments)
+				r.Patch("/news/{id}/attachments/{attachmentId}", deps.NewsHandler.HandleUpdateAttachment)
+				r.Delete("/news/{id}/attachments/{attachmentId}", deps.NewsHandler.HandleDeleteAttachment)
 			}
 		})
 

@@ -159,3 +159,66 @@ export const saveDraft = (sessionId: string, data: any) => api<unknown>(`${ADMIN
   body: JSON.stringify(data),
 });
 
+export const uploadAdminNewsAttachment = async (
+  newsId: string,
+  file: File,
+  titleUk = "",
+  titleEn = ""
+): Promise<import("../types/api.types").AdminNewsAttachment> => {
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const form = new FormData();
+  form.append("file", file);
+  if (titleUk) form.append("title_uk", titleUk);
+  if (titleEn) form.append("title_en", titleEn);
+
+  const res = await fetch(`${API_BASE}${ADMIN_BASE}/news/${newsId}/attachments`, {
+    method: "POST",
+    headers,
+    body: form,
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    try {
+      const parsed = JSON.parse(txt);
+      throw new Error(parsed.message || parsed.error || "Upload failed");
+    } catch (e: any) {
+      if (e?.message && e.message !== "Upload failed") throw e;
+      throw new Error(txt || "Upload failed");
+    }
+  }
+  return res.json();
+};
+
+export const fetchAdminNewsAttachments = (newsId: string): Promise<import("../types/api.types").AdminNewsAttachment[]> =>
+  api<import("../types/api.types").AdminNewsAttachment[]>(`${ADMIN_BASE}/news/${newsId}/attachments`);
+
+export const updateAdminNewsAttachment = (
+  newsId: string,
+  attachmentId: string,
+  payload: { title_uk?: string; title_en?: string; sort_order?: number }
+): Promise<void> =>
+  api<void>(`${ADMIN_BASE}/news/${newsId}/attachments/${attachmentId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+
+export const deleteAdminNewsAttachment = (
+  newsId: string,
+  attachmentId: string
+): Promise<void> =>
+  api<void>(`${ADMIN_BASE}/news/${newsId}/attachments/${attachmentId}`, {
+    method: "DELETE",
+  });
+
+export const reorderAdminNewsAttachments = (
+  newsId: string,
+  ids: string[]
+): Promise<void> =>
+  api<void>(`${ADMIN_BASE}/news/${newsId}/attachments/reorder`, {
+    method: "PATCH",
+    body: JSON.stringify(ids),
+  });
+

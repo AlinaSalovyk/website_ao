@@ -306,6 +306,7 @@ func (r *NewsRepo) GetByID(ctx context.Context, id string) (*domain.NewsArticle,
 	if err := r.loadTags(ctx, article); err != nil {
 		return nil, fmt.Errorf("news get by id: %w", err)
 	}
+	_ = r.loadAttachments(ctx, article)
 	return article, nil
 }
 
@@ -328,6 +329,7 @@ func (r *NewsRepo) GetBySlug(ctx context.Context, locale domain.Language, slug s
 		if err := r.loadTags(ctx, article); err != nil {
 			return nil, false, fmt.Errorf("news get by slug: %w", err)
 		}
+		_ = r.loadAttachments(ctx, article)
 		return article, false, nil
 	}
 	if err != sql.ErrNoRows {
@@ -349,6 +351,7 @@ func (r *NewsRepo) GetBySlug(ctx context.Context, locale domain.Language, slug s
 		if err := r.loadTags(ctx, article); err != nil {
 			return nil, false, fmt.Errorf("news get by slug (any locale): %w", err)
 		}
+		_ = r.loadAttachments(ctx, article)
 		wasRedirected := false
 		if targetLoc, ok := article.Locales[locale]; ok && targetLoc.Slug != "" && targetLoc.Slug != slug {
 			wasRedirected = true
@@ -402,6 +405,7 @@ func (r *NewsRepo) GetByPreviewToken(ctx context.Context, token string) (*domain
 	if err := r.loadTags(ctx, article); err != nil {
 		return nil, fmt.Errorf("news get by preview token: %w", err)
 	}
+	_ = r.loadAttachments(ctx, article)
 	return article, nil
 }
 
@@ -515,6 +519,7 @@ func (r *NewsRepo) List(ctx context.Context, opts domain.NewsListOptions) ([]dom
 		if err := r.batchLoadTags(ctx, articles); err != nil {
 			return nil, 0, fmt.Errorf("news list tags: %w", err)
 		}
+		_ = r.batchLoadAttachments(ctx, articles)
 	}
 
 	if articles == nil {
@@ -1285,5 +1290,165 @@ func insertSlugHistory(ctx context.Context, tx *sql.Tx, articleID string, locale
 	)
 	return err
 }
+
+// ─── News Attachments Implementation ──────────────────────────────────────────
+
+func (r *NewsRepo) AddAttachment(ctx context.Context, att *domain.NewsAttachment) error {
+	if att.ID == "" {
+		att.ID = uuid.New().String()
+	}
+	if att.CreatedAt.IsZero() {
+		att.CreatedAt = time.Now().UTC()
+	}
+	_, err := r.db.ExecContext(ctx, `
+		INSERT INTO news_attachments
+			(id, news_id, original_name, stored_name, mime_type, extension, size_bytes, sort_order, title_uk, title_en, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		att.ID, att.NewsID, att.OriginalName, att.StoredName, att.MIMEType, att.Extension,
+		att.SizeBytes, att.SortOrder, att.TitleUK, att.TitleEN, att.CreatedAt,
+	)
+	if err != nil {
+		return fmt.Errorf("news add attachment: %w", err)
+	}
+	return nil
+}
+
+func (r *NewsRepo) GetAttachmentByID(ctx context.Context, id string) (*domain.NewsAttachment, error) {
+	row := r.db.QueryRowContext(ctx, `
+		SELECT id, news_id, original_name, stored_name, mime_type, extension, size_bytes, sort_order, title_uk, title_en, created_at
+		FROM news_attachments WHERE id=?`, id,
+	)
+	var att domain.NewsAttachment
+	var createdAtStr string
+	err := row.Scan(&att.ID, &att.NewsID, &att.OriginalName, &att.StoredName, &att.MIMEType, &att.Extension,
+		&att.SizeBytes, &att.SortOrder, &att.TitleUK, &att.TitleEN, &createdAtStr)
+	if err == sql.ErrNoRows {
+		return nil, domain.ErrNewsNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("news get attachment: %w", err)
+	}
+	att.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
+	return &att, nil
+}
+
+func (r *NewsRepo) GetAttachmentsByNewsID(ctx context.Context, newsID string) ([]domain.NewsAttachment, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT id, news_id, original_name, stored_name, mime_type, extension, size_bytes, sort_order, title_uk, title_en, created_at
+		FROM news_attachments WHERE news_id=? ORDER BY sort_order ASC, created_at ASC`, newsID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("news get attachments by news_id: %w", err)
+	}
+	defer rows.Close()
+
+	var list []domain.NewsAttachment
+	for rows.Next() {
+		var att domain.NewsAttachment
+		var createdAtStr string
+		if err := rows.Scan(&att.ID, &att.NewsID, &att.OriginalName, &att.StoredName, &att.MIMEType, &att.Extension,
+			&att.SizeBytes, &att.SortOrder, &att.TitleUK, &att.TitleEN, &createdAtStr); err != nil {
+			return nil, fmt.Errorf("news scan attachment: %w", err)
+		}
+		att.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
+		list = append(list, att)
+	}
+	if list == nil {
+		list = []domain.NewsAttachment{}
+	}
+	return list, rows.Err()
+}
+
+func (r *NewsRepo) UpdateAttachment(ctx context.Context, id string, titleUK, titleEN string, sortOrder int) error {
+	res, err := r.db.ExecContext(ctx, `
+		UPDATE news_attachments SET title_uk=?, title_en=?, sort_order=? WHERE id=?`,
+		titleUK, titleEN, sortOrder, id,
+	)
+	if err != nil {
+		return fmt.Errorf("news update attachment: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return domain.ErrNewsNotFound
+	}
+	return nil
+}
+
+func (r *NewsRepo) DeleteAttachment(ctx context.Context, id string) error {
+	res, err := r.db.ExecContext(ctx, `DELETE FROM news_attachments WHERE id=?`, id)
+	if err != nil {
+		return fmt.Errorf("news delete attachment: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return domain.ErrNewsNotFound
+	}
+	return nil
+}
+
+func (r *NewsRepo) ReorderAttachments(ctx context.Context, newsID string, attachmentIDs []string) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("news reorder attachments tx: %w", err)
+	}
+	defer tx.Rollback()
+
+	for idx, attID := range attachmentIDs {
+		_, err := tx.ExecContext(ctx, `
+			UPDATE news_attachments SET sort_order=? WHERE id=? AND news_id=?`,
+			idx, attID, newsID,
+		)
+		if err != nil {
+			return fmt.Errorf("news reorder attachment %s: %w", attID, err)
+		}
+	}
+	return tx.Commit()
+}
+
+func (r *NewsRepo) loadAttachments(ctx context.Context, article *domain.NewsArticle) error {
+	atts, err := r.GetAttachmentsByNewsID(ctx, article.ID)
+	if err != nil {
+		article.Attachments = []domain.NewsAttachment{}
+		return err
+	}
+	article.Attachments = atts
+	return nil
+}
+
+func (r *NewsRepo) batchLoadAttachments(ctx context.Context, articles []domain.NewsArticle) error {
+	ids := make([]interface{}, len(articles))
+	for i, a := range articles {
+		ids[i] = a.ID
+	}
+	ph := strings.Repeat("?,", len(ids))
+	ph = ph[:len(ph)-1]
+
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT id, news_id, original_name, stored_name, mime_type, extension, size_bytes, sort_order, title_uk, title_en, created_at
+		FROM news_attachments WHERE news_id IN (`+ph+`) ORDER BY sort_order ASC, created_at ASC`, ids...)
+	if err != nil {
+		return fmt.Errorf("batch load attachments: %w", err)
+	}
+	defer rows.Close()
+
+	byID := make(map[string][]domain.NewsAttachment, len(articles))
+	for rows.Next() {
+		var att domain.NewsAttachment
+		var createdAtStr string
+		if err := rows.Scan(&att.ID, &att.NewsID, &att.OriginalName, &att.StoredName, &att.MIMEType, &att.Extension,
+			&att.SizeBytes, &att.SortOrder, &att.TitleUK, &att.TitleEN, &createdAtStr); err != nil {
+			return fmt.Errorf("batch load attachments scan: %w", err)
+		}
+		att.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
+		byID[att.NewsID] = append(byID[att.NewsID], att)
+	}
+	for i := range articles {
+		if atts, ok := byID[articles[i].ID]; ok {
+			articles[i].Attachments = atts
+		} else {
+			articles[i].Attachments = []domain.NewsAttachment{}
+		}
+	}
+	return rows.Err()
+}
+
 
 

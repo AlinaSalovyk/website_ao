@@ -116,6 +116,23 @@ type NewsArticle struct {
 	UpdatedAt    time.Time            `json:"updated_at"`
 	DeletedAt    *time.Time           `json:"deleted_at,omitempty"` // Soft-delete marker; nil = active.
 	Locales      map[Language]NewsLocale `json:"locales"`           // Keyed by LangUk / LangEn. Both always present after Validate().
+	Attachments  []NewsAttachment     `json:"attachments"`          // Document file attachments.
+}
+
+// NewsAttachment represents a document attachment linked to a news article.
+type NewsAttachment struct {
+	ID           string    `json:"id"`
+	NewsID       string    `json:"news_id"`
+	OriginalName string    `json:"original_name"`
+	StoredName   string    `json:"stored_name"`
+	MIMEType     string    `json:"mime_type"`
+	Extension    string    `json:"extension"`
+	SizeBytes    int64     `json:"size_bytes"`
+	SortOrder    int       `json:"sort_order"`
+	TitleUK      string    `json:"title_uk"`
+	TitleEN      string    `json:"title_en"`
+	URL          string    `json:"url,omitempty"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 type VideoType string

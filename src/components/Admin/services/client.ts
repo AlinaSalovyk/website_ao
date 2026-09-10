@@ -57,7 +57,6 @@ export async function api<T>(path: string, opts: RequestInit = {}): Promise<T> {
       });
     } else {
       clearToken();
-      window.location.reload(); 
       throw new Error("unauthorized");
     }
   } else if (res.status === 401) {

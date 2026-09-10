@@ -206,6 +206,11 @@ export const uk = {
     clearSearch: "Очистити пошук",
     noContent: "Вміст статті відсутній.",
     copied: "Скопійовано!",
+    attachmentsTitle: "Документи",
+    openDocument: "Відкрити",
+    downloadDocument: "Завантажити",
+    openDocumentAria: "Відкрити документ",
+    downloadDocumentAria: "Завантажити документ",
   },
 
   institute: {

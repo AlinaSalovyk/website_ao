@@ -211,6 +211,11 @@ export const en: Translations = {
     clearSearch: "Clear search",
     noContent: "Article content is not available.",
     copied: "Copied!",
+    attachmentsTitle: "Documents",
+    openDocument: "Open",
+    downloadDocument: "Download",
+    openDocumentAria: "Open document",
+    downloadDocumentAria: "Download document",
   },
 
   institute: {

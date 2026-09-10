@@ -8,6 +8,7 @@ import {
   createAdminNews,
   uploadAdminNewsImage,
   uploadAdminInlineImage,
+  uploadAdminNewsAttachment,
   type AdminNewsCategory,
 } from "../../api";
 import { usePreviewSync } from "@/lib/preview-sync";
@@ -154,6 +155,8 @@ export function useArticleForm(
       .finally(() => setLoading(false));
   }, [articleId]);
 
+  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+
   const handleSave = async () => {
     if (!form.locales.uk.title.trim()) {
       toast.error("Вкажіть заголовок української версії.");
@@ -177,7 +180,7 @@ export function useArticleForm(
         image_url: form.image_url || currentArticle?.image_url || "",
         cover_position: form.cover_position || currentArticle?.cover_position || "center",
         gallery: (form.gallery && form.gallery.length > 0) ? form.gallery : (currentArticle?.gallery || []),
-        video_url: form.video_url || currentArticle?.video_url || "",
+        video_url: form.video_url ?? "",
         is_pinned: form.is_pinned,
         status: form.status,
         locales: {
@@ -186,13 +189,27 @@ export function useArticleForm(
         } as Record<string, import("../../api").AdminNewsLocale>,
       };
 
+      let savedArticleId = articleId;
       if (articleId) {
         await updateAdminNews(articleId, payload);
         toast.success("Статтю оновлено");
       } else {
-        await createAdminNews(payload);
+        const created = await createAdminNews(payload);
+        savedArticleId = created.id;
         toast.success("Статтю створено");
       }
+
+      if (savedArticleId && pendingFiles.length > 0) {
+        for (const file of pendingFiles) {
+          try {
+            await uploadAdminNewsAttachment(savedArticleId, file);
+          } catch (err: any) {
+            toast.error(`Помилка завантаження «${file.name}»: ${err.message || "Не вдалося завантажити"}`);
+          }
+        }
+        setPendingFiles([]);
+      }
+
       setIsDirty(false);
       setAutoSaveStatus("saved");
       onSaved();
@@ -305,6 +322,8 @@ export function useArticleForm(
     isSlugManuallyEdited,
     setIsSlugManuallyEdited,
     handleAutoFillSEO,
+    pendingFiles,
+    setPendingFiles,
   };
 }
 

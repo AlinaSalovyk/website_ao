@@ -513,3 +513,142 @@ func TestNewsRepo_PublishPreservesMediaAndFields(t *testing.T) {
 	}
 }
 
+func TestNewsRepo_AttachmentsCRUD(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("attachments-uk", "attachments-en")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create article: %v", err)
+	}
+
+	att1 := &domain.NewsAttachment{
+		ID:           "att-1",
+		NewsID:       article.ID,
+		OriginalName: "Nakaz-123.pdf",
+		StoredName:   "uuid-123.pdf",
+		MIMEType:     "application/pdf",
+		Extension:    ".pdf",
+		SizeBytes:    1024567,
+		SortOrder:    1,
+		TitleUK:      "Наказ МОН №123",
+		TitleEN:      "MES Order No. 123",
+	}
+
+	att2 := &domain.NewsAttachment{
+		ID:           "att-2",
+		NewsID:       article.ID,
+		OriginalName: "Report.docx",
+		StoredName:   "uuid-456.docx",
+		MIMEType:     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		Extension:    ".docx",
+		SizeBytes:    2048500,
+		SortOrder:    2,
+		TitleUK:      "Звіт",
+		TitleEN:      "Report",
+	}
+
+	if err := repo.AddAttachment(ctx, att1); err != nil {
+		t.Fatalf("AddAttachment 1: %v", err)
+	}
+	if err := repo.AddAttachment(ctx, att2); err != nil {
+		t.Fatalf("AddAttachment 2: %v", err)
+	}
+
+	// Fetch attachments directly
+	atts, err := repo.GetAttachmentsByNewsID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetAttachmentsByNewsID: %v", err)
+	}
+	if len(atts) != 2 {
+		t.Fatalf("expected 2 attachments, got %d", len(atts))
+	}
+	if atts[0].ID != "att-1" || atts[1].ID != "att-2" {
+		t.Errorf("unexpected attachment order: %v", atts)
+	}
+
+	// Fetch article with loaded attachments
+	fetched, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID: %v", err)
+	}
+	if len(fetched.Attachments) != 2 {
+		t.Fatalf("article attachments count: got %d, want 2", len(fetched.Attachments))
+	}
+
+	// Update attachment metadata
+	if err := repo.UpdateAttachment(ctx, "att-1", "Оновлений наказ №123", "Updated Order No. 123", 1); err != nil {
+		t.Fatalf("UpdateAttachment: %v", err)
+	}
+
+	updatedAtt, err := repo.GetAttachmentByID(ctx, "att-1")
+	if err != nil {
+		t.Fatalf("GetAttachmentByID: %v", err)
+	}
+	if updatedAtt.TitleUK != "Оновлений наказ №123" {
+		t.Errorf("TitleUK update failed: got %q", updatedAtt.TitleUK)
+	}
+
+	// Reorder attachments
+	if err := repo.ReorderAttachments(ctx, article.ID, []string{"att-2", "att-1"}); err != nil {
+		t.Fatalf("ReorderAttachments: %v", err)
+	}
+	reordered, err := repo.GetAttachmentsByNewsID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetAttachmentsByNewsID after reorder: %v", err)
+	}
+	if len(reordered) != 2 || reordered[0].ID != "att-2" || reordered[1].ID != "att-1" {
+		t.Errorf("reorder failed: %v", reordered)
+	}
+
+	// Delete single attachment
+	if err := repo.DeleteAttachment(ctx, "att-1"); err != nil {
+		t.Fatalf("DeleteAttachment: %v", err)
+	}
+	afterDelete, err := repo.GetAttachmentsByNewsID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetAttachmentsByNewsID after delete: %v", err)
+	}
+	if len(afterDelete) != 1 || afterDelete[0].ID != "att-2" {
+		t.Errorf("expected 1 attachment (att-2), got %v", afterDelete)
+	}
+}
+
+func TestNewsRepo_VideoRemovalSemantics(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("video-test-uk", "video-test-en")
+	article.VideoURL = "https://www.youtube.com/embed/dQw4w9WgXcQ"
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create article with video: %v", err)
+	}
+
+	// Verify video exists in DB
+	got, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID: %v", err)
+	}
+	if got.VideoURL != "https://www.youtube.com/embed/dQw4w9WgXcQ" {
+		t.Fatalf("VideoURL not saved: got %q", got.VideoURL)
+	}
+
+	// Explicitly clear videoURL
+	got.VideoURL = ""
+	if err := repo.Update(ctx, got); err != nil {
+		t.Fatalf("Update with empty VideoURL: %v", err)
+	}
+
+	// Verify videoURL cleared in DB
+	cleared, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID after clear: %v", err)
+	}
+	if cleared.VideoURL != "" {
+		t.Errorf("VideoURL should be cleared, got %q", cleared.VideoURL)
+	}
+}
+
+

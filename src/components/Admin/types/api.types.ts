@@ -150,6 +150,21 @@ export interface AdminNewsCategory {
   locales: Record<string, AdminNewsCategoryLocale>;
 }
 
+export interface AdminNewsAttachment {
+  id: string;
+  news_id: string;
+  original_name: string;
+  stored_name: string;
+  mime_type: string;
+  extension: string;
+  size_bytes: number;
+  sort_order: number;
+  title_uk: string;
+  title_en: string;
+  url?: string;
+  created_at: string;
+}
+
 export interface AdminNewsArticle {
   id: string;
   status: "draft" | "published";
@@ -161,6 +176,7 @@ export interface AdminNewsArticle {
   cover_position?: string;
   gallery?: string[];
   video_url?: string;
+  attachments?: AdminNewsAttachment[];
   is_pinned: boolean;
   preview_token: string;
   publish_at?: string;

@@ -45,35 +45,39 @@ export default function AdminPanel() {
 
   useEffect(() => {
     async function initAuth() {
-      let urlToken: string | null = null;
+      try {
+        let urlToken: string | null = null;
 
-      if (window.location.hash) {
-        const hashParams = new URLSearchParams(window.location.hash.slice(1));
-        urlToken = hashParams.get("token");
-      }
-      if (!urlToken) {
-        const params = new URLSearchParams(window.location.search);
-        urlToken = params.get("token");
-      }
+        if (window.location.hash) {
+          const hashParams = new URLSearchParams(window.location.hash.slice(1));
+          urlToken = hashParams.get("token");
+        }
+        if (!urlToken) {
+          const params = new URLSearchParams(window.location.search);
+          urlToken = params.get("token");
+        }
 
-      if (urlToken) {
-        setToken(urlToken);
-        window.history.replaceState({}, "", window.location.pathname);
-      }
+        if (urlToken) {
+          setToken(urlToken);
+          window.history.replaceState({}, "", window.location.pathname);
+        }
 
-      if (!getToken()) {
-        await refreshAccessToken();
-      }
+        if (!getToken()) {
+          await refreshAccessToken().catch(() => null);
+        }
 
-      const isAuthenticated = !!getToken();
-      setAuthed(isAuthenticated);
-      
-      if (isAuthenticated) {
-        await loadUserProfile();
+        const isAuthenticated = !!getToken();
+        setAuthed(isAuthenticated);
+        
+        if (isAuthenticated) {
+          await loadUserProfile();
+        }
+      } catch (err) {
+        console.error("AdminPanel initAuth error:", err);
+      } finally {
+        setReady(true);
+        applyTheme(getSavedTheme());
       }
-
-      setReady(true);
-      applyTheme(getSavedTheme());
     }
 
     initAuth();

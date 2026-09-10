@@ -5,6 +5,7 @@ import { AnimatedSection, GlassCard, TabLoader, PageGuide } from "../ui";
 import { LocalePanel } from "./LocalePanel";
 import { useArticleForm } from "./hooks/useArticleForm";
 import { ArticleFormSidebar } from "./components/ArticleFormSidebar";
+import { ArticleAttachmentsManager } from "./components/ArticleAttachmentsManager";
 
 export const EditView = ({
   articleId,
@@ -37,6 +38,8 @@ export const EditView = ({
     isSlugManuallyEdited,
     setIsSlugManuallyEdited,
     handleAutoFillSEO,
+    pendingFiles,
+    setPendingFiles,
   } = useArticleForm(articleId, categories, onSaved);
 
   if (loading) return <TabLoader />;
@@ -103,10 +106,12 @@ export const EditView = ({
         <div className="mb-6">
           <PageGuide
             title="Як заповнювати статтю"
-            summary="Підказки щодо заповнення полів (UK / EN, SEO, обкладинка, категорія, закріплення)"
+            summary="Підказки щодо заповнення полів (UK / EN, SEO, обкладинка, категорія, прикріплені документи)"
             items={[
-              { title: "Українська версія", desc: "Спочатку повністю заповніть українську версію: Заголовок, Короткий опис, Основний текст. Українська версія є базою для подальшого перекладу англійською." },
+              { title: "Українська версія", desc: "Спочатку повністю заповніть українську версію: Заголовок, Короткий опис, Основний текст. Українська версія є базою для заповнення англійською." },
               { title: "Англійська версія", desc: "Title EN, Description EN та Content EN заповнюються редактором вручну. Переконайтеся, що англійська версія відповідає змісту української перед публікацією." },
+              { title: "Прикріплені документи", desc: "До новини можна додати до 20 документів (PDF, Word, Excel, PowerPoint, TXT тощо). Для кожного файла можна вказати локалізовані назви (UK/EN) та змінювати їх порядок стрілками." },
+              { title: "Режими Відкрити / Завантажити", desc: "PDF та TXT підтримують перегляд прямо в браузері (кнопки «Відкрити» та «Завантажити»). Офісні формати (DOCX, XLSX, PPTX) відображають тільки «Завантажити» для збереження на пристрій." },
               { title: "Slug", desc: "Slug — це частина адреси сторінки (наприклад: /news/nova-stattia). Для нової статті він формується автоматично. Для існуючої/опублікованої статті не рекомендується змінювати slug без необхідності, тому що це змінює URL." },
               { title: "SEO", desc: "SEO Title та SEO Description допомагають керувати тим, як сторінка описується для пошукових систем. Їх можна: залишити порожніми, заповнити автоматично кнопкою «🪄 Автозаповнити SEO та Slug» (вона заповнює лише порожні поля), або змінити вручну." },
               { title: "SEO Preview", desc: "\"Попередній перегляд у пошуку\" дозволяє приблизно побачити Title, URL та Description до публікації. Фактичний вигляд у пошуковій системі може відрізнятися." },
@@ -155,6 +160,13 @@ export const EditView = ({
                 onAutoFill={() => handleAutoFillSEO(activeLocale)}
               />
             </GlassCard>
+
+            {/* Document Attachments Manager */}
+            <ArticleAttachmentsManager
+              articleId={articleId}
+              pendingFiles={pendingFiles}
+              onPendingFilesChange={setPendingFiles}
+            />
           </div>
 
           {/* Right: sidebar settings */}

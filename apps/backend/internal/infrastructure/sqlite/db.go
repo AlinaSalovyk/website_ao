@@ -444,6 +444,27 @@ var migrations = []migration{
 		ALTER TABLE news_translations DROP COLUMN keywords;
 		`,
 	},
+	{
+		Version:     21,
+		Description: "news_attachments table for news documents",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS news_attachments (
+			id            TEXT PRIMARY KEY,
+			news_id       TEXT NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE,
+			original_name TEXT NOT NULL,
+			stored_name   TEXT NOT NULL,
+			mime_type     TEXT NOT NULL,
+			extension     TEXT NOT NULL,
+			size_bytes    INTEGER NOT NULL DEFAULT 0,
+			sort_order    INTEGER NOT NULL DEFAULT 0,
+			title_uk      TEXT NOT NULL DEFAULT '',
+			title_en      TEXT NOT NULL DEFAULT '',
+			created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_attachments_news_id ON news_attachments(news_id);
+		CREATE INDEX IF NOT EXISTS idx_news_attachments_sort ON news_attachments(news_id, sort_order ASC, created_at ASC);
+		`,
+	},
 }
 
 // runMigrations creates the schema_version table if absent, then iterates

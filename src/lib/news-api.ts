@@ -48,6 +48,21 @@ export interface NewsAuthor {
   position?: string;
 }
 
+export interface NewsAttachment {
+  id: string;
+  news_id: string;
+  original_name: string;
+  stored_name: string;
+  mime_type: string;
+  extension: string;
+  size_bytes: number;
+  sort_order: number;
+  title_uk: string;
+  title_en: string;
+  url?: string;
+  created_at: string;
+}
+
 export interface NewsArticle {
   id: string;
   status: "draft" | "published";
@@ -60,6 +75,7 @@ export interface NewsArticle {
   gallery?: string[];
   video_url?: string;
   video_type?: "external" | "uploaded";
+  attachments?: NewsAttachment[];
   is_pinned: boolean;
   publish_at?: string;
   published_at?: string;
@@ -283,3 +299,70 @@ export function getCategoryCoverUrl(url: string | undefined): string {
 export function buildImageSrcSet(imageUrl: string): string {
   return getFullImageUrl(imageUrl);
 }
+
+/**
+ * Format bytes into readable human format (KB, MB).
+ */
+export function formatFileSize(bytes: number): string {
+  if (!bytes || bytes <= 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
+}
+
+/**
+ * Safely extract display title for an attachment based on locale with fallback.
+ */
+export function attachmentDisplayName(
+  att: NewsAttachment,
+  locale: "uk" | "en" = "uk"
+): string {
+  if (locale === "en") {
+    return att.title_en?.trim() || att.title_uk?.trim() || att.original_name;
+  }
+  return att.title_uk?.trim() || att.original_name;
+}
+
+/**
+ * Builds canonical news attachment file URL for viewing (inline) or downloading.
+ * Requires both newsId and attachmentId.
+ */
+export function getNewsAttachmentFileUrl(
+  newsId: string,
+  attachmentId: string,
+  options?: { download?: boolean }
+): string {
+  if (!newsId || !attachmentId) {
+    throw new Error("newsId and attachmentId are required to build attachment URL");
+  }
+  const baseUrl = `/api/v1/news/${encodeURIComponent(newsId)}/attachments/${encodeURIComponent(attachmentId)}/file`;
+  if (options?.download) {
+    return `${baseUrl}?download=1`;
+  }
+  return baseUrl;
+}
+
+/**
+ * Builds canonical news attachment download URL.
+ */
+export function getNewsAttachmentDownloadUrl(
+  newsId: string,
+  attachmentId: string
+): string {
+  return getNewsAttachmentFileUrl(newsId, attachmentId, { download: true });
+}
+
+/**
+ * Determines whether an attachment can be previewed inline in the browser.
+ * Returns true ONLY for formats with native in-browser preview support (PDF, TXT).
+ * All office documents (DOC, DOCX, XLS, XLSX, PPT, PPTX, ODT, ODS, ODP, RTF, CSV) return false.
+ */
+export function canPreviewAttachment(extOrMime: string | undefined): boolean {
+  if (!extOrMime) return false;
+  const val = extOrMime.trim().toLowerCase().replace(/^\./, "");
+  if (val === "pdf" || val === "application/pdf") return true;
+  if (val === "txt" || val === "text/plain") return true;
+  return false;
+}
+

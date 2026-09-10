@@ -9,13 +9,16 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/net/html"
 
@@ -837,6 +840,16 @@ func (h *NewsHandler) resolveArticleMedia(article *domain.NewsArticle) {
 		}
 		article.Locales = h.sanitizeLocales(article.Locales)
 	}
+	if len(article.Attachments) > 0 {
+		for i := range article.Attachments {
+			fileRoute := fmt.Sprintf("/api/v1/news/%s/attachments/%s/file", article.ID, article.Attachments[i].ID)
+			if h.resolver != nil {
+				article.Attachments[i].URL = h.resolver.Resolve(fileRoute)
+			} else {
+				article.Attachments[i].URL = fileRoute
+			}
+		}
+	}
 }
 
 // sanitizeLocales runs the HTML sanitizer over the Content field of all locales.
@@ -1193,4 +1206,376 @@ func NormalizeVideoURL(raw string) string {
 		return "https://www.youtube.com/embed/" + matches[1]
 	}
 	return raw
+}
+
+// ─── Attachment Handlers ─────────────────────────────────────────────────────
+
+var allowedAttachmentExts = map[string]string{
+	".pdf":  "application/pdf",
+	".doc":  "application/msword",
+	".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	".xls":  "application/vnd.ms-excel",
+	".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+	".ppt":  "application/vnd.ms-powerpoint",
+	".pptx": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+	".odt":  "application/vnd.oasis.opendocument.text",
+	".ods":  "application/vnd.oasis.opendocument.spreadsheet",
+	".odp":  "application/vnd.oasis.opendocument.presentation",
+	".txt":  "text/plain",
+	".csv":  "text/csv",
+	".rtf":  "application/rtf",
+}
+
+var rejectedAttachmentExts = map[string]bool{
+	".exe": true, ".bat": true, ".cmd": true, ".ps1": true, ".sh": true,
+	".dll": true, ".so": true, ".js": true, ".html": true, ".htm": true,
+	".php": true, ".jar": true, ".apk": true, ".msi": true, ".scr": true,
+	".com": true, ".vbs": true, ".py": true, ".rb": true,
+}
+
+func ValidateAttachmentFile(filename string, content []byte) (ext string, mimeType string, err error) {
+	maxSize := getMaxAttachmentSize()
+	if int64(len(content)) > maxSize {
+		return "", "", fmt.Errorf("file size %d exceeds maximum limit of %d bytes", len(content), maxSize)
+	}
+
+	ext = strings.ToLower(filepath.Ext(filename))
+	if ext == "" {
+		return "", "", fmt.Errorf("extension is required")
+	}
+
+	if rejectedAttachmentExts[ext] {
+		return "", "", fmt.Errorf("file extension %s is not allowed for security reasons", ext)
+	}
+
+	expectedMIME, allowed := allowedAttachmentExts[ext]
+	if !allowed {
+		return "", "", fmt.Errorf("file extension %s is not supported", ext)
+	}
+
+	// Content sniffing / magic bytes check
+	if ext == ".pdf" {
+		if len(content) < 5 || !bytes.HasPrefix(content, []byte("%PDF-")) {
+			return "", "", fmt.Errorf("invalid PDF content signature")
+		}
+	} else if ext == ".docx" || ext == ".xlsx" || ext == ".pptx" || ext == ".odt" || ext == ".ods" || ext == ".odp" {
+		// Office OpenXML and OpenDocument containers are ZIP files
+		if len(content) < 4 || !bytes.HasPrefix(content, []byte("PK\x03\x04")) {
+			return "", "", fmt.Errorf("invalid Office container format")
+		}
+	}
+
+	return ext, expectedMIME, nil
+}
+
+func getMaxAttachmentSize() int64 {
+	if s := os.Getenv("NEWS_ATTACHMENT_MAX_SIZE"); s != "" {
+		if val, err := strconv.ParseInt(s, 10, 64); err == nil && val > 0 {
+			return val
+		}
+	}
+	return 25 * 1024 * 1024 // 25 MB default
+}
+
+// HandleUploadAttachment uploads a document file attachment for a news article.
+// POST /admin-.../news/{id}/attachments
+func (h *NewsHandler) HandleUploadAttachment(w http.ResponseWriter, r *http.Request) {
+	if h.storage == nil {
+		jsonError(w, "not_configured", "Storage is not configured", http.StatusNotImplemented)
+		return
+	}
+
+	newsID := chi.URLParam(r, "id")
+	if newsID == "" {
+		jsonError(w, "bad_request", "news id is required", http.StatusBadRequest)
+		return
+	}
+
+	// Check article exists
+	_, err := h.repo.GetByID(r.Context(), newsID)
+	if errors.Is(err, domain.ErrNewsNotFound) {
+		jsonError(w, "not_found", "Article not found", http.StatusNotFound)
+		return
+	}
+
+	maxSize := getMaxAttachmentSize()
+	if err := r.ParseMultipartForm(maxSize); err != nil {
+		jsonError(w, "invalid_form", fmt.Sprintf("File size exceeds limit (%d MB)", maxSize/(1024*1024)), http.StatusBadRequest)
+		return
+	}
+
+	existingAtts, _ := h.repo.GetAttachmentsByNewsID(r.Context(), newsID)
+	if len(existingAtts) >= 20 {
+		jsonError(w, "limit_exceeded", "Maximum 20 attachments per article allowed", http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		file, header, err = r.FormFile("attachment")
+		if err != nil {
+			jsonError(w, "missing_file", "No 'file' or 'attachment' field in multipart request", http.StatusBadRequest)
+			return
+		}
+	}
+	defer file.Close()
+
+	if header.Size > maxSize {
+		jsonError(w, "size_limit", fmt.Sprintf("File exceeds maximum allowed size of %d MB", maxSize/(1024*1024)), http.StatusBadRequest)
+		return
+	}
+
+	src, err := io.ReadAll(io.LimitReader(file, maxSize+1))
+	if err != nil {
+		jsonError(w, "read_error", "Cannot read uploaded file", http.StatusInternalServerError)
+		return
+	}
+	if int64(len(src)) > maxSize {
+		jsonError(w, "size_limit", fmt.Sprintf("File exceeds maximum allowed size of %d MB", maxSize/(1024*1024)), http.StatusBadRequest)
+		return
+	}
+
+	ext, mimeType, err := ValidateAttachmentFile(header.Filename, src)
+	if err != nil {
+		jsonError(w, "invalid_file", err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	cleanOrigName := filepath.Base(strings.ReplaceAll(header.Filename, "\x00", ""))
+
+	attID := uuid.New().String()
+	storedName := fmt.Sprintf("%s%s", attID, ext)
+	storageKey := fmt.Sprintf("news/articles/%s/attachments/%s", newsID, storedName)
+
+	if err := h.storage.Put(r.Context(), storageKey, src, mimeType); err != nil {
+		slog.Error("HandleUploadAttachment: storage save failed", "error", err)
+		jsonError(w, "storage_error", "Failed to save file binary to storage", http.StatusInternalServerError)
+		return
+	}
+
+	titleUK := r.FormValue("title_uk")
+	titleEN := r.FormValue("title_en")
+
+	att := &domain.NewsAttachment{
+		ID:           attID,
+		NewsID:       newsID,
+		OriginalName: cleanOrigName,
+		StoredName:   storedName,
+		MIMEType:     mimeType,
+		Extension:    ext,
+		SizeBytes:    int64(len(src)),
+		SortOrder:    len(existingAtts),
+		TitleUK:      titleUK,
+		TitleEN:      titleEN,
+		CreatedAt:    time.Now().UTC(),
+	}
+
+	if err := h.repo.AddAttachment(r.Context(), att); err != nil {
+		_ = h.storage.Delete(r.Context(), storageKey)
+		slog.Error("HandleUploadAttachment: db insert failed", "error", err)
+		jsonError(w, "db_error", "Failed to record attachment metadata", http.StatusInternalServerError)
+		return
+	}
+
+	fileRoute := fmt.Sprintf("/api/v1/news/%s/attachments/%s/file", newsID, att.ID)
+	if h.resolver != nil {
+		att.URL = h.resolver.Resolve(fileRoute)
+	} else {
+		att.URL = fileRoute
+	}
+
+	adminEmail := AdminEmailFromCtx(r.Context())
+	h.recordAudit(r.Context(), adminEmail, "upload_news_attachment", att.ID, realIP(r))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(att)
+}
+
+// HandleGetAttachments returns attachments for an article.
+// GET /admin-.../news/{id}/attachments
+func (h *NewsHandler) HandleGetAttachments(w http.ResponseWriter, r *http.Request) {
+	newsID := chi.URLParam(r, "id")
+	targetID := newsID
+	if article, err := h.repo.GetByID(r.Context(), newsID); err == nil && article != nil {
+		targetID = article.ID
+	} else if article, _, err := h.repo.GetBySlug(r.Context(), domain.LangUk, newsID); err == nil && article != nil {
+		targetID = article.ID
+	} else if article, _, err := h.repo.GetBySlug(r.Context(), domain.LangEn, newsID); err == nil && article != nil {
+		targetID = article.ID
+	}
+
+	atts, err := h.repo.GetAttachmentsByNewsID(r.Context(), targetID)
+	if err != nil {
+		jsonError(w, "db_error", "Failed to fetch attachments", http.StatusInternalServerError)
+		return
+	}
+	if atts == nil {
+		atts = []domain.NewsAttachment{}
+	}
+	for i := range atts {
+		fileRoute := fmt.Sprintf("/api/v1/news/%s/attachments/%s/file", atts[i].NewsID, atts[i].ID)
+		if h.resolver != nil {
+			atts[i].URL = h.resolver.Resolve(fileRoute)
+		} else {
+			atts[i].URL = fileRoute
+		}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(atts)
+}
+
+// HandleUpdateAttachment updates display title and sort_order of an attachment.
+// PATCH /admin-.../news/{id}/attachments/{attachmentId}
+func (h *NewsHandler) HandleUpdateAttachment(w http.ResponseWriter, r *http.Request) {
+	attID := chi.URLParam(r, "attachmentId")
+	var req struct {
+		TitleUK   string `json:"title_uk"`
+		TitleEN   string `json:"title_en"`
+		SortOrder int    `json:"sort_order"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		jsonError(w, "invalid_request", "Invalid JSON body", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.repo.UpdateAttachment(r.Context(), attID, req.TitleUK, req.TitleEN, req.SortOrder); err != nil {
+		if errors.Is(err, domain.ErrNewsNotFound) {
+			jsonError(w, "not_found", "Attachment not found", http.StatusNotFound)
+			return
+		}
+		jsonError(w, "db_error", "Failed to update attachment metadata", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+// HandleDeleteAttachment deletes an attachment record and physical storage file.
+// DELETE /admin-.../news/{id}/attachments/{attachmentId}
+func (h *NewsHandler) HandleDeleteAttachment(w http.ResponseWriter, r *http.Request) {
+	newsID := chi.URLParam(r, "id")
+	attID := chi.URLParam(r, "attachmentId")
+
+	att, err := h.repo.GetAttachmentByID(r.Context(), attID)
+	if errors.Is(err, domain.ErrNewsNotFound) {
+		jsonError(w, "not_found", "Attachment not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		jsonError(w, "db_error", "Failed to get attachment", http.StatusInternalServerError)
+		return
+	}
+
+	if err := h.repo.DeleteAttachment(r.Context(), attID); err != nil {
+		jsonError(w, "db_error", "Failed to delete attachment from DB", http.StatusInternalServerError)
+		return
+	}
+
+	if h.storage != nil {
+		storageKey := fmt.Sprintf("news/articles/%s/attachments/%s", newsID, att.StoredName)
+		_ = h.storage.Delete(r.Context(), storageKey)
+	}
+
+	adminEmail := AdminEmailFromCtx(r.Context())
+	h.recordAudit(r.Context(), adminEmail, "delete_news_attachment", attID, realIP(r))
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "deleted"})
+}
+
+// HandleReorderAttachments updates sort_order for attachments of an article.
+// PATCH /admin-.../news/{id}/attachments/reorder
+func (h *NewsHandler) HandleReorderAttachments(w http.ResponseWriter, r *http.Request) {
+	newsID := chi.URLParam(r, "id")
+	var ids []string
+	if err := json.NewDecoder(r.Body).Decode(&ids); err != nil {
+		jsonError(w, "invalid_request", "Expected array of attachment IDs", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.repo.ReorderAttachments(r.Context(), newsID, ids); err != nil {
+		jsonError(w, "db_error", "Failed to reorder attachments", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "reordered"})
+}
+
+// HandlePublicServeAttachment serves attachment file (inline preview or forced download).
+// GET /api/v1/news/{id}/attachments/{attachmentId}/file
+// GET /api/v1/news/{id}/attachments/{attachmentId}/download
+func (h *NewsHandler) HandlePublicServeAttachment(w http.ResponseWriter, r *http.Request) {
+	newsID := chi.URLParam(r, "id")
+	attID := chi.URLParam(r, "attachmentId")
+	if attID == "" {
+		attID = chi.URLParam(r, "id")
+	}
+
+	att, err := h.repo.GetAttachmentByID(r.Context(), attID)
+	if errors.Is(err, domain.ErrNewsNotFound) {
+		jsonError(w, "not_found", "Attachment not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		slog.Error("HandlePublicServeAttachment: error", "id", attID, "error", err)
+		jsonError(w, "db_error", "Failed to retrieve attachment", http.StatusInternalServerError)
+		return
+	}
+
+	// If newsId is present in route, verify that the attachment belongs to this news article
+	if newsID != "" {
+		targetID := newsID
+		if article, err := h.repo.GetByID(r.Context(), newsID); err == nil && article != nil {
+			targetID = article.ID
+		} else if article, _, err := h.repo.GetBySlug(r.Context(), domain.LangUk, newsID); err == nil && article != nil {
+			targetID = article.ID
+		} else if article, _, err := h.repo.GetBySlug(r.Context(), domain.LangEn, newsID); err == nil && article != nil {
+			targetID = article.ID
+		}
+		if att.NewsID != targetID {
+			jsonError(w, "not_found", "Attachment not found for specified news article", http.StatusNotFound)
+			return
+		}
+	}
+
+	storageKey := fmt.Sprintf("news/articles/%s/attachments/%s", att.NewsID, att.StoredName)
+	if h.storage != nil {
+		exists, err := h.storage.Exists(r.Context(), storageKey)
+		if err != nil || !exists {
+			jsonError(w, "not_found", "File not found in storage", http.StatusNotFound)
+			return
+		}
+	}
+
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("Cache-Control", "public, max-age=86400, s-maxage=86400")
+
+	downloadParam := r.URL.Query().Get("download")
+	isDownloadRoute := strings.HasSuffix(r.URL.Path, "/download") ||
+		downloadParam == "1" ||
+		downloadParam == "true"
+
+	extLower := strings.ToLower(att.Extension)
+	dispType := "attachment"
+	if !isDownloadRoute && (extLower == ".pdf" || extLower == ".txt") {
+		dispType = "inline"
+	}
+
+	encodedFilename := url.PathEscape(att.OriginalName)
+	sanitizedBaseFilename := strings.ReplaceAll(filepath.Base(att.OriginalName), "\"", "\\\"")
+
+	w.Header().Set("Content-Type", att.MIMEType)
+	w.Header().Set("Content-Disposition", fmt.Sprintf("%s; filename=\"%s\"; filename*=UTF-8''%s", dispType, sanitizedBaseFilename, encodedFilename))
+
+	if localStorage, ok := h.storage.(*storage.LocalStorage); ok {
+		cleanKey := strings.TrimPrefix(filepath.ToSlash(storageKey), "/")
+		filePath := filepath.Join(localStorage.BaseDir(), filepath.FromSlash(cleanKey))
+		http.ServeFile(w, r, filePath)
+		return
+	}
+
+	jsonError(w, "not_implemented", "Attachment serving for remote storage drivers is not configured", http.StatusNotImplemented)
 }

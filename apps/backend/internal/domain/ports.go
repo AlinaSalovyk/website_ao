@@ -322,4 +322,12 @@ type NewsRepo interface {
 
 	// SetCategoryCover atomically updates ONLY the cover_image column of a category.
 	SetCategoryCover(ctx context.Context, id string, coverImage string) error
+
+	// Attachments management
+	AddAttachment(ctx context.Context, att *NewsAttachment) error
+	GetAttachmentByID(ctx context.Context, id string) (*NewsAttachment, error)
+	GetAttachmentsByNewsID(ctx context.Context, newsID string) ([]NewsAttachment, error)
+	UpdateAttachment(ctx context.Context, id string, titleUK, titleEN string, sortOrder int) error
+	DeleteAttachment(ctx context.Context, id string) error
+	ReorderAttachments(ctx context.Context, newsID string, attachmentIDs []string) error
 }

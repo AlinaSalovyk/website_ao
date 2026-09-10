@@ -102,6 +102,11 @@ func NewLocalStorage(baseDir string) (*LocalStorage, error) {
 	return &LocalStorage{baseDir: abs}, nil
 }
 
+// BaseDir returns the root base directory on disk.
+func (s *LocalStorage) BaseDir() string {
+	return s.baseDir
+}
+
 // Put writes data to baseDir/key, creating parent directories as needed.
 func (s *LocalStorage) Put(_ context.Context, key string, data []byte, _ string) error {
 	cleanKey := strings.TrimPrefix(filepath.ToSlash(key), "/")

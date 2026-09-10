@@ -1,5 +1,5 @@
 import React, { useRef, useCallback } from "react";
-import { Image as ImageIcon, RefreshCw, Film, Plus, Trash2, Move, Upload } from "lucide-react";
+import { Image as ImageIcon, RefreshCw, Plus, Trash2, Move, Upload } from "lucide-react";
 import { GlassCard } from "../../ui";
 import type { AdminNewsCategory, AdminNewsTag, AdminNewsArticle } from "../../types/api.types";
 import type { ArticleForm } from "../types";
@@ -7,7 +7,6 @@ import { ImageCropper } from "../../ui/ImageCropper";
 import { uploadAdminInlineImage } from "../../services/news.api";
 import { getFullImageUrl } from "../../utils/helpers";
 import { toast } from "sonner";
-import { AddVideoModal } from "../../ui/AddVideoModal";
 
 interface ArticleFormSidebarProps {
   form: ArticleForm;
@@ -38,7 +37,6 @@ export function ArticleFormSidebar({
   const galleryRef = useRef<HTMLInputElement>(null);
   const dropRef = useRef<HTMLDivElement>(null);
   const [galleryUploading, setGalleryUploading] = React.useState(false);
-  const [sidebarVideoModalOpen, setSidebarVideoModalOpen] = React.useState(false);
 
   const onDrop = useCallback(
     (e: React.DragEvent) => {
@@ -189,50 +187,6 @@ export function ArticleFormSidebar({
         </div>
       </GlassCard>
 
-      {/* Video section */}
-      <GlassCard title="Відео новини" icon={Film}>
-        <div className="flex flex-col gap-3">
-          {form.video_url ? (
-            <div className="relative group rounded-xl overflow-hidden border border-border bg-black aspect-video flex items-center justify-center">
-              {form.video_url.includes("youtube.com") || form.video_url.includes("youtu.be") || form.video_url.includes("vimeo.com") ? (
-                <iframe
-                  src={form.video_url.replace("watch?v=", "embed/")}
-                  className="w-full h-full border-0 pointer-events-none"
-                  title="Video preview"
-                />
-              ) : (
-                <video src={form.video_url} controls className="w-full h-full object-contain" />
-              )}
-              <button
-                type="button"
-                onClick={() => setForm((f) => ({ ...f, video_url: "" }))}
-                className="absolute top-2 right-2 p-1.5 bg-red-600/90 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shadow-md"
-                title="Видалити відео"
-              >
-                <Trash2 size={14} />
-              </button>
-            </div>
-          ) : null}
-
-          <div className="flex items-center gap-2">
-            <input
-              value={form.video_url || ""}
-              onChange={(e) => setForm((f) => ({ ...f, video_url: e.target.value }))}
-              placeholder="Введіть посилання або завантажте файл..."
-              className={inputCls}
-            />
-            <button
-              type="button"
-              onClick={() => setSidebarVideoModalOpen(true)}
-              className="p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-colors cursor-pointer shrink-0"
-              title="Завантажити або вибрати відео"
-            >
-              <Upload size={16} />
-            </button>
-          </div>
-        </div>
-      </GlassCard>
-
       {/* Category */}
       <GlassCard title="Категорія">
         <select
@@ -313,12 +267,6 @@ export function ArticleFormSidebar({
           <span className="text-sm text-foreground">Закріплена стаття</span>
         </label>
       </GlassCard>
-
-      <AddVideoModal
-        isOpen={sidebarVideoModalOpen}
-        onClose={() => setSidebarVideoModalOpen(false)}
-        onSelectVideo={(videoUrl) => setForm((f) => ({ ...f, video_url: videoUrl }))}
-      />
     </div>
   );
 }
