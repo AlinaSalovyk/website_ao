@@ -9,6 +9,7 @@ import {
   articleSlug,
   articleTitle,
   categoryName,
+  formatAuthorName,
   formatNewsDate,
   getFullImageUrl,
   type NewsArticle,
@@ -96,7 +97,7 @@ export const FeaturedCard = ({
                   <div className="w-6 h-6 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-700 font-bold text-[10px]">
                     <User className="w-3 h-3 text-slate-500" />
                   </div>
-                  <span>{article.author.name}</span>
+                  <span>{formatAuthorName(article.author.name, locale)}</span>
                 </div>
               ) : <div />}
 

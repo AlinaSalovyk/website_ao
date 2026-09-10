@@ -211,6 +211,10 @@ export const uk = {
     downloadDocument: "Завантажити",
     openDocumentAria: "Відкрити документ",
     downloadDocumentAria: "Завантажити документ",
+    authorLabel: "Автор",
+    photoGallery: "Фотогалерея",
+    videoMaterials: "Відео матеріали",
+    relatedNews: "Схожі матеріали",
   },
 
   institute: {

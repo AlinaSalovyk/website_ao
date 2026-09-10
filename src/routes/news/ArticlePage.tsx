@@ -26,6 +26,8 @@ import {
   canPreviewAttachment,
   categoryName,
   fetchNewsList,
+  formatAuthorName,
+  formatAuthorPosition,
   formatFileSize,
   formatNewsDate,
   getFullImageUrl,
@@ -121,23 +123,31 @@ export const ArticlePage = ({
             )}
 
             {/* Author Block */}
-            {article.author?.name && (
-              <div className="flex items-center gap-3.5 pt-4 border-t border-slate-200">
-                <div className="w-10 h-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 font-bold text-sm shrink-0">
-                  {article.author.name.charAt(0).toUpperCase()}
-                </div>
-                <div>
-                  <p className="text-slate-900 text-sm font-bold">
-                    {article.author.name}
-                  </p>
-                  {article.author.position && (
-                    <p className="text-slate-500 text-xs">
-                      {article.author.position}
+            {article.author?.name && (() => {
+              const displayAuthorName = formatAuthorName(article.author.name, locale);
+              const displayAuthorPosition = formatAuthorPosition(article.author.position, locale);
+
+              return (
+                <div className="flex items-center gap-3.5 pt-4 border-t border-slate-200">
+                  <div className="w-10 h-10 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 font-bold text-sm shrink-0">
+                    {displayAuthorName.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+                      {t.newsPage.authorLabel}
+                    </span>
+                    <p className="text-slate-900 text-sm font-bold">
+                      {displayAuthorName}
                     </p>
-                  )}
+                    {displayAuthorPosition && (
+                      <p className="text-slate-500 text-xs">
+                        {displayAuthorPosition}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </ScrollReveal>
         </header>
 
@@ -159,7 +169,7 @@ export const ArticlePage = ({
             <ScrollReveal variant="fade-up" delay={50} className="mt-10 md:mt-14">
               <div className="flex items-center gap-2 mb-3 font-serif font-bold text-xl text-slate-900">
                 <Film className="w-5 h-5 text-blue-600" />
-                <span>Відео матеріали</span>
+                <span>{t.newsPage.videoMaterials}</span>
               </div>
               <div className="w-full aspect-video rounded-2xl overflow-hidden shadow-xs border border-slate-200 bg-slate-900 flex items-center justify-center">
                 {article.video_type === "external" ||
@@ -191,7 +201,7 @@ export const ArticlePage = ({
             <ScrollReveal variant="fade-up" delay={50} className="mt-10 md:mt-14">
               <div className="flex items-center gap-2 mb-4 font-serif font-bold text-xl text-slate-900">
                 <ImageIcon className="w-5 h-5 text-blue-600" />
-                <span>Фотогалерея</span>
+                <span>{t.newsPage.photoGallery}</span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 {article.gallery.map((item, idx) => (
@@ -320,7 +330,7 @@ export const ArticlePage = ({
             <div className="flex items-center gap-2 mb-6">
               <div className="w-1.5 h-6 bg-blue-600 rounded-full" />
               <h3 className="text-2xl font-serif font-bold text-slate-900 tracking-tight">
-                Схожі матеріали
+                {t.newsPage.relatedNews}
               </h3>
             </div>
 

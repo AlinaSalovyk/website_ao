@@ -3,7 +3,9 @@ import assert from "node:assert";
 import { 
   getNewsAttachmentFileUrl, 
   getNewsAttachmentDownloadUrl, 
-  canPreviewAttachment 
+  canPreviewAttachment,
+  formatAuthorName,
+  formatAuthorPosition
 } from "./news-api.ts";
 
 describe("News Attachment Helpers", () => {
@@ -54,5 +56,19 @@ describe("News Attachment Helpers", () => {
     assert.strictEqual(canPreviewAttachment("rtf"), false);
     assert.strictEqual(canPreviewAttachment("csv"), false);
     assert.strictEqual(canPreviewAttachment(undefined), false);
+  });
+
+  it("formats and transliterates author name correctly per locale", () => {
+    assert.strictEqual(formatAuthorName("Денис Мацевич", "uk"), "Денис Мацевич");
+    assert.strictEqual(formatAuthorName("Денис Мацевич", "en"), "Denys Matsevych");
+    assert.strictEqual(formatAuthorName("Олександр Войтюк", "en"), "Oleksandr Voitiuk");
+  });
+
+  it("translates or transliterates author position correctly per locale", () => {
+    assert.strictEqual(formatAuthorPosition("Вчитель", "uk"), "Вчитель");
+    assert.strictEqual(formatAuthorPosition("Вчитель", "en"), "Teacher");
+    assert.strictEqual(formatAuthorPosition("Викладач", "en"), "Lecturer");
+    assert.strictEqual(formatAuthorPosition("Доцент", "en"), "Associate Professor");
+    assert.strictEqual(formatAuthorPosition("Професор", "en"), "Professor");
   });
 });

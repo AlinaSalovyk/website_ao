@@ -9,6 +9,7 @@ import {
   articleSlug,
   articleTitle,
   categoryName,
+  formatAuthorName,
   formatNewsDate,
   getFullImageUrl,
   type NewsArticle,
@@ -80,7 +81,7 @@ export const ArticleCard = ({
                 <span>•</span>
                 <span className="flex items-center gap-1 line-clamp-1">
                   <User className="w-3.5 h-3.5 text-slate-400" />
-                  {article.author.name}
+                  {formatAuthorName(article.author.name, locale)}
                 </span>
               </>
             )}

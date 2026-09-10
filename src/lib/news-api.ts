@@ -366,3 +366,121 @@ export function canPreviewAttachment(extOrMime: string | undefined): boolean {
   return false;
 }
 
+/**
+ * Transliterates Cyrillic text (e.g. Ukrainian author names) into Latin format
+ * following standard Ukrainian-to-English transliteration conventions.
+ */
+export function transliterateCyrillic(text: string): string {
+  if (!text) return "";
+  const map: Record<string, string> = {
+    'А': 'A', 'а': 'a',
+    'Б': 'B', 'б': 'b',
+    'В': 'V', 'в': 'v',
+    'Г': 'H', 'г': 'h',
+    'Ґ': 'G', 'ґ': 'g',
+    'Д': 'D', 'д': 'd',
+    'Е': 'E', 'е': 'e',
+    'Є': 'Ye', 'є': 'ie',
+    'Ж': 'Zh', 'ж': 'zh',
+    'З': 'Z', 'з': 'z',
+    'И': 'Y', 'и': 'y',
+    'І': 'I', 'і': 'i',
+    'Ї': 'Yi', 'ї': 'i',
+    'Й': 'Y', 'й': 'i',
+    'К': 'K', 'к': 'k',
+    'Л': 'L', 'л': 'l',
+    'М': 'M', 'м': 'm',
+    'Н': 'N', 'н': 'n',
+    'О': 'O', 'о': 'o',
+    'П': 'P', 'п': 'p',
+    'Р': 'R', 'р': 'r',
+    'С': 'S', 'с': 's',
+    'Т': 'T', 'т': 't',
+    'У': 'U', 'у': 'u',
+    'Ф': 'F', 'ф': 'f',
+    'Х': 'Kh', 'х': 'kh',
+    'Ц': 'Ts', 'ц': 'ts',
+    'Ч': 'Ch', 'ч': 'ch',
+    'Ш': 'Sh', 'ш': 'sh',
+    'Щ': 'Shch', 'щ': 'shch',
+    'Ю': 'Yu', 'ю': 'iu',
+    'Я': 'Ya', 'я': 'ia',
+    'Ь': '', 'ь': '',
+    "'": '', '’': '', '‘': ''
+  };
+
+  const words = text.split(" ");
+  return words
+    .map((word) => {
+      if (!word) return "";
+      let res = "";
+      for (let i = 0; i < word.length; i++) {
+        const char = word[i];
+        if (i === 0) {
+          if (char === 'є') { res += 'Ye'; continue; }
+          if (char === 'ї') { res += 'Yi'; continue; }
+          if (char === 'ю') { res += 'Yu'; continue; }
+          if (char === 'я') { res += 'Ya'; continue; }
+        }
+        res += map[char] !== undefined ? map[char] : char;
+      }
+      return res;
+    })
+    .join(" ");
+}
+
+/**
+ * Format author display name according to the target locale.
+ * Automatically transliterates Cyrillic names to Latin for English locale.
+ */
+export function formatAuthorName(
+  name: string | undefined,
+  locale: "uk" | "en" = "uk"
+): string {
+  if (!name) return "";
+  if (locale === "uk") return name;
+  return transliterateCyrillic(name);
+}
+
+const POSITION_TRANSLATIONS: Record<string, string> = {
+  "вчитель": "Teacher",
+  "викладач": "Lecturer",
+  "старший викладач": "Senior Lecturer",
+  "доцент": "Associate Professor",
+  "професор": "Professor",
+  "асистент": "Assistant",
+  "декан": "Dean",
+  "заступник декана": "Deputy Dean",
+  "ректор": "Rector",
+  "проректор": "Vice-Rector",
+  "завідувач кафедри": "Head of Department",
+  "зав. кафедри": "Head of Department",
+  "редактор": "Editor",
+  "головний редактор": "Editor-in-Chief",
+  "прес-служба": "Press Service",
+  "адміністрація": "Administration",
+  "журналіст": "Journalist",
+  "автор": "Author",
+  "студент": "Student",
+  "аспірант": "PhD Student",
+  "дослідник": "Researcher",
+  "науковий співробітник": "Research Fellow",
+};
+
+/**
+ * Format author position/role according to target locale.
+ * Uses dictionary translations for common academic roles with transliteration fallback for EN.
+ */
+export function formatAuthorPosition(
+  position: string | undefined,
+  locale: "uk" | "en" = "uk"
+): string {
+  if (!position) return "";
+  if (locale === "uk") return position;
+  const lower = position.trim().toLowerCase();
+  if (POSITION_TRANSLATIONS[lower]) {
+    return POSITION_TRANSLATIONS[lower];
+  }
+  return transliterateCyrillic(position);
+}
+

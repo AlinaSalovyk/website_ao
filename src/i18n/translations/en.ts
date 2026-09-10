@@ -216,6 +216,10 @@ export const en: Translations = {
     downloadDocument: "Download",
     openDocumentAria: "Open document",
     downloadDocumentAria: "Download document",
+    authorLabel: "Author",
+    photoGallery: "Photo Gallery",
+    videoMaterials: "Video Materials",
+    relatedNews: "Related Articles",
   },
 
   institute: {
