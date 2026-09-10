@@ -330,4 +330,12 @@ type NewsRepo interface {
 	UpdateAttachment(ctx context.Context, id string, titleUK, titleEN string, sortOrder int) error
 	DeleteAttachment(ctx context.Context, id string) error
 	ReorderAttachments(ctx context.Context, newsID string, attachmentIDs []string) error
+
+	// Photo Gallery management
+	AddGalleryImage(ctx context.Context, img *NewsGalleryImage) error
+	GetGalleryImageByID(ctx context.Context, id string) (*NewsGalleryImage, error)
+	GetGalleryImagesByNewsID(ctx context.Context, newsID string) ([]NewsGalleryImage, error)
+	UpdateGalleryImage(ctx context.Context, id string, altUK, altEN, captionUK, captionEN string, sortOrder int) error
+	DeleteGalleryImage(ctx context.Context, id string) error
+	ReorderGalleryImages(ctx context.Context, newsID string, imageIDs []string) error
 }

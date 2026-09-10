@@ -651,4 +651,115 @@ func TestNewsRepo_VideoRemovalSemantics(t *testing.T) {
 	}
 }
 
+func TestNewsRepo_GalleryImagesCRUD(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	article := makeArticle("gallery-uk", "gallery-en")
+	if err := repo.Create(ctx, article); err != nil {
+		t.Fatalf("Create article: %v", err)
+	}
+
+	img1 := &domain.NewsGalleryImage{
+		ID:           "img-1",
+		NewsID:       article.ID,
+		OriginalName: "photo1.jpg",
+		StoredName:   "uuid-photo1.webp",
+		MIMEType:     "image/webp",
+		Extension:    ".webp",
+		SizeBytes:    512000,
+		Width:        1920,
+		Height:       1080,
+		SortOrder:    1,
+		AltUK:        "Фото 1",
+		AltEN:        "Photo 1",
+		CaptionUK:    "Опис 1",
+		CaptionEN:    "Caption 1",
+	}
+
+	img2 := &domain.NewsGalleryImage{
+		ID:           "img-2",
+		NewsID:       article.ID,
+		OriginalName: "photo2.png",
+		StoredName:   "uuid-photo2.webp",
+		MIMEType:     "image/webp",
+		Extension:    ".webp",
+		SizeBytes:    812000,
+		Width:        1200,
+		Height:       800,
+		SortOrder:    2,
+		AltUK:        "Фото 2",
+		AltEN:        "Photo 2",
+		CaptionUK:    "Опис 2",
+		CaptionEN:    "Caption 2",
+	}
+
+	if err := repo.AddGalleryImage(ctx, img1); err != nil {
+		t.Fatalf("AddGalleryImage 1: %v", err)
+	}
+	if err := repo.AddGalleryImage(ctx, img2); err != nil {
+		t.Fatalf("AddGalleryImage 2: %v", err)
+	}
+
+	// Fetch gallery images directly
+	imgs, err := repo.GetGalleryImagesByNewsID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetGalleryImagesByNewsID: %v", err)
+	}
+	if len(imgs) != 2 {
+		t.Fatalf("expected 2 gallery images, got %d", len(imgs))
+	}
+	if imgs[0].ID != "img-1" || imgs[1].ID != "img-2" {
+		t.Errorf("unexpected image order: %v", imgs)
+	}
+
+	// Fetch article with loaded gallery images
+	fetched, err := repo.GetByID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetByID: %v", err)
+	}
+	if len(fetched.GalleryImages) != 2 {
+		t.Fatalf("article gallery images count: got %d, want 2", len(fetched.GalleryImages))
+	}
+
+	// Update metadata
+	if err := repo.UpdateGalleryImage(ctx, "img-1", "Оновлене Фото 1", "Updated Photo 1", "Оновлений опис", "Updated Caption", 1); err != nil {
+		t.Fatalf("UpdateGalleryImage: %v", err)
+	}
+
+	updatedImg, err := repo.GetGalleryImageByID(ctx, "img-1")
+	if err != nil {
+		t.Fatalf("GetGalleryImageByID: %v", err)
+	}
+	if updatedImg.AltUK != "Оновлене Фото 1" || updatedImg.CaptionUK != "Оновлений опис" {
+		t.Errorf("Alt/Caption update failed: got alt %q, caption %q", updatedImg.AltUK, updatedImg.CaptionUK)
+	}
+
+	// Reorder images
+	if err := repo.ReorderGalleryImages(ctx, article.ID, []string{"img-2", "img-1"}); err != nil {
+		t.Fatalf("ReorderGalleryImages: %v", err)
+	}
+	reordered, err := repo.GetGalleryImagesByNewsID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetGalleryImagesByNewsID after reorder: %v", err)
+	}
+	if len(reordered) != 2 || reordered[0].ID != "img-2" || reordered[1].ID != "img-1" {
+		t.Errorf("reorder failed: %v", reordered)
+	}
+
+	// Delete single image
+	if err := repo.DeleteGalleryImage(ctx, "img-1"); err != nil {
+		t.Fatalf("DeleteGalleryImage: %v", err)
+	}
+	afterDelete, err := repo.GetGalleryImagesByNewsID(ctx, article.ID)
+	if err != nil {
+		t.Fatalf("GetGalleryImagesByNewsID after delete: %v", err)
+	}
+	if len(afterDelete) != 1 || afterDelete[0].ID != "img-2" {
+		t.Errorf("expected 1 gallery image (img-2), got %v", afterDelete)
+	}
+}
+
+
 

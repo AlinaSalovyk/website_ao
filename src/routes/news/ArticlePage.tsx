@@ -16,6 +16,8 @@ import { useEffect, useState, type JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
 import { RelatedCard } from "@/components/news/RelatedCard";
+import { RelatedNewsSlider } from "@/components/news/RelatedNewsSlider";
+import { NewsPhotoGallery } from "@/components/news/NewsPhotoGallery";
 import type { Locale } from "@/i18n";
 import { getTranslations } from "@/i18n";
 import {
@@ -65,13 +67,21 @@ export const ArticlePage = ({
       try {
         const res = await fetchNewsList({
           locale,
-          limit: 4,
+          limit: 10,
           category: article.category_id || undefined,
         });
         if (isMounted && res.articles) {
-          setRelatedArticles(
-            res.articles.filter((a: NewsArticle) => a.id !== article.id).slice(0, 3)
-          );
+          let filtered = res.articles.filter((a: NewsArticle) => a.id !== article.id);
+          if (filtered.length < 3) {
+            const generalRes = await fetchNewsList({ locale, limit: 8 });
+            if (generalRes.articles) {
+              const generalFiltered = generalRes.articles.filter(
+                (a: NewsArticle) => a.id !== article.id && !filtered.some((f) => f.id === a.id)
+              );
+              filtered = [...filtered, ...generalFiltered];
+            }
+          }
+          setRelatedArticles(filtered.slice(0, 8));
         }
       } catch (e) {
         console.error("Failed to load related articles", e);
@@ -196,30 +206,10 @@ export const ArticlePage = ({
             </ScrollReveal>
           )}
 
-          {/* ── Gallery Section ── */}
-          {article.gallery && article.gallery.length > 0 && (
-            <ScrollReveal variant="fade-up" delay={50} className="mt-10 md:mt-14">
-              <div className="flex items-center gap-2 mb-4 font-serif font-bold text-xl text-slate-900">
-                <ImageIcon className="w-5 h-5 text-blue-600" />
-                <span>{t.newsPage.photoGallery}</span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {article.gallery.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="aspect-[4/3] rounded-xl overflow-hidden border border-slate-200/80 shadow-xs bg-slate-100 group"
-                  >
-                    <img
-                      src={getFullImageUrl(item)}
-                      alt={`Gallery ${idx + 1}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                  </div>
-                ))}
-              </div>
-            </ScrollReveal>
-          )}
+          {/* ── Photo Gallery Section ── */}
+          <ScrollReveal variant="fade-up" delay={50}>
+            <NewsPhotoGallery article={article} locale={locale} />
+          </ScrollReveal>
 
           {/* ── Document Attachments Section ── */}
           {article.attachments && article.attachments.length > 0 && (
@@ -334,16 +324,7 @@ export const ArticlePage = ({
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {relatedArticles.map((relArticle, idx) => (
-                <RelatedCard
-                  key={relArticle.id}
-                  article={relArticle}
-                  locale={locale}
-                  index={idx}
-                />
-              ))}
-            </div>
+            <RelatedNewsSlider articles={relatedArticles} locale={locale} />
           </section>
         )}
       </div>

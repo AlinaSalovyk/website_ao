@@ -63,6 +63,27 @@ export interface NewsAttachment {
   created_at: string;
 }
 
+export interface NewsGalleryImage {
+  id: string;
+  news_id: string;
+  original_name: string;
+  stored_name: string;
+  mime_type: string;
+  extension: string;
+  size_bytes: number;
+  width: number;
+  height: number;
+  sort_order: number;
+  alt_uk: string;
+  alt_en: string;
+  caption_uk: string;
+  caption_en: string;
+  url?: string;
+  thumbnail_url?: string;
+  large_url?: string;
+  created_at: string;
+}
+
 export interface NewsArticle {
   id: string;
   status: "draft" | "published";
@@ -73,6 +94,7 @@ export interface NewsArticle {
   image_url: string;
   cover_position?: string;
   gallery?: string[];
+  gallery_images?: NewsGalleryImage[];
   video_url?: string;
   video_type?: "external" | "uploaded";
   attachments?: NewsAttachment[];
@@ -483,4 +505,94 @@ export function formatAuthorPosition(
   }
   return transliterateCyrillic(position);
 }
+
+/**
+ * Fetch photo gallery images for a news article.
+ */
+export async function fetchNewsGallery(newsId: string): Promise<NewsGalleryImage[]> {
+  if (!newsId) return [];
+  const res = await fetch(`${getBase()}/api/v1/news/${encodeURIComponent(newsId)}/gallery`, {
+    headers: { Accept: "application/json" },
+  });
+  if (!res.ok) return [];
+  return res.json() as Promise<NewsGalleryImage[]>;
+}
+
+/**
+ * Upload a photo to the article's gallery.
+ */
+export async function uploadNewsGalleryImage(
+  newsId: string,
+  file: File,
+  metadata?: { alt_uk?: string; alt_en?: string; caption_uk?: string; caption_en?: string }
+): Promise<NewsGalleryImage> {
+  const formData = new FormData();
+  formData.append("file", file);
+  if (metadata?.alt_uk) formData.append("alt_uk", metadata.alt_uk);
+  if (metadata?.alt_en) formData.append("alt_en", metadata.alt_en);
+  if (metadata?.caption_uk) formData.append("caption_uk", metadata.caption_uk);
+  if (metadata?.caption_en) formData.append("caption_en", metadata.caption_en);
+
+  const res = await fetch(`${getBase()}/api/v1/news/${encodeURIComponent(newsId)}/gallery`, {
+    method: "POST",
+    body: formData,
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.message || `Upload gallery image failed: ${res.status}`);
+  }
+  return res.json() as Promise<NewsGalleryImage>;
+}
+
+/**
+ * Update metadata (alt/caption/sort_order) of a gallery image.
+ */
+export async function updateNewsGalleryImage(
+  newsId: string,
+  imageId: string,
+  data: { alt_uk?: string; alt_en?: string; caption_uk?: string; caption_en?: string; sort_order?: number }
+): Promise<void> {
+  const res = await fetch(
+    `${getBase()}/api/v1/news/${encodeURIComponent(newsId)}/gallery/${encodeURIComponent(imageId)}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    }
+  );
+  if (!res.ok) {
+    throw new Error(`Update gallery image failed: ${res.status}`);
+  }
+}
+
+/**
+ * Delete a photo from an article's gallery.
+ */
+export async function deleteNewsGalleryImage(newsId: string, imageId: string): Promise<void> {
+  const res = await fetch(
+    `${getBase()}/api/v1/news/${encodeURIComponent(newsId)}/gallery/${encodeURIComponent(imageId)}`,
+    { method: "DELETE" }
+  );
+  if (!res.ok) {
+    throw new Error(`Delete gallery image failed: ${res.status}`);
+  }
+}
+
+/**
+ * Reorder gallery images of an article.
+ */
+export async function reorderNewsGalleryImages(newsId: string, imageIds: string[]): Promise<void> {
+  const res = await fetch(
+    `${getBase()}/api/v1/news/${encodeURIComponent(newsId)}/gallery/reorder`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(imageIds),
+    }
+  );
+  if (!res.ok) {
+    throw new Error(`Reorder gallery images failed: ${res.status}`);
+  }
+}
+
 

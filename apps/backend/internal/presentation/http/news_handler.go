@@ -850,6 +850,20 @@ func (h *NewsHandler) resolveArticleMedia(article *domain.NewsArticle) {
 			}
 		}
 	}
+	if len(article.GalleryImages) > 0 {
+		for i := range article.GalleryImages {
+			fileRoute := fmt.Sprintf("/api/v1/news/%s/gallery/%s/file", article.ID, article.GalleryImages[i].ID)
+			if h.resolver != nil {
+				article.GalleryImages[i].URL = h.resolver.Resolve(fileRoute)
+				article.GalleryImages[i].ThumbnailURL = h.resolver.Resolve(fileRoute + "?variant=thumb")
+				article.GalleryImages[i].LargeURL = h.resolver.Resolve(fileRoute + "?variant=large")
+			} else {
+				article.GalleryImages[i].URL = fileRoute
+				article.GalleryImages[i].ThumbnailURL = fileRoute + "?variant=thumb"
+				article.GalleryImages[i].LargeURL = fileRoute + "?variant=large"
+			}
+		}
+	}
 }
 
 // sanitizeLocales runs the HTML sanitizer over the Content field of all locales.
@@ -1578,4 +1592,367 @@ func (h *NewsHandler) HandlePublicServeAttachment(w http.ResponseWriter, r *http
 	}
 
 	jsonError(w, "not_implemented", "Attachment serving for remote storage drivers is not configured", http.StatusNotImplemented)
+}
+
+// ─── News Gallery Image Handlers ─────────────────────────────────────────────
+
+var allowedGalleryImageExts = map[string]string{
+	".jpg":  "image/jpeg",
+	".jpeg": "image/jpeg",
+	".png":  "image/png",
+	".webp": "image/webp",
+}
+
+func getMaxGalleryImageSize() int64 {
+	if s := os.Getenv("NEWS_GALLERY_IMAGE_MAX_SIZE"); s != "" {
+		if val, err := strconv.ParseInt(s, 10, 64); err == nil && val > 0 {
+			return val
+		}
+	}
+	return 15 * 1024 * 1024 // 15 MB default
+}
+
+func ValidateGalleryImageFile(filename string, content []byte) (ext string, mimeType string, width int, height int, err error) {
+	maxSize := getMaxGalleryImageSize()
+	if int64(len(content)) > maxSize {
+		return "", "", 0, 0, fmt.Errorf("file size %d exceeds maximum limit of %d bytes", len(content), maxSize)
+	}
+
+	ext = strings.ToLower(filepath.Ext(filename))
+	if ext == "" {
+		ext = ".jpg"
+	}
+
+	expectedMIME, allowed := allowedGalleryImageExts[ext]
+	if !allowed {
+		return "", "", 0, 0, fmt.Errorf("image extension %s is not allowed (only JPG, PNG, WebP supported)", ext)
+	}
+
+	// Signature verification
+	if ext == ".jpg" || ext == ".jpeg" {
+		if len(content) < 3 || !bytes.HasPrefix(content, []byte("\xFF\xD8\xFF")) {
+			return "", "", 0, 0, fmt.Errorf("invalid JPEG content signature")
+		}
+	} else if ext == ".png" {
+		if len(content) < 8 || !bytes.HasPrefix(content, []byte("\x89PNG\r\n\x1a\n")) {
+			return "", "", 0, 0, fmt.Errorf("invalid PNG content signature")
+		}
+	} else if ext == ".webp" {
+		if len(content) < 12 || !bytes.HasPrefix(content, []byte("RIFF")) || !bytes.Equal(content[8:12], []byte("WEBP")) {
+			return "", "", 0, 0, fmt.Errorf("invalid WebP content signature")
+		}
+	}
+
+	return ext, expectedMIME, width, height, nil
+}
+
+// HandleUploadGalleryImage processes and saves photo gallery images.
+// POST /admin/.../news/{id}/gallery
+func (h *NewsHandler) HandleUploadGalleryImage(w http.ResponseWriter, r *http.Request) {
+	if h.storage == nil {
+		jsonError(w, "not_configured", "Storage is not configured", http.StatusNotImplemented)
+		return
+	}
+
+	newsID := chi.URLParam(r, "id")
+	if newsID == "" {
+		jsonError(w, "bad_request", "news id is required", http.StatusBadRequest)
+		return
+	}
+
+	_, err := h.repo.GetByID(r.Context(), newsID)
+	if errors.Is(err, domain.ErrNewsNotFound) {
+		jsonError(w, "not_found", "Article not found", http.StatusNotFound)
+		return
+	}
+
+	maxSize := getMaxGalleryImageSize()
+	if err := r.ParseMultipartForm(maxSize); err != nil {
+		jsonError(w, "invalid_form", fmt.Sprintf("File size exceeds limit (%d MB)", maxSize/(1024*1024)), http.StatusBadRequest)
+		return
+	}
+
+	existingImgs, _ := h.repo.GetGalleryImagesByNewsID(r.Context(), newsID)
+	if len(existingImgs) >= 30 {
+		jsonError(w, "limit_exceeded", "Maximum 30 gallery images per article allowed", http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		file, header, err = r.FormFile("image")
+		if err != nil {
+			jsonError(w, "missing_file", "No 'file' or 'image' field in request", http.StatusBadRequest)
+			return
+		}
+	}
+	defer file.Close()
+
+	if header.Size > maxSize {
+		jsonError(w, "size_limit", fmt.Sprintf("File exceeds maximum allowed size of %d MB", maxSize/(1024*1024)), http.StatusBadRequest)
+		return
+	}
+
+	src, err := io.ReadAll(io.LimitReader(file, maxSize+1))
+	if err != nil {
+		jsonError(w, "read_error", "Cannot read uploaded file", http.StatusInternalServerError)
+		return
+	}
+	if int64(len(src)) > maxSize {
+		jsonError(w, "size_limit", fmt.Sprintf("File exceeds maximum allowed size of %d MB", maxSize/(1024*1024)), http.StatusBadRequest)
+		return
+	}
+
+	ext, mimeType, width, height, err := ValidateGalleryImageFile(header.Filename, src)
+	if err != nil {
+		jsonError(w, "invalid_file", err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	processedData := src
+	storedExt := ext
+	storedMIME := mimeType
+
+	if h.imgProc != nil {
+		if proc, errProc := h.imgProc.ProcessSingle(src); errProc == nil && len(proc) > 0 {
+			processedData = proc
+			storedExt = ".webp"
+			storedMIME = "image/webp"
+		}
+	}
+
+	cleanOrigName := filepath.Base(strings.ReplaceAll(header.Filename, "\x00", ""))
+	imgID := uuid.New().String()
+	storedName := fmt.Sprintf("%s%s", imgID, storedExt)
+	storageKey := fmt.Sprintf("news/articles/%s/gallery/%s", newsID, storedName)
+
+	if err := h.storage.Put(r.Context(), storageKey, processedData, storedMIME); err != nil {
+		slog.Error("HandleUploadGalleryImage: storage save failed", "error", err)
+		jsonError(w, "storage_error", "Failed to save gallery image to storage", http.StatusInternalServerError)
+		return
+	}
+
+	altUK := r.FormValue("alt_uk")
+	altEN := r.FormValue("alt_en")
+	captionUK := r.FormValue("caption_uk")
+	captionEN := r.FormValue("caption_en")
+
+	img := &domain.NewsGalleryImage{
+		ID:           imgID,
+		NewsID:       newsID,
+		OriginalName: cleanOrigName,
+		StoredName:   storedName,
+		MIMEType:     storedMIME,
+		Extension:    storedExt,
+		SizeBytes:    int64(len(processedData)),
+		Width:        width,
+		Height:       height,
+		SortOrder:    len(existingImgs),
+		AltUK:        altUK,
+		AltEN:        altEN,
+		CaptionUK:    captionUK,
+		CaptionEN:    captionEN,
+		CreatedAt:    time.Now().UTC(),
+	}
+
+	if err := h.repo.AddGalleryImage(r.Context(), img); err != nil {
+		_ = h.storage.Delete(r.Context(), storageKey)
+		slog.Error("HandleUploadGalleryImage: db insert failed", "error", err)
+		jsonError(w, "db_error", "Failed to record gallery image metadata", http.StatusInternalServerError)
+		return
+	}
+
+	fileRoute := fmt.Sprintf("/api/v1/news/%s/gallery/%s/file", newsID, img.ID)
+	if h.resolver != nil {
+		img.URL = h.resolver.Resolve(fileRoute)
+		img.ThumbnailURL = h.resolver.Resolve(fileRoute + "?variant=thumb")
+		img.LargeURL = h.resolver.Resolve(fileRoute + "?variant=large")
+	} else {
+		img.URL = fileRoute
+		img.ThumbnailURL = fileRoute + "?variant=thumb"
+		img.LargeURL = fileRoute + "?variant=large"
+	}
+
+	adminEmail := AdminEmailFromCtx(r.Context())
+	h.recordAudit(r.Context(), adminEmail, "upload_news_gallery_image", img.ID, realIP(r))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(img)
+}
+
+// HandleGetGalleryImages returns all gallery images for a news article.
+// GET /admin/.../news/{id}/gallery
+// GET /api/v1/news/{id}/gallery
+func (h *NewsHandler) HandleGetGalleryImages(w http.ResponseWriter, r *http.Request) {
+	newsID := chi.URLParam(r, "id")
+	targetID := newsID
+	if article, err := h.repo.GetByID(r.Context(), newsID); err == nil && article != nil {
+		targetID = article.ID
+	} else if article, _, err := h.repo.GetBySlug(r.Context(), domain.LangUk, newsID); err == nil && article != nil {
+		targetID = article.ID
+	} else if article, _, err := h.repo.GetBySlug(r.Context(), domain.LangEn, newsID); err == nil && article != nil {
+		targetID = article.ID
+	}
+
+	imgs, err := h.repo.GetGalleryImagesByNewsID(r.Context(), targetID)
+	if err != nil {
+		jsonError(w, "db_error", "Failed to fetch gallery images", http.StatusInternalServerError)
+		return
+	}
+	if imgs == nil {
+		imgs = []domain.NewsGalleryImage{}
+	}
+	for i := range imgs {
+		fileRoute := fmt.Sprintf("/api/v1/news/%s/gallery/%s/file", imgs[i].NewsID, imgs[i].ID)
+		if h.resolver != nil {
+			imgs[i].URL = h.resolver.Resolve(fileRoute)
+			imgs[i].ThumbnailURL = h.resolver.Resolve(fileRoute + "?variant=thumb")
+			imgs[i].LargeURL = h.resolver.Resolve(fileRoute + "?variant=large")
+		} else {
+			imgs[i].URL = fileRoute
+			imgs[i].ThumbnailURL = fileRoute + "?variant=thumb"
+			imgs[i].LargeURL = fileRoute + "?variant=large"
+		}
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(imgs)
+}
+
+// HandleUpdateGalleryImage updates localized alt/caption and sort_order of a gallery image.
+// PATCH /admin/.../news/{id}/gallery/{imageId}
+func (h *NewsHandler) HandleUpdateGalleryImage(w http.ResponseWriter, r *http.Request) {
+	imgID := chi.URLParam(r, "imageId")
+	var req struct {
+		AltUK     string `json:"alt_uk"`
+		AltEN     string `json:"alt_en"`
+		CaptionUK string `json:"caption_uk"`
+		CaptionEN string `json:"caption_en"`
+		SortOrder int    `json:"sort_order"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		jsonError(w, "invalid_request", "Invalid JSON body", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.repo.UpdateGalleryImage(r.Context(), imgID, req.AltUK, req.AltEN, req.CaptionUK, req.CaptionEN, req.SortOrder); err != nil {
+		if errors.Is(err, domain.ErrNewsNotFound) {
+			jsonError(w, "not_found", "Gallery image not found", http.StatusNotFound)
+			return
+		}
+		jsonError(w, "db_error", "Failed to update gallery image metadata", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+}
+
+// HandleDeleteGalleryImage deletes a gallery image record and physical file.
+// DELETE /admin/.../news/{id}/gallery/{imageId}
+func (h *NewsHandler) HandleDeleteGalleryImage(w http.ResponseWriter, r *http.Request) {
+	newsID := chi.URLParam(r, "id")
+	imgID := chi.URLParam(r, "imageId")
+
+	img, err := h.repo.GetGalleryImageByID(r.Context(), imgID)
+	if errors.Is(err, domain.ErrNewsNotFound) {
+		jsonError(w, "not_found", "Gallery image not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		jsonError(w, "db_error", "Failed to get gallery image", http.StatusInternalServerError)
+		return
+	}
+
+	if err := h.repo.DeleteGalleryImage(r.Context(), imgID); err != nil {
+		jsonError(w, "db_error", "Failed to delete gallery image from DB", http.StatusInternalServerError)
+		return
+	}
+
+	if h.storage != nil {
+		storageKey := fmt.Sprintf("news/articles/%s/gallery/%s", newsID, img.StoredName)
+		_ = h.storage.Delete(r.Context(), storageKey)
+	}
+
+	adminEmail := AdminEmailFromCtx(r.Context())
+	h.recordAudit(r.Context(), adminEmail, "delete_news_gallery_image", imgID, realIP(r))
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "deleted"})
+}
+
+// HandleReorderGalleryImages updates sort_order for gallery images of an article.
+// PATCH /admin/.../news/{id}/gallery/reorder
+func (h *NewsHandler) HandleReorderGalleryImages(w http.ResponseWriter, r *http.Request) {
+	newsID := chi.URLParam(r, "id")
+	var ids []string
+	if err := json.NewDecoder(r.Body).Decode(&ids); err != nil {
+		jsonError(w, "invalid_request", "Expected array of gallery image IDs", http.StatusBadRequest)
+		return
+	}
+
+	if err := h.repo.ReorderGalleryImages(r.Context(), newsID, ids); err != nil {
+		jsonError(w, "db_error", "Failed to reorder gallery images", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "reordered"})
+}
+
+// HandlePublicServeGalleryImage serves the physical gallery image binary.
+// GET /api/v1/news/{id}/gallery/{imageId}/file
+func (h *NewsHandler) HandlePublicServeGalleryImage(w http.ResponseWriter, r *http.Request) {
+	newsID := chi.URLParam(r, "id")
+	imgID := chi.URLParam(r, "imageId")
+	if imgID == "" {
+		imgID = chi.URLParam(r, "id")
+	}
+
+	img, err := h.repo.GetGalleryImageByID(r.Context(), imgID)
+	if errors.Is(err, domain.ErrNewsNotFound) {
+		jsonError(w, "not_found", "Gallery image not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		jsonError(w, "db_error", "Failed to retrieve gallery image", http.StatusInternalServerError)
+		return
+	}
+
+	if newsID != "" {
+		targetID := newsID
+		if article, err := h.repo.GetByID(r.Context(), newsID); err == nil && article != nil {
+			targetID = article.ID
+		} else if article, _, err := h.repo.GetBySlug(r.Context(), domain.LangUk, newsID); err == nil && article != nil {
+			targetID = article.ID
+		} else if article, _, err := h.repo.GetBySlug(r.Context(), domain.LangEn, newsID); err == nil && article != nil {
+			targetID = article.ID
+		}
+		if img.NewsID != targetID {
+			jsonError(w, "not_found", "Gallery image not found for specified news article", http.StatusNotFound)
+			return
+		}
+	}
+
+	storageKey := fmt.Sprintf("news/articles/%s/gallery/%s", img.NewsID, img.StoredName)
+	if h.storage != nil {
+		exists, err := h.storage.Exists(r.Context(), storageKey)
+		if err != nil || !exists {
+			jsonError(w, "not_found", "File not found in storage", http.StatusNotFound)
+			return
+		}
+	}
+
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("Cache-Control", "public, max-age=86400, s-maxage=86400")
+	w.Header().Set("Content-Type", img.MIMEType)
+
+	if localStorage, ok := h.storage.(*storage.LocalStorage); ok {
+		cleanKey := strings.TrimPrefix(filepath.ToSlash(storageKey), "/")
+		filePath := filepath.Join(localStorage.BaseDir(), filepath.FromSlash(cleanKey))
+		http.ServeFile(w, r, filePath)
+		return
+	}
+
+	jsonError(w, "not_implemented", "Gallery image serving for remote storage drivers is not configured", http.StatusNotImplemented)
 }

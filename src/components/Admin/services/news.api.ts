@@ -222,3 +222,68 @@ export const reorderAdminNewsAttachments = (
     body: JSON.stringify(ids),
   });
 
+export const uploadAdminNewsGalleryImage = async (
+  newsId: string,
+  file: File,
+  metadata?: { alt_uk?: string; alt_en?: string; caption_uk?: string; caption_en?: string }
+): Promise<import("@/lib/news-api").NewsGalleryImage> => {
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const form = new FormData();
+  form.append("file", file);
+  if (metadata?.alt_uk) form.append("alt_uk", metadata.alt_uk);
+  if (metadata?.alt_en) form.append("alt_en", metadata.alt_en);
+  if (metadata?.caption_uk) form.append("caption_uk", metadata.caption_uk);
+  if (metadata?.caption_en) form.append("caption_en", metadata.caption_en);
+
+  const res = await fetch(`${API_BASE}${ADMIN_BASE}/news/${newsId}/gallery`, {
+    method: "POST",
+    headers,
+    body: form,
+  });
+  if (!res.ok) {
+    const txt = await res.text();
+    try {
+      const parsed = JSON.parse(txt);
+      throw new Error(parsed.message || parsed.error || "Upload gallery image failed");
+    } catch (e: any) {
+      if (e?.message && e.message !== "Upload gallery image failed") throw e;
+      throw new Error(txt || "Upload gallery image failed");
+    }
+  }
+  return res.json();
+};
+
+export const fetchAdminNewsGallery = (newsId: string): Promise<import("@/lib/news-api").NewsGalleryImage[]> =>
+  api<import("@/lib/news-api").NewsGalleryImage[]>(`${ADMIN_BASE}/news/${newsId}/gallery`);
+
+export const updateAdminNewsGalleryImage = (
+  newsId: string,
+  imageId: string,
+  payload: { alt_uk?: string; alt_en?: string; caption_uk?: string; caption_en?: string; sort_order?: number }
+): Promise<void> =>
+  api<void>(`${ADMIN_BASE}/news/${newsId}/gallery/${imageId}`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+
+export const deleteAdminNewsGalleryImage = (
+  newsId: string,
+  imageId: string
+): Promise<void> =>
+  api<void>(`${ADMIN_BASE}/news/${newsId}/gallery/${imageId}`, {
+    method: "DELETE",
+  });
+
+export const reorderAdminNewsGalleryImages = (
+  newsId: string,
+  ids: string[]
+): Promise<void> =>
+  api<void>(`${ADMIN_BASE}/news/${newsId}/gallery/reorder`, {
+    method: "PATCH",
+    body: JSON.stringify(ids),
+  });
+
+

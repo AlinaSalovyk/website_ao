@@ -6,6 +6,7 @@ import { LocalePanel } from "./LocalePanel";
 import { useArticleForm } from "./hooks/useArticleForm";
 import { ArticleFormSidebar } from "./components/ArticleFormSidebar";
 import { ArticleAttachmentsManager } from "./components/ArticleAttachmentsManager";
+import { ArticleGalleryManager } from "./components/ArticleGalleryManager";
 
 export const EditView = ({
   articleId,
@@ -40,6 +41,8 @@ export const EditView = ({
     handleAutoFillSEO,
     pendingFiles,
     setPendingFiles,
+    pendingPhotos,
+    setPendingPhotos,
   } = useArticleForm(articleId, categories, onSaved);
 
   if (loading) return <TabLoader />;
@@ -160,6 +163,13 @@ export const EditView = ({
                 onAutoFill={() => handleAutoFillSEO(activeLocale)}
               />
             </GlassCard>
+
+            {/* Article Photo Gallery Manager */}
+            <ArticleGalleryManager
+              articleId={articleId}
+              pendingPhotos={pendingPhotos}
+              onPendingPhotosChange={setPendingPhotos}
+            />
 
             {/* Document Attachments Manager */}
             <ArticleAttachmentsManager

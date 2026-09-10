@@ -307,6 +307,7 @@ func (r *NewsRepo) GetByID(ctx context.Context, id string) (*domain.NewsArticle,
 		return nil, fmt.Errorf("news get by id: %w", err)
 	}
 	_ = r.loadAttachments(ctx, article)
+	_ = r.loadGalleryImages(ctx, article)
 	return article, nil
 }
 
@@ -330,6 +331,7 @@ func (r *NewsRepo) GetBySlug(ctx context.Context, locale domain.Language, slug s
 			return nil, false, fmt.Errorf("news get by slug: %w", err)
 		}
 		_ = r.loadAttachments(ctx, article)
+		_ = r.loadGalleryImages(ctx, article)
 		return article, false, nil
 	}
 	if err != sql.ErrNoRows {
@@ -352,6 +354,7 @@ func (r *NewsRepo) GetBySlug(ctx context.Context, locale domain.Language, slug s
 			return nil, false, fmt.Errorf("news get by slug (any locale): %w", err)
 		}
 		_ = r.loadAttachments(ctx, article)
+		_ = r.loadGalleryImages(ctx, article)
 		wasRedirected := false
 		if targetLoc, ok := article.Locales[locale]; ok && targetLoc.Slug != "" && targetLoc.Slug != slug {
 			wasRedirected = true
@@ -406,6 +409,7 @@ func (r *NewsRepo) GetByPreviewToken(ctx context.Context, token string) (*domain
 		return nil, fmt.Errorf("news get by preview token: %w", err)
 	}
 	_ = r.loadAttachments(ctx, article)
+	_ = r.loadGalleryImages(ctx, article)
 	return article, nil
 }
 
@@ -520,6 +524,7 @@ func (r *NewsRepo) List(ctx context.Context, opts domain.NewsListOptions) ([]dom
 			return nil, 0, fmt.Errorf("news list tags: %w", err)
 		}
 		_ = r.batchLoadAttachments(ctx, articles)
+		_ = r.batchLoadGalleryImages(ctx, articles)
 	}
 
 	if articles == nil {
@@ -1445,6 +1450,168 @@ func (r *NewsRepo) batchLoadAttachments(ctx context.Context, articles []domain.N
 			articles[i].Attachments = atts
 		} else {
 			articles[i].Attachments = []domain.NewsAttachment{}
+		}
+	}
+	return rows.Err()
+}
+
+// ─── News Gallery Images Implementation ───────────────────────────────────────
+
+func (r *NewsRepo) AddGalleryImage(ctx context.Context, img *domain.NewsGalleryImage) error {
+	if img.ID == "" {
+		img.ID = uuid.New().String()
+	}
+	if img.CreatedAt.IsZero() {
+		img.CreatedAt = time.Now().UTC()
+	}
+	_, err := r.db.ExecContext(ctx, `
+		INSERT INTO news_gallery_images
+			(id, news_id, original_name, stored_name, mime_type, extension, size_bytes, width, height, sort_order, alt_uk, alt_en, caption_uk, caption_en, created_at)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		img.ID, img.NewsID, img.OriginalName, img.StoredName, img.MIMEType, img.Extension,
+		img.SizeBytes, img.Width, img.Height, img.SortOrder, img.AltUK, img.AltEN, img.CaptionUK, img.CaptionEN, img.CreatedAt,
+	)
+	if err != nil {
+		return fmt.Errorf("news add gallery image: %w", err)
+	}
+	return nil
+}
+
+func (r *NewsRepo) GetGalleryImageByID(ctx context.Context, id string) (*domain.NewsGalleryImage, error) {
+	row := r.db.QueryRowContext(ctx, `
+		SELECT id, news_id, original_name, stored_name, mime_type, extension, size_bytes, width, height, sort_order, alt_uk, alt_en, caption_uk, caption_en, created_at
+		FROM news_gallery_images WHERE id=?`, id,
+	)
+	var img domain.NewsGalleryImage
+	var createdAtStr string
+	err := row.Scan(&img.ID, &img.NewsID, &img.OriginalName, &img.StoredName, &img.MIMEType, &img.Extension,
+		&img.SizeBytes, &img.Width, &img.Height, &img.SortOrder, &img.AltUK, &img.AltEN, &img.CaptionUK, &img.CaptionEN, &createdAtStr)
+	if err == sql.ErrNoRows {
+		return nil, domain.ErrNewsNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("news get gallery image: %w", err)
+	}
+	img.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
+	return &img, nil
+}
+
+func (r *NewsRepo) GetGalleryImagesByNewsID(ctx context.Context, newsID string) ([]domain.NewsGalleryImage, error) {
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT id, news_id, original_name, stored_name, mime_type, extension, size_bytes, width, height, sort_order, alt_uk, alt_en, caption_uk, caption_en, created_at
+		FROM news_gallery_images WHERE news_id=? ORDER BY sort_order ASC, created_at ASC`, newsID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("news get gallery images by news_id: %w", err)
+	}
+	defer rows.Close()
+
+	var list []domain.NewsGalleryImage
+	for rows.Next() {
+		var img domain.NewsGalleryImage
+		var createdAtStr string
+		if err := rows.Scan(&img.ID, &img.NewsID, &img.OriginalName, &img.StoredName, &img.MIMEType, &img.Extension,
+			&img.SizeBytes, &img.Width, &img.Height, &img.SortOrder, &img.AltUK, &img.AltEN, &img.CaptionUK, &img.CaptionEN, &createdAtStr); err != nil {
+			return nil, fmt.Errorf("news scan gallery image: %w", err)
+		}
+		img.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
+		list = append(list, img)
+	}
+	if list == nil {
+		list = []domain.NewsGalleryImage{}
+	}
+	return list, rows.Err()
+}
+
+func (r *NewsRepo) UpdateGalleryImage(ctx context.Context, id string, altUK, altEN, captionUK, captionEN string, sortOrder int) error {
+	res, err := r.db.ExecContext(ctx, `
+		UPDATE news_gallery_images SET alt_uk=?, alt_en=?, caption_uk=?, caption_en=?, sort_order=? WHERE id=?`,
+		altUK, altEN, captionUK, captionEN, sortOrder, id,
+	)
+	if err != nil {
+		return fmt.Errorf("news update gallery image: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return domain.ErrNewsNotFound
+	}
+	return nil
+}
+
+func (r *NewsRepo) DeleteGalleryImage(ctx context.Context, id string) error {
+	res, err := r.db.ExecContext(ctx, `DELETE FROM news_gallery_images WHERE id=?`, id)
+	if err != nil {
+		return fmt.Errorf("news delete gallery image: %w", err)
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return domain.ErrNewsNotFound
+	}
+	return nil
+}
+
+func (r *NewsRepo) ReorderGalleryImages(ctx context.Context, newsID string, imageIDs []string) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("news reorder gallery images tx: %w", err)
+	}
+	defer tx.Rollback()
+
+	for idx, imgID := range imageIDs {
+		_, err := tx.ExecContext(ctx, `
+			UPDATE news_gallery_images SET sort_order=? WHERE id=? AND news_id=?`,
+			idx, imgID, newsID,
+		)
+		if err != nil {
+			return fmt.Errorf("news reorder gallery image %s: %w", imgID, err)
+		}
+	}
+	return tx.Commit()
+}
+
+func (r *NewsRepo) loadGalleryImages(ctx context.Context, article *domain.NewsArticle) error {
+	imgs, err := r.GetGalleryImagesByNewsID(ctx, article.ID)
+	if err != nil {
+		article.GalleryImages = []domain.NewsGalleryImage{}
+		return err
+	}
+	article.GalleryImages = imgs
+	return nil
+}
+
+func (r *NewsRepo) batchLoadGalleryImages(ctx context.Context, articles []domain.NewsArticle) error {
+	if len(articles) == 0 {
+		return nil
+	}
+	ids := make([]interface{}, len(articles))
+	for i, a := range articles {
+		ids[i] = a.ID
+	}
+	ph := strings.Repeat("?,", len(ids))
+	ph = ph[:len(ph)-1]
+
+	rows, err := r.db.QueryContext(ctx, `
+		SELECT id, news_id, original_name, stored_name, mime_type, extension, size_bytes, width, height, sort_order, alt_uk, alt_en, caption_uk, caption_en, created_at
+		FROM news_gallery_images WHERE news_id IN (`+ph+`) ORDER BY sort_order ASC, created_at ASC`, ids...)
+	if err != nil {
+		return fmt.Errorf("batch load gallery images: %w", err)
+	}
+	defer rows.Close()
+
+	byID := make(map[string][]domain.NewsGalleryImage, len(articles))
+	for rows.Next() {
+		var img domain.NewsGalleryImage
+		var createdAtStr string
+		if err := rows.Scan(&img.ID, &img.NewsID, &img.OriginalName, &img.StoredName, &img.MIMEType, &img.Extension,
+			&img.SizeBytes, &img.Width, &img.Height, &img.SortOrder, &img.AltUK, &img.AltEN, &img.CaptionUK, &img.CaptionEN, &createdAtStr); err != nil {
+			return fmt.Errorf("batch load gallery images scan: %w", err)
+		}
+		img.CreatedAt, _ = time.Parse("2006-01-02 15:04:05", createdAtStr)
+		byID[img.NewsID] = append(byID[img.NewsID], img)
+	}
+	for i := range articles {
+		if imgs, ok := byID[articles[i].ID]; ok {
+			articles[i].GalleryImages = imgs
+		} else {
+			articles[i].GalleryImages = []domain.NewsGalleryImage{}
 		}
 	}
 	return rows.Err()

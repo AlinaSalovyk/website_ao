@@ -156,6 +156,7 @@ export function useArticleForm(
   }, [articleId]);
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingPhotos, setPendingPhotos] = useState<File[]>([]);
 
   const handleSave = async () => {
     if (!form.locales.uk.title.trim()) {
@@ -208,6 +209,18 @@ export function useArticleForm(
           }
         }
         setPendingFiles([]);
+      }
+
+      if (savedArticleId && pendingPhotos.length > 0) {
+        const { uploadAdminNewsGalleryImage } = await import("../../services/news.api");
+        for (const file of pendingPhotos) {
+          try {
+            await uploadAdminNewsGalleryImage(savedArticleId, file);
+          } catch (err: any) {
+            toast.error(`Помилка завантаження фото «${file.name}»: ${err.message || "Не вдалося завантажити"}`);
+          }
+        }
+        setPendingPhotos([]);
       }
 
       setIsDirty(false);
@@ -324,6 +337,8 @@ export function useArticleForm(
     handleAutoFillSEO,
     pendingFiles,
     setPendingFiles,
+    pendingPhotos,
+    setPendingPhotos,
   };
 }
 

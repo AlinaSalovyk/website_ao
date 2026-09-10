@@ -5,7 +5,8 @@ import {
   getNewsAttachmentDownloadUrl, 
   canPreviewAttachment,
   formatAuthorName,
-  formatAuthorPosition
+  formatAuthorPosition,
+  getFullImageUrl
 } from "./news-api.ts";
 
 describe("News Attachment Helpers", () => {
@@ -72,3 +73,11 @@ describe("News Attachment Helpers", () => {
     assert.strictEqual(formatAuthorPosition("Професор", "en"), "Professor");
   });
 });
+
+describe("News Photo Gallery Helpers", () => {
+  it("resolves full gallery image URL correctly", () => {
+    const url = getFullImageUrl("/api/v1/news/news-123/gallery/img-456/file");
+    assert.ok(url.endsWith("/api/v1/news/news-123/gallery/img-456/file"));
+  });
+});
+

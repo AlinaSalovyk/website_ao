@@ -117,6 +117,29 @@ type NewsArticle struct {
 	DeletedAt    *time.Time           `json:"deleted_at,omitempty"` // Soft-delete marker; nil = active.
 	Locales      map[Language]NewsLocale `json:"locales"`           // Keyed by LangUk / LangEn. Both always present after Validate().
 	Attachments  []NewsAttachment     `json:"attachments"`          // Document file attachments.
+	GalleryImages []NewsGalleryImage  `json:"gallery_images"`       // Structured photo gallery images.
+}
+
+// NewsGalleryImage represents a photo item in a news article photo gallery.
+type NewsGalleryImage struct {
+	ID           string    `json:"id"`
+	NewsID       string    `json:"news_id"`
+	OriginalName string    `json:"original_name"`
+	StoredName   string    `json:"stored_name"`
+	MIMEType     string    `json:"mime_type"`
+	Extension    string    `json:"extension"`
+	SizeBytes    int64     `json:"size_bytes"`
+	Width        int       `json:"width"`
+	Height       int       `json:"height"`
+	SortOrder    int       `json:"sort_order"`
+	AltUK        string    `json:"alt_uk"`
+	AltEN        string    `json:"alt_en"`
+	CaptionUK    string    `json:"caption_uk"`
+	CaptionEN    string    `json:"caption_en"`
+	URL          string    `json:"url,omitempty"`
+	ThumbnailURL string    `json:"thumbnail_url,omitempty"`
+	LargeURL     string    `json:"large_url,omitempty"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 // NewsAttachment represents a document attachment linked to a news article.

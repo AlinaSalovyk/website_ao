@@ -465,6 +465,31 @@ var migrations = []migration{
 		CREATE INDEX IF NOT EXISTS idx_news_attachments_sort ON news_attachments(news_id, sort_order ASC, created_at ASC);
 		`,
 	},
+	{
+		Version:     22,
+		Description: "news_gallery_images table for news photo gallery",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS news_gallery_images (
+			id            TEXT PRIMARY KEY,
+			news_id       TEXT NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE,
+			original_name TEXT NOT NULL,
+			stored_name   TEXT NOT NULL,
+			mime_type     TEXT NOT NULL,
+			extension     TEXT NOT NULL,
+			size_bytes    INTEGER NOT NULL DEFAULT 0,
+			width         INTEGER NOT NULL DEFAULT 0,
+			height        INTEGER NOT NULL DEFAULT 0,
+			sort_order    INTEGER NOT NULL DEFAULT 0,
+			alt_uk        TEXT NOT NULL DEFAULT '',
+			alt_en        TEXT NOT NULL DEFAULT '',
+			caption_uk    TEXT NOT NULL DEFAULT '',
+			caption_en    TEXT NOT NULL DEFAULT '',
+			created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_gallery_news_id ON news_gallery_images(news_id);
+		CREATE INDEX IF NOT EXISTS idx_news_gallery_sort ON news_gallery_images(news_id, sort_order ASC, created_at ASC);
+		`,
+	},
 }
 
 // runMigrations creates the schema_version table if absent, then iterates

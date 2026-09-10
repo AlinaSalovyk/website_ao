@@ -22,11 +22,11 @@ function getDeterministicIndex(str: string): number {
 }
 
 const GRADIENTS = [
-  "from-blue-700 via-indigo-900 to-slate-950",
-  "from-indigo-700 via-blue-900 to-slate-950",
-  "from-slate-900 via-blue-900 to-indigo-950",
-  "from-blue-800 via-slate-900 to-sky-950",
-  "from-indigo-800 via-purple-950 to-slate-950",
+  "from-blue-600 via-blue-700 to-indigo-800",
+  "from-indigo-600 via-blue-600 to-sky-700",
+  "from-blue-700 via-indigo-700 to-slate-800",
+  "from-sky-600 via-blue-700 to-indigo-800",
+  "from-indigo-700 via-purple-700 to-blue-800",
 ];
 
 const ICONS = [Newspaper, Sparkles, BookOpen, Activity];

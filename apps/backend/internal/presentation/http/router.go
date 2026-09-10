@@ -66,6 +66,7 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 			// Exclude multipart upload endpoints from the global 1 MB body limit.
 			if strings.HasSuffix(r.URL.Path, "/documents/upload") ||
 				strings.Contains(r.URL.Path, "/attachments") ||
+				strings.Contains(r.URL.Path, "/gallery") ||
 				(strings.Contains(r.URL.Path, "/news/") && (strings.HasSuffix(r.URL.Path, "/image") || strings.HasSuffix(r.URL.Path, "/upload-video"))) {
 				next.ServeHTTP(w, r)
 				return
@@ -162,6 +163,8 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 			r.Get("/news/{id}/attachments/{attachmentId}/download", deps.NewsHandler.HandlePublicServeAttachment)
 			r.Get("/news/attachments/{attachmentId}/file", deps.NewsHandler.HandlePublicServeAttachment)
 			r.Get("/news/attachments/{attachmentId}/download", deps.NewsHandler.HandlePublicServeAttachment)
+			r.Get("/news/{id}/gallery/{imageId}/file", deps.NewsHandler.HandlePublicServeGalleryImage)
+			r.Get("/news/{id}/gallery", deps.NewsHandler.HandleGetGalleryImages)
 			r.Get("/news/preview/{token}", deps.NewsHandler.HandlePreview)
 			r.Get("/news/{slug}", deps.NewsHandler.HandlePublicBySlug)
 		}
@@ -264,6 +267,12 @@ func NewRouter(deps RouterDeps) *chi.Mux {
 				r.Patch("/news/{id}/attachments/reorder", deps.NewsHandler.HandleReorderAttachments)
 				r.Patch("/news/{id}/attachments/{attachmentId}", deps.NewsHandler.HandleUpdateAttachment)
 				r.Delete("/news/{id}/attachments/{attachmentId}", deps.NewsHandler.HandleDeleteAttachment)
+
+				r.Get("/news/{id}/gallery", deps.NewsHandler.HandleGetGalleryImages)
+				r.Post("/news/{id}/gallery", deps.NewsHandler.HandleUploadGalleryImage)
+				r.Patch("/news/{id}/gallery/reorder", deps.NewsHandler.HandleReorderGalleryImages)
+				r.Patch("/news/{id}/gallery/{imageId}", deps.NewsHandler.HandleUpdateGalleryImage)
+				r.Delete("/news/{id}/gallery/{imageId}", deps.NewsHandler.HandleDeleteGalleryImage)
 			}
 		})
 
