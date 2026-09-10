@@ -53,8 +53,6 @@ export const ArticlePage = ({
   const localeContent =
     article.locales?.[locale]?.content ?? article.locales?.["uk"]?.content ?? "";
 
-  const srcSet = article.image_url ? buildImageSrcSet(article.image_url) : "";
-
   // Sanitize content & ensure attributes
   const cleanContent = localeContent;
 
@@ -92,10 +90,6 @@ export const ArticlePage = ({
     );
     return match ? `https://www.youtube.com/embed/${match[1]}` : url;
   };
-
-  const coverPositionStyle = article.cover_position
-    ? { objectPosition: article.cover_position }
-    : undefined;
 
   return (
     <article className="w-full bg-slate-50 text-slate-900 pt-28 md:pt-36 pb-20 relative overflow-hidden">
@@ -145,24 +139,6 @@ export const ArticlePage = ({
               </div>
             )}
           </ScrollReveal>
-
-          {/* Cover Media */}
-          {article.image_url && (
-            <ScrollReveal variant="fade-up" delay={50} className="w-full mt-4">
-              <div className="w-full max-w-4xl mx-auto aspect-[16/9] md:aspect-[21/9] rounded-2xl overflow-hidden border border-slate-200/90 shadow-sm bg-slate-100 relative">
-                <img
-                  src={getFullImageUrl(article.image_url)}
-                  srcSet={srcSet || getFullImageUrl(article.image_url)}
-                  sizes="(min-width: 1024px) 1024px, 100vw"
-                  alt={title}
-                  style={coverPositionStyle}
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
-              </div>
-            </ScrollReveal>
-          )}
         </header>
 
         {/* ── Main Article Body Content (Optimal 65-75 char reading measure) ── */}
