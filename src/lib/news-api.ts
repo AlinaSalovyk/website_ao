@@ -6,6 +6,21 @@
  * is used throughout.
  */
 
+// ─── Security Helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Safely escapes HTML special characters to prevent XSS vulnerability in LightGallery subHtml
+ */
+export function escapeHtml(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface NewsLocale {
@@ -306,6 +321,16 @@ export function getFullImageUrl(url: string | undefined): string {
     }
   }
   return `${getBase()}${formatted}`;
+}
+
+/**
+ * Resolves all relative image src URLs inside an HTML content string to full backend API URLs.
+ */
+export function resolveHtmlMediaUrls(html: string): string {
+  if (!html) return "";
+  return html.replace(/(<img\s+[^>]*?src=["'])([^"']+)(["'])/gi, (_match, prefix, src, suffix) => {
+    return `${prefix}${getFullImageUrl(src)}${suffix}`;
+  });
 }
 
 /**

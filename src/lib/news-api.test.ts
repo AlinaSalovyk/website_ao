@@ -6,7 +6,9 @@ import {
   canPreviewAttachment,
   formatAuthorName,
   formatAuthorPosition,
-  getFullImageUrl
+  getFullImageUrl,
+  escapeHtml,
+  resolveHtmlMediaUrls,
 } from "./news-api.ts";
 
 describe("News Attachment Helpers", () => {
@@ -80,4 +82,29 @@ describe("News Photo Gallery Helpers", () => {
     assert.ok(url.endsWith("/api/v1/news/news-123/gallery/img-456/file"));
   });
 });
+
+describe("LightGallery Security & Sanitization", () => {
+  it("escapes malicious HTML tags in captions to prevent XSS", () => {
+    assert.strictEqual(
+      escapeHtml("<script>alert('xss')</script>"),
+      "&lt;script&gt;alert(&#039;xss&#039;)&lt;/script&gt;"
+    );
+    assert.strictEqual(
+      escapeHtml('<img src=x onerror="alert(1)">'),
+      "&lt;img src=x onerror=&quot;alert(1)&quot;&gt;"
+    );
+    assert.strictEqual(
+      escapeHtml('Caption with "quotes" & <tags>'),
+      "Caption with &quot;quotes&quot; &amp; &lt;tags&gt;"
+    );
+  });
+
+  it("resolves relative img src tags in article HTML content to full backend URLs", () => {
+    const rawHtml = '<p>Text</p><img src="/api/v1/news/media/123" alt="Photo"/><p>More text</p>';
+    const resolved = resolveHtmlMediaUrls(rawHtml);
+    assert.ok(resolved.includes('src="http'));
+    assert.ok(resolved.includes('/api/v1/news/media/123"'));
+  });
+});
+
 

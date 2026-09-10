@@ -35,6 +35,7 @@ import {
   getFullImageUrl,
   getNewsAttachmentDownloadUrl,
   getNewsAttachmentFileUrl,
+  resolveHtmlMediaUrls,
   type NewsArticle,
 } from "@/lib/news-api";
 
@@ -57,8 +58,8 @@ export const ArticlePage = ({
   const localeContent =
     article.locales?.[locale]?.content ?? article.locales?.["uk"]?.content ?? "";
 
-  // Sanitize content & ensure attributes
-  const cleanContent = localeContent;
+  // Sanitize content & resolve relative media URLs inside HTML
+  const cleanContent = resolveHtmlMediaUrls(localeContent);
 
   // Fetch related articles from same category or latest
   useEffect(() => {
