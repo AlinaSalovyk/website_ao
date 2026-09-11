@@ -75,6 +75,9 @@ export function useArticleForm(
       position: form.author_position,
     },
     category: categories.find((c) => c.id === form.category_id),
+    attachments: (form as any).attachments || currentArticle?.attachments || [],
+    gallery_images: (form as any).gallery_images || (currentArticle as any)?.gallery_images || [],
+    gallery: (form.gallery && form.gallery.length > 0) ? form.gallery : (currentArticle?.gallery || []),
   };
 
   // Sync draft to Live Preview

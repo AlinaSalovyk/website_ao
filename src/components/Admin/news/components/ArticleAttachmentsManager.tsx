@@ -24,12 +24,14 @@ interface ArticleAttachmentsManagerProps {
   articleId: string | null;
   pendingFiles: File[];
   onPendingFilesChange: (files: File[]) => void;
+  onAttachmentsChange?: (attachments: AdminNewsAttachment[]) => void;
 }
 
 export function ArticleAttachmentsManager({
   articleId,
   pendingFiles,
   onPendingFilesChange,
+  onAttachmentsChange,
 }: ArticleAttachmentsManagerProps) {
   const [attachments, setAttachments] = useState<AdminNewsAttachment[]>([]);
   const [loading, setLoading] = useState(false);
@@ -39,6 +41,11 @@ export function ArticleAttachmentsManager({
   const [editTitleEn, setEditTitleEn] = useState("");
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Notify parent of attachments change
+  useEffect(() => {
+    onAttachmentsChange?.(attachments);
+  }, [attachments, onAttachmentsChange]);
 
   // Load existing attachments for existing article
   useEffect(() => {

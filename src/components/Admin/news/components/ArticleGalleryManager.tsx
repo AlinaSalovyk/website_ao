@@ -28,6 +28,7 @@ interface ArticleGalleryManagerProps {
   pendingPhotos: File[];
   onPendingPhotosChange: (files: File[]) => void;
   onGalleryCountChange?: (count: number) => void;
+  onGalleryImagesChange?: (images: NewsGalleryImage[]) => void;
 }
 
 export function ArticleGalleryManager({
@@ -35,6 +36,7 @@ export function ArticleGalleryManager({
   pendingPhotos,
   onPendingPhotosChange,
   onGalleryCountChange,
+  onGalleryImagesChange,
 }: ArticleGalleryManagerProps) {
   const [galleryImages, setGalleryImages] = useState<NewsGalleryImage[]>([]);
   const [loading, setLoading] = useState(false);
@@ -49,10 +51,11 @@ export function ArticleGalleryManager({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Notify parent of total gallery count
+  // Notify parent of total gallery count and loaded images
   useEffect(() => {
     onGalleryCountChange?.((galleryImages?.length || 0) + (pendingPhotos?.length || 0));
-  }, [galleryImages, pendingPhotos, onGalleryCountChange]);
+    onGalleryImagesChange?.(galleryImages);
+  }, [galleryImages, pendingPhotos, onGalleryCountChange, onGalleryImagesChange]);
 
   // Fetch gallery images for existing article
   useEffect(() => {

@@ -249,6 +249,7 @@ export const EditView = ({
                   pendingPhotos={pendingPhotos}
                   onPendingPhotosChange={setPendingPhotos}
                   onGalleryCountChange={setManagedGalleryCount}
+                  onGalleryImagesChange={(imgs) => setForm((f) => ({ ...f, gallery_images: imgs }))}
                 />
               </div>
             )}
@@ -260,6 +261,7 @@ export const EditView = ({
                   articleId={articleId}
                   pendingFiles={pendingFiles}
                   onPendingFilesChange={setPendingFiles}
+                  onAttachmentsChange={(atts) => setForm((f) => ({ ...f, attachments: atts }))}
                 />
               </div>
             )}
