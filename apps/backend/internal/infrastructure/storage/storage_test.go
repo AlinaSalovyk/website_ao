@@ -2,6 +2,7 @@ package storage_test
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/joho/godotenv"
 
 	"university-chatbot/backend/internal/infrastructure/storage"
 )
@@ -303,4 +305,108 @@ func TestNewFromEnv_Drivers(t *testing.T) {
 	os.Unsetenv("S3_SECRET_ACCESS_KEY")
 	os.Unsetenv("S3_BUCKET")
 	os.Unsetenv("MEDIA_PUBLIC_BASE_URL")
+}
+
+func TestNewFromEnv_R2Driver(t *testing.T) {
+	tempDir, _ := os.MkdirTemp("", "factory_r2_test_*")
+	defer os.RemoveAll(tempDir)
+
+	os.Setenv("MEDIA_STORAGE_DRIVER", "r2")
+	os.Setenv("R2_ACCOUNT_ID", "acc123")
+	os.Setenv("R2_ACCESS_KEY_ID", "key123")
+	os.Setenv("R2_SECRET_ACCESS_KEY", "secret123")
+	os.Setenv("R2_BUCKET_NAME", "my-r2-bucket")
+	os.Setenv("R2_PUBLIC_BASE_URL", "https://pub-bebae854aa5d4a54b536f62f74a8cdbd.r2.dev")
+
+	r2Store, r2Resolver, err := storage.NewFromEnv(tempDir)
+	if err != nil {
+		t.Fatalf("NewFromEnv r2: %v", err)
+	}
+	if r2Store == nil || r2Resolver == nil {
+		t.Fatal("NewFromEnv r2 returned nil store or resolver")
+	}
+
+	key := "news/articles/art-999/cover/cover.webp"
+	resURL := r2Resolver.Resolve(key)
+	expectedURL := "https://pub-bebae854aa5d4a54b536f62f74a8cdbd.r2.dev/news/articles/art-999/cover/cover.webp"
+	if resURL != expectedURL {
+		t.Errorf("R2 resolver url: got %q, want %q", resURL, expectedURL)
+	}
+
+	os.Unsetenv("MEDIA_STORAGE_DRIVER")
+	os.Unsetenv("R2_ACCOUNT_ID")
+	os.Unsetenv("R2_ACCESS_KEY_ID")
+	os.Unsetenv("R2_SECRET_ACCESS_KEY")
+	os.Unsetenv("R2_BUCKET_NAME")
+	os.Unsetenv("R2_PUBLIC_BASE_URL")
+}
+
+func TestR2Integration(t *testing.T) {
+	if os.Getenv("R2_INTEGRATION_TEST") != "1" {
+		t.Skip("Skipping real R2 integration test. Set R2_INTEGRATION_TEST=1 with valid credentials in env to run.")
+	}
+
+	_ = godotenv.Load()
+	_ = godotenv.Load("../../.env")
+	_ = godotenv.Load("../../../.env")
+
+	if os.Getenv("MEDIA_STORAGE_DRIVER") == "" {
+		os.Setenv("MEDIA_STORAGE_DRIVER", "r2")
+	}
+
+	tempDir, _ := os.MkdirTemp("", "r2_integration_*")
+	defer os.RemoveAll(tempDir)
+
+	store, resolver, err := storage.NewFromEnv(tempDir)
+	if err != nil {
+		t.Fatalf("Failed to initialize R2 storage for integration test: %v", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	testObjectKey := "test/integration/" + time.Now().Format("20060102-150405") + "-test.webp"
+	tinyWebpData := []byte("RIFF\x28\x00\x00\x00WEBPVP8L\x1b\x00\x00\x00\x2f\x00\x00\x00\x00\x07\x07\x07\x07")
+
+	t.Logf("R2 Integration Test: Uploading test object key %q", testObjectKey)
+	if err := store.Put(ctx, testObjectKey, tinyWebpData, "image/webp"); err != nil {
+		t.Fatalf("R2 Put Object failed: %v", err)
+	}
+
+	exists, err := store.Exists(ctx, testObjectKey)
+	if err != nil || !exists {
+		t.Fatalf("R2 Exists check failed: exists=%v, err=%v", exists, err)
+	}
+
+	publicURL := resolver.Resolve(testObjectKey)
+	t.Logf("R2 Integration Test Public URL: %s", publicURL)
+
+	// Verify HTTP GET public URL
+	resp, err := http.Get(publicURL)
+	if err != nil {
+		t.Fatalf("HTTP GET public URL failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	t.Logf("R2 Integration Test HTTP Response Status: %d", resp.StatusCode)
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected HTTP 200 from public R2 URL, got %d", resp.StatusCode)
+	}
+
+	contentType := resp.Header.Get("Content-Type")
+	t.Logf("R2 Integration Test HTTP Response Content-Type: %s", contentType)
+	if !strings.Contains(contentType, "image/webp") {
+		t.Errorf("Expected Content-Type image/webp from public R2 URL, got %s", contentType)
+	}
+
+	// Clean up test object
+	if err := store.Delete(ctx, testObjectKey); err != nil {
+		t.Errorf("R2 Delete Object cleanup failed: %v", err)
+	}
+
+	existsAfter, err := store.Exists(ctx, testObjectKey)
+	if err != nil || existsAfter {
+		t.Errorf("Expected object to be deleted, exists=%v, err=%v", existsAfter, err)
+	}
+	t.Logf("R2 Integration Test SUCCESS: Object uploaded, verified HTTP 200, and cleaned up.")
 }

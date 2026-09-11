@@ -46,8 +46,24 @@ type S3Storage struct {
 
 // NewS3Storage creates an S3Storage instance using AWS SDK v2.
 func NewS3Storage(cfg S3Config) (*S3Storage, error) {
-	if cfg.Endpoint == "" || cfg.Bucket == "" || cfg.AccessKeyID == "" || cfg.SecretAccessKey == "" {
-		return nil, fmt.Errorf("storage: S3 config requires Endpoint, Bucket, AccessKeyID, and SecretAccessKey")
+	var missing []string
+	if cfg.Endpoint == "" {
+		missing = append(missing, "Endpoint (R2_ENDPOINT or R2_ACCOUNT_ID)")
+	}
+	if cfg.Bucket == "" {
+		missing = append(missing, "Bucket (R2_BUCKET_NAME)")
+	}
+	if cfg.AccessKeyID == "" {
+		missing = append(missing, "AccessKeyID (R2_ACCESS_KEY_ID)")
+	}
+	if cfg.SecretAccessKey == "" {
+		missing = append(missing, "SecretAccessKey (R2_SECRET_ACCESS_KEY)")
+	}
+	if cfg.PublicBaseURL == "" {
+		missing = append(missing, "PublicBaseURL (R2_PUBLIC_BASE_URL)")
+	}
+	if len(missing) > 0 {
+		return nil, fmt.Errorf("storage: R2/S3 configuration requires %s", strings.Join(missing, ", "))
 	}
 	if cfg.Region == "" {
 		cfg.Region = "auto"

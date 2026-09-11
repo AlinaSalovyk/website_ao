@@ -43,29 +43,43 @@ type MediaURLResolver interface {
 //
 // Driver configuration:
 //   MEDIA_STORAGE_DRIVER=local (default)
-//   MEDIA_STORAGE_DRIVER=s3
+//   MEDIA_STORAGE_DRIVER=r2 or s3
 //
-// Environment variables for S3 driver:
-//   S3_ENDPOINT, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_BUCKET, S3_REGION
-//
-// Environment variable for public URL resolver:
-//   MEDIA_PUBLIC_BASE_URL (defaults to http://localhost:8280 in local mode)
+// Environment variables for R2/S3 driver:
+//   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_ENDPOINT, R2_PUBLIC_BASE_URL
+//   (Fallbacks: S3_ENDPOINT, S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_BUCKET, S3_REGION, MEDIA_PUBLIC_BASE_URL)
 func NewFromEnv(defaultBaseDir string) (MediaStorage, MediaURLResolver, error) {
-	driver := strings.ToLower(os.Getenv("MEDIA_STORAGE_DRIVER"))
-	publicBaseURL := os.Getenv("MEDIA_PUBLIC_BASE_URL")
+	driver := strings.ToLower(strings.TrimSpace(os.Getenv("MEDIA_STORAGE_DRIVER")))
 
-	if driver == "s3" {
+	if driver == "s3" || driver == "r2" {
+		endpoint := getFirstEnv("R2_ENDPOINT", "S3_ENDPOINT")
+		accountID := getFirstEnv("R2_ACCOUNT_ID")
+		if strings.Contains(endpoint, "<account_id>") && accountID != "" {
+			endpoint = strings.ReplaceAll(endpoint, "<account_id>", accountID)
+		} else if endpoint == "" && accountID != "" {
+			endpoint = fmt.Sprintf("https://%s.r2.cloudflarestorage.com", accountID)
+		}
+
+		accessKeyID := getFirstEnv("R2_ACCESS_KEY_ID", "S3_ACCESS_KEY_ID")
+		secretAccessKey := getFirstEnv("R2_SECRET_ACCESS_KEY", "S3_SECRET_ACCESS_KEY")
+		bucket := getFirstEnv("R2_BUCKET_NAME", "R2_BUCKET", "S3_BUCKET")
+		region := getFirstEnv("R2_REGION", "S3_REGION")
+		if region == "" {
+			region = "auto"
+		}
+		publicBaseURL := getFirstEnv("R2_PUBLIC_BASE_URL", "MEDIA_PUBLIC_BASE_URL", "S3_PUBLIC_BASE_URL")
+
 		cfg := S3Config{
-			Endpoint:        os.Getenv("S3_ENDPOINT"),
-			AccessKeyID:     os.Getenv("S3_ACCESS_KEY_ID"),
-			SecretAccessKey: os.Getenv("S3_SECRET_ACCESS_KEY"),
-			Bucket:          os.Getenv("S3_BUCKET"),
-			Region:          os.Getenv("S3_REGION"),
+			Endpoint:        endpoint,
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+			Bucket:          bucket,
+			Region:          region,
 			PublicBaseURL:   publicBaseURL,
 		}
 		store, err := NewS3Storage(cfg)
 		if err != nil {
-			return nil, nil, fmt.Errorf("storage: init s3 driver: %w", err)
+			return nil, nil, fmt.Errorf("storage: init %s driver: %w", driver, err)
 		}
 		resolver := NewMediaURLResolver(publicBaseURL)
 		return store, resolver, nil
@@ -76,11 +90,18 @@ func NewFromEnv(defaultBaseDir string) (MediaStorage, MediaURLResolver, error) {
 	if err != nil {
 		return nil, nil, fmt.Errorf("storage: init local driver: %w", err)
 	}
-	if publicBaseURL == "" {
-		publicBaseURL = os.Getenv("PUBLIC_API_URL")
-	}
+	publicBaseURL := getFirstEnv("MEDIA_PUBLIC_BASE_URL", "PUBLIC_API_URL")
 	resolver := NewMediaURLResolver(publicBaseURL)
 	return store, resolver, nil
+}
+
+func getFirstEnv(keys ...string) string {
+	for _, k := range keys {
+		if v := strings.TrimSpace(os.Getenv(k)); v != "" {
+			return v
+		}
+	}
+	return ""
 }
 
 // ─── LocalStorage ─────────────────────────────────────────────────────────────

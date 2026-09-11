@@ -555,10 +555,18 @@ func (h *NewsHandler) HandleUploadImage(w http.ResponseWriter, r *http.Request) 
 	id := chi.URLParam(r, "id")
 
 	// Ensure article exists before processing the image.
-	_, err := h.repo.GetByID(r.Context(), id)
+	existingArt, err := h.repo.GetByID(r.Context(), id)
 	if errors.Is(err, domain.ErrNewsNotFound) {
 		jsonError(w, "not_found", "Article not found", http.StatusNotFound)
 		return
+	}
+	if err != nil {
+		jsonError(w, "db_error", "Failed to fetch article", http.StatusInternalServerError)
+		return
+	}
+	oldCoverKey := ""
+	if existingArt != nil {
+		oldCoverKey = existingArt.ImageURL
 	}
 
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
@@ -589,7 +597,7 @@ func (h *NewsHandler) HandleUploadImage(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	ts := time.Now().Unix()
+	ts := time.Now().UnixNano()
 	storageKey := fmt.Sprintf("news/articles/%s/cover/%d.webp", id, ts)
 	if err := h.storage.Put(r.Context(), storageKey, data, "image/webp"); err != nil {
 		slog.Error("HandleUploadImage: save failed", "id", id, "error", err)
@@ -601,8 +609,17 @@ func (h *NewsHandler) HandleUploadImage(w http.ResponseWriter, r *http.Request) 
 	// Atomic single-column UPDATE — persists the canonical storage key in DB.
 	if err := h.repo.SetImageURL(r.Context(), id, storageKey); err != nil {
 		slog.Error("HandleUploadImage: persist image_url failed", "id", id, "error", err)
+		// Clean up newly uploaded object to prevent creating an orphan if DB update fails
+		_ = h.storage.Delete(r.Context(), storageKey)
 		jsonError(w, "db_error", "Failed to persist image URL", http.StatusInternalServerError)
 		return
+	}
+
+	// Delete previous cover object from storage if it exists and is different
+	if oldCoverKey != "" && oldCoverKey != storageKey && !strings.HasPrefix(oldCoverKey, "http://") && !strings.HasPrefix(oldCoverKey, "https://") && !strings.HasPrefix(oldCoverKey, "blob:") {
+		if delErr := h.storage.Delete(r.Context(), oldCoverKey); delErr != nil {
+			slog.Warn("HandleUploadImage: failed to delete previous cover image", "id", id, "old_key", oldCoverKey, "error", delErr)
+		}
 	}
 
 	adminEmail := AdminEmailFromCtx(r.Context())

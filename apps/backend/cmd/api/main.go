@@ -139,12 +139,20 @@ func main() {
 	var newsResolver storage.MediaURLResolver
 	var newsImgProc *imageproc.Processor
 	if newsStore, newsResolver, err = storage.NewFromEnv(newsImagesDir); err != nil {
+		driver := strings.ToLower(strings.TrimSpace(os.Getenv("MEDIA_STORAGE_DRIVER")))
+		if driver == "r2" || driver == "s3" {
+			log.Fatalf("Fatal: Cloudflare R2 / S3 storage initialization failed: %v", err)
+		}
 		slog.Warn("News storage init failed — image upload disabled", "error", err)
 		newsStore = nil
 		newsResolver = storage.NewMediaURLResolver(os.Getenv("MEDIA_PUBLIC_BASE_URL"))
 	} else {
 		newsImgProc = imageproc.NewProcessor(imageproc.DefaultOptions())
-		slog.Info("News storage ready", "dir", newsImagesDir, "driver", os.Getenv("MEDIA_STORAGE_DRIVER"))
+		driverName := os.Getenv("MEDIA_STORAGE_DRIVER")
+		if driverName == "" {
+			driverName = "local"
+		}
+		slog.Info("News storage ready", "dir", newsImagesDir, "driver", driverName)
 	}
 
 	cacheStore := cache.NewCacheFromEnv(cfg.UpstashRedisURL, cfg.UpstashRedisToken)
