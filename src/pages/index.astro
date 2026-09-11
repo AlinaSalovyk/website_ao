@@ -29,8 +29,8 @@ const coursesJsonLd = getDepartments(t).flatMap((dept) =>
         url: siteUrl,
       },
       ...(prog.link ? { url: prog.link } : {}),
-    }))
-  )
+    })),
+  ),
 );
 
 const organizationJsonLd = {

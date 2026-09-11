@@ -1,0 +1,115 @@
+---
+/**
+ * /preview/news/category/[slug] — SSR live preview for categories.
+ */
+export const prerender = false;
+
+import Layout from "@/layouts/Layout.astro";
+import { Footer } from "@/components/layout/Footer";
+import { Header } from "@/components/layout/Header";
+import { getTranslations } from "@/i18n";
+import type { Locale } from "@/i18n";
+import { LivePreviewClient } from "../_LivePreviewClient";
+
+const localeParam = Astro.url.searchParams.get("locale");
+const locale: Locale = localeParam === "en" ? "en" : "uk";
+const t = getTranslations(locale);
+
+const { slug } = Astro.params;
+const sessionId = Astro.url.searchParams.get("preview_session");
+
+if (!sessionId) {
+  return new Response("Missing preview_session", { status: 400 });
+}
+
+const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8280";
+const ADMIN_PATH = import.meta.env.PUBLIC_ADMIN_PATH ?? "panel";
+const ADMIN_BASE = `/admin-${ADMIN_PATH}`;
+
+let category: any = null;
+let categories: any[] = [];
+
+try {
+  const cookie = Astro.request.headers.get("cookie") || "";
+  let adminTokenVal = "";
+  if (cookie.includes("admin_token=")) {
+    adminTokenVal = cookie.split("admin_token=")[1].split(";")[0];
+  }
+  
+  const res = await fetch(`${API_BASE}${ADMIN_BASE}/news/drafts/${sessionId}`, {
+    headers: { 
+      Accept: "application/json",
+      Cookie: cookie,
+      "X-Admin-Token": adminTokenVal,
+      "Authorization": `Bearer ${adminTokenVal}`
+    },
+  });
+
+  if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      return new Response("Unauthorized to view preview", { status: 401 });
+    }
+    console.error(`Preview category fetch failed: ${res.status}`);
+    category = { type: "category", data: null };
+  } else {
+    category = await res.json();
+  }
+
+  // Fetch all published categories using correct API v1 endpoint
+  const catRes = await fetch(`${API_BASE}/api/v1/news/categories`, {
+    headers: { Accept: "application/json" }
+  });
+  if (catRes.ok) {
+    const catsData = await catRes.json();
+    categories = Array.isArray(catsData) ? catsData : catsData.data || [];
+  }
+} catch (err) {
+  console.error("Preview category fetch exception:", err);
+  category = { type: "category", data: null };
+}
+
+const catData = category?.data || {
+  id: "preview",
+  color: "#2563eb",
+  icon: "newspaper",
+  cover_image: "",
+  cover_position: "center",
+  locales: {
+    uk: { name: "Loading Preview...", description: "Connecting to Live Preview...", slug: slug || "preview" },
+  }
+};
+
+const localePart = catData.locales?.[locale] ?? catData.locales?.["uk"];
+const title = "[Preview] " + (localePart?.seo_title || localePart?.name || t.meta.newsTitle);
+const description = localePart?.seo_description || localePart?.description || t.meta.newsDescription;
+---
+
+<Layout
+  title={title}
+  description={description}
+  ogImage={catData.cover_image ? `${catData.cover_image}-1024w.webp` : undefined}
+  noIndex={true}
+>
+  <div class="overflow-x-clip w-full min-h-screen flex justify-center bg-pure-white">
+    <div class="flex w-full relative flex-col items-start min-h-screen">
+      <Header
+        client:load
+        variant="light"
+        headerPosition="absolute"
+        locale={locale}
+        currentPath={Astro.url.pathname + Astro.url.search}
+      />
+      <main id="main-content" class="w-full">
+        <LivePreviewClient
+          client:load
+          sessionId={sessionId}
+          type="category"
+          initialData={catData}
+          categories={categories}
+          locale={locale}
+        />
+      </main>
+      <Footer client:visible locale={locale} />
+    </div>
+  </div>
+</Layout>

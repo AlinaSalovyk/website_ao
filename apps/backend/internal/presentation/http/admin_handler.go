@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 
@@ -29,25 +31,30 @@ import (
 //   - Audit log viewing
 //   - CSV export
 type AdminHandler struct {
-	oauthSvc           *auth.OAuthService // OAuth Service used for Google OAuth authentication
-	jwtSvc             *auth.JWTService // JWT Service used for generating and validating JWT tokens
-	analyticsRepo      domain.AnalyticsRepo // Analytics Repository used for storing and retrieving analytics data
-	auditRepo          domain.AuditRepo // Audit Repository used for storing and retrieving audit data
-	documentRepo       domain.DocumentRepo // Document Repository used for storing and retrieving document data
-	promptRepo         domain.PromptRepo // Prompt Repository used for storing and retrieving prompt data
-	suggestRepo        domain.SuggestionsRepo // Suggestions Repository used for storing and retrieving suggested questions
-	adminUsersRepo     domain.AdminUsersRepo // Admin Users Repository used for storing and retrieving admin users
-	vectorStore        domain.VectorStore // Vector Store used for storing and retrieving vector data
-	allowedEmails      []string // Allowed Emails used for restricting admin access
-	frontendURL        string // Frontend URL used for redirecting after OAuth login
+	oauthSvc           *auth.OAuthService        // OAuth Service used for Google OAuth authentication
+	jwtSvc             *auth.JWTService          // JWT Service used for generating and validating JWT tokens
+	analyticsRepo      domain.AnalyticsRepo      // Analytics Repository used for storing and retrieving analytics data
+	auditRepo          domain.AuditRepo          // Audit Repository used for storing and retrieving audit data
+	documentRepo       domain.DocumentRepo       // Document Repository used for storing and retrieving document data
+	promptRepo         domain.PromptRepo         // Prompt Repository used for storing and retrieving prompt data
+	suggestRepo        domain.SuggestionsRepo    // Suggestions Repository used for storing and retrieving suggested questions
+	adminUsersRepo     domain.AdminUsersRepo     // Admin Users Repository used for storing and retrieving admin users
+	invitationsRepo    domain.AdminInvitationsRepo // Admin Invitations Repository
+	oauthStateRepo     domain.AdminOAuthStateRepo // Persistent OAuth State Repository
+	mailer             domain.Mailer             // Mailer interface for email delivery
+	vectorStore        domain.VectorStore        // Vector Store used for storing and retrieving vector data
+	allowedEmails      []string                  // Allowed Emails used for restricting admin access
+	frontendURL        string                    // Frontend URL used for redirecting after OAuth login
+	publicBaseURL      string                    // Public URL for invitation links
+	invitationTTL      time.Duration             // Invitation TTL duration
 	settingsRepo       *sqlite.AdminSettingsRepo // Admin Settings Repository used for storing and retrieving admin settings
-	cookieSameSiteNone bool // Cookie SameSite None used for setting the SameSite attribute of the refresh token cookie
-	refreshCookiePath  string // Refresh Cookie Path used for setting the Path attribute of the refresh token cookie
+	cookieSameSiteNone bool                      // Cookie SameSite None used for setting the SameSite attribute of the refresh token cookie
+	refreshCookiePath  string                    // Refresh Cookie Path used for setting the Path attribute of the refresh token cookie
 }
 
 // NewAdminHandler creates an AdminHandler with all required dependencies.
 func NewAdminHandler(
-	oauthSvc *auth.OAuthService, 
+	oauthSvc *auth.OAuthService,
 	jwtSvc *auth.JWTService,
 	analyticsRepo domain.AnalyticsRepo,
 	auditRepo domain.AuditRepo,
@@ -55,16 +62,18 @@ func NewAdminHandler(
 	promptRepo domain.PromptRepo,
 	suggestRepo domain.SuggestionsRepo,
 	adminUsersRepo domain.AdminUsersRepo,
+	invitationsRepo domain.AdminInvitationsRepo,
+	oauthStateRepo domain.AdminOAuthStateRepo,
+	mailer domain.Mailer,
 	vectorStore domain.VectorStore,
 	allowedEmails []string,
 	frontendURL string,
+	publicBaseURL string,
+	invitationTTL time.Duration,
 	settingsRepo *sqlite.AdminSettingsRepo,
 	cookieSameSiteNone bool,
 	refreshCookiePath string,
 ) *AdminHandler {
-	if frontendURL == "" {
-		frontendURL = "http://localhost:4321/admin"
-	}
 	return &AdminHandler{
 		oauthSvc:           oauthSvc,
 		jwtSvc:             jwtSvc,
@@ -74,9 +83,14 @@ func NewAdminHandler(
 		promptRepo:         promptRepo,
 		suggestRepo:        suggestRepo,
 		adminUsersRepo:     adminUsersRepo,
+		invitationsRepo:    invitationsRepo,
+		oauthStateRepo:     oauthStateRepo,
+		mailer:             mailer,
 		vectorStore:        vectorStore,
 		allowedEmails:      allowedEmails,
 		frontendURL:        frontendURL,
+		publicBaseURL:      publicBaseURL,
+		invitationTTL:      invitationTTL,
 		settingsRepo:       settingsRepo,
 		cookieSameSiteNone: cookieSameSiteNone,
 		refreshCookiePath:  refreshCookiePath,
@@ -88,51 +102,233 @@ func NewAdminHandler(
 // HandleLogin redirects to Google OAuth consent screen.
 // GET /admin/auth/login
 func (h *AdminHandler) HandleLogin(w http.ResponseWriter, r *http.Request) {
-	state := GenerateState()
-	if !StoreState(state) {
-		jsonError(w, "service_unavailable", "Too many pending login attempts, please try again later", http.StatusServiceUnavailable)
-		return
+	inviteToken := strings.TrimSpace(r.URL.Query().Get("invite_token"))
+	rawState := GenerateState()
+	stateHash := hashToken(rawState)
+
+	invitationID := ""
+	purpose := "login"
+
+	if inviteToken != "" {
+		if h.invitationsRepo == nil {
+			jsonError(w, "not_configured", "Invitations system not available", http.StatusInternalServerError)
+			return
+		}
+		invHash := hashToken(inviteToken)
+		inv, err := h.invitationsRepo.GetByTokenHash(r.Context(), invHash)
+		if err != nil || inv == nil {
+			jsonError(w, "invalid_invite", "Запрошення не знайдено або токен недійсний", http.StatusBadRequest)
+			return
+		}
+		if inv.AcceptedAt != nil || inv.RevokedAt != nil || time.Now().UTC().After(inv.ExpiresAt) {
+			jsonError(w, "invalid_invite", "Запрошення не дійсне або закінчився термін дії", http.StatusBadRequest)
+			return
+		}
+		invitationID = inv.ID
+		purpose = "invite_acceptance"
 	}
 
-	authURL := h.oauthSvc.GetAuthURL(state)
+	if h.oauthStateRepo != nil {
+		if err := h.oauthStateRepo.CreateState(r.Context(), stateHash, invitationID, purpose, 10*time.Minute); err != nil {
+			slog.Error("Failed to store persistent OAuth state", "error", err)
+			jsonError(w, "service_unavailable", "Failed to initialize login flow", http.StatusServiceUnavailable)
+			return
+		}
+	} else {
+		// In-memory fallback if repo not set
+		if !StoreState(rawState, inviteToken) {
+			jsonError(w, "service_unavailable", "Too many pending login attempts, please try again later", http.StatusServiceUnavailable)
+			return
+		}
+	}
+
+	authURL := h.oauthSvc.GetAuthURL(rawState)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(stateResponse{URL: authURL})
 }
 
+func (h *AdminHandler) redirectAuthError(w http.ResponseWriter, r *http.Request, msg string) {
+	redirectURL, err := url.Parse(h.frontendURL)
+	if err != nil {
+		writeAuthError(w, msg, http.StatusForbidden)
+		return
+	}
+	q := redirectURL.Query()
+	q.Set("error", msg)
+	redirectURL.RawQuery = q.Encode()
+	http.Redirect(w, r, redirectURL.String(), http.StatusFound)
+}
+
 // HandleCallback processes the OAuth callback and issues a JWT.
 // GET /admin/auth/callback
 func (h *AdminHandler) HandleCallback(w http.ResponseWriter, r *http.Request) {
-	state := r.URL.Query().Get("state")
-	if !ValidateState(state) {
-		writeAuthError(w, "Invalid or expired OAuth state", http.StatusBadRequest)
+	rawState := r.URL.Query().Get("state")
+	if rawState == "" {
+		h.redirectAuthError(w, r, "Відсутній параметр стану OAuth")
 		return
+	}
+
+	var invitationID string
+	var isInviteFlow bool
+
+	if h.oauthStateRepo != nil {
+		stateHash := hashToken(rawState)
+		stateRec, err := h.oauthStateRepo.GetAndConsumeState(r.Context(), stateHash)
+		if err != nil {
+			slog.Warn("OAuth state validation failed", "error", err)
+			h.redirectAuthError(w, r, "Недійсний, застарілий або повторно використаний стан авторизації. Спробуйте увійти знову.")
+			return
+		}
+		if stateRec.Purpose == "invite_acceptance" && stateRec.InvitationID != "" {
+			isInviteFlow = true
+			invitationID = stateRec.InvitationID
+		}
+	} else {
+		// Fallback for tests if repo not wired
+		valid, inviteToken := ValidateStateWithInvite(rawState)
+		if !valid {
+			h.redirectAuthError(w, r, "Недійсний або застарілий стан авторизації. Спробуйте увійти знову.")
+			return
+		}
+		if inviteToken != "" {
+			isInviteFlow = true
+			tokenHash := hashToken(inviteToken)
+			if h.invitationsRepo != nil {
+				inv, err := h.invitationsRepo.GetByTokenHash(r.Context(), tokenHash)
+				if err == nil && inv != nil {
+					invitationID = inv.ID
+				}
+			}
+		}
 	}
 
 	code := r.URL.Query().Get("code")
 	if code == "" {
-		writeAuthError(w, "Missing authorization code", http.StatusBadRequest)
+		h.redirectAuthError(w, r, "Відсутній код авторизації від Google")
 		return
 	}
 
 	accessToken, err := h.oauthSvc.ExchangeCode(r.Context(), code)
 	if err != nil {
 		slog.Error("OAuth code exchange failed", "error", err)
-		writeAuthError(w, "Failed to exchange authorization code", http.StatusInternalServerError)
+		h.redirectAuthError(w, r, "Не вдалося обміняти код авторизації Google. Спробуйте ще раз.")
 		return
 	}
 
 	userInfo, err := h.oauthSvc.GetUserInfo(r.Context(), accessToken)
 	if err != nil {
 		slog.Error("OAuth get user info failed", "error", err)
-		writeAuthError(w, "Failed to get user info", http.StatusInternalServerError)
+		h.redirectAuthError(w, r, "Не вдалося отримати дані користувача Google.")
 		return
 	}
 
-	if !CheckAdminAccess(r.Context(), userInfo.Email, h.allowedEmails, h.settingsRepo) {
-		slog.Warn("OAuth login rejected: email not authorized", "email", userInfo.Email)
-		writeAuthError(w, "Access denied: email not authorized", http.StatusForbidden)
+	googleEmail := strings.ToLower(strings.TrimSpace(userInfo.Email))
+	var adminUser *domain.AdminUser
+
+	if isInviteFlow {
+		if h.invitationsRepo == nil {
+			h.redirectAuthError(w, r, "Система запрошень недоступна")
+			return
+		}
+
+		inv, err := h.invitationsRepo.GetByID(r.Context(), invitationID)
+		if err != nil || inv == nil {
+			slog.Warn("Invitation record not found during OAuth callback", "error", err, "invitation_id", invitationID)
+			h.redirectAuthError(w, r, "Запрошення не знайдено або токен недійсний.")
+			return
+		}
+
+		if inv.AcceptedAt != nil {
+			h.redirectAuthError(w, r, "Це запрошення вже було використано.")
+			return
+		}
+		if inv.RevokedAt != nil {
+			h.redirectAuthError(w, r, "Це запрошення було анульовано адміністратором.")
+			return
+		}
+		if time.Now().UTC().After(inv.ExpiresAt) {
+			h.redirectAuthError(w, r, "Термін дії запрошення закінчився. Попросіть надіслати нове запрошення.")
+			return
+		}
+
+		invEmail := strings.ToLower(strings.TrimSpace(inv.Email))
+		if invEmail != googleEmail {
+			slog.Warn("Invitation email mismatch during Google login", "invited", invEmail, "google", googleEmail)
+			h.redirectAuthError(w, r, fmt.Sprintf("Доступ заборонено: ви увійшли через Google під адресою %s, але запрошення було надіслано на %s.", googleEmail, invEmail))
+			return
+		}
+
+		// Atomic Acceptance & Account Creation/Activation
+		if err := h.invitationsRepo.MarkAccepted(r.Context(), inv.ID); err != nil {
+			slog.Error("Failed to mark invitation accepted", "error", err, "id", inv.ID)
+			h.redirectAuthError(w, r, "Не вдалося активувати запрошення у системі.")
+			return
+		}
+
+		user, err := h.adminUsersRepo.GetByEmail(r.Context(), googleEmail)
+		if err != nil && errors.Is(err, domain.ErrAdminNotFound) {
+			newAdmin, err := h.adminUsersRepo.Add(r.Context(), googleEmail, inv.Role, domain.AdminStatusActive, inv.InvitedByAdminID)
+			if err != nil {
+				slog.Error("Failed to add admin user during OAuth invite accept", "error", err, "email", googleEmail)
+				h.redirectAuthError(w, r, "Не вдалося створити обліковий запис адміністратора.")
+				return
+			}
+			adminUser = newAdmin
+		} else if err != nil {
+			slog.Error("GetByEmail failed during OAuth invite accept", "error", err, "email", googleEmail)
+			h.redirectAuthError(w, r, "Не вдалося активувати обліковий запис адміністратора.")
+			return
+		} else {
+			_ = h.adminUsersRepo.UpdateRole(r.Context(), googleEmail, inv.Role)
+			_ = h.adminUsersRepo.UpdateStatus(r.Context(), googleEmail, domain.AdminStatusActive)
+			user.Role = inv.Role
+			user.Status = domain.AdminStatusActive
+			adminUser = user
+		}
+	} else {
+		// Standard Google OAuth Login Flow
+		if h.adminUsersRepo != nil {
+			user, err := h.adminUsersRepo.GetByEmail(r.Context(), googleEmail)
+			if err == nil {
+				adminUser = user
+			} else if errors.Is(err, domain.ErrAdminNotFound) {
+				// Check if there is an active pending invitation for this email
+				if h.invitationsRepo != nil {
+					inv, invErr := h.invitationsRepo.GetPendingByEmail(r.Context(), googleEmail)
+					if invErr == nil && inv != nil {
+						_ = h.invitationsRepo.MarkAccepted(r.Context(), inv.ID)
+						newAdmin, addErr := h.adminUsersRepo.Add(r.Context(), googleEmail, inv.Role, domain.AdminStatusActive, inv.InvitedByAdminID)
+						if addErr == nil {
+							adminUser = newAdmin
+						}
+					}
+				}
+
+				if adminUser == nil && CheckBootstrapAccess(r.Context(), googleEmail, h.allowedEmails, h.adminUsersRepo) {
+					newAdmin, err := h.adminUsersRepo.Add(r.Context(), googleEmail, domain.RoleSuperAdmin, domain.AdminStatusActive, "system")
+					if err == nil {
+						adminUser = newAdmin
+					}
+				}
+			}
+		}
+
+		if adminUser == nil {
+			slog.Warn("OAuth login rejected: email not authorized", "email", googleEmail)
+			h.redirectAuthError(w, r, fmt.Sprintf("Доступ заборонено: поштова скринька %s не авторизована у системі. Для доступу зверніться до адміністратора за запрошенням.", googleEmail))
+			return
+		}
+	}
+
+	if adminUser.Status == domain.AdminStatusDisabled {
+		slog.Warn("OAuth login rejected: account disabled", "email", googleEmail)
+		h.redirectAuthError(w, r, "Ваш обліковий запис деактивовано адміністратором. Зверніться до головного адміністратора.")
 		return
+	}
+
+	if h.adminUsersRepo != nil {
+		_ = h.adminUsersRepo.UpdateLastLogin(r.Context(), googleEmail)
 	}
 
 	token, err := h.jwtSvc.GenerateToken(userInfo)
@@ -147,17 +343,21 @@ func (h *AdminHandler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 		slog.Error("Refresh token generation failed", "error", err)
 	}
 	if h.auditRepo != nil {
+		action := domain.ActionLogin
+		if isInviteFlow {
+			action = domain.AdminAction("admin.invite.accepted")
+		}
 		go func() {
 			_ = h.auditRepo.Record(context.Background(), domain.AuditEntry{
-				AdminEmail: userInfo.Email,
-				Action:     domain.ActionLogin,
+				AdminEmail: googleEmail,
+				Action:     action,
 				Target:     "oauth",
 				IP:         realIP(r),
 			})
 		}()
 	}
 
-	slog.Info("Admin login successful", "email", userInfo.Email)
+	slog.Info("Admin login successful", "email", googleEmail)
 
 	if refreshToken != "" {
 		sameSiteMode := http.SameSiteLaxMode
@@ -175,6 +375,16 @@ func (h *AdminHandler) HandleCallback(w http.ResponseWriter, r *http.Request) {
 			Value:    refreshToken,
 			Path:     cookiePath,
 			MaxAge:   30 * 24 * 3600,
+			HttpOnly: true,
+			Secure:   true,
+			SameSite: sameSiteMode,
+		})
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "admin_token",
+			Value:    token,
+			Path:     "/",
+			MaxAge:   86400,
 			HttpOnly: true,
 			Secure:   true,
 			SameSite: sameSiteMode,
@@ -220,9 +430,13 @@ func (h *AdminHandler) HandleRefreshToken(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	if !CheckAdminAccess(r.Context(), claims.Email, h.allowedEmails, h.settingsRepo) {
-		jsonError(w, "forbidden", "Email no longer authorized", http.StatusForbidden)
-		return
+	googleEmail := strings.ToLower(strings.TrimSpace(claims.Email))
+	if h.adminUsersRepo != nil {
+		user, err := h.adminUsersRepo.GetByEmail(r.Context(), googleEmail)
+		if err != nil || user.Status == domain.AdminStatusDisabled {
+			jsonError(w, "forbidden", "Email no longer authorized or account disabled", http.StatusForbidden)
+			return
+		}
 	}
 
 	newToken, err := h.jwtSvc.GenerateToken(&auth.GoogleUserInfo{
@@ -233,6 +447,21 @@ func (h *AdminHandler) HandleRefreshToken(w http.ResponseWriter, r *http.Request
 		jsonError(w, "token_error", "Failed to generate new access token", http.StatusInternalServerError)
 		return
 	}
+
+	sameSiteMode := http.SameSiteLaxMode
+	if h.cookieSameSiteNone {
+		sameSiteMode = http.SameSiteNoneMode
+	}
+	
+	http.SetCookie(w, &http.Cookie{
+		Name:     "admin_token",
+		Value:    newToken,
+		Path:     "/",
+		MaxAge:   86400,
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: sameSiteMode,
+	})
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
@@ -265,6 +494,14 @@ func (h *AdminHandler) HandleLogout(w http.ResponseWriter, r *http.Request) {
 		Name:     "refresh_token",
 		Value:    "",
 		Path:     cookiePath,
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   true,
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "admin_token",
+		Value:    "",
+		Path:     "/",
 		MaxAge:   -1,
 		HttpOnly: true,
 		Secure:   true,
@@ -765,7 +1002,8 @@ func (h *AdminHandler) HandleAddAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Email string `json:"email"`
+		Email string      `json:"email"`
+		Role  domain.Role `json:"role"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		jsonError(w, "invalid_request", "Invalid JSON body", http.StatusBadRequest)
@@ -777,10 +1015,13 @@ func (h *AdminHandler) HandleAddAdmin(w http.ResponseWriter, r *http.Request) {
 		jsonError(w, "validation_error", "Valid email is required", http.StatusBadRequest)
 		return
 	}
+	if req.Role == "" {
+		req.Role = domain.RoleNewsEditor
+	}
 
 	callerEmail := AdminEmailFromCtx(r.Context())
 
-	admin, err := h.adminUsersRepo.Add(r.Context(), req.Email, callerEmail)
+	admin, err := h.adminUsersRepo.Add(r.Context(), req.Email, req.Role, domain.AdminStatusActive, callerEmail)
 	if err != nil {
 		if err == domain.ErrAdminAlreadyExists {
 			jsonError(w, "already_exists", "This email is already an administrator", http.StatusConflict)
@@ -808,7 +1049,7 @@ func (h *AdminHandler) HandleAddAdmin(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(admin)
 }
 
-// HandleRemoveAdmin removes an administrator.
+// HandleRemoveAdmin removes an administrator or revokes their invitation.
 // DELETE /admin/admins/{email}
 func (h *AdminHandler) HandleRemoveAdmin(w http.ResponseWriter, r *http.Request) {
 	if h.adminUsersRepo == nil {
@@ -816,11 +1057,13 @@ func (h *AdminHandler) HandleRemoveAdmin(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	targetEmail := chi.URLParam(r, "email")
-	if targetEmail == "" {
+	rawEmail := chi.URLParam(r, "email")
+	if rawEmail == "" {
 		jsonError(w, "missing_email", "Email parameter is required", http.StatusBadRequest)
 		return
 	}
+	targetEmail, _ := url.QueryUnescape(rawEmail)
+	targetEmail = strings.ToLower(strings.TrimSpace(targetEmail))
 
 	callerEmail := AdminEmailFromCtx(r.Context())
 
@@ -829,13 +1072,29 @@ func (h *AdminHandler) HandleRemoveAdmin(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if err := h.adminUsersRepo.Delete(r.Context(), targetEmail); err != nil {
-		if err == domain.ErrAdminNotFound {
-			jsonError(w, "not_found", "Admin user not found", http.StatusNotFound)
+	existing, err := h.adminUsersRepo.GetByEmail(r.Context(), targetEmail)
+	if err == nil && existing != nil && existing.Role == domain.RoleSuperAdmin && existing.Status == domain.AdminStatusActive {
+		count, err := h.adminUsersRepo.CountActiveSuperAdmins(r.Context())
+		if err == nil && count <= 1 {
+			jsonError(w, "last_super_admin", "Неможливо вилучити єдиного активного головного адміністратора", http.StatusBadRequest)
 			return
 		}
-		slog.Error("Remove admin failed", "error", err, "email", targetEmail)
-		jsonError(w, "db_error", "Failed to remove administrator", http.StatusInternalServerError)
+	}
+
+	removedAny := false
+
+	if err := h.adminUsersRepo.Delete(r.Context(), targetEmail); err == nil {
+		removedAny = true
+	}
+
+	if h.invitationsRepo != nil {
+		if err := h.invitationsRepo.RevokeByEmail(r.Context(), targetEmail); err == nil {
+			removedAny = true
+		}
+	}
+
+	if !removedAny {
+		jsonError(w, "not_found", "Адміністратора або активного запрошення не знайдено", http.StatusNotFound)
 		return
 	}
 

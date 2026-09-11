@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	_ "modernc.org/sqlite"
@@ -179,6 +180,316 @@ var migrations = []migration{
 		);
 		CREATE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users(email);`,
 	},
+	{
+		Version:     9,
+		Description: "news module: categories, articles, translations, tags, slug history, FTS5",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS news_categories (
+			id      TEXT PRIMARY KEY,
+			slug    TEXT NOT NULL UNIQUE,
+			name_uk TEXT NOT NULL,
+			name_en TEXT NOT NULL
+		);
+
+		INSERT OR IGNORE INTO news_categories (id, slug, name_uk, name_en) VALUES
+			('cat-news',          'news',          'Новини',       'News'),
+			('cat-events',        'events',        'Події',        'Events'),
+			('cat-science',       'science',       'Наука',        'Science'),
+			('cat-achievements',  'achievements',  'Досягнення',   'Achievements'),
+			('cat-conferences',   'conferences',   'Конференції',  'Conferences');
+
+		CREATE TABLE IF NOT EXISTS news_articles (
+			id               TEXT PRIMARY KEY,
+			status           TEXT NOT NULL DEFAULT 'draft'
+			                      CHECK (status IN ('draft', 'published')),
+			category_id      TEXT NOT NULL DEFAULT 'cat-news'
+			                      REFERENCES news_categories(id),
+			author_name      TEXT NOT NULL DEFAULT '',
+			author_avatar    TEXT NOT NULL DEFAULT '',
+			author_position  TEXT NOT NULL DEFAULT '',
+			image_url        TEXT NOT NULL DEFAULT '',
+			is_pinned        INTEGER NOT NULL DEFAULT 0,
+			preview_token    TEXT UNIQUE,
+			publish_at       DATETIME,
+			published_at     DATETIME,
+			created_by       TEXT NOT NULL DEFAULT 'system',
+			created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			deleted_at       DATETIME
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_status      ON news_articles(status, publish_at DESC);
+		CREATE INDEX IF NOT EXISTS idx_news_category    ON news_articles(category_id);
+		CREATE INDEX IF NOT EXISTS idx_news_pinned      ON news_articles(is_pinned);
+		CREATE INDEX IF NOT EXISTS idx_news_preview     ON news_articles(preview_token);
+		CREATE INDEX IF NOT EXISTS idx_news_deleted     ON news_articles(deleted_at);
+		CREATE INDEX IF NOT EXISTS idx_news_created     ON news_articles(created_at DESC);
+
+		CREATE TABLE IF NOT EXISTS news_translations (
+			article_id      TEXT    NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE,
+			locale          TEXT    NOT NULL CHECK (locale IN ('uk', 'en')),
+			title           TEXT    NOT NULL DEFAULT '',
+			slug            TEXT    NOT NULL DEFAULT '',
+			description     TEXT    NOT NULL DEFAULT '',
+			content         TEXT    NOT NULL DEFAULT '',
+			seo_title       TEXT    NOT NULL DEFAULT '',
+			seo_description TEXT    NOT NULL DEFAULT '',
+			keywords        TEXT    NOT NULL DEFAULT '',
+			PRIMARY KEY (article_id, locale),
+			UNIQUE (locale, slug)
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_trans_slug ON news_translations(locale, slug);
+
+		CREATE TABLE IF NOT EXISTS news_slug_history (
+			id          TEXT NOT NULL PRIMARY KEY,
+			article_id  TEXT NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE,
+			locale      TEXT NOT NULL CHECK (locale IN ('uk', 'en')),
+			old_slug    TEXT NOT NULL,
+			replaced_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE (locale, old_slug)
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_slug_hist ON news_slug_history(locale, old_slug);
+
+		CREATE TABLE IF NOT EXISTS news_tags (
+			id   TEXT PRIMARY KEY,
+			slug TEXT NOT NULL UNIQUE,
+			name TEXT NOT NULL
+		);
+
+		CREATE TABLE IF NOT EXISTS news_article_tags (
+			article_id TEXT NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE,
+			tag_id     TEXT NOT NULL REFERENCES news_tags(id)     ON DELETE CASCADE,
+			PRIMARY KEY (article_id, tag_id)
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_art_tags ON news_article_tags(article_id);
+
+		CREATE VIRTUAL TABLE IF NOT EXISTS news_fts USING fts5(
+			title,
+			description,
+			content,
+			locale   UNINDEXED,
+			article_id UNINDEXED,
+			content='news_translations',
+			content_rowid='rowid'
+		);`,
+	},
+	{
+		Version:     10,
+		Description: "news module: dynamic categories with translations, styling, soft delete, and slug history",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS news_category_translations (
+			category_id     TEXT    NOT NULL REFERENCES news_categories(id) ON DELETE CASCADE,
+			locale          TEXT    NOT NULL CHECK (locale IN ('uk', 'en')),
+			name            TEXT    NOT NULL DEFAULT '',
+			slug            TEXT    NOT NULL DEFAULT '',
+			description     TEXT    NOT NULL DEFAULT '',
+			seo_title       TEXT    NOT NULL DEFAULT '',
+			seo_description TEXT    NOT NULL DEFAULT '',
+			PRIMARY KEY (category_id, locale),
+			UNIQUE (locale, slug)
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_cat_trans_slug ON news_category_translations(locale, slug);
+
+		-- Migrate existing names to translations
+		INSERT OR IGNORE INTO news_category_translations (category_id, locale, name, slug)
+		SELECT id, 'uk', name_uk, slug FROM news_categories;
+		
+		INSERT OR IGNORE INTO news_category_translations (category_id, locale, name, slug)
+		SELECT id, 'en', name_en, slug || '-en' FROM news_categories;
+
+		-- We do NOT drop name_uk, name_en, slug from news_categories to maintain compatibility with older SQLite versions,
+		-- but we will no longer use them in the Go domain model.
+
+		ALTER TABLE news_categories ADD COLUMN cover_image TEXT NOT NULL DEFAULT '';
+		ALTER TABLE news_categories ADD COLUMN icon TEXT NOT NULL DEFAULT 'folder';
+		ALTER TABLE news_categories ADD COLUMN color TEXT NOT NULL DEFAULT 'primary';
+		ALTER TABLE news_categories ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0;
+		ALTER TABLE news_categories ADD COLUMN status TEXT NOT NULL DEFAULT 'visible';
+		ALTER TABLE news_categories ADD COLUMN created_at DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00';
+		ALTER TABLE news_categories ADD COLUMN updated_at DATETIME NOT NULL DEFAULT '1970-01-01 00:00:00';
+		ALTER TABLE news_categories ADD COLUMN deleted_at DATETIME;
+
+		CREATE INDEX IF NOT EXISTS idx_news_cat_sort ON news_categories(sort_order);
+		CREATE INDEX IF NOT EXISTS idx_news_cat_deleted ON news_categories(deleted_at);
+
+		CREATE TABLE IF NOT EXISTS category_slug_history (
+			id          TEXT NOT NULL PRIMARY KEY,
+			category_id TEXT NOT NULL REFERENCES news_categories(id) ON DELETE CASCADE,
+			locale      TEXT NOT NULL CHECK (locale IN ('uk', 'en')),
+			old_slug    TEXT NOT NULL,
+			replaced_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			UNIQUE (locale, old_slug)
+		);
+		CREATE INDEX IF NOT EXISTS idx_cat_slug_hist ON category_slug_history(locale, old_slug);
+		`,
+	},
+	{
+		Version:     13,
+		Description: "add cover_position to news_categories",
+		SQL: `
+		ALTER TABLE news_categories ADD COLUMN cover_position TEXT NOT NULL DEFAULT 'center';
+		`,
+	},
+	{
+		Version:     14,
+		Description: "add cover_position, gallery, video_url, video_poster to news_articles",
+		SQL: `
+		ALTER TABLE news_articles ADD COLUMN cover_position TEXT NOT NULL DEFAULT 'center';
+		ALTER TABLE news_articles ADD COLUMN gallery TEXT NOT NULL DEFAULT '[]';
+		ALTER TABLE news_articles ADD COLUMN video_url TEXT NOT NULL DEFAULT '';
+		ALTER TABLE news_articles ADD COLUMN video_poster TEXT NOT NULL DEFAULT '';
+		`,
+	},
+	{
+		Version:     15,
+		Description: "backfill published_at for published articles with missing or zero timestamps",
+		SQL: `
+		UPDATE news_articles
+		SET published_at = created_at
+		WHERE status = 'published' AND (published_at IS NULL OR published_at LIKE '0001%');
+		`,
+	},
+	{
+		Version:     16,
+		Description: "admin invitations and RBAC roles support for admin_users",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS admin_users_new (
+			id            INTEGER PRIMARY KEY AUTOINCREMENT,
+			email         TEXT NOT NULL UNIQUE,
+			role          TEXT NOT NULL DEFAULT 'super_admin' CHECK (role IN ('super_admin', 'news_editor', 'chatbot_admin')),
+			status        TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'disabled', 'pending')),
+			added_by      TEXT NOT NULL DEFAULT 'system',
+			added_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			updated_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			last_login_at DATETIME,
+			password_hash TEXT NOT NULL DEFAULT ''
+		);
+
+		INSERT OR IGNORE INTO admin_users_new (id, email, added_by, added_at)
+		SELECT id, LOWER(TRIM(email)), added_by, added_at FROM admin_users;
+
+		DROP TABLE IF EXISTS admin_users;
+		ALTER TABLE admin_users_new RENAME TO admin_users;
+		CREATE UNIQUE INDEX IF NOT EXISTS idx_admin_users_email ON admin_users(email);
+
+		CREATE TABLE IF NOT EXISTS admin_invitations (
+			id                  TEXT PRIMARY KEY,
+			email               TEXT NOT NULL,
+			role                TEXT NOT NULL CHECK (role IN ('super_admin', 'news_editor', 'chatbot_admin')),
+			token_hash          TEXT NOT NULL UNIQUE,
+			invited_by_admin_id TEXT NOT NULL DEFAULT 'system',
+			created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			expires_at          DATETIME NOT NULL,
+			accepted_at         DATETIME,
+			revoked_at          DATETIME,
+			last_sent_at        DATETIME
+		);
+		CREATE INDEX IF NOT EXISTS idx_invitations_email ON admin_invitations(email);
+		CREATE INDEX IF NOT EXISTS idx_invitations_token ON admin_invitations(token_hash);
+		`,
+	},
+	{
+		Version:     17,
+		Description: "admin_oauth_states table for persistent OAuth state continuation",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS admin_oauth_states (
+			state_hash    TEXT PRIMARY KEY,
+			invitation_id TEXT DEFAULT '',
+			purpose       TEXT NOT NULL DEFAULT 'login',
+			created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			expires_at    DATETIME NOT NULL,
+			consumed_at   DATETIME
+		);
+		CREATE INDEX IF NOT EXISTS idx_oauth_states_expires ON admin_oauth_states(expires_at);
+		`,
+	},
+	{
+		Version:     18,
+		Description: "add delivery_status column to admin_invitations table",
+		SQL: `
+		ALTER TABLE admin_invitations ADD COLUMN delivery_status TEXT NOT NULL DEFAULT 'sent' CHECK (delivery_status IN ('pending', 'sent', 'delivery_failed'));
+		`,
+	},
+	{
+		Version:     19,
+		Description: "recreate admin_invitations with nullable last_sent_at",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS admin_invitations_new (
+			id                  TEXT PRIMARY KEY,
+			email               TEXT NOT NULL,
+			role                TEXT NOT NULL CHECK (role IN ('super_admin', 'news_editor', 'chatbot_admin')),
+			token_hash          TEXT NOT NULL UNIQUE,
+			invited_by_admin_id TEXT NOT NULL DEFAULT 'system',
+			created_at          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			expires_at          DATETIME NOT NULL,
+			accepted_at         DATETIME,
+			revoked_at          DATETIME,
+			last_sent_at        DATETIME,
+			delivery_status     TEXT NOT NULL DEFAULT 'sent' CHECK (delivery_status IN ('pending', 'sent', 'delivery_failed'))
+		);
+
+		INSERT OR IGNORE INTO admin_invitations_new (
+			id, email, role, token_hash, invited_by_admin_id, created_at, expires_at, accepted_at, revoked_at, last_sent_at, delivery_status
+		) SELECT id, email, role, token_hash, invited_by_admin_id, created_at, expires_at, accepted_at, revoked_at, last_sent_at, COALESCE(delivery_status, 'sent') FROM admin_invitations;
+
+		DROP TABLE IF EXISTS admin_invitations;
+		ALTER TABLE admin_invitations_new RENAME TO admin_invitations;
+		CREATE INDEX IF NOT EXISTS idx_invitations_email ON admin_invitations(email);
+		CREATE INDEX IF NOT EXISTS idx_invitations_token ON admin_invitations(token_hash);
+		`,
+	},
+	{
+		Version:     20,
+		Description: "drop keywords column from news_translations",
+		SQL: `
+		ALTER TABLE news_translations DROP COLUMN keywords;
+		`,
+	},
+	{
+		Version:     21,
+		Description: "news_attachments table for news documents",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS news_attachments (
+			id            TEXT PRIMARY KEY,
+			news_id       TEXT NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE,
+			original_name TEXT NOT NULL,
+			stored_name   TEXT NOT NULL,
+			mime_type     TEXT NOT NULL,
+			extension     TEXT NOT NULL,
+			size_bytes    INTEGER NOT NULL DEFAULT 0,
+			sort_order    INTEGER NOT NULL DEFAULT 0,
+			title_uk      TEXT NOT NULL DEFAULT '',
+			title_en      TEXT NOT NULL DEFAULT '',
+			created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_attachments_news_id ON news_attachments(news_id);
+		CREATE INDEX IF NOT EXISTS idx_news_attachments_sort ON news_attachments(news_id, sort_order ASC, created_at ASC);
+		`,
+	},
+	{
+		Version:     22,
+		Description: "news_gallery_images table for news photo gallery",
+		SQL: `
+		CREATE TABLE IF NOT EXISTS news_gallery_images (
+			id            TEXT PRIMARY KEY,
+			news_id       TEXT NOT NULL REFERENCES news_articles(id) ON DELETE CASCADE,
+			original_name TEXT NOT NULL,
+			stored_name   TEXT NOT NULL,
+			mime_type     TEXT NOT NULL,
+			extension     TEXT NOT NULL,
+			size_bytes    INTEGER NOT NULL DEFAULT 0,
+			width         INTEGER NOT NULL DEFAULT 0,
+			height        INTEGER NOT NULL DEFAULT 0,
+			sort_order    INTEGER NOT NULL DEFAULT 0,
+			alt_uk        TEXT NOT NULL DEFAULT '',
+			alt_en        TEXT NOT NULL DEFAULT '',
+			caption_uk    TEXT NOT NULL DEFAULT '',
+			caption_en    TEXT NOT NULL DEFAULT '',
+			created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+		);
+		CREATE INDEX IF NOT EXISTS idx_news_gallery_news_id ON news_gallery_images(news_id);
+		CREATE INDEX IF NOT EXISTS idx_news_gallery_sort ON news_gallery_images(news_id, sort_order ASC, created_at ASC);
+		`,
+	},
 }
 
 // runMigrations creates the schema_version table if absent, then iterates
@@ -211,8 +522,12 @@ func runMigrations(db *sql.DB) error {
 		}
 
 		if _, err := tx.Exec(m.SQL); err != nil {
-			_ = tx.Rollback()
-			return fmt.Errorf("migration v%d (%s): %w", m.Version, m.Description, err)
+			if strings.Contains(err.Error(), "duplicate column name") {
+				slog.Warn("Migration column already exists, proceeding", "version", m.Version, "error", err)
+			} else {
+				_ = tx.Rollback()
+				return fmt.Errorf("migration v%d (%s): %w", m.Version, m.Description, err)
+			}
 		}
 
 		if _, err := tx.Exec(

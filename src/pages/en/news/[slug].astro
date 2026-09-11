@@ -1,38 +1,154 @@
 ---
+/**
+ * /en/news/[slug] — SSR article page (English locale).
+ *
+ * Mirrors /news/[slug].astro but uses locale="en".
+ */
+export const prerender = false;
+
 import Layout from "@/layouts/Layout.astro";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { normalizeText, extractArticleSummary, getEffectiveSeoPreview } from "@/utils/seo";
 import { ArticlePage } from "@/routes/news/ArticlePage";
 import { getTranslations } from "@/i18n";
 import type { Locale } from "@/i18n";
-import { getArticles, getArticleBySlug } from "@/data/articles";
 
-export function getStaticPaths() {
-  const articles = getArticles();
-  return articles.map((article) => ({
-    params: { slug: article.slug },
-  }));
+interface NewsLocale {
+  locale: string;
+  title: string;
+  slug: string;
+  description: string;
+  content: string;
+  seo_title: string;
+  seo_description: string;
+}
+
+interface NewsCategory {
+  id: string;
+  color: string;
+  icon: string;
+  cover_image: string;
+  locales: Record<string, any>;
+}
+
+interface NewsArticle {
+  id: string;
+  status: "draft" | "published";
+  category_id: string;
+  category?: NewsCategory;
+  tags: { id: string; slug: string; name: string }[];
+  author: { name: string; avatar?: string; position?: string };
+  image_url: string;
+  is_pinned: boolean;
+  publish_at?: string;
+  published_at?: string;
+  created_at: string;
+  updated_at: string;
+  locales: Record<string, NewsLocale>;
 }
 
 const locale: Locale = "en";
 const t = getTranslations(locale);
 
 const { slug } = Astro.params;
-const article = getArticleBySlug(slug as string);
-
-if (!article) {
-  return Astro.redirect("/en/news");
+if (!slug) {
+  return Astro.redirect("/en/news", 302);
 }
 
-const siteUrl = Astro.site?.toString()?.replace(/\/$/, "") ?? Astro.url.origin;
-const articleUrl = `${siteUrl}/en/news/${article.slug}/`;
+const API_BASE =
+  import.meta.env.PUBLIC_API_URL ?? "http://localhost:8280";
+
+let article: NewsArticle | null = null;
+
+try {
+  const res = await fetch(
+    `${API_BASE}/api/v1/news/${encodeURIComponent(slug)}?locale=${locale}`,
+    { headers: { Accept: "application/json" } }
+  );
+
+  if (res.status === 301 || res.status === 302) {
+    const location = res.headers.get("Location");
+    if (location) {
+      const canonical = location.split("/").pop()?.split("?")[0];
+      if (canonical && canonical !== slug) {
+        return Astro.redirect(`/en/news/${canonical}`, 301);
+      }
+    }
+  }
+
+  if (res.status === 404) {
+    return Astro.redirect("/en/news", 302);
+  }
+
+  if (!res.ok) {
+    console.error(`[en/news/[slug]] API error: ${res.status} for slug=${slug}`);
+    return Astro.redirect("/en/news", 302);
+  }
+
+  const cacheControl = res.headers.get("Cache-Control");
+  if (cacheControl) {
+    Astro.response.headers.set("Cache-Control", cacheControl);
+  }
+
+  article = (await res.json()) as NewsArticle;
+} catch (err) {
+  console.error("[en/news/[slug]] fetch failed:", err);
+  return Astro.redirect("/en/news", 302);
+}
+
+if (!article) {
+  return Astro.redirect("/en/news", 302);
+}
+
+const localePart = article.locales?.[locale] ?? article.locales?.["uk"];
+const preview = getEffectiveSeoPreview({
+  title: localePart?.title ?? "",
+  description: localePart?.description ?? "",
+  content: localePart?.content ?? "",
+  seoTitle: localePart?.seo_title ?? "",
+  seoDescription: localePart?.seo_description ?? "",
+  fallbackTitle: t.meta.newsTitle,
+  fallbackDescription: t.meta.newsDescription,
+});
+
+const title = preview.effectiveTitle;
+const description = preview.effectiveDescription;
+
+const siteUrl =
+  Astro.site?.toString()?.replace(/\/$/, "") ?? Astro.url.origin;
+const canonicalSlug = localePart?.slug ?? slug;
+if (canonicalSlug && canonicalSlug !== slug) {
+  return Astro.redirect(`/en/news/${canonicalSlug}`, 301);
+}
+const articleUrl = `${siteUrl}/en/news/${canonicalSlug}/`;
+
+const publishedAt = article.published_at
+  ? new Date(article.published_at).toISOString()
+  : undefined;
+const modifiedAt = new Date(article.updated_at).toISOString();
+
 const articleJsonLd = {
   "@context": "https://schema.org",
   "@type": "NewsArticle",
-  headline: article.title[locale],
-  description: article.summary[locale],
-  datePublished: article.date,
+  headline: localePart?.title,
+  description: localePart?.description,
+  datePublished: publishedAt,
+  dateModified: modifiedAt,
   url: articleUrl,
+  image: article.image_url
+    ? [
+        `${article.image_url}-640w.webp`,
+        `${article.image_url}-1024w.webp`,
+      ]
+    : undefined,
+  author: article.author?.name
+    ? {
+        "@type": "Person",
+        name: article.author.name,
+        jobTitle: article.author.position,
+      }
+    : undefined,
   publisher: {
     "@type": "Organization",
     name: t.meta.siteName,
@@ -46,15 +162,13 @@ const articleJsonLd = {
 ---
 
 <Layout
-  title={`${article.title[locale]} | ${t.meta.siteName}`}
-  description={article.summary[locale]}
+  title={`${title} | ${t.meta.siteName}`}
+  description={description}
   ogType="article"
   jsonLdExtra={articleJsonLd}
   locale={locale}
 >
-  <div
-    class="overflow-hidden w-full min-h-screen flex justify-center bg-pure-white"
-  >
+  <div class="overflow-hidden w-full min-h-screen flex justify-center bg-pure-white">
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header
         client:load

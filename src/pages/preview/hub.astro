@@ -1,0 +1,18 @@
+---
+export const prerender = false;
+import { PreviewHubClient } from "./_PreviewHubClient";
+import "@/styles/global.css";
+---
+
+<!doctype html>
+<html lang="uk" class="h-full bg-gray-900 overflow-hidden">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Режим перегляду (Live Preview)</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="h-full m-0 p-0 overflow-hidden bg-gray-900 antialiased">
+    <PreviewHubClient client:only="react" />
+  </body>
+</html>

@@ -7,11 +7,23 @@ import react from '@astrojs/react';
 
 import sitemap from '@astrojs/sitemap';
 
+import node from '@astrojs/node';
+
 // https://astro.build/config
 export default defineConfig({
+  // server mode: most pages use `export const prerender = true` (static),
+  // news pages use `export const prerender = false` (SSR on every request).
+  output: 'server',
+  adapter: node({ mode: 'standalone' }),
   site: 'https://www.itb.oa.edu.ua',
   vite: {
     plugins: [tailwindcss()],
+    server: {
+      proxy: {
+        '/news-images': 'http://localhost:8280',
+        '/news-videos': 'http://localhost:8280',
+      },
+    },
     ssr: {
       noExternal: ['motion'],
     },
@@ -25,9 +37,7 @@ export default defineConfig({
     routing: {
       prefixDefaultLocale: false,
     },
-    fallback: {
-      en: 'uk',
-    },
+    
   },
   integrations: [
     react(),

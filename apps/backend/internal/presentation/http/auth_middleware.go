@@ -6,6 +6,7 @@ import (
 	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -20,38 +21,162 @@ import (
 
 type contextKey string
 
-const adminEmailKey contextKey = "admin_email"
+const (
+	adminUserKey  contextKey = "admin_user"
+	adminEmailKey contextKey = "admin_email"
+)
 
 // DualAuthMiddleware creates a chi middleware that authenticates admin requests
 // using either JWT (Bearer token via Authorization header) or static admin token
-// (X-Admin-Token header). Falls through from JWT to token auth on JWT failure.
-func DualAuthMiddleware(jwtSvc *auth.JWTService, adminToken string, allowedEmails []string, settings *sqlite.AdminSettingsRepo) func(http.Handler) http.Handler {
+// (X-Admin-Token header). Enforces account active status and attaches AdminUser to context.
+func DualAuthMiddleware(jwtSvc *auth.JWTService, adminToken string, legacyTokenEnabled bool, allowedEmails []string, settings *sqlite.AdminSettingsRepo, adminUsersRepo domain.AdminUsersRepo) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var email string
+			authed := false
+
 			if authHeader := r.Header.Get("Authorization"); strings.HasPrefix(authHeader, "Bearer ") {
 				tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
 				claims, err := jwtSvc.ValidateToken(tokenStr)
 				if err == nil {
-					if !CheckAdminAccess(r.Context(), claims.Email, allowedEmails, settings) {
-						jsonError(w, "forbidden", "Email not authorized", http.StatusForbidden)
-						return
+					email = claims.Email
+					authed = true
+				} else {
+					slog.Debug("JWT validation via header failed", "error", err)
+				}
+			} else {
+				cookie, err := r.Cookie("admin_token")
+				if err == nil && cookie.Value != "" {
+					claims, err := jwtSvc.ValidateToken(cookie.Value)
+					if err == nil {
+						email = claims.Email
+						authed = true
+					} else {
+						slog.Debug("JWT validation via cookie failed", "error", err)
 					}
-					ctx := context.WithValue(r.Context(), adminEmailKey, claims.Email)
-					next.ServeHTTP(w, r.WithContext(ctx))
+				}
+			}
+
+			if authed {
+				email = strings.ToLower(strings.TrimSpace(email))
+				var adminUser *domain.AdminUser
+
+				if adminUsersRepo != nil {
+					user, err := adminUsersRepo.GetByEmail(r.Context(), email)
+					if err == nil {
+						adminUser = user
+					} else if errors.Is(err, domain.ErrAdminNotFound) {
+						if CheckBootstrapAccess(r.Context(), email, allowedEmails, adminUsersRepo) {
+							// Auto-bootstrap as initial super_admin on empty DB
+							newAdmin, err := adminUsersRepo.Add(r.Context(), email, domain.RoleSuperAdmin, domain.AdminStatusActive, "system")
+							if err == nil {
+								adminUser = newAdmin
+							}
+						}
+					}
+				} else if isEmailAllowed(email, allowedEmails) {
+					adminUser = &domain.AdminUser{
+						Email:  email,
+						Role:   domain.RoleSuperAdmin,
+						Status: domain.AdminStatusActive,
+					}
+				}
+
+				if adminUser == nil {
+					jsonError(w, "forbidden", "Email not authorized", http.StatusForbidden)
 					return
 				}
-				slog.Debug("JWT validation failed, trying Admin-Token", "error", err)
+
+				if adminUser.Status == domain.AdminStatusDisabled {
+					jsonError(w, "forbidden", "Обліковий запис деактивовано", http.StatusForbidden)
+					return
+				}
+
+				ctx := context.WithValue(r.Context(), adminEmailKey, email)
+				ctx = context.WithValue(ctx, adminUserKey, adminUser)
+				next.ServeHTTP(w, r.WithContext(ctx))
+				return
 			}
-			if adminToken != "" {
-				token := r.Header.Get("X-Admin-Token")
-				if token != "" && subtle.ConstantTimeCompare([]byte(token), []byte(adminToken)) == 1 {
-					ctx := context.WithValue(r.Context(), adminEmailKey, "admin@token-auth")
+
+			token := r.Header.Get("X-Admin-Token")
+			if token != "" {
+				if !legacyTokenEnabled {
+					jsonError(w, "forbidden", "Legacy static token authentication is disabled", http.StatusForbidden)
+					return
+				}
+				if adminToken != "" && subtle.ConstantTimeCompare([]byte(token), []byte(adminToken)) == 1 {
+					systemEmail := "system@token-auth"
+					if len(allowedEmails) > 0 && allowedEmails[0] != "" {
+						systemEmail = allowedEmails[0]
+					}
+
+					var adminUser *domain.AdminUser
+					if adminUsersRepo != nil {
+						user, err := adminUsersRepo.GetByEmail(r.Context(), systemEmail)
+						if err == nil {
+							adminUser = user
+						} else if errors.Is(err, domain.ErrAdminNotFound) {
+							newAdmin, err := adminUsersRepo.Add(r.Context(), systemEmail, domain.RoleSuperAdmin, domain.AdminStatusActive, "system")
+							if err == nil {
+								adminUser = newAdmin
+							}
+						}
+					}
+
+					if adminUser == nil {
+						adminUser = &domain.AdminUser{
+							Email:  systemEmail,
+							Role:   domain.RoleSuperAdmin,
+							Status: domain.AdminStatusActive,
+						}
+					}
+
+					if adminUser.Status == domain.AdminStatusDisabled {
+						jsonError(w, "forbidden", "Обліковий запис деактивовано", http.StatusForbidden)
+						return
+					}
+
+					ctx := context.WithValue(r.Context(), adminEmailKey, adminUser.Email)
+					ctx = context.WithValue(ctx, adminUserKey, adminUser)
 					next.ServeHTTP(w, r.WithContext(ctx))
 					return
 				}
 			}
 
 			jsonError(w, "unauthorized", "Valid JWT or Admin-Token required", http.StatusUnauthorized)
+		})
+	}
+}
+
+// AdminUserFromCtx extracts the AdminUser struct from request context.
+func AdminUserFromCtx(ctx context.Context) *domain.AdminUser {
+	if u, ok := ctx.Value(adminUserKey).(*domain.AdminUser); ok && u != nil {
+		return u
+	}
+	return nil
+}
+
+// RequireRole creates a middleware enforcing that the authenticated admin possesses one of the allowed roles.
+// super_admin always bypasses role checks.
+func RequireRole(allowedRoles ...domain.Role) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			u := AdminUserFromCtx(r.Context())
+			if u == nil {
+				jsonError(w, "unauthorized", "Авторизація обов'язкова", http.StatusUnauthorized)
+				return
+			}
+			if u.Role == domain.RoleSuperAdmin {
+				next.ServeHTTP(w, r)
+				return
+			}
+			for _, role := range allowedRoles {
+				if u.Role == role {
+					next.ServeHTTP(w, r)
+					return
+				}
+			}
+			jsonError(w, "forbidden", "У вас немає доступу до цього розділу.", http.StatusForbidden)
 		})
 	}
 }
@@ -66,36 +191,17 @@ func AdminEmailFromCtx(ctx context.Context) string {
 	return email
 }
 
-// CheckAdminAccess verifies whether the given email has admin access.
-// Checks in order: email whitelist → first-admin auto-promotion → reject.
-func CheckAdminAccess(ctx context.Context, email string, allowedEmails []string, settings *sqlite.AdminSettingsRepo) bool {
-	if len(allowedEmails) > 0 {
-		return isEmailAllowed(email, allowedEmails)
+// CheckBootstrapAccess verifies whether an email is permitted to initialize the initial super_admin.
+// BOOTSTRAP ONLY semantics: allowed ONLY when the admin_users table is completely empty (0 users).
+func CheckBootstrapAccess(ctx context.Context, email string, allowedEmails []string, adminUsersRepo domain.AdminUsersRepo) bool {
+	if adminUsersRepo == nil || len(allowedEmails) == 0 {
+		return false
 	}
-	if settings != nil {
-		firstAdmin, err := settings.Get(ctx, "first_admin_email")
-		if err != nil {
-			slog.Error("Failed to get first_admin_email", "error", err)
-			return false
-		}
-
-		if firstAdmin == "" {
-			_, actualAdmin, err := settings.SetFirstAdminAtomic(ctx, email)
-			if err != nil {
-				slog.Error("Failed to set first_admin_email atomically", "error", err)
-				return false
-			}
-			won := strings.EqualFold(actualAdmin, email)
-			if won {
-				slog.Info("Auto-promoted first user to admin", "email", email)
-			}
-			return won
-		}
-
-		return strings.EqualFold(email, firstAdmin)
+	count, err := adminUsersRepo.CountTotal(ctx)
+	if err != nil || count > 0 {
+		return false // Bootstrap complete or error — strictly reject auto-minting
 	}
-
-	return false
+	return isEmailAllowed(email, allowedEmails)
 }
 
 // isEmailAllowed checks if the given email is in the allowed emails list.
@@ -209,7 +315,8 @@ func GenerateState() string {
 }
 
 type csrfEntry struct {
-	createdAt time.Time // Time when the CSRF state token was created
+	createdAt   time.Time // Time when the CSRF state token was created
+	inviteToken string    // Optional invitation raw token
 }
 
 const csrfStateTTL = 10 * time.Minute // Time to live for CSRF state tokens
@@ -244,32 +351,42 @@ func StartCSRFCleanup(ctx context.Context) {
 	}()
 }
 
-// StoreState stores a CSRF state token in the store. Returns false if the store is full.
-func StoreState(state string) bool {
+// StoreState stores a CSRF state token in the store with an optional invite token.
+func StoreState(state string, inviteToken ...string) bool {
 	csrfStoreMu.Lock()
 	defer csrfStoreMu.Unlock()
 	if len(csrfStore) >= csrfStoreMaxSize {
 		return false
 	}
-	csrfStore[state] = csrfEntry{createdAt: time.Now()}
+	inv := ""
+	if len(inviteToken) > 0 {
+		inv = inviteToken[0]
+	}
+	csrfStore[state] = csrfEntry{createdAt: time.Now(), inviteToken: inv}
 	return true
 }
 
-// ValidateState validates a CSRF state token. Removes the token from the store after successful validation.
-func ValidateState(state string) bool {
+// ValidateStateWithInvite validates a CSRF state token and returns whether valid and its invite token.
+func ValidateStateWithInvite(state string) (bool, string) {
 	csrfStoreMu.Lock()
 	defer csrfStoreMu.Unlock()
 	entry, ok := csrfStore[state]
 	if !ok {
-		return false
+		return false, ""
 	}
 
 	if time.Since(entry.createdAt) > csrfStateTTL {
 		delete(csrfStore, state)
-		return false
+		return false, ""
 	}
 	delete(csrfStore, state)
-	return true
+	return true, entry.inviteToken
+}
+
+// ValidateState validates a CSRF state token.
+func ValidateState(state string) bool {
+	valid, _ := ValidateStateWithInvite(state)
+	return valid
 }
 
 type stateResponse struct {

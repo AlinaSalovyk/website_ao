@@ -10,23 +10,30 @@ const ParticleCanvas = lazy(() =>
   })),
 );
 
-/**
- * Full-screen Google OAuth login screen for the admin panel.
- *
- * - Lazily loads a particle canvas background (non-blocking)
- * - Calls GET /auth/login to get the Google redirect URL, then navigates
- * - Shows an error banner if the OAuth endpoint is unreachable
- * - Entry animation via Framer Motion
- *
- * @param onAuth - Callback invoked by the parent when authentication succeeds.
- *                 (Currently reserved; auth is detected on next mount via the
- *                  refresh cookie, not via a direct callback from this screen.)
- */
-export function LoginScreen({ onAuth }: { onAuth: () => void }) {
+export function LoginScreen({ onAuth: _onAuth }: { onAuth: () => void }) {
   const [oauthError, setOauthError] = useState(false);
+  const [urlErrorMessage, setUrlErrorMessage] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    const search = new URLSearchParams(window.location.search);
+    const errParam = search.get("error");
+    if (errParam) return errParam;
+    const hash = window.location.hash;
+    if (hash.includes("error=")) {
+      const match = hash.match(/error=([^&]+)/);
+      if (match) {
+        try {
+          return decodeURIComponent(match[1].replace(/\+/g, " "));
+        } catch {
+          return match[1];
+        }
+      }
+    }
+    return null;
+  });
 
-  const handleLogin = async () => {
+  const handleOAuthLogin = async () => {
     setOauthError(false);
+    setUrlErrorMessage(null);
     try {
       const url = await getLoginUrl();
       window.location.href = url;
@@ -36,7 +43,7 @@ export function LoginScreen({ onAuth }: { onAuth: () => void }) {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[#0a0c0f] px-4 overflow-hidden">
+    <div className="relative flex min-h-screen items-center justify-center bg-background text-foreground px-4 overflow-hidden transition-colors duration-200">
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Suspense fallback={null}>
           <ParticleCanvas
@@ -60,23 +67,23 @@ export function LoginScreen({ onAuth }: { onAuth: () => void }) {
         transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
         className="relative z-10 w-full max-w-sm"
       >
-        <div className="relative overflow-hidden rounded-3xl border border-white/[0.08] bg-[#12151a]/90 p-8 text-center backdrop-blur-2xl shadow-2xl shadow-blue-950/20">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent" />
+        <div className="relative overflow-hidden rounded-3xl border border-border bg-card p-8 text-center backdrop-blur-2xl shadow-xl text-card-foreground">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
 
           <motion.div
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.3, type: "spring", stiffness: 200, damping: 12 }}
-            className="mx-auto mb-7 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/10 text-blue-400 ring-1 ring-white/[0.06]"
+            className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20"
           >
-            <Shield size={38} strokeWidth={1.5} />
+            <Shield size={32} strokeWidth={1.5} />
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="mb-2 text-2xl font-bold tracking-tight text-white"
+            className="mb-1 text-2xl font-bold tracking-tight text-foreground"
           >
             Адмін-панель
           </motion.h1>
@@ -85,20 +92,20 @@ export function LoginScreen({ onAuth }: { onAuth: () => void }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="mb-8 text-sm leading-relaxed text-zinc-500"
+            className="mb-6 text-xs leading-relaxed text-muted-foreground"
           >
-            Увійдіть через Google для доступу до управління чат-ботом кафедри.
+            Увійдіть за допомогою акаунту Google для доступу до панелі.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.1 }}
           >
             <Button
-              onClick={handleLogin}
+              onClick={handleOAuthLogin}
               size="lg"
-              className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-medium shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 hover:from-blue-500 hover:to-blue-400 transition-all duration-300"
+              className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 text-white font-medium shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 hover:from-blue-500 hover:to-blue-400 transition-all duration-300 cursor-pointer"
             >
               <svg className="mr-2.5 h-5 w-5" viewBox="0 0 24 24">
                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
@@ -109,17 +116,29 @@ export function LoginScreen({ onAuth }: { onAuth: () => void }) {
               Увійти з Google
             </Button>
 
-            {oauthError && (
+            {urlErrorMessage && (
               <motion.div
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/[0.07] px-4 py-3 text-left"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mt-4 flex items-start gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-left shadow-lg backdrop-blur-xl"
               >
+                <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
+                <div>
+                  <h4 className="text-xs font-bold text-destructive uppercase tracking-wider mb-0.5">Доступ обмежено</h4>
+                  <p className="text-xs leading-relaxed text-foreground/90 font-medium">
+                    {urlErrorMessage}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {oauthError && (
+              <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-amber-500/20 bg-amber-500/[0.07] px-4 py-3 text-left">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
                 <p className="text-xs leading-relaxed text-amber-300/90">
-                  OAuth недоступний. Зверніться до системного адміністратора.
+                  Не вдалося розпочати авторизацію через Google OAuth. Зверніться до адміністратора.
                 </p>
-              </motion.div>
+              </div>
             )}
           </motion.div>
         </div>
@@ -128,17 +147,13 @@ export function LoginScreen({ onAuth }: { onAuth: () => void }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 1 }}
-          className="mt-8 text-center text-sm text-zinc-500/80"
+          className="mt-8 text-center text-xs text-muted-foreground/80"
         >
-          <p className="mb-2 uppercase tracking-[0.15em] text-[10px] font-bold text-zinc-500">
-            Система управління чат-ботом
+          <p className="mb-1 uppercase tracking-[0.15em] text-[10px] font-bold text-muted-foreground">
+            Система управління ресурсами
           </p>
-          <p className="px-2 text-xs leading-relaxed">
-            Ця сторінка призначена виключно для адміністраторів кафедри. 
-            Тут ви можете завантажувати документи в базу знань, аналізувати ефективність роботи бота (статистику, лайки/дизлайки) та переглядати історію запитів користувачів.
-          </p>
-          <p className="mt-3 text-[11px] text-zinc-600">
-            Доступ надається автоматично для авторизованих Google-акаунтів співробітників кафедри.
+          <p className="px-2 text-[11px] leading-relaxed">
+            Доступ надається авторизованим адміністраторам з ролями Головний адміністратор, Редактор новин або Адміністратор чат-бота.
           </p>
         </motion.div>
       </motion.div>

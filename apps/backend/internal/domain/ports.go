@@ -187,16 +187,155 @@ type SuggestionsRepo interface {
 // AdminUsersRepo manages the admin_users table.
 // Implemented by sqlite.AdminUsersRepo.
 type AdminUsersRepo interface {
-	
-	// List returns all registered admin users.
 	List(ctx context.Context) ([]AdminUser, error)
-	
-	// Add creates a new admin record and returns it.
-	Add(ctx context.Context, email, addedBy string) (*AdminUser, error)
-	
-	// Delete removes an admin by email.
+	GetByEmail(ctx context.Context, email string) (*AdminUser, error)
+	Add(ctx context.Context, email string, role Role, status AdminStatus, addedBy string) (*AdminUser, error)
+	UpdateRole(ctx context.Context, email string, role Role) error
+	UpdateStatus(ctx context.Context, email string, status AdminStatus) error
+	UpdateLastLogin(ctx context.Context, email string) error
 	Delete(ctx context.Context, email string) error
-	
-	// Exists checks if an admin with the given email is registered.
 	Exists(ctx context.Context, email string) (bool, error)
+	CountTotal(ctx context.Context) (int, error)
+	CountActiveSuperAdmins(ctx context.Context) (int, error)
+}
+
+// AdminInvitationsRepo manages the admin_invitations table.
+type AdminInvitationsRepo interface {
+	Create(ctx context.Context, inv *AdminInvitation) error
+	GetByID(ctx context.Context, id string) (*AdminInvitation, error)
+	GetByTokenHash(ctx context.Context, tokenHash string) (*AdminInvitation, error)
+	GetPendingByEmail(ctx context.Context, email string) (*AdminInvitation, error)
+	ListPending(ctx context.Context) ([]AdminInvitation, error)
+	MarkAccepted(ctx context.Context, id string) error
+	MarkRevoked(ctx context.Context, id string) error
+	UpdateTokenAndExpiry(ctx context.Context, id, newTokenHash string, expiresAt time.Time, status DeliveryStatus) error
+	UpdateDeliveryStatus(ctx context.Context, id string, status DeliveryStatus) error
+	RevokeByEmail(ctx context.Context, email string) error
+}
+
+// OAuthStateRecord represents a persistent OAuth continuation state record.
+type OAuthStateRecord struct {
+	StateHash    string     `json:"state_hash"`
+	InvitationID string     `json:"invitation_id"`
+	Purpose      string     `json:"purpose"`
+	CreatedAt    time.Time  `json:"created_at"`
+	ExpiresAt    time.Time  `json:"expires_at"`
+	ConsumedAt   *time.Time `json:"consumed_at,omitempty"`
+}
+
+// AdminOAuthStateRepo manages the persistent admin_oauth_states table.
+type AdminOAuthStateRepo interface {
+	CreateState(ctx context.Context, stateHash, invitationID, purpose string, ttl time.Duration) error
+	GetAndConsumeState(ctx context.Context, stateHash string) (*OAuthStateRecord, error)
+	CleanupExpired(ctx context.Context) error
+}
+
+// Mailer defines the email delivery contract.
+type Mailer interface {
+	SendInvitation(ctx context.Context, toEmail string, role Role, inviteURL string, expiresAt time.Time) error
+}
+
+
+// NewsRepo manages news_articles and all related tables (news_translations,
+// news_categories, news_tags, news_article_tags, news_slug_history, news_fts).
+// All write operations are transactional. Implementations must be DB-agnostic
+// to allow migration from SQLite to PostgreSQL without changing the domain layer.
+// Implemented by sqlite.NewsRepo.
+type NewsRepo interface {
+
+	// Create inserts a new article with both locale translations and tags.
+	// Sets CreatedAt/UpdatedAt to UTC now if zero.
+	// Returns ErrNewsSlugConflict if either locale slug is already taken.
+	Create(ctx context.Context, article *NewsArticle) error
+
+	// Update replaces article metadata and re-inserts translations and tags.
+	// Saves old slugs to news_slug_history before overwriting.
+	// Returns ErrNewsNotFound if the article does not exist.
+	// Returns ErrNewsSlugConflict if the new slug collides with another article.
+	Update(ctx context.Context, article *NewsArticle) error
+
+	// SetStatus transitions the article to the given status.
+	// On first transition to NewsStatusPublished, sets PublishedAt to UTC now.
+	// Returns ErrNewsNotFound if the article does not exist.
+	SetStatus(ctx context.Context, id string, status NewsStatus) error
+
+	// Delete performs a soft delete by setting deleted_at to UTC now.
+	// Returns ErrNewsNotFound if the article is not found or already deleted.
+	Delete(ctx context.Context, id string) error
+
+	// Restore clears deleted_at, making the article active again.
+	// Returns ErrNewsNotFound if the article does not exist.
+	Restore(ctx context.Context, id string) error
+
+	// GetByID returns the full article with locales, category, and tags populated.
+	// By default excludes soft-deleted articles; pass IncludeDeleted via ListOptions instead.
+	GetByID(ctx context.Context, id string) (*NewsArticle, error)
+
+	// GetBySlug finds an article by its locale-specific slug.
+	// If the slug matches a historic entry in news_slug_history, wasRedirected is true
+	// and the handler must issue a 301 to the article's current slug.
+	// Returns ErrNewsNotFound if neither current nor historic slug matches.
+	GetBySlug(ctx context.Context, locale Language, slug string) (article *NewsArticle, wasRedirected bool, err error)
+
+	// GetByPreviewToken finds an article by its secret preview token.
+	// Intentionally includes soft-deleted articles — preview is an admin-only capability.
+	// Returns ErrNewsNotFound if no article matches the token.
+	GetByPreviewToken(ctx context.Context, token string) (*NewsArticle, error)
+
+	// List returns a page of articles matching opts and the total matching count.
+	// When Status is NewsStatusPublished, only articles with publish_at <= now() are included.
+	List(ctx context.Context, opts NewsListOptions) ([]NewsArticle, int, error)
+
+	// GetAllPublishedSlugs returns slim entries for all published, non-deleted articles.
+	// Used for sitemap.xml and RSS feed generation.
+	GetAllPublishedSlugs(ctx context.Context) ([]NewsSlugEntry, error)
+
+	// SlugExists reports whether the given locale+slug is already in use by any article.
+	// Pass excludeID (article UUID) to allow a slug to match the article being updated.
+	SlugExists(ctx context.Context, locale Language, slug string, excludeID string) (bool, error)
+
+	// SaveSlugHistory records an old slug so that incoming requests can be 301-redirected.
+	// Called automatically by Update when a slug changes.
+	SaveSlugHistory(ctx context.Context, articleID string, locale Language, oldSlug string) error
+
+	// GetCategories returns all categories.
+	GetCategories(ctx context.Context) ([]NewsCategory, error)
+
+	GetCategoryByID(ctx context.Context, id string) (*NewsCategory, error)
+	GetCategoryBySlug(ctx context.Context, locale Language, slug string) (*NewsCategory, error)
+	CreateCategory(ctx context.Context, cat *NewsCategory) error
+	UpdateCategory(ctx context.Context, cat *NewsCategory) error
+	SoftDeleteCategory(ctx context.Context, id string, transferToID string) error
+	RestoreCategory(ctx context.Context, id string) error
+	ReorderCategories(ctx context.Context, ids []string) error
+
+	// GetTags returns all rows from news_tags.
+	GetTags(ctx context.Context) ([]Tag, error)
+
+	// EnsureTag finds an existing tag by slug or creates a new one.
+	// Returns the persisted Tag record (with ID assigned).
+	EnsureTag(ctx context.Context, slug, name string) (Tag, error)
+
+	// SetImageURL atomically updates the cover image URL of an article.
+	// Preferred over Update when only the image_url column needs to change.
+	SetImageURL(ctx context.Context, id string, imageURL string) error
+
+	// SetCategoryCover atomically updates ONLY the cover_image column of a category.
+	SetCategoryCover(ctx context.Context, id string, coverImage string) error
+
+	// Attachments management
+	AddAttachment(ctx context.Context, att *NewsAttachment) error
+	GetAttachmentByID(ctx context.Context, id string) (*NewsAttachment, error)
+	GetAttachmentsByNewsID(ctx context.Context, newsID string) ([]NewsAttachment, error)
+	UpdateAttachment(ctx context.Context, id string, titleUK, titleEN string, sortOrder int) error
+	DeleteAttachment(ctx context.Context, id string) error
+	ReorderAttachments(ctx context.Context, newsID string, attachmentIDs []string) error
+
+	// Photo Gallery management
+	AddGalleryImage(ctx context.Context, img *NewsGalleryImage) error
+	GetGalleryImageByID(ctx context.Context, id string) (*NewsGalleryImage, error)
+	GetGalleryImagesByNewsID(ctx context.Context, newsID string) ([]NewsGalleryImage, error)
+	UpdateGalleryImage(ctx context.Context, id string, altUK, altEN, captionUK, captionEN string, sortOrder int) error
+	DeleteGalleryImage(ctx context.Context, id string) error
+	ReorderGalleryImages(ctx context.Context, newsID string, imageIDs []string) error
 }

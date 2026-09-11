@@ -1,5 +1,5 @@
 # Stage 1: Build binary
-FROM golang:1.25-alpine AS builder
+FROM golang:1.26-alpine AS builder
 WORKDIR /app
 
 # Download dependencies first (better layer caching)
@@ -23,9 +23,9 @@ COPY --from=builder /app/server .
 # Create data directory for SQLite
 RUN mkdir -p /app/data
 
-EXPOSE 8080
+EXPOSE 8280
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -qO- http://localhost:8080/healthz || exit 1
+  CMD wget -qO- http://localhost:8280/healthz || wget -qO- http://localhost:8080/healthz || exit 1
 
 CMD ["./server"]

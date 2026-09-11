@@ -19,6 +19,7 @@
 9. [Configuration Reference](#9-configuration-reference)
 10. [Deployment Guide](#10-deployment-guide)
 11. [Observability](#11-observability)
+12. [SMTP & Admin Invitation Email Architecture](#12-smtp--admin-invitation-email-architecture)
 
 ---
 
@@ -519,6 +520,16 @@ All config loaded from environment variables (`.env` file supported via godotenv
 | `COOKIE_SAME_SITE_NONE` | ⬜ | `false` | Set for cross-origin admin (prod) |
 | `METRICS_TOKEN` | ⬜ | — | Bearer token for `/metrics` |
 | `LOG_LEVEL` | ⬜ | `info` | `info` or `debug` |
+| `MAILER_DRIVER` | ⬜ | `smtp` | Mailer implementation (`smtp` or `noop`) |
+| `SMTP_HOST` | ⬜ | `localhost` / `mailpit` | SMTP server hostname (`smtp.gmail.com` for real delivery) |
+| `SMTP_PORT` | ⬜ | `1025` / `587` | SMTP port (`1025` for Mailpit, `587` for TLS/STARTTLS) |
+| `SMTP_SECURITY` | ⬜ | `none` / `starttls` | TLS mode (`none`, `starttls`, `ssl`/`tls`) |
+| `SMTP_AUTH_MODE` | ⬜ | `none` / `plain` | Authentication mode (`none`, `plain`, `login`) |
+| `SMTP_USERNAME` | ⬜ | — | SMTP username / email address |
+| `SMTP_PASSWORD` | ⬜ | — | SMTP password or Google App Password |
+| `SMTP_FROM_EMAIL` | ⬜ | — | Sender email address |
+| `SMTP_FROM_NAME` | ⬜ | — | Human-readable sender display name |
+| `SMTP_TIMEOUT` | ⬜ | `10s` | Network timeout for SMTP connections |
 
 > ⚠️ **Production checklist:**
 > - `JWT_SECRET` must be ≥32 bytes (use `openssl rand -hex 32`)
@@ -644,3 +655,119 @@ export_csv       → GET .../analytics/export/csv
 view_analytics   → GET .../analytics/*
 view_audit       → GET .../audit
 ```
+
+---
+
+## 12. SMTP & Admin Invitation Email Architecture
+
+### 12.1 Overview & Operational Modes
+
+The invitation delivery system supports two distinct operational paradigms designed for seamless local development and secure production operations:
+
+1. **Local Sandbox Mode (Mailpit Catcher)**
+   - Used for zero-side-effect offline development and manual testing.
+   - All outgoing emails are trapped by the **Mailpit** container (`axllent/mailpit`).
+   - Developers inspect sent invitations, secret tokens, and rendered HTML templates via the web UI at `http://localhost:8025/`.
+   - Settings: `SMTP_HOST=localhost` (or `mailpit` within docker network), `SMTP_PORT=1025`, `SMTP_SECURITY=none`, `SMTP_AUTH_MODE=none`.
+
+2. **Production SMTP Mode (e.g., Gmail SMTP / SendGrid / Amazon SES)**
+   - Used to deliver real invitation links to recipients' real inbox folders.
+   - Requires valid TLS/STARTTLS credentials and active sender identity verification.
+   - Settings for Gmail SMTP: `SMTP_HOST=smtp.gmail.com`, `SMTP_PORT=587`, `SMTP_SECURITY=starttls`, `SMTP_AUTH_MODE=plain`, `SMTP_USERNAME=...`, `SMTP_PASSWORD=...` (16-character App Password).
+
+---
+
+### 12.2 Transactional Invitation Lifecycle & DB Consistency
+
+To ensure strict data consistency, eliminate orphaned records, and guarantee that link invitation secrets are never dispatched before being safely recorded in SQLite:
+
+```
+┌─────────────────────────┐
+│ Super Admin Invitation  │
+│  Request (POST /resend) │
+└────────────┬────────────┘
+             │
+             ▼
+┌─────────────────────────┐
+│ 1. DB Persistence FIRST │
+│ • Token generated       │
+│ • DB transaction commit │
+│ • status = 'pending'    │
+└────────────┬────────────┘
+             │
+     ┌───────┴───────┐
+     │ Commit OK?    │
+     └───────┬───────┘
+             │ Yes
+             ▼
+┌─────────────────────────┐
+│ 2. SMTP Delivery        │
+│    (SendInvitation)     │
+└────────────┬────────────┘
+             │
+     ┌───────┴─────────────────────────────────┐
+     ▼                                         ▼
+[SMTP Success]                           [SMTP Failure]
+• delivery_status = 'sent'               • delivery_status = 'delivery_failed'
+• last_sent_at = NOW() (UTC)             • last_sent_at = UNCHANGED (NULL)
+• Returns 200 OK                         • Returns 500 Internal Error
+```
+
+#### Key Guarantees & Constraints:
+1. **DB Persistence Before Dispatch:** The secret invitation token is written to `admin_invitations` with `delivery_status = 'pending'` **before** invoking SMTP network calls.
+2. **Semantic Purity of `last_sent_at`:** The `last_sent_at` timestamp is written **only** upon successful `250 OK` acknowledgment from the SMTP server. If the network call fails, `last_sent_at` remains untouched (`NULL`), preventing misleading delivery stats.
+3. **Resend Idempotency:** Resending an invitation resets `delivery_status` back to `'pending'`, attempts transport, and updates `last_sent_at` only on success.
+
+---
+
+### 12.3 Critical Infrastructure Gotcha: Docker Compose Precedence
+
+> [!WARNING]
+> **Docker Environment Variable Precedence Pitfall:**
+> Environment variables declared in the `environment:` section of `docker-compose.yml` **override** values declared inside `.env` (loaded via `env_file:`).
+
+#### Post-Mortem Analysis:
+- **Issue:** A developer set `SMTP_HOST=smtp.gmail.com` and `SMTP_PORT=587` in `.env`. However, `docker-compose.yml` contained a hardcoded line: `services.backend.environment: - SMTP_HOST=mailpit`.
+- **Symptom:** Backend tried to connect to `mailpit:587`, resulting in `connection refused` because Mailpit listens on `1025`, not `587`.
+- **Resolution:** Removed the hardcoded `- SMTP_HOST=mailpit` line from [docker-compose.yml](file:///e:/website_ao/apps/backend/docker-compose.yml). Now, Docker Compose dynamically propagates `SMTP_HOST` directly from [.env](file:///e:/website_ao/apps/backend/.env) or [.env.example](file:///e:/website_ao/apps/backend/.env.example).
+
+---
+
+### 12.4 Database Schema (`admin_invitations`)
+
+| Column | Type | Nullable | Description |
+|---|---|---|---|
+| `id` | TEXT PK | No | UUID v4 unique identifier |
+| `email` | TEXT | No | Recipient email address |
+| `role` | TEXT | No | Assigned system role (`admin`, `super_admin`, `news_editor`, etc.) |
+| `token_hash` | TEXT | No | SHA-256 hash of secret token (raw token is only sent in email) |
+| `invited_by` | TEXT | No | Email of super admin issuing invitation |
+| `delivery_status` | TEXT | No | `'pending'`, `'sent'`, or `'delivery_failed'` |
+| `last_sent_at` | DATETIME | Yes | Timestamp of last successful SMTP dispatch (UTC) |
+| `expires_at` | DATETIME | No | Expiry timestamp (default: 48h from creation) |
+| `created_at` | DATETIME | No | Record creation timestamp |
+| `used_at` | DATETIME | Yes | Timestamp when recipient accepted invitation |
+
+---
+
+### 12.5 Developer Configuration Matrix & Reference
+
+| Parameter | Mailpit (Local Sandbox) | Gmail SMTP (Production) | Description |
+|---|---|---|---|
+| `MAILER_DRIVER` | `smtp` | `smtp` | Mailer driver implementation (`smtp` / `noop`) |
+| `SMTP_HOST` | `mailpit` (or `localhost`) | `smtp.gmail.com` | SMTP host address |
+| `SMTP_PORT` | `1025` | `587` | Server connection port |
+| `SMTP_SECURITY` | `none` | `starttls` | Transport encryption (`none` / `starttls` / `tls`) |
+| `SMTP_AUTH_MODE` | `none` | `plain` | Auth mechanism (`none` / `plain` / `login`) |
+| `SMTP_USERNAME` | *(empty)* | `your-email@domain.com` | SMTP account login |
+| `SMTP_PASSWORD` | *(empty)* | `16-char App Password` | SMTP account password |
+| `SMTP_FROM_EMAIL` | `noreply@domain.ua` | `your-email@domain.com` | Verified sender email |
+| `SMTP_FROM_NAME` | `"Острозька академія"` | `"Острозька академія"` | Sender display name |
+| `SMTP_TIMEOUT` | `10s` | `10s` | Network dial & payload timeout |
+
+> 💡 **Google App Password Requirement:**  
+> When using Gmail SMTP with 2-Factor Authentication enabled, Google will reject standard account passwords with `535 5.7.8 Authorization Id and Password Unrecognized`.  
+> Developers **must** generate a 16-character App Password at:  
+> **Google Account → Security → 2-Step Verification → App Passwords**.
+
+
