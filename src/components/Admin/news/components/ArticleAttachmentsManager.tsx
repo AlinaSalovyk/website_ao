@@ -278,8 +278,12 @@ export function ArticleAttachmentsManager({
             <div className="flex flex-col gap-2">
               {attachments.map((att, idx) => {
                 const targetNewsId = att.news_id || articleId || "";
-                const openUrl = targetNewsId ? getNewsAttachmentFileUrl(targetNewsId, att.id) : (att.url || "");
-                const downloadUrl = targetNewsId ? getNewsAttachmentDownloadUrl(targetNewsId, att.id) : "";
+                const rawOpenUrl = att.url || (targetNewsId ? getNewsAttachmentFileUrl(targetNewsId, att.id) : "");
+                const openUrl = getFullImageUrl(rawOpenUrl);
+                const rawDownloadUrl = att.url
+                  ? (att.url.includes("?") ? `${att.url}&download=1` : `${att.url}?download=1`)
+                  : (targetNewsId ? getNewsAttachmentDownloadUrl(targetNewsId, att.id) : "");
+                const downloadUrl = getFullImageUrl(rawDownloadUrl);
                 const previewable = canPreviewAttachment(att.extension || att.mime_type);
 
                 return (

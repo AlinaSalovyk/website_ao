@@ -226,8 +226,10 @@ export const ArticlePage = ({
                   const formattedSize = formatFileSize(att.size_bytes);
                   
                   const targetNewsId = att.news_id || article.id;
-                  const rawOpenUrl = getNewsAttachmentFileUrl(targetNewsId, att.id);
-                  const rawDownloadUrl = getNewsAttachmentDownloadUrl(targetNewsId, att.id);
+                  const rawOpenUrl = att.url || getNewsAttachmentFileUrl(targetNewsId, att.id);
+                  const rawDownloadUrl = att.url
+                    ? (att.url.includes("?") ? `${att.url}&download=1` : `${att.url}?download=1`)
+                    : getNewsAttachmentDownloadUrl(targetNewsId, att.id);
                   const fileUrl = getFullImageUrl(rawOpenUrl);
                   const downloadUrl = getFullImageUrl(rawDownloadUrl);
                   const previewable = canPreviewAttachment(att.extension || att.mime_type);

@@ -143,6 +143,8 @@ export interface NewsListParams {
 
 // ─── Client ───────────────────────────────────────────────────────────────────
 
+import { getSsrApiBase } from "./api-config";
+
 const getBase = (): string => {
   let url = "";
   if (typeof process !== "undefined" && process.env?.PUBLIC_API_URL) {
@@ -153,7 +155,7 @@ const getBase = (): string => {
   if (typeof window !== "undefined" && window.location.protocol === "https:" && url.startsWith("http://")) {
     return "";
   }
-  return url || (typeof window !== "undefined" ? "" : "http://localhost:8280");
+  return url || (typeof window !== "undefined" ? "" : getSsrApiBase());
 };
 
 /**
