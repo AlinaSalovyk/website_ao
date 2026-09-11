@@ -85,9 +85,9 @@ export function ArticleAttachmentsManager({
         const created = await uploadAdminNewsAttachment(articleId, file);
         setAttachments((prev) => [...prev, created]);
         successCount++;
-      } catch (err: any) {
+      } catch (err: unknown) {
         failCount++;
-        toast.error(`Помилка завантаження «${file.name}»: ${err.message || "Непідтримуваний формат або перевищено розмір"}`);
+        toast.error(`Помилка завантаження «${file.name}»: ${err instanceof Error ? err.message : "Непідтримуваний формат або перевищено розмір"}`);
       }
     }
 

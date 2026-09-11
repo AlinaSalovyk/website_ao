@@ -108,8 +108,8 @@ export function useCategoryForm(categoryId: string | null, onSaved: () => void) 
       setCat(savedCat);
       toast.success(categoryId ? "Категорію оновлено" : "Категорію створено");
       onSaved();
-    } catch (err: any) {
-      toast.error(err?.message || "Помилка збереження");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Помилка збереження");
     } finally {
       setSaving(false);
     }

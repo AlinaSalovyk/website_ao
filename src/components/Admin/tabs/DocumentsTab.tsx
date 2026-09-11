@@ -1,6 +1,7 @@
 import { FileText, Upload, FileUp, Loader2, RefreshCw, Download, AlertTriangle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AnimatedSection, GlassCard, TabLoader, EmptyState, PageGuide } from "../ui";
+import { DOCUMENTS_GUIDE } from "./constants/guides";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { getToken } from "../api";
 import { API_BASE, ADMIN_BASE } from "../services/client";
@@ -142,16 +143,7 @@ export function DocumentsTab() {
       </AnimatePresence>
 
       <AnimatedSection i={0.5}>
-        <PageGuide
-          title="Як користуватися цією сторінкою"
-          summary="Управління знаннями чат-бота (завантаження офіційних документів, положень та довідників)"
-          items={[
-            { title: "Мозок бота", desc: "Завантажуйте офіційні документи, положення, накази та розклади." },
-            { title: "Формати файлів", desc: "Підтримуються формати PDF, DOCX, XLSX, TXT для автоматичної індексації." },
-            { title: "Шукач відповідей", desc: "Бот аналізує вміст цих файлів і відповідає студентам точними фактами." },
-            { title: "Актуальність", desc: "Оновлюйте застарілі документи, щоб бот завжди надавав точну інформацію." }
-          ]}
-        />
+        <PageGuide {...DOCUMENTS_GUIDE} />
       </AnimatedSection>
 
       <AnimatedSection i={1}>

@@ -1,122 +1,36 @@
-import { useState, useCallback, useEffect } from "react";
-import { MessageSquareDashed, Plus, Edit2, Play, Square, Loader2, Trash2, AlertTriangle, MoreVertical } from "lucide-react";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { fetchPrompts, createPrompt, togglePromptActive, updatePrompt, deletePrompt, type PromptVariant } from "../api";
-import { toast } from "sonner";
-import { AnimatedSection, GlassCard, Badge, TabLoader, PageGuide } from "../ui";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { MessageSquareDashed } from "lucide-react";
+import { AnimatedSection, GlassCard, PageGuide, TabLoader } from "../ui";
+import { CreatePromptModal } from "./components/CreatePromptModal";
+import { DeletePromptModal } from "./components/DeletePromptModal";
+import { EditPromptModal } from "./components/EditPromptModal";
+import { PromptsTable } from "./components/PromptsTable";
+import { PROMPTS_GUIDE } from "./constants/guides";
+import { usePrompts } from "./hooks/usePrompts";
 
-/**
- * A/B system prompt management tab.
- *
- * Enables admins to:
- * - Create new prompt variants (name, language, text) via a Dialog form
- * - Toggle variants active/inactive (multiple can be active simultaneously)
- * - Edit prompt text via an edit Dialog
- * - Delete variants with a confirmation modal
- * - View per-variant usage count and average feedback score
- *
- * Active variants are selected randomly by the backend's PromptSelector.
- * The variant with the highest `avg_score` (feedback ratio) is the "winner".
- */
 export function PromptsTab() {
-  const [prompts, setPrompts] = useState<PromptVariant[]>([]);
-  const [loading, setLoading] = useState(true);
-  
-  const [isCreating, setIsCreating] = useState(false);
-  const [newPrompt, setNewPrompt] = useState<Partial<PromptVariant>>({
-    name: "", language: "uk", prompt_text: "", is_active: false,
-  });
-
-  const [editTarget, setEditTarget] = useState<PromptVariant | null>(null);
-  const [editOpen, setEditOpen] = useState(false);
-  const [editLoading, setEditLoading] = useState(false);
-  const [editText, setEditText] = useState("");
-
-  // Delete state
-  const [deleteTarget, setDeleteTarget] = useState<PromptVariant | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-
-  const loadPrompts = useCallback(async () => {
-    setLoading(true);
-    try {
-      const data = await fetchPrompts();
-      setPrompts(data || []);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => { loadPrompts(); }, [loadPrompts]);
-
-  const handleToggleActive = async (id: number, currentActive: boolean) => {
-    try {
-      await togglePromptActive(id, !currentActive);
-      await loadPrompts();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
-  const handleCreate = async () => {
-    if (!newPrompt.name || !newPrompt.prompt_text) return;
-    setIsCreating(true);
-    try {
-      await createPrompt(newPrompt);
-      setNewPrompt({ name: "", language: "uk", prompt_text: "", is_active: false });
-      toast.success("Новий промпт створено!");
-      await loadPrompts();
-    } catch (e) {
-      console.error(e);
-      toast.error("Помилка створення");
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const handleSaveEdit = async () => {
-    if (!editTarget || !editText.trim()) return;
-    setEditLoading(true);
-    try {
-      await updatePrompt(editTarget.id, editText.trim());
-      toast.success("Промпт успішно оновлено");
-      setEditOpen(false);
-      setTimeout(() => loadPrompts(), 300);
-    } catch {
-      toast.error("Помилка оновлення");
-    } finally {
-      setEditLoading(false);
-    }
-  };
-
-  const confirmDelete = async () => {
-    if (!deleteTarget) return;
-    setDeleteLoading(true);
-    try {
-      await deletePrompt(deleteTarget.id);
-      toast.success("Промпт видалено з бази");
-      setDeleteOpen(false);
-      setTimeout(() => loadPrompts(), 300);
-    } catch {
-      toast.error("Помилка видалення");
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
-
-  const openEditModal = (p: PromptVariant) => {
-    setEditTarget(p);
-    setEditText(p.prompt_text);
-    setEditOpen(true);
-  };
-
-  const openDeleteModal = (p: PromptVariant) => {
-    setDeleteTarget(p);
-    setDeleteOpen(true);
-  };
+  const {
+    prompts,
+    loading,
+    isCreating,
+    newPrompt,
+    setNewPrompt,
+    editOpen,
+    setEditOpen,
+    editTarget,
+    editText,
+    setEditText,
+    editLoading,
+    deleteOpen,
+    setDeleteOpen,
+    deleteTarget,
+    deleteLoading,
+    handleToggleActive,
+    handleCreate,
+    handleSaveEdit,
+    confirmDelete,
+    openEditModal,
+    openDeleteModal,
+  } = usePrompts();
 
   if (loading) return <TabLoader />;
 
@@ -125,249 +39,51 @@ export function PromptsTab() {
       <AnimatedSection i={0} className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">A/B Промпти</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">Керуйте системними інструкціями для чат-бота</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Керуйте системними інструкціями для чат-бота
+          </p>
         </div>
 
-        <Dialog>
-          <DialogTrigger asChild>
-            <button className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2.5 text-sm font-medium text-white shadow-[0_4px_12px_rgba(37,99,235,0.2)] transition-all hover:bg-gradient-to-br hover:from-blue-500 hover:to-blue-400 hover:scale-[1.02] active:scale-95">
-              <Plus size={16} /> <span>Створити</span>
-            </button>
-          </DialogTrigger>
-          <DialogContent className="border-border bg-card text-card-foreground sm:max-w-[550px] shadow-2xl backdrop-blur-3xl">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-                <MessageSquareDashed className="text-primary" size={20} />
-                Новий Промпт
-              </DialogTitle>
-            </DialogHeader>
-            <div className="grid gap-5 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Назва варіанту</label>
-                  <input
-                    value={newPrompt.name}
-                    onChange={(e) => setNewPrompt({ ...newPrompt, name: e.target.value })}
-                    placeholder="e.g. friendly_bot_v2"
-                    className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all shadow-sm"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Мова</label>
-                  <select
-                    value={newPrompt.language}
-                    onChange={(e) => setNewPrompt({ ...newPrompt, language: e.target.value })}
-                    className="rounded-xl border border-input bg-background px-4 py-2.5 text-sm font-medium text-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all appearance-none cursor-pointer shadow-sm"
-                  >
-                    <option value="uk">🇺🇦 Українська</option>
-                    <option value="en">🇬🇧 English</option>
-                  </select>
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Текст Промпту (Системна інструкція)</label>
-                <textarea
-                  value={newPrompt.prompt_text}
-                  onChange={(e) => setNewPrompt({ ...newPrompt, prompt_text: e.target.value })}
-                  className="min-h-[160px] resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition-all leading-relaxed shadow-sm"
-                  placeholder="Напишіть детальну інструкцію для штучного інтелекту..."
-                />
-              </div>
-              <button 
-                onClick={handleCreate} 
-                disabled={isCreating || !newPrompt.name || !newPrompt.prompt_text} 
-                className="mt-2 inline-flex w-full cursor-pointer justify-center items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isCreating ? <Loader2 className="animate-spin" size={18} /> : "Зберегти промпт"}
-              </button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <CreatePromptModal
+          newPrompt={newPrompt}
+          onPromptChange={setNewPrompt}
+          isCreating={isCreating}
+          onCreate={handleCreate}
+        />
       </AnimatedSection>
 
       <AnimatedSection i={0.5}>
-        <PageGuide
-          title="Як користуватися цією сторінкою"
-          summary="A/B тестування характеру та системних інструкцій для штучного інтелекту"
-          items={[
-            { title: "A/B Тестування", desc: "Створюйте та порівнюйте різні варіанти характеру й ролі бота." },
-            { title: "Системна інструкція", desc: "Визначає tone of voice, лаконічність та поведінкові правила штучного інтелекту." },
-            { title: "Випадковий вибір", desc: "Увімкніть кілька варіантів одночасно для автоматичного розподілу між студентами." },
-            { title: "Оцінка рейтингу", desc: "Аналізуйте середній бал (Avg Score) на основі лайків для вибору переможця." }
-          ]}
-        />
+        <PageGuide {...PROMPTS_GUIDE} />
       </AnimatedSection>
-      
+
       <AnimatedSection i={1}>
         <GlassCard title="Каталог промптів" icon={MessageSquareDashed}>
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full text-left text-sm whitespace-nowrap">
-              <thead>
-                <tr className="border-b border-border text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  <th className="pb-3 pr-4">Варіант</th>
-                  <th className="pb-3 pr-4">Мова</th>
-                  <th className="pb-3 pr-4 text-center">Статус</th>
-                  <th className="pb-3 pr-4 text-right">Сесії</th>
-                  <th className="pb-3 text-right">Рейтинг (Avg)</th>
-                  <th className="pb-3 pl-4 text-right">Дії</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/40">
-                {prompts.map((p) => (
-                  <tr key={p.id} className="group transition-colors hover:bg-muted/50">
-                    <td className="py-4 pr-4">
-                      <div className="font-semibold text-foreground">{p.name}</div>
-                      <div className="mt-1 line-clamp-1 max-w-[280px] whitespace-normal text-xs text-muted-foreground leading-tight" title={p.prompt_text}>
-                        {p.prompt_text}
-                      </div>
-                    </td>
-                    <td className="py-4 pr-4">
-                      <Badge color={p.language === "uk" ? "blue" : "purple"}>
-                        {p.language === "uk" ? "🇺🇦 UA" : "🇬🇧 EN"}
-                      </Badge>
-                    </td>
-                    <td className="py-4 pr-4 text-center">
-                      <button
-                        onClick={() => handleToggleActive(p.id, p.is_active)}
-                        className={`inline-flex cursor-pointer select-none items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-bold transition-all hover:scale-105 active:scale-95 ${
-                          p.is_active 
-                          ? "bg-emerald-500/10 text-emerald-500 ring-1 ring-inset ring-emerald-500/20 hover:bg-emerald-500/20" 
-                          : "bg-muted text-muted-foreground ring-1 ring-inset ring-border hover:bg-muted/80 hover:text-foreground"
-                        }`}
-                      >
-                        {p.is_active ? <Play size={10} className="fill-current" /> : <Square size={10} className="fill-current" />}
-                        {p.is_active ? "АКТИВНИЙ" : "ВИМКНЕНО"}
-                      </button>
-                    </td>
-                    <td className="py-4 pr-4 text-right font-mono text-zinc-400 font-medium">
-                      {p.usage_count}
-                    </td>
-                    <td className="py-4 text-right">
-                      {p.avg_score !== 0 ? (
-                        <div className={`inline-flex items-center justify-end font-mono font-bold text-sm ${p.avg_score > 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                          {p.avg_score > 0 ? "+" : ""}{p.avg_score.toFixed(2)}
-                        </div>
-                      ) : (
-                        <span className="text-zinc-600 font-mono">—</span>
-                      )}
-                    </td>
-                    <td className="py-4 pl-4 text-right">
-                      <DropdownMenu.Root>
-                        <DropdownMenu.Trigger asChild>
-                          <button className="rounded-lg p-1.5 text-muted-foreground transition-all hover:bg-muted hover:text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer">
-                            <MoreVertical size={16} />
-                          </button>
-                        </DropdownMenu.Trigger>
-                        
-                        <DropdownMenu.Portal>
-                          <DropdownMenu.Content
-                            sideOffset={5}
-                            align="end"
-                            className="z-50 min-w-[180px] overflow-hidden rounded-xl border border-border bg-card p-1.5 shadow-2xl backdrop-blur-2xl text-card-foreground origin-top-right will-change-transform data-[state=open]:fade-in data-[state=closed]:fade-out data-[state=open]:zoom-in-95 data-[state=closed]:zoom-out-95"
-                          >
-                            <DropdownMenu.Item
-                              onSelect={() => setTimeout(() => openEditModal(p), 0)}
-                              className="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-foreground outline-none transition-colors data-[highlighted]:bg-amber-500/15 data-[highlighted]:text-amber-500"
-                            >
-                              <Edit2 size={15} />
-                              Редагувати
-                            </DropdownMenu.Item>
-                            
-                            <DropdownMenu.Separator className="my-1.5 h-px w-full bg-border" />
-                            
-                            <DropdownMenu.Item
-                              onSelect={() => setTimeout(() => openDeleteModal(p), 0)}
-                              className="flex cursor-pointer select-none items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-destructive outline-none transition-colors data-[highlighted]:bg-destructive/15 data-[highlighted]:text-destructive"
-                            >
-                              <Trash2 size={15} />
-                              Видалити
-                            </DropdownMenu.Item>
-                          </DropdownMenu.Content>
-                        </DropdownMenu.Portal>
-                      </DropdownMenu.Root>
-                    </td>
-                  </tr>
-                ))}
-                {prompts.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="py-12 text-center text-zinc-500">
-                      Немає створених промптів. Натисніть "Створити" щоб додати новий варіант для A/B тестування.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+          <PromptsTable
+            prompts={prompts}
+            onToggleActive={handleToggleActive}
+            onOpenEdit={openEditModal}
+            onOpenDelete={openDeleteModal}
+          />
         </GlassCard>
       </AnimatedSection>
 
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="border-border bg-card text-card-foreground sm:max-w-[550px] shadow-2xl backdrop-blur-3xl">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-foreground flex items-center gap-2">
-              <Edit2 className="text-amber-500" size={20} />
-              Редагування Промпту "{editTarget?.name}"
-            </DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Текст Промпту</label>
-              <textarea
-                value={editText}
-                onChange={(e) => setEditText(e.target.value)}
-                className="min-h-[160px] resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none transition-all leading-relaxed shadow-sm"
-              />
-            </div>
-            <div className="flex justify-end gap-3 mt-2">
-              <button 
-                onClick={() => setEditOpen(false)}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-              >
-                Скасувати
-              </button>
-              <button 
-                onClick={handleSaveEdit} 
-                disabled={editLoading || !editText.trim()} 
-                className="inline-flex min-w-[120px] justify-center items-center gap-2 rounded-xl bg-amber-500/10 text-amber-500 px-4 py-2.5 text-sm font-bold border border-amber-500/20 transition-all hover:bg-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-              >
-                {editLoading ? <Loader2 className="animate-spin" size={16} /> : "Зберегти зміни"}
-              </button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <EditPromptModal
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        target={editTarget}
+        text={editText}
+        onTextChange={setEditText}
+        loading={editLoading}
+        onSave={handleSaveEdit}
+      />
 
-      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="border-destructive/20 bg-card text-card-foreground sm:max-w-[400px] shadow-2xl backdrop-blur-3xl">
-          <DialogHeader className="mb-2">
-            <DialogTitle className="text-xl font-bold flex flex-col items-center gap-3 text-center text-destructive">
-              <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
-                <AlertTriangle size={24} className="text-destructive" />
-              </div>
-              Підтвердження видалення
-            </DialogTitle>
-          </DialogHeader>
-          <div className="text-center text-sm text-muted-foreground mb-6">
-            Ви впевнені, що хочете безповоротно видалити варіант <span className="font-bold text-foreground">"{deleteTarget?.name}"</span>? 
-            Вся статистика по ньому буде втрачена.
-          </div>
-          <div className="flex gap-3">
-            <button 
-              onClick={() => setDeleteOpen(false)}
-              className="flex-1 py-2.5 rounded-xl text-sm font-medium text-muted-foreground bg-muted hover:text-foreground hover:bg-muted/80 transition-colors cursor-pointer"
-            >
-              Скасувати
-            </button>
-            <button 
-              onClick={confirmDelete} 
-              disabled={deleteLoading} 
-              className="flex-1 inline-flex justify-center items-center gap-2 rounded-xl bg-destructive text-white px-4 py-2.5 text-sm font-bold shadow-sm transition-all hover:bg-destructive/90 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              {deleteLoading ? <Loader2 className="animate-spin" size={16} /> : "Видалити"}
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <DeletePromptModal
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        target={deleteTarget}
+        loading={deleteLoading}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

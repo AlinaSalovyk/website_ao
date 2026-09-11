@@ -64,7 +64,7 @@ export function ArticleFormSidebar({
         gallery: [...(prev.gallery || []), ...uploadedUrls],
       }));
       toast.success(`Додано ${uploadedUrls.length} фото до галереї`);
-    } catch (err: any) {
+    } catch {
       toast.error("Помилка завантаження фото в галерею");
     } finally {
       setGalleryUploading(false);

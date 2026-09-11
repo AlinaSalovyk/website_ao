@@ -97,8 +97,8 @@ export function ArticleGalleryManager({
         const created = await uploadAdminNewsGalleryImage(articleId, file);
         setGalleryImages((prev) => [...prev, created]);
         successCount++;
-      } catch (err: any) {
-        toast.error(`Помилка завантаження «${file.name}»: ${err.message || "Непідтримуваний формат"}`);
+      } catch (err: unknown) {
+        toast.error(`Помилка завантаження «${file.name}»: ${err instanceof Error ? err.message : "Непідтримуваний формат"}`);
       }
     }
 
@@ -146,8 +146,8 @@ export function ArticleGalleryManager({
       await deleteAdminNewsGalleryImage(articleId, imageId);
       setGalleryImages((prev) => prev.filter((img) => img.id !== imageId));
       toast.success("Фотографію видалено з галереї");
-    } catch (err: any) {
-      toast.error(`Помилка видалення: ${err.message || "Помилка сервера"}`);
+    } catch (err: unknown) {
+      toast.error(`Помилка видалення: ${err instanceof Error ? err.message : "Помилка сервера"}`);
     } finally {
       setDeleteConfirmId(null);
     }
@@ -196,8 +196,8 @@ export function ArticleGalleryManager({
       );
       toast.success("Метадані фотографії оновлено");
       setEditingId(null);
-    } catch (err: any) {
-      toast.error(`Не вдалося оновити: ${err.message || "Помилка сервера"}`);
+    } catch (err: unknown) {
+      toast.error(`Не вдалося оновити: ${err instanceof Error ? err.message : "Помилка сервера"}`);
     }
   };
 

@@ -22,6 +22,12 @@ function stripHTMLContent(s: string): string {
   return tmp.replace(/\s+/g, " ").trim();
 }
 
+/** Extracts a user-readable message from an unknown caught error. */
+function getErrorMessage(err: unknown, fallback: string): string {
+  if (err instanceof Error) return err.message || fallback;
+  return fallback;
+}
+
 function scrollToFirstError(errors: Record<string, string>) {
   setTimeout(() => {
     const errorKeys = Object.keys(errors);
@@ -259,8 +265,8 @@ export function useArticleForm(
         for (const file of pendingFiles) {
           try {
             await uploadAdminNewsAttachment(savedArticleId, file);
-          } catch (err: any) {
-            toast.error(`Помилка завантаження «${file.name}»: ${err.message || "Не вдалося завантажити"}`);
+          } catch (err: unknown) {
+            toast.error(`Помилка завантаження «${file.name}»: ${getErrorMessage(err, "Не вдалося завантажити")}`);
           }
         }
         setPendingFiles([]);
@@ -271,8 +277,8 @@ export function useArticleForm(
         for (const file of pendingPhotos) {
           try {
             await uploadAdminNewsGalleryImage(savedArticleId, file);
-          } catch (err: any) {
-            toast.error(`Помилка завантаження фото «${file.name}»: ${err.message || "Не вдалося завантажити"}`);
+          } catch (err: unknown) {
+            toast.error(`Помилка завантаження фото «${file.name}»: ${getErrorMessage(err, "Не вдалося завантажити")}`);
           }
         }
         setPendingPhotos([]);

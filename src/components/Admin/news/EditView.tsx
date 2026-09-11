@@ -1,13 +1,16 @@
-import { RefreshCw, Save, Sparkles, ExternalLink, FileText, Image as ImageIcon, Paperclip, Layers } from "lucide-react";
+import { Sparkles, FileText, Image as ImageIcon, Paperclip, Layers } from "lucide-react";
 import { useState, useEffect, type JSX } from "react";
 import type { AdminNewsCategory, AdminNewsTag } from "../api";
-import { AnimatedSection, GlassCard, TabLoader, PageGuide } from "../ui";
+import { GlassCard, TabLoader, PageGuide } from "../ui";
 import { LocalePanel } from "./LocalePanel";
 import { useArticleForm } from "./hooks/useArticleForm";
+import { ArticleHeader } from "./components/ArticleHeader";
+import { ArticleSeoTab } from "./components/ArticleSeoTab";
 import { ArticleFormSidebar } from "./components/ArticleFormSidebar";
 import { ArticleAttachmentsManager } from "./components/ArticleAttachmentsManager";
 import { ArticleGalleryManager } from "./components/ArticleGalleryManager";
-import { getEffectiveSeoPreview } from "@/utils/seo";
+
+import { ARTICLE_EDIT_GUIDE } from "./constants/guides";
 
 export const EditView = ({
   articleId,
@@ -67,147 +70,28 @@ export const EditView = ({
   return (
     <div className="flex flex-col gap-6 relative">
       {/* ── STICKY TOP ACTION HEADER ── */}
-      <div className="sticky top-0 z-30 -mx-4 px-4 py-3 bg-background/95 backdrop-blur-md border-b border-border/80 shadow-xs flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={onBack}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-          >
-            ← Назад
-          </button>
-          <h2 className="text-sm font-bold text-foreground truncate max-w-[180px] sm:max-w-xs">
-            {articleId ? "Редагування статті" : "Нова стаття"}
-          </h2>
-
-          {/* Save / Dirty Status indicator */}
-          <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${autoSaveStatus === "saving" || saving
-              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-              : isDirty
-                ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-            }`}>
-            {saving ? "Збереження..." : isDirty ? "Є незбережені зміни" : "Збережено"}
-          </span>
-        </div>
-
-        {/* Quick Workspace Tabs Header */}
-        <div className="hidden md:flex items-center gap-1 p-1 bg-muted/60 rounded-xl border border-border/40 text-xs font-medium">
-          <button
-            type="button"
-            onClick={() => setActiveSectionTab("main")}
-            className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${activeSectionTab === "main" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-          >
-            Текст
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveSectionTab("media")}
-            className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${activeSectionTab === "media" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-          >
-            Медіа
-            <span className="text-[10px] opacity-80 font-bold">({galleryCount})</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveSectionTab("files")}
-            className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${activeSectionTab === "files" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-          >
-            Файли
-            {pendingFiles.length > 0 && <span className="text-[10px] text-amber-500 font-bold">+{pendingFiles.length}</span>}
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveSectionTab("seo")}
-            className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${activeSectionTab === "seo" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-          >
-            SEO
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveSectionTab("all")}
-            className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${activeSectionTab === "all" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground opacity-60 hover:opacity-100"
-              }`}
-            title="Показати всі секції підряд"
-          >
-            Все
-          </button>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleAutoFillSEO(activeLocale)}
-            className="hidden sm:flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border-indigo-500/20 transition-colors cursor-pointer"
-            title="Автозаповнити порожні SEO-поля та Slug"
-          >
-            <Sparkles size={14} />
-            <span>SEO Helper</span>
-          </button>
-
-          <button
-            onClick={() => window.open(`/preview/hub?url=/preview/news/${form.locales.uk?.slug || "preview"}&session=${sessionId}`, "_blank")}
-            className="flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer bg-card border-border text-foreground hover:bg-muted"
-          >
-            <ExternalLink size={14} />
-            <span className="hidden sm:inline">Live Preview</span>
-          </button>
-
-          {/* Status selector */}
-          <select
-            value={form.status}
-            onChange={(e) =>
-              setForm((f) => ({
-                ...f,
-                status: e.target.value as "draft" | "published",
-              }))
-            }
-            className="rounded-xl border border-input bg-card px-2.5 py-1.5 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer shadow-xs"
-          >
-            <option value="draft">Чернетка</option>
-            <option value="published">Опублікувати</option>
-          </select>
-
-          {/* Primary Save button */}
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="flex items-center gap-1.5 rounded-xl bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
-          >
-            {saving ? (
-              <RefreshCw size={14} className="animate-spin" />
-            ) : (
-              <Save size={14} />
-            )}
-            <span>{saving ? "Збереження..." : "Зберегти"}</span>
-          </button>
-        </div>
-      </div>
+      <ArticleHeader
+        articleId={articleId}
+        form={form}
+        setForm={setForm}
+        activeSectionTab={activeSectionTab}
+        setActiveSectionTab={setActiveSectionTab}
+        activeLocale={activeLocale}
+        saving={saving}
+        isDirty={isDirty}
+        autoSaveStatus={autoSaveStatus}
+        galleryCount={galleryCount}
+        pendingFilesCount={pendingFiles.length}
+        sessionId={sessionId}
+        onBack={onBack}
+        onSave={handleSave}
+        onAutoFillSEO={handleAutoFillSEO}
+      />
 
       <div className="flex flex-col gap-6 w-full">
         {/* Helper Guide */}
         <div className="mb-2">
-          <PageGuide
-            title="Як заповнювати статтю"
-            summary="Підказки щодо заповнення полів (UK / EN, SEO, обкладинка, категорія, прикріплені документи)"
-            items={[
-              { title: "Українська версія", desc: "Спочатку повністю заповніть українську версію: Заголовок, Короткий опис, Основний текст. Українська версія є базою для заповнення англійською." },
-              { title: "Англійська версія", desc: "Title EN, Description EN та Content EN заповнюються редактором вручну. Переконайтеся, що англійська версія відповідає змісту української перед публікацією." },
-              { title: "Прикріплені документи", desc: "До новини можна додати до 20 документів (PDF, Word, Excel, PowerPoint, TXT тощо). Для кожного файла можна вказати локалізовані назви (UK/EN) та змінювати їх порядок стрілками." },
-              { title: "Режими Відкрити / Завантажити", desc: "PDF та TXT підтримують перегляд прямо в браузері (кнопки «Відкрити» та «Завантажити»). Офісні формати (DOCX, XLSX, PPTX) відображають тільки «Завантажити» для збереження на пристрій." },
-              { title: "Slug", desc: "Slug — це частина адреси сторінки (наприклад: /news/nova-stattia). Для нової статті він формується автоматично. Для існуючої/опублікованої статті не рекомендується змінювати slug без необхідності, тому що це змінює URL." },
-              { title: "SEO", desc: "SEO Title та SEO Description допомагають керувати тим, як сторінка описується для пошукових систем. Їх можна: залишити порожніми, заповнити автоматично кнопкою «🪄 Автозаповнити SEO та Slug» (вона заповнює лише порожні поля), або змінити вручну." },
-              { title: "SEO Preview", desc: "\"Попередній перегляд у пошуку\" дозволяє приблизно побачити Title, URL та Description до публікації. Фактичний вигляд у пошуковій системі може відрізнятися." },
-              { title: "Обкладинка", desc: "Виберіть релевантне зображення, перевірте, що воно відповідає змісту статті та використовуйте якісне зображення." },
-              { title: "Категорія", desc: "Оберіть категорію, яка найкраще відповідає темі матеріалу." },
-              { title: "Закріплення", desc: "Закріплення використовуйте лише для важливих матеріалів, які повинні відображатися вище за звичайні новини." },
-              { title: "Публікація", desc: "Стаття може бути збережена як Чернетка або Опублікована. Перед публікацією рекомендуємо перевірити: UK, EN, Обкладинку, Категорію, SEO Preview та Slug." }
-            ]}
-          />
+          <PageGuide {...ARTICLE_EDIT_GUIDE} />
         </div>
 
         {/* Main Grid */}
@@ -381,143 +265,13 @@ export const EditView = ({
             {/* SECTION 4: DEDICATED SEO TAB */}
             {activeSectionTab === "seo" && (
               <div id="section-seo-tab" className="scroll-mt-20">
-                <GlassCard>
-                  <div className="flex flex-wrap items-center justify-between gap-3 mb-5 pb-3 border-b border-border/50">
-                    <div>
-                      <h3 className="font-semibold text-foreground text-base">
-                        SEO та відображення у пошуку ({activeLocale.toUpperCase()})
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Налаштування пошукової оптимізації та картки в соціальних мережах
-                      </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleAutoFillSEO(activeLocale)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer"
-                    >
-                      <Sparkles size={14} />
-                      <span>Автозаповнити SEO та Slug</span>
-                    </button>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 mb-5 text-xs text-indigo-700 dark:text-indigo-300 font-medium">
-                    Автозаповнення згенерує SEO Title та SEO Description з заголовку й тексту новини, залишаючи ваші ручні редагування без змін.
-                  </div>
-
-                  <div className="flex flex-col gap-5">
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        SEO Title ({activeLocale.toUpperCase()})
-                      </label>
-                      <input
-                        value={form.locales[activeLocale].seo_title}
-                        onChange={(e) =>
-                          setForm((f) => ({
-                            ...f,
-                            locales: {
-                              ...f.locales,
-                              [activeLocale]: { ...f.locales[activeLocale], seo_title: e.target.value },
-                            },
-                          }))
-                        }
-                        placeholder="Заголовок для пошуковиків…"
-                        className="w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition shadow-sm"
-                      />
-                      <p className="mt-1 text-[11px] text-muted-foreground ml-1">
-                        {form.locales[activeLocale].seo_title.length} символів (рекомендовано ~60)
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        SEO Description ({activeLocale.toUpperCase()})
-                      </label>
-                      <textarea
-                        rows={3}
-                        value={form.locales[activeLocale].seo_description}
-                        onChange={(e) =>
-                          setForm((f) => ({
-                            ...f,
-                            locales: {
-                              ...f.locales,
-                              [activeLocale]: { ...f.locales[activeLocale], seo_description: e.target.value },
-                            },
-                          }))
-                        }
-                        placeholder="Опис новини для Google та соцмереж…"
-                        className="w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition shadow-sm"
-                      />
-                      <p className="mt-1 text-[11px] text-muted-foreground ml-1">
-                        {form.locales[activeLocale].seo_description.length} символів (рекомендовано ~160)
-                      </p>
-                    </div>
-
-                    {/* Search Engine Result Preview (Google Preview) */}
-                    <div className="mt-2 pt-5 border-t border-border/60">
-                      <div className="flex items-center justify-between gap-3 mb-3">
-                        <h4 className="text-sm font-bold text-foreground">Попередній перегляд у пошуку</h4>
-                        <div className="flex items-center gap-1 bg-muted/60 p-1 rounded-xl border border-border/40">
-                          {(["uk", "en"] as const).map((l) => (
-                            <button
-                              key={l}
-                              type="button"
-                              onClick={() => setActiveLocale(l)}
-                              className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-colors cursor-pointer ${activeLocale === l
-                                  ? "bg-primary text-primary-foreground shadow-xs"
-                                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                                }`}
-                            >
-                              {l.toUpperCase()}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="p-4 bg-card border border-border/70 rounded-xl shadow-xs">
-                        <div className="flex items-center gap-2 text-[12px] text-muted-foreground mb-1.5 break-all">
-                          <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-                            {typeof window !== 'undefined' ? window.location.host : 'example.com'}{activeLocale === 'uk' ? '/news/' : '/en/news/'}
-                          </span>
-                          <span className="text-foreground font-medium">{form.locales[activeLocale].slug || "slug-url"}</span>
-                        </div>
-                        <h3 className="text-lg leading-tight font-semibold text-blue-700 dark:text-blue-400 mb-1 hover:underline cursor-pointer">
-                          {(() => {
-                            const preview = getEffectiveSeoPreview({
-                              title: form.locales[activeLocale].title,
-                              description: form.locales[activeLocale].description,
-                              content: form.locales[activeLocale].content,
-                              seoTitle: form.locales[activeLocale].seo_title,
-                              seoDescription: form.locales[activeLocale].seo_description,
-                              fallbackTitle: "Заголовок статті",
-                              fallbackDescription: "Опис статті з'явиться тут після заповнення."
-                            });
-                            return preview.effectiveTitle;
-                          })()}
-                        </h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                          {(() => {
-                            const preview = getEffectiveSeoPreview({
-                              title: form.locales[activeLocale].title,
-                              description: form.locales[activeLocale].description,
-                              content: form.locales[activeLocale].content,
-                              seoTitle: form.locales[activeLocale].seo_title,
-                              seoDescription: form.locales[activeLocale].seo_description,
-                              fallbackTitle: "Заголовок статті",
-                              fallbackDescription: "Опис статті з'явиться тут після заповнення."
-                            });
-                            return preview.effectiveDescription;
-                          })()}
-                        </p>
-                      </div>
-
-                      <p className="mt-2 text-[11px] text-muted-foreground ml-1">
-                        Фактичний вигляд у пошуковій системі Google або соціальних мережах може відрізнятися залежно від пристрою та запиту.
-                      </p>
-                    </div>
-                  </div>
-                </GlassCard>
+                <ArticleSeoTab
+                  form={form}
+                  setForm={setForm}
+                  activeLocale={activeLocale}
+                  setActiveLocale={setActiveLocale}
+                  onAutoFillSEO={handleAutoFillSEO}
+                />
               </div>
             )}
 

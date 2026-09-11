@@ -331,7 +331,7 @@ func TestValidateAttachmentFile(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ext, mime, err := newshttp.ValidateAttachmentFile(tt.filename, tt.content)
+			ext, mime, err := newshttp.ValidateAttachmentFile(tt.filename, tt.content, 25*1024*1024)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ValidateAttachmentFile(%q) error = %v, wantErr %v", tt.filename, err, tt.wantErr)
 				return
