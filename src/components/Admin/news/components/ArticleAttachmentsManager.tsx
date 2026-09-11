@@ -196,7 +196,7 @@ export function ArticleAttachmentsManager({
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
-          className="border-2 border-dashed border-border hover:border-primary/50 bg-muted/30 hover:bg-muted/60 transition-all rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer text-center group"
+          className="border-2 border-dashed border-border hover:border-primary/50 bg-card hover:bg-muted/30 transition-all rounded-2xl p-6 flex flex-col items-center justify-center gap-2 cursor-pointer text-center group"
         >
           <input
             ref={fileInputRef}

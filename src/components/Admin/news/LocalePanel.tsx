@@ -16,6 +16,7 @@ export const LocalePanel = ({
   setIsSlugManuallyEdited,
   onAutoFill,
   fieldErrors,
+  showSEO = true,
 }: {
   locale: "uk" | "en";
   value: LocaleForm;
@@ -25,6 +26,7 @@ export const LocalePanel = ({
   setIsSlugManuallyEdited: React.Dispatch<React.SetStateAction<{ uk: boolean; en: boolean }>>;
   onAutoFill: () => void;
   fieldErrors?: Record<string, string>;
+  showSEO?: boolean;
 }): JSX.Element => {
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugOk, setSlugOk] = useState<boolean | null>(null);
@@ -69,6 +71,25 @@ export const LocalePanel = ({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Quick SEO Autofill banner at top */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
+          <span className="text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+            Автоматичне заповнення SEO та адреси (Slug) для {locale.toUpperCase()}
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={onAutoFill}
+          aria-label="Автозаповнити SEO та Slug"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+        >
+          <Sparkles size={14} />
+          <span>✨ Автозаповнити SEO та Slug</span>
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div data-field-error={`title_${locale}`} className={titleErr ? "has-error" : ""}>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -153,110 +174,112 @@ export const LocalePanel = ({
         )}
       </div>
 
-      <div className="border border-border/60 rounded-xl bg-card overflow-hidden mt-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/30 px-5 py-4 border-b border-border/60">
-          <div>
-            <h3 className="font-semibold text-foreground">SEO ({locale.toUpperCase()})</h3>
-            <p className="text-xs text-muted-foreground mt-1">Налаштування відображення у пошуку</p>
+      {showSEO && (
+        <div id="section-seo" className="border border-border/60 rounded-xl bg-card overflow-hidden mt-6 scroll-mt-20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-muted/30 px-5 py-4 border-b border-border/60">
+            <div>
+              <h3 className="font-semibold text-foreground">SEO ({locale.toUpperCase()})</h3>
+              <p className="text-xs text-muted-foreground mt-1">Налаштування відображення у пошуку</p>
+            </div>
+            <button
+              type="button"
+              onClick={onAutoFill}
+              aria-label="Автозаповнити SEO та Slug"
+              className="flex-shrink-0 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+            >
+              <Sparkles size={16} aria-hidden="true" focusable="false" />
+              <span>Автозаповнити SEO та Slug</span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onAutoFill}
-            aria-label="Автозаповнити SEO та Slug"
-            className="flex-shrink-0 flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-sm font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
-          >
-            <Sparkles size={16} aria-hidden="true" focusable="false" />
-            <span>Автозаповнити SEO та Slug</span>
-          </button>
-        </div>
-        
-        <div className="px-5 py-3 bg-indigo-500/5 border-b border-indigo-500/10">
-          <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
-            💡 Автоматично заповнить лише порожні SEO-поля та Slug.
-          </p>
-        </div>
-
-        <div className="p-5 flex flex-col gap-5">
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              SEO Title
-            </label>
-            <input
-              value={value.seo_title}
-              onChange={field("seo_title")}
-              placeholder="SEO Title"
-              className={inputCls}
-            />
-            <p className="mt-1 text-[11px] text-muted-foreground ml-1">
-              {value.seo_title.length} символів (рекомендовано ~60)
-            </p>
-          </div>
-          <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              SEO Description
-            </label>
-            <textarea
-              rows={2}
-              value={value.seo_description}
-              onChange={field("seo_description")}
-              placeholder="SEO Description"
-              className={inputCls}
-            />
-            <p className="mt-1 text-[11px] text-muted-foreground ml-1">
-              {value.seo_description.length} символів (рекомендовано ~160)
+          
+          <div className="px-5 py-3 bg-indigo-500/5 border-b border-indigo-500/10">
+            <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
+              💡 Автоматично заповнить лише порожні SEO-поля та Slug.
             </p>
           </div>
 
-          <div className="mt-2 pt-5 border-t border-border/60">
-            <h4 className="text-sm font-medium mb-3 text-foreground">Попередній перегляд у пошуку</h4>
-            
-            <div className="p-4 bg-background border border-border/60 rounded-lg shadow-sm">
-              <div className="flex items-center gap-2 text-[12px] text-muted-foreground mb-1 break-all">
-                <span>{typeof window !== 'undefined' ? window.location.host : 'example.com'}{locale === 'uk' ? '/news/' : '/en/news/'}</span>
-                <span className="text-foreground font-medium">{value.slug || "slug"}</span>
-              </div>
-              <h3 className="text-lg leading-tight font-medium text-blue-700 dark:text-blue-400 mb-1 truncate">
-                {(() => {
-                  const preview = getEffectiveSeoPreview({
-                    title: value.title,
-                    description: value.description,
-                    content: value.content,
-                    seoTitle: value.seo_title,
-                    seoDescription: value.seo_description,
-                    fallbackTitle: "Заголовок статті",
-                    fallbackDescription: "Опис статті з'явиться тут після заповнення."
-                  });
-                  return preview.effectiveTitle;
-                })()}
-              </h3>
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {(() => {
-                  const preview = getEffectiveSeoPreview({
-                    title: value.title,
-                    description: value.description,
-                    content: value.content,
-                    seoTitle: value.seo_title,
-                    seoDescription: value.seo_description,
-                    fallbackTitle: "Заголовок статті",
-                    fallbackDescription: "Опис статті з'явиться тут після заповнення."
-                  });
-                  return preview.effectiveDescription;
-                })()}
+          <div className="p-5 flex flex-col gap-5">
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                SEO Title
+              </label>
+              <input
+                value={value.seo_title}
+                onChange={field("seo_title")}
+                placeholder="SEO Title"
+                className={inputCls}
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground ml-1">
+                {value.seo_title.length} символів (рекомендовано ~60)
               </p>
             </div>
-            {locale === 'en' && (
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Примітка: публічний EN-роутинг ще знаходиться в розробці. Фактичний вигляд у пошуковій системі може відрізнятися.
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                SEO Description
+              </label>
+              <textarea
+                rows={2}
+                value={value.seo_description}
+                onChange={field("seo_description")}
+                placeholder="SEO Description"
+                className={inputCls}
+              />
+              <p className="mt-1 text-[11px] text-muted-foreground ml-1">
+                {value.seo_description.length} символів (рекомендовано ~160)
               </p>
-            )}
-            {locale === 'uk' && (
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Фактичний вигляд у пошуковій системі може відрізнятися.
-              </p>
-            )}
+            </div>
+
+            <div className="mt-2 pt-5 border-t border-border/60">
+              <h4 className="text-sm font-medium mb-3 text-foreground">Попередній перегляд у пошуку</h4>
+              
+              <div className="p-4 bg-background border border-border/60 rounded-lg shadow-sm">
+                <div className="flex items-center gap-2 text-[12px] text-muted-foreground mb-1 break-all">
+                  <span>{typeof window !== 'undefined' ? window.location.host : 'example.com'}{locale === 'uk' ? '/news/' : '/en/news/'}</span>
+                  <span className="text-foreground font-medium">{value.slug || "slug"}</span>
+                </div>
+                <h3 className="text-lg leading-tight font-medium text-blue-700 dark:text-blue-400 mb-1 truncate">
+                  {(() => {
+                    const preview = getEffectiveSeoPreview({
+                      title: value.title,
+                      description: value.description,
+                      content: value.content,
+                      seoTitle: value.seo_title,
+                      seoDescription: value.seo_description,
+                      fallbackTitle: "Заголовок статті",
+                      fallbackDescription: "Опис статті з'явиться тут після заповнення."
+                    });
+                    return preview.effectiveTitle;
+                  })()}
+                </h3>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {(() => {
+                    const preview = getEffectiveSeoPreview({
+                      title: value.title,
+                      description: value.description,
+                      content: value.content,
+                      seoTitle: value.seo_title,
+                      seoDescription: value.seo_description,
+                      fallbackTitle: "Заголовок статті",
+                      fallbackDescription: "Опис статті з'явиться тут після заповнення."
+                    });
+                    return preview.effectiveDescription;
+                  })()}
+                </p>
+              </div>
+              {locale === 'en' && (
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Примітка: публічний EN-роутинг ще знаходиться в розробці. Фактичний вигляд у пошуковій системі може відрізнятися.
+                </p>
+              )}
+              {locale === 'uk' && (
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Фактичний вигляд у пошуковій системі може відрізнятися.
+                </p>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -204,20 +204,17 @@ export function ArticleGalleryManager({
   const totalPhotosCount = (galleryImages?.length || 0) + (pendingPhotos?.length || 0);
 
   return (
-    <GlassCard className="p-5 sm:p-6 mb-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-900/60 shadow-sm">
-      <div className="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-slate-200/80 dark:border-slate-800">
-        <div className="flex items-center gap-2">
-          <ImageIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          <h3 className="font-serif font-bold text-lg text-slate-900 dark:text-white">
-            Фотогалерея новини
-          </h3>
-          <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
-            {totalPhotosCount} / 30
-          </span>
-        </div>
-      </div>
-
-      <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
+    <GlassCard
+      title="Фотогалерея новини"
+      icon={ImageIcon}
+      action={
+        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+          {totalPhotosCount} / 30
+        </span>
+      }
+      className="p-5 sm:p-6 mb-6"
+    >
+      <p className="text-xs text-muted-foreground mb-4">
         Додайте фотографії до галереї новини (JPEG, PNG, WebP до 15 MB). Для кожного фото можна вказати подвійні підписи та alt-опис (UK/EN).
       </p>
 
@@ -226,7 +223,7 @@ export function ArticleGalleryManager({
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 bg-slate-50/70 dark:bg-slate-950/40 rounded-xl p-6 text-center cursor-pointer transition-all duration-200 mb-6 group"
+        className="border-2 border-dashed border-border hover:border-primary/50 bg-card hover:bg-muted/30 rounded-xl p-6 text-center cursor-pointer transition-all duration-200 mb-6 group"
       >
         <input
           ref={fileInputRef}
@@ -236,13 +233,13 @@ export function ArticleGalleryManager({
           className="hidden"
           onChange={(e) => e.target.files && handleFilesSelected(e.target.files)}
         />
-        <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+        <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
           {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-6 h-6" />}
         </div>
-        <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mb-1">
+        <p className="text-sm font-semibold text-foreground mb-1">
           {uploading ? "Завантаження фотографій..." : "Перетягніть фотографії сюди або натисніть для вибору"}
         </p>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-muted-foreground">
           Підтримуються JPG, PNG, WebP (до 15 MB, максимум 30 фото)
         </p>
       </div>
@@ -250,7 +247,7 @@ export function ArticleGalleryManager({
       {/* Staged pending photos for unsaved draft */}
       {pendingPhotos.length > 0 && (
         <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-          <h4 className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+          <h4 className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-3 flex items-center gap-1.5">
             <AlertCircle className="w-4 h-4" />
             <span>Очікують завантаження після збереження ({pendingPhotos.length})</span>
           </h4>
@@ -258,7 +255,7 @@ export function ArticleGalleryManager({
             {pendingPhotos.map((file, idx) => (
               <div
                 key={idx}
-                className="relative aspect-square rounded-lg overflow-hidden border border-amber-500/30 bg-slate-900 group"
+                className="relative aspect-square rounded-lg overflow-hidden border border-amber-500/30 bg-card group"
               >
                 <img
                   src={URL.createObjectURL(file)}
@@ -268,7 +265,7 @@ export function ArticleGalleryManager({
                 <button
                   type="button"
                   onClick={() => handleRemovePending(idx)}
-                  className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-full opacity-90 hover:opacity-100 transition-opacity"
+                  className="absolute top-1 right-1 p-1 bg-destructive text-destructive-foreground rounded-full opacity-90 hover:opacity-100 transition-opacity"
                   title="Вилучити"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -284,13 +281,13 @@ export function ArticleGalleryManager({
 
       {/* List of uploaded gallery photos */}
       {loading ? (
-        <div className="flex items-center justify-center py-8 text-slate-400">
-          <Loader2 className="w-6 h-6 animate-spin mr-2" />
+        <div className="flex items-center justify-center py-8 text-muted-foreground">
+          <Loader2 className="w-6 h-6 animate-spin mr-2 text-primary" />
           <span>Завантаження фотогалереї...</span>
         </div>
       ) : galleryImages.length === 0 && pendingPhotos.length === 0 ? (
-        <div className="text-center py-8 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/50 dark:bg-slate-950/20 text-slate-500">
-          <FileImage className="w-8 h-8 mx-auto mb-2 text-slate-400 opacity-60" />
+        <div className="text-center py-8 border border-border rounded-xl bg-card text-muted-foreground">
+          <FileImage className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-60" />
           <p className="text-sm font-medium">У галереї цієї новини поки немає фотографій</p>
         </div>
       ) : (
@@ -303,13 +300,13 @@ export function ArticleGalleryManager({
             return (
               <div
                 key={img.id}
-                className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 transition-all hover:border-blue-300 dark:hover:border-slate-700"
+                className="p-4 rounded-xl border border-border bg-card transition-all hover:border-primary/40 shadow-xs"
               >
                 <div className="flex flex-col sm:flex-row gap-4">
                   {/* Photo Thumbnail */}
                   <div
                     onClick={() => setPreviewImage(fullUrl)}
-                    className="relative w-full sm:w-36 aspect-[4/3] rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-950 shrink-0 cursor-pointer group"
+                    className="relative w-full sm:w-36 aspect-[4/3] rounded-lg overflow-hidden border border-border bg-muted shrink-0 cursor-pointer group"
                   >
                     <img
                       src={fullUrl}
@@ -325,10 +322,10 @@ export function ArticleGalleryManager({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div>
-                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate" title={img.original_name}>
+                        <h4 className="text-sm font-bold text-foreground truncate" title={img.original_name}>
                           {img.original_name}
                         </h4>
-                        <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                           <span className="uppercase font-semibold">{img.extension.replace(".", "")}</span>
                           <span>•</span>
                           <span>{formatFileSize(img.size_bytes)}</span>
@@ -347,7 +344,7 @@ export function ArticleGalleryManager({
                           type="button"
                           onClick={() => handleMove(idx, "up")}
                           disabled={idx === 0}
-                          className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed text-slate-700 dark:text-slate-300"
+                          className="p-1.5 rounded-lg border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed text-foreground"
                           title="Перемістити вгору"
                         >
                           <ArrowUp className="w-3.5 h-3.5" />
@@ -356,7 +353,7 @@ export function ArticleGalleryManager({
                           type="button"
                           onClick={() => handleMove(idx, "down")}
                           disabled={idx === galleryImages.length - 1}
-                          className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-200 dark:hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed text-slate-700 dark:text-slate-300"
+                          className="p-1.5 rounded-lg border border-border hover:bg-muted disabled:opacity-30 disabled:cursor-not-allowed text-foreground"
                           title="Перемістити вниз"
                         >
                           <ArrowDown className="w-3.5 h-3.5" />
@@ -367,14 +364,14 @@ export function ArticleGalleryManager({
                             <button
                               type="button"
                               onClick={() => handleDelete(img.id)}
-                              className="px-2 py-1 bg-red-600 text-white font-bold text-xs rounded-lg hover:bg-red-700"
+                              className="px-2 py-1 bg-destructive text-destructive-foreground font-bold text-xs rounded-lg hover:bg-destructive/90"
                             >
                               Так
                             </button>
                             <button
                               type="button"
                               onClick={() => setDeleteConfirmId(null)}
-                              className="px-2 py-1 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs rounded-lg"
+                              className="px-2 py-1 bg-muted text-foreground text-xs rounded-lg hover:bg-muted/80"
                             >
                               Ні
                             </button>
@@ -383,7 +380,7 @@ export function ArticleGalleryManager({
                           <button
                             type="button"
                             onClick={() => setDeleteConfirmId(img.id)}
-                            className="p-1.5 rounded-lg border border-red-200 dark:border-red-900/50 hover:bg-red-50 dark:hover:bg-red-950/50 text-red-600 dark:text-red-400 ml-1"
+                            className="p-1.5 rounded-lg border border-destructive/30 hover:bg-destructive/10 text-destructive ml-1"
                             title="Видалити фотографію"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -394,10 +391,10 @@ export function ArticleGalleryManager({
 
                     {/* Editable localized metadata fields */}
                     {isEditing ? (
-                      <div className="space-y-3 mt-3 pt-3 border-t border-slate-200 dark:border-slate-800 animate-in fade-in duration-150">
+                      <div className="space-y-3 mt-3 pt-3 border-t border-border animate-in fade-in duration-150">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
                               Alt UK (Опис фото)
                             </label>
                             <input
@@ -405,11 +402,11 @@ export function ArticleGalleryManager({
                               value={editAltUk}
                               onChange={(e) => setEditAltUk(e.target.value)}
                               placeholder="Короткий опис для UK..."
-                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white"
+                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-input bg-card text-foreground"
                             />
                           </div>
                           <div>
-                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
                               Alt EN (Photo description)
                             </label>
                             <input
@@ -417,14 +414,14 @@ export function ArticleGalleryManager({
                               value={editAltEn}
                               onChange={(e) => setEditAltEn(e.target.value)}
                               placeholder="Short description for EN..."
-                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white"
+                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-input bg-card text-foreground"
                             />
                           </div>
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           <div>
-                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
                               Caption UK (Підпис під фото)
                             </label>
                             <input
@@ -432,11 +429,11 @@ export function ArticleGalleryManager({
                               value={editCaptionUk}
                               onChange={(e) => setEditCaptionUk(e.target.value)}
                               placeholder="Підпис під фото українською..."
-                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white"
+                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-input bg-card text-foreground"
                             />
                           </div>
                           <div>
-                            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider mb-1">
+                            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
                               Caption EN (Photo caption)
                             </label>
                             <input
@@ -444,7 +441,7 @@ export function ArticleGalleryManager({
                               value={editCaptionEn}
                               onChange={(e) => setEditCaptionEn(e.target.value)}
                               placeholder="English photo caption..."
-                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white"
+                              className="w-full px-3 py-1.5 text-xs rounded-lg border border-input bg-card text-foreground"
                             />
                           </div>
                         </div>
@@ -453,7 +450,7 @@ export function ArticleGalleryManager({
                           <button
                             type="button"
                             onClick={() => handleSaveEdit(img)}
-                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
+                            className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-lg flex items-center gap-1.5 transition-colors shadow-xs"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             <span>Зберегти метадані</span>
@@ -461,7 +458,7 @@ export function ArticleGalleryManager({
                           <button
                             type="button"
                             onClick={() => setEditingId(null)}
-                            className="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold rounded-lg transition-colors"
+                            className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold rounded-lg transition-colors"
                           >
                             Скасувати
                           </button>
@@ -469,22 +466,22 @@ export function ArticleGalleryManager({
                       </div>
                     ) : (
                       <div className="mt-2 text-xs space-y-1">
-                        <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
+                        <div className="flex items-center justify-between text-muted-foreground">
                           <p className="truncate">
-                            <span className="font-semibold text-slate-700 dark:text-slate-300">Alt UK:</span>{" "}
-                            {img.alt_uk || <span className="italic text-slate-400">не вказано (fallback на заголовок)</span>}
+                            <span className="font-semibold text-foreground">Alt UK:</span>{" "}
+                            {img.alt_uk || <span className="italic text-muted-foreground">не вказано (fallback на заголовок)</span>}
                           </p>
                           <button
                             type="button"
                             onClick={() => handleStartEdit(img)}
-                            className="text-blue-600 dark:text-blue-400 font-bold hover:underline ml-2"
+                            className="text-primary font-bold hover:underline ml-2"
                           >
                             Редагувати
                           </button>
                         </div>
                         {img.caption_uk && (
-                          <p className="text-slate-600 dark:text-slate-400 truncate">
-                            <span className="font-semibold text-slate-700 dark:text-slate-300">Caption UK:</span>{" "}
+                          <p className="text-muted-foreground truncate">
+                            <span className="font-semibold text-foreground">Caption UK:</span>{" "}
                             {img.caption_uk}
                           </p>
                         )}
@@ -508,7 +505,7 @@ export function ArticleGalleryManager({
             <img
               src={previewImage}
               alt="Preview"
-              className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border border-slate-800"
+              className="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl border border-border"
             />
           </div>
         </div>

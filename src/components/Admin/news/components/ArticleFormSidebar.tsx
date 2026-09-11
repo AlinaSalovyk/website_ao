@@ -83,6 +83,46 @@ export function ArticleFormSidebar({
 
   return (
     <div className="flex flex-col gap-4">
+      {/* Category * Card - PRIMARY */}
+      <GlassCard title="Категорія *">
+        <div data-field-error="category_id" className={fieldErrors?.category_id ? "has-error" : ""}>
+          <select
+            value={form.category_id}
+            onChange={(e) => setForm((f) => ({ ...f, category_id: e.target.value }))}
+            className={`${inputCls} ${fieldErrors?.category_id ? "border-red-500 ring-2 ring-red-500/20 bg-red-50/20 dark:bg-red-950/10" : ""}`}
+          >
+            <option value="">Оберіть категорію новини...</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.locales?.["uk"]?.name || "Без назви"}
+              </option>
+            ))}
+          </select>
+          {fieldErrors?.category_id && (
+            <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
+              <span>⚠</span> {fieldErrors.category_id}
+            </p>
+          )}
+        </div>
+      </GlassCard>
+
+      {/* Options */}
+      <GlassCard title="Параметри публікації">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <div
+            onClick={() => setForm((f) => ({ ...f, is_pinned: !f.is_pinned }))}
+            className={`relative w-10 h-5 rounded-full transition-colors ${form.is_pinned ? "bg-amber-500" : "bg-muted border border-border"
+              }`}
+          >
+            <div
+              className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-foreground transition-transform ${form.is_pinned ? "translate-x-5 bg-white" : "translate-x-0"
+                }`}
+            />
+          </div>
+          <span className="text-sm text-foreground">Закріплена стаття</span>
+        </label>
+      </GlassCard>
+
       {/* Cover image with ImageCropper */}
       <GlassCard title="Обкладинка новини" icon={ImageIcon}>
         {(form.image_url || currentArticle?.image_url) ? (
@@ -148,70 +188,6 @@ export function ArticleFormSidebar({
         />
       </GlassCard>
 
-      {/* Gallery photos */}
-      <GlassCard title="Галерея додаткових фото">
-        <div className="flex flex-col gap-3">
-          {(form.gallery || []).length > 0 && (
-            <div className="grid grid-cols-3 gap-2">
-              {(form.gallery || []).map((url, idx) => (
-                <div key={idx} className="relative group aspect-square rounded-lg overflow-hidden border border-border bg-slate-100">
-                  <img src={getFullImageUrl(url)} alt={`gallery-${idx}`} className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => removeGalleryImage(idx)}
-                    className="absolute top-1 right-1 p-1 bg-red-600 text-white rounded-md opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                    title="Видалити"
-                  >
-                    <Trash2 size={12} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-dashed border-border hover:border-primary/50 text-xs font-medium text-muted-foreground hover:text-foreground cursor-pointer transition-colors">
-            {galleryUploading ? (
-              <RefreshCw size={14} className="animate-spin" />
-            ) : (
-              <Plus size={14} className="text-primary" />
-            )}
-            <span>{galleryUploading ? "Завантаження..." : "Додати фото в галерею"}</span>
-            <input
-              ref={galleryRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={handleGalleryUpload}
-              disabled={galleryUploading}
-            />
-          </label>
-        </div>
-      </GlassCard>
-
-      {/* Category */}
-      <GlassCard title="Категорія *">
-        <div data-field-error="category_id" className={fieldErrors?.category_id ? "has-error" : ""}>
-          <select
-            value={form.category_id}
-            onChange={(e) => setForm((f) => ({ ...f, category_id: e.target.value }))}
-            className={`${inputCls} ${fieldErrors?.category_id ? "border-red-500 ring-2 ring-red-500/20 bg-red-50/20 dark:bg-red-950/10" : ""}`}
-          >
-            <option value="">Оберіть категорію новини...</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.locales?.["uk"]?.name || "Без назви"}
-              </option>
-            ))}
-          </select>
-          {fieldErrors?.category_id && (
-            <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
-              <span>⚠</span> {fieldErrors.category_id}
-            </p>
-          )}
-        </div>
-      </GlassCard>
-
       {/* Tags */}
       {tags.length > 0 && (
         <GlassCard title="Теги">
@@ -258,23 +234,6 @@ export function ArticleFormSidebar({
             className={inputCls}
           />
         </div>
-      </GlassCard>
-
-      {/* Options */}
-      <GlassCard title="Параметри">
-        <label className="flex items-center gap-3 cursor-pointer">
-          <div
-            onClick={() => setForm((f) => ({ ...f, is_pinned: !f.is_pinned }))}
-            className={`relative w-10 h-5 rounded-full transition-colors ${form.is_pinned ? "bg-amber-500" : "bg-muted border border-border"
-              }`}
-          >
-            <div
-              className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-foreground transition-transform ${form.is_pinned ? "translate-x-5 bg-white" : "translate-x-0"
-                }`}
-            />
-          </div>
-          <span className="text-sm text-foreground">Закріплена стаття</span>
-        </label>
       </GlassCard>
     </div>
   );
