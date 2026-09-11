@@ -4,7 +4,8 @@
  */
 
 export const API_BASE = import.meta.env?.PUBLIC_API_URL ?? "";
-export const ADMIN_PATH = import.meta.env?.PUBLIC_ADMIN_PATH ?? "panel";
+const rawAdminPath = (import.meta.env?.PUBLIC_ADMIN_PATH ?? "panel").trim();
+export const ADMIN_PATH = rawAdminPath.replace(/^\/?(admin-)?/, "");
 export const ADMIN_BASE = `/admin-${ADMIN_PATH}`;
 
 let _memoryToken: string | null = null;

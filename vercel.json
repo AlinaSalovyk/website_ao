@@ -1,0 +1,60 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/v1/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/api/v1/:path*"
+    },
+    {
+      "source": "/news-images/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/news-images/:path*"
+    },
+    {
+      "source": "/news-videos/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/news-videos/:path*"
+    },
+    {
+      "source": "/admin-:hash/auth/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/auth/:path*"
+    },
+    {
+      "source": "/admin-:hash/me",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/me"
+    },
+    {
+      "source": "/admin-:hash/documents/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/documents/:path*"
+    },
+    {
+      "source": "/admin-:hash/analytics/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/analytics/:path*"
+    },
+    {
+      "source": "/admin-:hash/queries",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/queries"
+    },
+    {
+      "source": "/admin-:hash/prompts/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/prompts/:path*"
+    },
+    {
+      "source": "/admin-:hash/suggestions/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/suggestions/:path*"
+    },
+    {
+      "source": "/admin-:hash/news/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/news/:path*"
+    },
+    {
+      "source": "/admin-:hash/audit",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/audit"
+    },
+    {
+      "source": "/admin-:hash/admins/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/admins/:path*"
+    },
+    {
+      "source": "/admin-:hash/invitations/:path*",
+      "destination": "http://141.145.200.204.nip.io:8280/admin-:hash/invitations/:path*"
+    }
+  ]
+}
