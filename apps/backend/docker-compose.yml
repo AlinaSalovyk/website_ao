@@ -1,3 +1,5 @@
+version: '3.3'
+
 services:
   # ── Qdrant Vector Database ───────────────────────────────────────────────────
   qdrant:
@@ -42,8 +44,7 @@ services:
     volumes:
       - backend_data:/app/data
     depends_on:
-      qdrant:
-        condition: service_healthy
+      - qdrant
     restart: unless-stopped
 
 volumes:
