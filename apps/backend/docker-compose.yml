@@ -44,8 +44,7 @@ services:
     volumes:
       - backend_data:/app/data
     depends_on:
-      qdrant:
-        condition: service_healthy
+      - qdrant
     restart: unless-stopped
 
 volumes:
