@@ -281,9 +281,9 @@ export function ArticleAttachmentsManager({
                 const targetNewsId = att.news_id || articleId || "";
                 const rawOpenUrl = att.url || (targetNewsId ? getNewsAttachmentFileUrl(targetNewsId, att.id) : "");
                 const openUrl = getFullImageUrl(rawOpenUrl);
-                const rawDownloadUrl = att.url
-                  ? (att.url.includes("?") ? `${att.url}&download=1` : `${att.url}?download=1`)
-                  : (targetNewsId ? getNewsAttachmentDownloadUrl(targetNewsId, att.id) : "");
+                const rawDownloadUrl = targetNewsId
+                  ? getNewsAttachmentDownloadUrl(targetNewsId, att.id)
+                  : (att.url ? (att.url.includes("?") ? `${att.url}&download=1` : `${att.url}?download=1`) : "");
                 const downloadUrl = getFullImageUrl(rawDownloadUrl);
                 const previewable = canPreviewAttachment(att.extension || att.mime_type);
 

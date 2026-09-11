@@ -152,8 +152,13 @@ const getBase = (): string => {
   } else if (typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_API_URL) {
     url = (import.meta.env.PUBLIC_API_URL as string).trim();
   }
-  if (typeof window !== "undefined" && window.location.protocol === "https:" && url.startsWith("http://")) {
-    return "";
+  if (typeof window !== "undefined") {
+    if (window.location.protocol === "https:" && url.startsWith("http://")) {
+      return "";
+    }
+    if (url.includes("localhost:8280") || !url) {
+      return "";
+    }
   }
   return url || (typeof window !== "undefined" ? "" : getSsrApiBase());
 };
@@ -331,6 +336,13 @@ export function getFullImageUrl(url: string | undefined): string {
     } else {
       formatted = `/${formatted}`;
     }
+  }
+  if (formatted.startsWith("/api/")) {
+    if (typeof window !== "undefined") {
+      return formatted;
+    }
+    const base = getBase();
+    return base ? `${base}${formatted}` : formatted;
   }
   return `${getBase()}${formatted}`;
 }
