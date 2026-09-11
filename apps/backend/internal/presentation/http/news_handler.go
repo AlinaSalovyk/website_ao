@@ -267,17 +267,71 @@ func (h *NewsHandler) HandleAdminList(w http.ResponseWriter, r *http.Request) {
 
 // HandleCreate creates a new news article.
 // POST /admin-.../news
+func mapValidationError(err error) (code string, msg string, field string) {
+	switch {
+	case errors.Is(err, domain.ErrNewsStatusInvalid):
+		return "NEWS_STATUS_INVALID", domain.ErrNewsStatusInvalid.Error(), "status"
+	case errors.Is(err, domain.ErrNewsCategoryRequired):
+		return "NEWS_CATEGORY_REQUIRED", domain.ErrNewsCategoryRequired.Error(), "category_id"
+	case errors.Is(err, domain.ErrNewsCategoryNotFound):
+		return "NEWS_CATEGORY_NOT_FOUND", domain.ErrNewsCategoryNotFound.Error(), "category_id"
+	case errors.Is(err, domain.ErrNewsUkTitleRequired):
+		return "NEWS_TITLE_REQUIRED", domain.ErrNewsUkTitleRequired.Error(), "title_uk"
+	case errors.Is(err, domain.ErrNewsUkContentRequired):
+		return "NEWS_CONTENT_REQUIRED", domain.ErrNewsUkContentRequired.Error(), "content_uk"
+	case errors.Is(err, domain.ErrNewsEnLocaleRequiredForPublish):
+		return "NEWS_EN_LOCALE_REQUIRED", domain.ErrNewsEnLocaleRequiredForPublish.Error(), "title_en"
+	case errors.Is(err, domain.ErrNewsSlugConflict):
+		return "NEWS_SLUG_CONFLICT", "Новина з такою адресою (Slug) вже існує. Змініть Slug.", "slug_uk"
+	default:
+		return "VALIDATION_ERROR", err.Error(), ""
+	}
+}
+
+type APIErrorResponse struct {
+	Code        string            `json:"code,omitempty"`
+	Message     string            `json:"message"`
+	Field       string            `json:"field,omitempty"`
+	FieldErrors map[string]string `json:"field_errors,omitempty"`
+}
+
+func jsonFieldError(w http.ResponseWriter, code, msg, field string, status int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	fieldErrors := make(map[string]string)
+	if field != "" && msg != "" {
+		fieldErrors[field] = msg
+	}
+	json.NewEncoder(w).Encode(APIErrorResponse{
+		Code:        code,
+		Message:     msg,
+		Field:       field,
+		FieldErrors: fieldErrors,
+	})
+}
+
+// HandleCreate creates a new news article.
+// POST /admin-.../news
 // Body: NewsArticle JSON (both locales required).
 func (h *NewsHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	var article domain.NewsArticle
 	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-		jsonError(w, "invalid_request", "Invalid JSON body", http.StatusBadRequest)
+		jsonError(w, "invalid_request", "Некоректний формат даних запиту.", http.StatusBadRequest)
 		return
 	}
 
 	if err := article.Validate(); err != nil {
-		jsonError(w, "validation_error", err.Error(), http.StatusBadRequest)
+		code, msg, field := mapValidationError(err)
+		jsonFieldError(w, code, msg, field, http.StatusBadRequest)
 		return
+	}
+
+	if article.CategoryID != "" {
+		if _, err := h.repo.GetCategoryByID(r.Context(), article.CategoryID); err != nil {
+			code, msg, field := mapValidationError(domain.ErrNewsCategoryNotFound)
+			jsonFieldError(w, code, msg, field, http.StatusBadRequest)
+			return
+		}
 	}
 
 	// Sanitize HTML content for all locales.
@@ -298,12 +352,22 @@ func (h *NewsHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.repo.Create(r.Context(), &article); err != nil {
-		if errors.Is(err, domain.ErrNewsSlugConflict) {
-			jsonError(w, "slug_conflict", "Slug already taken — change the title or slug", http.StatusConflict)
+		if errors.Is(err, domain.ErrNewsSlugConflict) || strings.Contains(err.Error(), "news_translations.slug") {
+			code, msg, field := mapValidationError(domain.ErrNewsSlugConflict)
+			jsonFieldError(w, code, msg, field, http.StatusConflict)
+			return
+		}
+		if strings.Contains(err.Error(), "FOREIGN KEY") && strings.Contains(err.Error(), "category_id") {
+			code, msg, field := mapValidationError(domain.ErrNewsCategoryNotFound)
+			jsonFieldError(w, code, msg, field, http.StatusBadRequest)
+			return
+		}
+		if strings.Contains(err.Error(), "database is locked") || strings.Contains(err.Error(), "SQLITE_BUSY") {
+			jsonError(w, "db_locked", "Не вдалося зберегти зміни через тимчасову зайнятість системи. Спробуйте ще раз за кілька секунд.", http.StatusServiceUnavailable)
 			return
 		}
 		slog.Error("HandleCreate: db failed", "error", err)
-		jsonError(w, "db_error", "Failed to create article", http.StatusInternalServerError)
+		jsonError(w, "db_error", "Сталася внутрішня помилка під час збереження новини. Спробуйте ще раз.", http.StatusInternalServerError)
 		return
 	}
 
@@ -341,14 +405,23 @@ func (h *NewsHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 
 	var article domain.NewsArticle
 	if err := json.NewDecoder(r.Body).Decode(&article); err != nil {
-		jsonError(w, "invalid_request", "Invalid JSON body", http.StatusBadRequest)
+		jsonError(w, "invalid_request", "Некоректний формат даних запиту.", http.StatusBadRequest)
 		return
 	}
 	article.ID = id
 
 	if err := article.Validate(); err != nil {
-		jsonError(w, "validation_error", err.Error(), http.StatusBadRequest)
+		code, msg, field := mapValidationError(err)
+		jsonFieldError(w, code, msg, field, http.StatusBadRequest)
 		return
+	}
+
+	if article.CategoryID != "" {
+		if _, err := h.repo.GetCategoryByID(r.Context(), article.CategoryID); err != nil {
+			code, msg, field := mapValidationError(domain.ErrNewsCategoryNotFound)
+			jsonFieldError(w, code, msg, field, http.StatusBadRequest)
+			return
+		}
 	}
 
 	article.Locales = h.sanitizeLocales(article.Locales)
@@ -364,15 +437,25 @@ func (h *NewsHandler) HandleUpdate(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.repo.Update(r.Context(), &article); err != nil {
 		if errors.Is(err, domain.ErrNewsNotFound) {
-			jsonError(w, "not_found", "Article not found", http.StatusNotFound)
+			jsonError(w, "not_found", "Новину не знайдено. Можливо, її було видалено іншим користувачем.", http.StatusNotFound)
 			return
 		}
-		if errors.Is(err, domain.ErrNewsSlugConflict) {
-			jsonError(w, "slug_conflict", "Slug already taken", http.StatusConflict)
+		if errors.Is(err, domain.ErrNewsSlugConflict) || strings.Contains(err.Error(), "news_translations.slug") {
+			code, msg, field := mapValidationError(domain.ErrNewsSlugConflict)
+			jsonFieldError(w, code, msg, field, http.StatusConflict)
+			return
+		}
+		if strings.Contains(err.Error(), "FOREIGN KEY") && strings.Contains(err.Error(), "category_id") {
+			code, msg, field := mapValidationError(domain.ErrNewsCategoryNotFound)
+			jsonFieldError(w, code, msg, field, http.StatusBadRequest)
+			return
+		}
+		if strings.Contains(err.Error(), "database is locked") || strings.Contains(err.Error(), "SQLITE_BUSY") {
+			jsonError(w, "db_locked", "Не вдалося зберегти зміни через тимчасову зайнятість системи. Спробуйте ще раз за кілька секунд.", http.StatusServiceUnavailable)
 			return
 		}
 		slog.Error("HandleUpdate: failed", "id", id, "error", err)
-		jsonError(w, "db_error", "Failed to update article", http.StatusInternalServerError)
+		jsonError(w, "db_error", "Сталася внутрішня помилка під час збереження новини. Спробуйте ще раз.", http.StatusInternalServerError)
 		return
 	}
 
@@ -393,11 +476,11 @@ func (h *NewsHandler) HandleSetStatus(w http.ResponseWriter, r *http.Request) {
 		Status domain.NewsStatus `json:"status"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		jsonError(w, "invalid_request", "Invalid JSON body", http.StatusBadRequest)
+		jsonError(w, "invalid_request", "Некоректний формат даних запиту.", http.StatusBadRequest)
 		return
 	}
 	if req.Status != domain.NewsStatusDraft && req.Status != domain.NewsStatusPublished {
-		jsonError(w, "validation_error", "status must be 'draft' or 'published'", http.StatusBadRequest)
+		jsonFieldError(w, "NEWS_STATUS_INVALID", "Оберіть коректний статус новини.", "status", http.StatusBadRequest)
 		return
 	}
 

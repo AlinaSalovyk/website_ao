@@ -14,6 +14,30 @@ import {
 import { usePreviewSync } from "@/lib/preview-sync";
 import { normalizeText, extractArticleSummary, computeAutoFillSEO } from "@/utils/seo";
 
+import { ApiError } from "../../services/client";
+
+function stripHTMLContent(s: string): string {
+  if (!s) return "";
+  const tmp = s.replace(/<[^>]*>/g, " ").replace(/&nbsp;/gi, " ");
+  return tmp.replace(/\s+/g, " ").trim();
+}
+
+function scrollToFirstError(errors: Record<string, string>) {
+  setTimeout(() => {
+    const errorKeys = Object.keys(errors);
+    if (errorKeys.length === 0) return;
+    const firstKey = errorKeys[0];
+    const el = document.querySelector(`[data-field-error="${firstKey}"]`) || document.querySelector(`.has-error`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      const input = el.querySelector("input, select, textarea");
+      if (input && "focus" in input && typeof (input as HTMLElement).focus === "function") {
+        (input as HTMLElement).focus();
+      }
+    }
+  }, 100);
+}
+
 export function useArticleForm(
   articleId: string | null,
   categories: AdminNewsCategory[],
@@ -21,6 +45,7 @@ export function useArticleForm(
 ) {
   const [form, setForm] = useState<ArticleForm>(emptyForm());
   const [activeLocale, setActiveLocale] = useState<"uk" | "en">("uk");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [autoSaveStatus, setAutoSaveStatus] = useState<"saved" | "dirty" | "saving" | "error">("saved");
@@ -98,11 +123,21 @@ export function useArticleForm(
     return () => clearTimeout(timer);
   }, [form, isDirty, loading, saving, articleId, currentArticle]);
 
-  // Wrapped setForm state updater that marks form dirty
+  // Wrapped setForm state updater that marks form dirty & clears errors
   const updateForm: typeof setForm = (updater) => {
     setIsDirty(true);
     setAutoSaveStatus("dirty");
+    setFieldErrors({});
     setForm(updater);
+  };
+
+  const clearFieldError = (fieldKey: string) => {
+    setFieldErrors((prev) => {
+      if (!prev[fieldKey]) return prev;
+      const next = { ...prev };
+      delete next[fieldKey];
+      return next;
+    });
   };
 
   // Load existing article
@@ -159,17 +194,37 @@ export function useArticleForm(
   const [pendingPhotos, setPendingPhotos] = useState<File[]>([]);
 
   const handleSave = async () => {
+    const errs: Record<string, string> = {};
+
+    if (!form.category_id.trim()) {
+      errs.category_id = "Оберіть категорію новини.";
+    }
+
     if (!form.locales.uk.title.trim()) {
-      toast.error("Вкажіть заголовок української версії.");
-      return;
+      errs.title_uk = "Введіть заголовок новини.";
+    }
+
+    if (stripHTMLContent(form.locales.uk.content) === "") {
+      errs.content_uk = "Додайте текст новини.";
     }
 
     if (form.status === "published" && (!form.locales.en?.title?.trim())) {
-      toast.error("Перед публікацією заповніть або перекладіть англійську версію.");
+      errs.title_en = "Перед публікацією заповніть англійську версію новини.";
+      if (!activeLocale || activeLocale !== "en") {
+        setActiveLocale("en");
+      }
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      toast.error("Перевірте правильність заповнення форми.");
+      scrollToFirstError(errs);
       return;
     }
 
     setSaving(true);
+    setFieldErrors({});
+
     try {
       const payload: Partial<AdminNewsArticle> = {
         category_id: form.category_id || "",
@@ -193,11 +248,11 @@ export function useArticleForm(
       let savedArticleId = articleId;
       if (articleId) {
         await updateAdminNews(articleId, payload);
-        toast.success("Статтю оновлено");
+        toast.success("Зміни успішно збережено");
       } else {
         const created = await createAdminNews(payload);
         savedArticleId = created.id;
-        toast.success("Статтю створено");
+        toast.success("Новину успішно створено");
       }
 
       if (savedArticleId && pendingFiles.length > 0) {
@@ -227,14 +282,30 @@ export function useArticleForm(
       setAutoSaveStatus("saved");
       onSaved();
     } catch (err: unknown) {
-      let msg = err instanceof Error ? err.message : "Помилка збереження";
-      if (msg.includes("both uk and en locales") || msg.includes("англійську версію")) {
-        msg = "Перед публікацією заповніть або перекладіть англійську версію.";
-      } else if (msg.includes("slug already exists") || msg.includes("slug_conflict")) {
-        msg = "Стаття з таким URL уже існує.";
+      const newFieldErrors: Record<string, string> = {};
+      let msg = "Не вдалося зберегти новину. Перевірте виділені поля.";
+
+      if (err instanceof ApiError) {
+        if (err.fieldErrors && Object.keys(err.fieldErrors).length > 0) {
+          Object.assign(newFieldErrors, err.fieldErrors);
+        } else if (err.field && err.message) {
+          newFieldErrors[err.field] = err.message;
+        }
+        msg = err.message || msg;
+      } else if (err instanceof Error) {
+        msg = err.message;
       }
+
+      if (msg.includes("category") || msg.includes("Категор")) {
+        newFieldErrors.category_id = msg;
+      } else if (msg.includes("slug") || msg.includes("URL")) {
+        newFieldErrors.slug_uk = msg;
+      }
+
+      setFieldErrors(newFieldErrors);
       toast.error(msg);
       setAutoSaveStatus("error");
+      scrollToFirstError(newFieldErrors);
     } finally {
       setSaving(false);
     }
@@ -285,7 +356,7 @@ export function useArticleForm(
     const locForm = form.locales[locale];
     if (normalizeText(locForm.title) === "") {
       if (locale === "en") {
-        toast.error("Спочатку створіть або перекладіть англійську версію статті.");
+        toast.error("Спочатку заповніть англійську версію новини.");
       } else {
         toast.error("Введіть заголовок статті.");
       }
@@ -324,6 +395,7 @@ export function useArticleForm(
   return {
     form, setForm: updateForm,
     activeLocale, setActiveLocale,
+    fieldErrors, clearFieldError, setFieldErrors,
     loading, saving,
     isDirty, autoSaveStatus,
     imageUploading,

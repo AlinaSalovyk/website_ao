@@ -189,10 +189,38 @@ func (a *NewsArticle) IsPubliclyVisible() bool {
 	return true
 }
 
+func stripHTMLTags(s string) string {
+	var builder strings.Builder
+	inTag := false
+	for _, r := range s {
+		if r == '<' {
+			inTag = true
+		} else if r == '>' {
+			inTag = false
+		} else if !inTag {
+			builder.WriteRune(r)
+		}
+	}
+	res := strings.ReplaceAll(builder.String(), "&nbsp;", " ")
+	return strings.TrimSpace(res)
+}
+
 func (a *NewsArticle) Validate() error {
+	if a.Status != "" && a.Status != NewsStatusDraft && a.Status != NewsStatusPublished {
+		return ErrNewsStatusInvalid
+	}
+
+	if strings.TrimSpace(a.CategoryID) == "" {
+		return ErrNewsCategoryRequired
+	}
+
 	ukLoc, hasUk := a.Locales[LangUk]
 	if !hasUk || strings.TrimSpace(ukLoc.Title) == "" {
 		return ErrNewsUkTitleRequired
+	}
+
+	if strings.TrimSpace(stripHTMLTags(ukLoc.Content)) == "" {
+		return ErrNewsUkContentRequired
 	}
 
 	if a.Status == NewsStatusPublished {
@@ -240,11 +268,23 @@ var (
 	// ErrNewsSlugConflict is returned when the requested locale+slug already belongs to another article.
 	ErrNewsSlugConflict = errors.New("news slug already exists")
 
+	// ErrNewsStatusInvalid is returned when status is not draft or published.
+	ErrNewsStatusInvalid = errors.New("Оберіть коректний статус новини.")
+
+	// ErrNewsCategoryRequired is returned when category_id is empty.
+	ErrNewsCategoryRequired = errors.New("Оберіть категорію новини.")
+
+	// ErrNewsCategoryNotFound is returned when category_id does not exist.
+	ErrNewsCategoryNotFound = errors.New("Обрана категорія не існує або була видалена. Оберіть іншу категорію.")
+
 	// ErrNewsUkTitleRequired is returned when UK title is missing.
-	ErrNewsUkTitleRequired = errors.New("Вкажіть заголовок української версії.")
+	ErrNewsUkTitleRequired = errors.New("Введіть заголовок новини.")
+
+	// ErrNewsUkContentRequired is returned when UK content body is empty.
+	ErrNewsUkContentRequired = errors.New("Додайте текст новини.")
 
 	// ErrNewsEnLocaleRequiredForPublish is returned when EN title/slug is missing on publish.
-	ErrNewsEnLocaleRequiredForPublish = errors.New("Перед публікацією заповніть або перекладіть англійську версію.")
+	ErrNewsEnLocaleRequiredForPublish = errors.New("Перед публікацією заповніть англійську версію новини.")
 
 	// ErrNewsLocaleMissing is returned when a required locale (uk or en) is absent or its
 	// mandatory fields (Title, Slug) are empty. Both locales must be provided even for drafts.

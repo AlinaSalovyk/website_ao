@@ -15,6 +15,7 @@ export const LocalePanel = ({
   isSlugManuallyEdited,
   setIsSlugManuallyEdited,
   onAutoFill,
+  fieldErrors,
 }: {
   locale: "uk" | "en";
   value: LocaleForm;
@@ -23,10 +24,15 @@ export const LocalePanel = ({
   isSlugManuallyEdited: { uk: boolean; en: boolean };
   setIsSlugManuallyEdited: React.Dispatch<React.SetStateAction<{ uk: boolean; en: boolean }>>;
   onAutoFill: () => void;
+  fieldErrors?: Record<string, string>;
 }): JSX.Element => {
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugOk, setSlugOk] = useState<boolean | null>(null);
   const slugTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const titleErr = fieldErrors?.[`title_${locale}`] || (locale === "uk" ? fieldErrors?.title : undefined);
+  const slugErr = fieldErrors?.[`slug_${locale}`] || (locale === "uk" ? fieldErrors?.slug : undefined);
+  const contentErr = fieldErrors?.[`content_${locale}`] || (locale === "uk" ? fieldErrors?.content : undefined);
 
   const field = (key: keyof LocaleForm) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -64,7 +70,7 @@ export const LocalePanel = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
+        <div data-field-error={`title_${locale}`} className={titleErr ? "has-error" : ""}>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Заголовок ({locale.toUpperCase()}) *
           </label>
@@ -72,11 +78,16 @@ export const LocalePanel = ({
             value={value.title}
             onChange={field("title")}
             placeholder={locale === "uk" ? "Введіть заголовок…" : "Enter title…"}
-            className={inputCls}
+            className={`${inputCls} ${titleErr ? "border-red-500 ring-2 ring-red-500/20 bg-red-50/20 dark:bg-red-950/10" : ""}`}
           />
+          {titleErr && (
+            <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
+              <span>⚠</span> {titleErr}
+            </p>
+          )}
         </div>
 
-        <div>
+        <div data-field-error={`slug_${locale}`} className={slugErr ? "has-error" : ""}>
           <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Slug ({locale.toUpperCase()})
           </label>
@@ -85,7 +96,7 @@ export const LocalePanel = ({
               value={value.slug}
               onChange={field("slug")}
               placeholder="slug-url"
-              className={`${inputCls} pr-8`}
+              className={`${inputCls} pr-8 ${slugErr ? "border-red-500 ring-2 ring-red-500/20 bg-red-50/20 dark:bg-red-950/10" : ""}`}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
               {slugChecking && (
@@ -99,11 +110,15 @@ export const LocalePanel = ({
               )}
             </div>
           </div>
-          {slugOk === false && (
+          {slugErr ? (
+            <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
+              <span>⚠</span> {slugErr}
+            </p>
+          ) : slugOk === false ? (
             <p className="mt-1 text-[11px] text-destructive">
               Цей slug вже зайнятий
             </p>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -120,15 +135,22 @@ export const LocalePanel = ({
         />
       </div>
 
-      <div>
+      <div data-field-error={`content_${locale}`} className={contentErr ? "has-error" : ""}>
         <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Зміст ({locale.toUpperCase()}) — Rich Text Editor
+          Зміст ({locale.toUpperCase()}) — Rich Text Editor *
         </label>
-        <RichTextEditor
-          content={value.content}
-          onChange={(html) => onChange({ ...value, content: html })}
-          articleId={articleId}
-        />
+        <div className={contentErr ? "rounded-xl border-2 border-red-500/80 p-0.5" : ""}>
+          <RichTextEditor
+            content={value.content}
+            onChange={(html) => onChange({ ...value, content: html })}
+            articleId={articleId}
+          />
+        </div>
+        {contentErr && (
+          <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
+            <span>⚠</span> {contentErr}
+          </p>
+        )}
       </div>
 
       <div className="border border-border/60 rounded-xl bg-card overflow-hidden mt-6">

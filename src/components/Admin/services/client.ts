@@ -3,8 +3,8 @@
  * Core API client with token management and auto-refresh.
  */
 
-export const API_BASE = import.meta.env.PUBLIC_API_URL ?? "";
-export const ADMIN_PATH = import.meta.env.PUBLIC_ADMIN_PATH ?? "panel";
+export const API_BASE = import.meta.env?.PUBLIC_API_URL ?? "";
+export const ADMIN_PATH = import.meta.env?.PUBLIC_ADMIN_PATH ?? "panel";
 export const ADMIN_BASE = `/admin-${ADMIN_PATH}`;
 
 let _memoryToken: string | null = null;
@@ -32,6 +32,28 @@ export const refreshAccessToken = async (): Promise<string | null> => {
   }
 };
 
+export class ApiError extends Error {
+  code?: string;
+  field?: string;
+  fieldErrors?: Record<string, string>;
+  status: number;
+
+  constructor(
+    message: string,
+    status: number,
+    code?: string,
+    field?: string,
+    fieldErrors?: Record<string, string>
+  ) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.code = code;
+    this.field = field;
+    this.fieldErrors = fieldErrors;
+  }
+}
+
 export async function api<T>(path: string, opts: RequestInit = {}): Promise<T> {
   const token = getToken();
   const headers: Record<string, string> = {
@@ -57,11 +79,11 @@ export async function api<T>(path: string, opts: RequestInit = {}): Promise<T> {
       });
     } else {
       clearToken();
-      throw new Error("unauthorized");
+      throw new ApiError("unauthorized", 401, "UNAUTHORIZED");
     }
   } else if (res.status === 401) {
     clearToken();
-    throw new Error("unauthorized");
+    throw new ApiError("unauthorized", 401, "UNAUTHORIZED");
   }
 
   if (!res.ok) {
@@ -70,17 +92,22 @@ export async function api<T>(path: string, opts: RequestInit = {}): Promise<T> {
     if (errorText) {
       try {
         const parsed = JSON.parse(errorText);
-        if (parsed && typeof parsed.message === "string" && parsed.message) {
-          throw new Error(parsed.message);
+        if (parsed && typeof parsed === "object") {
+          const msg = parsed.message || parsed.error || `HTTP ${res.status}`;
+          const code = parsed.code || (typeof parsed.error === "string" ? parsed.error : undefined);
+          const field = parsed.field;
+          const fieldErrors: Record<string, string> = parsed.field_errors || {};
+          if (field && msg && !fieldErrors[field]) {
+            fieldErrors[field] = msg;
+          }
+          throw new ApiError(msg, res.status, code, field, fieldErrors);
         }
       } catch (e) {
-        if (e instanceof Error && e.message !== errorText && !e.message.includes("JSON")) {
-          throw e;
-        }
+        if (e instanceof ApiError) throw e;
       }
-      throw new Error(errorText);
+      throw new ApiError(errorText, res.status);
     }
-    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+    throw new ApiError(`HTTP ${res.status}: ${res.statusText}`, res.status);
   }
   if (res.status === 204) return {} as T;
   const text = await res.text();

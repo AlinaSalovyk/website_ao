@@ -26,6 +26,7 @@ export const EditView = ({
     setForm,
     activeLocale,
     setActiveLocale,
+    fieldErrors,
     loading,
     saving,
     imageUploading,
@@ -161,6 +162,7 @@ export const EditView = ({
                 isSlugManuallyEdited={isSlugManuallyEdited}
                 setIsSlugManuallyEdited={setIsSlugManuallyEdited}
                 onAutoFill={() => handleAutoFillSEO(activeLocale)}
+                fieldErrors={fieldErrors}
               />
             </GlassCard>
 
@@ -191,6 +193,7 @@ export const EditView = ({
             imageHistory={imageHistory}
             setImageHistory={setImageHistory}
             handleImageFile={handleImageFile}
+            fieldErrors={fieldErrors}
           />
         </div>
       </div>

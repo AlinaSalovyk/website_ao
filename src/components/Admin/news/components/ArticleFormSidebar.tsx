@@ -19,6 +19,7 @@ interface ArticleFormSidebarProps {
   imageHistory: string[];
   setImageHistory: React.Dispatch<React.SetStateAction<string[]>>;
   handleImageFile: (file: File) => Promise<void>;
+  fieldErrors?: Record<string, string>;
 }
 
 export function ArticleFormSidebar({
@@ -32,6 +33,7 @@ export function ArticleFormSidebar({
   imageHistory,
   setImageHistory,
   handleImageFile,
+  fieldErrors,
 }: ArticleFormSidebarProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -188,19 +190,26 @@ export function ArticleFormSidebar({
       </GlassCard>
 
       {/* Category */}
-      <GlassCard title="Категорія">
-        <select
-          value={form.category_id}
-          onChange={(e) => setForm((f) => ({ ...f, category_id: e.target.value }))}
-          className={inputCls}
-        >
-          <option value="">Без категорії</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.locales?.["uk"]?.name || "Без назви"}
-            </option>
-          ))}
-        </select>
+      <GlassCard title="Категорія *">
+        <div data-field-error="category_id" className={fieldErrors?.category_id ? "has-error" : ""}>
+          <select
+            value={form.category_id}
+            onChange={(e) => setForm((f) => ({ ...f, category_id: e.target.value }))}
+            className={`${inputCls} ${fieldErrors?.category_id ? "border-red-500 ring-2 ring-red-500/20 bg-red-50/20 dark:bg-red-950/10" : ""}`}
+          >
+            <option value="">Оберіть категорію новини...</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.locales?.["uk"]?.name || "Без назви"}
+              </option>
+            ))}
+          </select>
+          {fieldErrors?.category_id && (
+            <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
+              <span>⚠</span> {fieldErrors.category_id}
+            </p>
+          )}
+        </div>
       </GlassCard>
 
       {/* Tags */}
