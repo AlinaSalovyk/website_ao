@@ -225,6 +225,11 @@ func (h *NewsHandler) HandlePublicServeAttachment(w http.ResponseWriter, r *http
 		return
 	}
 
+	if h.resolver != nil {
+		http.Redirect(w, r, h.resolver.Resolve(storageKey), http.StatusFound)
+		return
+	}
+
 	jsonError(w, "not_implemented", "Attachment serving for remote storage drivers is not configured", http.StatusNotImplemented)
 }
 
@@ -277,6 +282,11 @@ func (h *NewsHandler) HandlePublicServeGalleryImage(w http.ResponseWriter, r *ht
 		cleanKey := strings.TrimPrefix(filepath.ToSlash(storageKey), "/")
 		filePath := filepath.Join(localStorage.BaseDir(), filepath.FromSlash(cleanKey))
 		http.ServeFile(w, r, filePath)
+		return
+	}
+
+	if h.resolver != nil {
+		http.Redirect(w, r, h.resolver.Resolve(storageKey), http.StatusFound)
 		return
 	}
 

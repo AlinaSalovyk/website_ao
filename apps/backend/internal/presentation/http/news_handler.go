@@ -142,28 +142,31 @@ func (h *NewsHandler) resolveArticleMedia(article *domain.NewsArticle) {
 	}
 }
 
-// resolveGalleryImageURLs fills the URL, ThumbnailURL, and LargeURL fields of a gallery image
-// using the canonical /api/v1/news/{newsID}/gallery/{imageID}/file route.
+// resolveGalleryImageURLs fills the URL, ThumbnailURL, and LargeURL fields of a gallery image.
+// When a public media URL resolver (e.g. Cloudflare R2) is configured, it resolves the storage key directly.
 func (h *NewsHandler) resolveGalleryImageURLs(img *domain.NewsGalleryImage, newsID string) {
-	fileRoute := fmt.Sprintf("/api/v1/news/%s/gallery/%s/file", newsID, img.ID)
+	storageKey := fmt.Sprintf("news/articles/%s/gallery/%s", newsID, img.StoredName)
 	if h.resolver != nil {
-		img.URL = h.resolver.Resolve(fileRoute)
-		img.ThumbnailURL = h.resolver.Resolve(fileRoute + "?variant=thumb")
-		img.LargeURL = h.resolver.Resolve(fileRoute + "?variant=large")
+		resolved := h.resolver.Resolve(storageKey)
+		img.URL = resolved
+		img.ThumbnailURL = resolved
+		img.LargeURL = resolved
 	} else {
+		fileRoute := fmt.Sprintf("/api/v1/news/%s/gallery/%s/file", newsID, img.ID)
 		img.URL = fileRoute
 		img.ThumbnailURL = fileRoute + "?variant=thumb"
 		img.LargeURL = fileRoute + "?variant=large"
 	}
 }
 
-// resolveAttachmentURL fills the URL field of an attachment
-// using the canonical /api/v1/news/{newsID}/attachments/{attID}/file route.
+// resolveAttachmentURL fills the URL field of an attachment.
+// When a public media URL resolver is configured, it resolves the storage key directly.
 func (h *NewsHandler) resolveAttachmentURL(att *domain.NewsAttachment, newsID string) {
-	fileRoute := fmt.Sprintf("/api/v1/news/%s/attachments/%s/file", newsID, att.ID)
+	storageKey := fmt.Sprintf("news/articles/%s/attachments/%s", newsID, att.StoredName)
 	if h.resolver != nil {
-		att.URL = h.resolver.Resolve(fileRoute)
+		att.URL = h.resolver.Resolve(storageKey)
 	} else {
+		fileRoute := fmt.Sprintf("/api/v1/news/%s/attachments/%s/file", newsID, att.ID)
 		att.URL = fileRoute
 	}
 }
