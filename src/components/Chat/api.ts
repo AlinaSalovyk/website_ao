@@ -4,7 +4,16 @@
  * Handles SSE streaming (streamChat), feedback submission, and suggestions.
  * Base URL is set via the PUBLIC_API_URL env variable.
  */
-const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8080";
+const getApiBase = (): string => {
+  if (typeof process !== "undefined" && process.env?.PUBLIC_API_URL) {
+    return process.env.PUBLIC_API_URL;
+  }
+  if (typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_API_URL) {
+    return import.meta.env.PUBLIC_API_URL as string;
+  }
+  return "http://localhost:8280";
+};
+const API_BASE = getApiBase();
 
 /** Supported UI and chat languages. */
 export type Language = "uk" | "en";

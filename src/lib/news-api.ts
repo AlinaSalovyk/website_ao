@@ -143,10 +143,15 @@ export interface NewsListParams {
 
 // ─── Client ───────────────────────────────────────────────────────────────────
 
-const getBase = (): string =>
-  typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_API_URL
-    ? (import.meta.env.PUBLIC_API_URL as string)
-    : "http://localhost:8280";
+const getBase = (): string => {
+  if (typeof process !== "undefined" && process.env?.PUBLIC_API_URL) {
+    return process.env.PUBLIC_API_URL;
+  }
+  if (typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_API_URL) {
+    return import.meta.env.PUBLIC_API_URL as string;
+  }
+  return "http://localhost:8280";
+};
 
 /**
  * Fetch a paginated list of published news articles.
