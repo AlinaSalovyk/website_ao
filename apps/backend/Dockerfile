@@ -8,7 +8,7 @@ RUN go mod download
 
 # Build the binary
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+RUN CGO_ENABLED=0 GOOS=linux \
     go build -ldflags="-w -s" -o /app/server ./cmd/api
 
 # Stage 2: Minimal runtime image
