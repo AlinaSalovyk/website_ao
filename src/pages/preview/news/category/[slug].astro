@@ -33,28 +33,25 @@ let categories: any[] = [];
 
 try {
   const cookie = Astro.request.headers.get("cookie") || "";
-  let adminTokenVal = "";
-  if (cookie.includes("admin_token=")) {
-    adminTokenVal = cookie.split("admin_token=")[1].split(";")[0];
+  let tokenVal = "";
+  if (cookie.includes("admin_jwt=")) {
+    tokenVal = cookie.split("admin_jwt=")[1].split(";")[0];
+  } else if (cookie.includes("admin_token=")) {
+    tokenVal = cookie.split("admin_token=")[1].split(";")[0];
   }
   
-  const res = await fetch(`${API_BASE}${ADMIN_BASE}/news/drafts/${sessionId}`, {
-    headers: { 
-      Accept: "application/json",
-      Cookie: cookie,
-      "X-Admin-Token": adminTokenVal,
-      "Authorization": `Bearer ${adminTokenVal}`
-    },
-  });
+  const headers: Record<string, string> = { Accept: "application/json", Cookie: cookie };
+  if (tokenVal) {
+    headers["Authorization"] = `Bearer ${tokenVal}`;
+    headers["X-Admin-Token"] = tokenVal;
+  }
 
-  if (!res.ok) {
-    if (res.status === 401 || res.status === 403) {
-      return new Response("Unauthorized to view preview", { status: 401 });
-    }
-    console.error(`Preview category fetch failed: ${res.status}`);
-    category = { type: "category", data: null };
-  } else {
+  const res = await fetch(`${API_BASE}${ADMIN_BASE}/news/drafts/${sessionId}`, { headers });
+
+  if (res.ok) {
     category = await res.json();
+  } else {
+    category = { type: "category", data: null };
   }
 
   // Fetch all published categories using correct API v1 endpoint
