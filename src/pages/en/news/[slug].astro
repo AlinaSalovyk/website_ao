@@ -56,8 +56,9 @@ if (!slug) {
   return Astro.redirect("/en/news", 302);
 }
 
-const API_BASE =
-  import.meta.env.PUBLIC_API_URL ?? "http://localhost:8280";
+import { getSsrApiBase } from "@/lib/api-config";
+
+const API_BASE = getSsrApiBase();
 
 let article: NewsArticle | null = null;
 

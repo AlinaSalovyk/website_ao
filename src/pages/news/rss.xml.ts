@@ -10,6 +10,7 @@
 export const prerender = false;
 
 import type { APIRoute } from "astro";
+import { getSsrApiBase } from "../../lib/api-config";
 
 interface NewsLocale {
   title: string;
@@ -36,7 +37,7 @@ function escapeXml(str: string): string {
 }
 
 export const GET: APIRoute = async ({ site, url }) => {
-  const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8280";
+  const API_BASE = getSsrApiBase();
   const siteUrl = site?.toString()?.replace(/\/$/, "") ?? url.origin;
 
   let articles: NewsArticle[] = [];

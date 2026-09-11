@@ -26,8 +26,10 @@ function escapeXml(str: string): string {
     .replace(/>/g, "&gt;");
 }
 
+import { getSsrApiBase } from "@/lib/api-config";
+
 export const GET: APIRoute = async ({ site, url }) => {
-  const API_BASE = import.meta.env.PUBLIC_API_URL ?? "http://localhost:8280";
+  const API_BASE = getSsrApiBase();
   const siteUrl = site?.toString()?.replace(/\/$/, "") ?? url.origin;
 
   let entries: NewsSlugEntry[] = [];

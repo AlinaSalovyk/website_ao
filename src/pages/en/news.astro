@@ -16,8 +16,9 @@ import type { Locale } from "@/i18n";
 const locale: Locale = "en";
 const t = getTranslations(locale);
 
-const API_BASE =
-  import.meta.env.PUBLIC_API_URL ?? "http://localhost:8280";
+import { getSsrApiBase } from "@/lib/api-config";
+
+const API_BASE = getSsrApiBase();
 
 let initialArticles: unknown[] = [];
 let initialTotal = 0;
