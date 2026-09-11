@@ -3,7 +3,15 @@
  * Core API client with token management and auto-refresh.
  */
 
-export const API_BASE = import.meta.env?.PUBLIC_API_URL ?? "";
+const getRawApiBase = (): string => {
+  const url = (import.meta.env?.PUBLIC_API_URL ?? "").trim();
+  if (typeof window !== "undefined" && window.location.protocol === "https:" && url.startsWith("http://")) {
+    return "";
+  }
+  return url;
+};
+
+export const API_BASE = getRawApiBase();
 const rawAdminPath = (import.meta.env?.PUBLIC_ADMIN_PATH ?? "panel").trim();
 export const ADMIN_PATH = rawAdminPath.replace(/^\/?(admin-)?/, "");
 export const ADMIN_BASE = `/admin-${ADMIN_PATH}`;

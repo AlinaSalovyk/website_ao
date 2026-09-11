@@ -144,13 +144,16 @@ export interface NewsListParams {
 // ─── Client ───────────────────────────────────────────────────────────────────
 
 const getBase = (): string => {
+  let url = "";
   if (typeof process !== "undefined" && process.env?.PUBLIC_API_URL) {
-    return process.env.PUBLIC_API_URL;
+    url = process.env.PUBLIC_API_URL.trim();
+  } else if (typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_API_URL) {
+    url = (import.meta.env.PUBLIC_API_URL as string).trim();
   }
-  if (typeof import.meta !== "undefined" && import.meta.env?.PUBLIC_API_URL) {
-    return import.meta.env.PUBLIC_API_URL as string;
+  if (typeof window !== "undefined" && window.location.protocol === "https:" && url.startsWith("http://")) {
+    return "";
   }
-  return "http://localhost:8280";
+  return url || (typeof window !== "undefined" ? "" : "http://localhost:8280");
 };
 
 /**
