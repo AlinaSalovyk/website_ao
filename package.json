@@ -13,6 +13,7 @@
     "@astrojs/node": "^9.5.5",
     "@astrojs/react": "^4.4.2",
     "@astrojs/sitemap": "^3.7.0",
+    "@astrojs/vercel": "^11.0.10",
     "@fontsource/cormorant-garamond": "^5.2.11",
     "@fontsource/montserrat": "^5.2.8",
     "@radix-ui/react-accordion": "^1.2.12",
