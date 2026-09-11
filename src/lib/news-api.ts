@@ -324,6 +324,8 @@ export function getFullImageUrl(url: string | undefined): string {
       formatted = `/news-images/category-images/${formatted}`;
     } else if (formatted.startsWith("art-") || formatted.startsWith("news-")) {
       formatted = `/news-images/news-images/${formatted}`;
+    } else if (/\.(jpg|jpeg|png|webp|gif|svg)$/i.test(formatted)) {
+      formatted = `/news-images/news-images/${formatted}`;
     } else {
       formatted = `/${formatted}`;
     }

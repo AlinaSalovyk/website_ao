@@ -39,11 +39,11 @@ export const LivePreviewClient: React.FC<LivePreviewClientProps> = ({
 
   const handleUpdate = useCallback(
     (msg: any) => {
-      // The editor wraps the payload as { type, data }
       if (msg && msg.type === type && msg.data) {
         setData(msg.data);
-      } else if (msg && !msg.type) {
-        // Fallback: unwrapped payload (backwards compatibility)
+      } else if (msg && msg.data) {
+        setData(msg.data);
+      } else if (msg) {
         setData(msg);
       }
     },

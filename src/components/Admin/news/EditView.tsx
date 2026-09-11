@@ -53,6 +53,7 @@ export const EditView = ({
   } = useArticleForm(articleId, categories, onSaved);
 
   const [activeSectionTab, setActiveSectionTab] = useState<"main" | "media" | "files" | "seo" | "all">("main");
+  const [managedGalleryCount, setManagedGalleryCount] = useState<number | null>(null);
 
   // If a field error occurs during save, switch to the section containing the error
   useEffect(() => {
@@ -65,7 +66,7 @@ export const EditView = ({
 
   if (loading) return <TabLoader />;
 
-  const galleryCount = (form.gallery?.length || 0) + pendingPhotos.length;
+  const galleryCount = managedGalleryCount !== null ? managedGalleryCount : ((form.gallery?.length || 0) + pendingPhotos.length);
 
   return (
     <div className="flex flex-col gap-6 relative">
@@ -247,6 +248,7 @@ export const EditView = ({
                   articleId={articleId}
                   pendingPhotos={pendingPhotos}
                   onPendingPhotosChange={setPendingPhotos}
+                  onGalleryCountChange={setManagedGalleryCount}
                 />
               </div>
             )}

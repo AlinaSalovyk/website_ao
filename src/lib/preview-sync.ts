@@ -48,7 +48,12 @@ export function usePreviewSync<T>(sessionId: string, data: T, enabled: boolean =
       iframe.contentWindow.postMessage(payload, window.location.origin);
     }
 
-    // 3. Debounced save to Redis backend
+    // 3. Instant sync via localStorage for cross-tab initialization
+    try {
+      localStorage.setItem(`preview:${sessionId}`, JSON.stringify(payload));
+    } catch (err) {}
+
+    // 4. Debounced save to Redis backend
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);
     }
@@ -117,24 +122,49 @@ export function useLivePreviewUpdater<T>(
   useEffect(() => {
     if (!sessionId) return;
 
-    // Handler for messages
+    // 1. Check localStorage on mount for initial state (instant sync on tab load)
+    try {
+      const stored = localStorage.getItem(`preview:${sessionId}`);
+      if (stored) {
+        const parsed = JSON.parse(stored) as PreviewMessage<T>;
+        if (parsed && parsed.type === "preview_update" && parsed.data) {
+          onUpdate(parsed.data);
+        }
+      }
+    } catch (e) {}
+
+    // Handler for messages (works for postMessage and BroadcastChannel)
     const handleMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin) return;
+      if (event.origin && event.origin !== window.location.origin) return;
       const msg = event.data as PreviewMessage<T>;
       if (msg && msg.type === "preview_update" && msg.sessionId === sessionId) {
         onUpdate(msg.data);
       }
     };
 
-    // 1. Listen for iframe postMessage
-    window.addEventListener("message", handleMessage);
+    // Handler for cross-tab localStorage updates
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === `preview:${sessionId}` && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue) as PreviewMessage<T>;
+          if (parsed && parsed.type === "preview_update" && parsed.data) {
+            onUpdate(parsed.data);
+          }
+        } catch (err) {}
+      }
+    };
 
-    // 2. Listen for cross-tab BroadcastChannel
+    // 2. Listen for iframe postMessage & localStorage storage events
+    window.addEventListener("message", handleMessage);
+    window.addEventListener("storage", handleStorage);
+
+    // 3. Listen for cross-tab BroadcastChannel
     const channel = new BroadcastChannel(`preview:${sessionId}`);
     channel.onmessage = handleMessage;
 
     return () => {
       window.removeEventListener("message", handleMessage);
+      window.removeEventListener("storage", handleStorage);
       channel.close();
     };
   }, [sessionId, onUpdate]);
