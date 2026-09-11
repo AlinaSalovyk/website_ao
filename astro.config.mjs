@@ -17,7 +17,7 @@ export default defineConfig({
   // server mode: most pages use `export const prerender = true` (static),
   // news pages use `export const prerender = false` (SSR on every request).
   output: 'server',
-  adapter: isVercel ? vercel() : node({ mode: 'standalone' }),
+  adapter: isVercel ? vercel({ runtime: 'nodejs20.x' }) : node({ mode: 'standalone' }),
   site: 'https://www.itb.oa.edu.ua',
   vite: {
     plugins: [tailwindcss()],

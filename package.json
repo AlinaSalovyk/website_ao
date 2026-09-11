@@ -2,6 +2,9 @@
   "name": "website_ao",
   "type": "module",
   "version": "0.0.1",
+  "engines": {
+    "node": "^20.0.0"
+  },
   "scripts": {
     "clean:vite": "node -e \"const fs=require('fs');fs.rmSync('node_modules/.vite',{ recursive: true, force: true });\"",
     "dev": "astro dev",
