@@ -15,6 +15,7 @@ import {
 } from "../../services/news.api";
 import { 
   formatFileSize, 
+  getFullImageUrl,
   getNewsAttachmentFileUrl, 
   getNewsAttachmentDownloadUrl, 
   canPreviewAttachment 
