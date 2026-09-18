@@ -1,127 +1,87 @@
-import { ArrowRightIcon, ArrowUpRight } from "lucide-react";
-import { motion } from "motion/react";
-import type { JSX } from "react";
+import { ArrowRightIcon } from "lucide-react";
+import { useEffect, useState, type JSX } from "react";
 
 import { ScrollReveal } from "@/components/effects/ScrollReveal";
-import type { Article } from "@/data/articles";
-import { formatArticleDate, getLatestArticles } from "@/data/articles";
-import type { Locale, Translations } from "@/i18n";
+import type { Locale } from "@/i18n";
 import { getLocalizedPath, getTranslations } from "@/i18n";
-import { cn } from "@/lib/utils";
+import {
+  fetchNewsList,
+  hasEnglishTranslation,
+  type NewsArticle,
+} from "@/lib/news-api";
+import { ArticleCard } from "@/components/news/cards/ArticleCard";
+import { FeaturedCard } from "@/components/news/cards/FeaturedCard";
 
-const BentoCard = ({
-  article,
-  index,
-  className,
-  isLarge = false,
-  t,
+export const NewsAndEvents = ({
   locale,
+  initialArticles = [],
 }: {
-  article: Article;
-  index: number;
-  className?: string;
-  isLarge?: boolean;
-  t: Translations;
-  locale: Locale;
-}) => {
-  return (
-    <div className={cn("w-full h-full flex flex-col", className)}>
-      <ScrollReveal
-        variant="fade-up"
-        delay={(index + 1) * 100}
-        className="w-full h-full flex-1"
-      >
-        <motion.a
-          href={getLocalizedPath(`/news/${article.slug}`, locale)}
-          aria-label={`${t.home.news.readMore}: ${article.title[locale]}`}
-          whileHover="hover"
-          className={cn(
-            "relative flex flex-col justify-end w-full h-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden group cursor-pointer border border-black/5 flex-1 shadow-xl bg-gray-900 isolate",
-            isLarge
-              ? "min-h-[280px] md:min-h-full"
-              : "min-h-[220px] md:min-h-full",
-          )}
-        >
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-
-          {/* Content */}
-          <div className="relative z-20 p-5 md:p-8 flex flex-col h-full w-full justify-between">
-            {/* Top Info */}
-            <div className="flex flex-wrap items-center justify-between gap-3 w-full mb-auto mt-1 md:mt-2">
-              <div className="backdrop-blur-md bg-white/10 border border-white/20 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full shrink-0">
-                <span className="text-white text-[9px] md:text-[10px] lg:text-xs font-semibold tracking-wider uppercase">
-                  {t.home.news.weeklyBadge}
-                </span>
-              </div>
-              <div className="backdrop-blur-md bg-black/30 px-2.5 py-1 md:px-3 md:py-1.5 rounded-full flex items-center gap-1.5 md:gap-2 shrink-0">
-                <time
-                  dateTime={article.date}
-                  className="text-white/80 text-[9px] md:text-[10px] lg:text-xs font-medium tracking-wider uppercase"
-                >
-                  {formatArticleDate(article.date, locale)}
-                </time>
-              </div>
-            </div>
-
-            {/* Bottom Info */}
-            <div className="flex flex-col gap-2 md:gap-4 mt-6 md:mt-8">
-              <h3
-                className={cn(
-                  "font-semibold text-white tracking-tight text-balance",
-                  isLarge
-                    ? "text-xl sm:text-3xl md:text-4xl lg:text-5xl leading-tight"
-                    : "text-lg md:text-2xl lg:text-3xl leading-snug",
-                )}
-              >
-                {article.title[locale]}
-              </h3>
-
-              <div className="flex items-center gap-2.5 md:gap-3 mt-1 md:mt-4">
-                <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white flex items-center justify-center shrink-0 group-hover:bg-blue-600 transition-colors duration-300">
-                  <ArrowUpRight className="w-4 h-4 md:w-5 md:h-5 text-black group-hover:text-white transition-colors" />
-                </div>
-                <span className="text-sm md:text-base font-medium text-white/90 group-hover:text-white relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-white group-hover:after:w-full after:transition-all after:duration-300">
-                  {t.home.news.readMore}
-                </span>
-              </div>
-            </div>
-          </div>
-        </motion.a>
-      </ScrollReveal>
-    </div>
-  );
-};
-
-export const NewsAndEvents = ({ locale }: { locale?: Locale }): JSX.Element => {
+  locale?: Locale;
+  initialArticles?: NewsArticle[];
+}): JSX.Element => {
   const t = getTranslations(locale);
   const currentLocale = locale ?? "uk";
-  const articles = getLatestArticles(4);
+  const [articles, setArticles] = useState<NewsArticle[]>(initialArticles);
+  const [loading, setLoading] = useState(initialArticles.length === 0);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      if (initialArticles.length > 0) {
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
+      try {
+        const data = await fetchNewsList({
+          locale: currentLocale,
+          status: "published",
+          limit: 4,
+        });
+        let fetched = data.articles ?? [];
+        if (currentLocale === "en") {
+          fetched = fetched.filter((a) => hasEnglishTranslation(a));
+        }
+        if (isMounted) {
+          setArticles(fetched);
+        }
+      } catch (e) {
+        console.error("Failed to load homepage news", e);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, [currentLocale, initialArticles.length]);
+
   return (
     <section
       id="news"
-      className="w-full bg-pure-white py-16 md:py-24 relative overflow-hidden"
+      className="w-full bg-slate-50 py-16 md:py-24 relative overflow-hidden"
     >
       {/* Background creative flares */}
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-blue-50 rounded-full blur-[80px] md:blur-[120px] -translate-x-1/2 translate-y-1/2 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] md:w-[600px] md:h-[600px] bg-blue-100/50 rounded-full blur-[80px] md:blur-[120px] -translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
-      <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 relative z-10">
+      <div className="w-full max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-8 relative z-10">
         {/* Header */}
         <ScrollReveal variant="fade-up">
-          <header className="flex flex-col md:flex-row items-start md:items-end justify-between w-full mb-10 md:mb-16 gap-6 md:gap-8">
+          <header className="flex flex-col md:flex-row items-start md:items-end justify-between w-full mb-10 md:mb-14 gap-6 md:gap-8">
             <div className="flex flex-col items-start gap-3 w-full md:w-auto">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold tracking-wide">
-                <span className="w-1.5 h-1.5 rounded-full bg-gray-700 animate-pulse"></span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold tracking-wide border border-blue-200/80">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-pulse"></span>
                 {t.home.news.badge}
               </div>
-              <h2 className="font-semibold text-pure-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1]">
+              <h2 className="font-semibold text-slate-900 text-3xl sm:text-4xl md:text-5xl lg:text-6xl tracking-tight leading-[1.1]">
                 {t.home.news.heading}
               </h2>
             </div>
 
             <a
               href={getLocalizedPath("/news", currentLocale)}
-              className="group flex items-center justify-center gap-3 bg-pure-black text-white px-6 py-3.5 rounded-full font-medium text-sm md:text-base hover:bg-gray-800 transition-colors duration-300 w-full md:w-max"
+              className="group flex items-center justify-center gap-3 bg-slate-900 text-white px-6 py-3.5 rounded-full font-medium text-sm md:text-base hover:bg-blue-700 transition-colors duration-300 w-full md:w-max shadow-xs"
             >
               {t.home.news.allNews}
               <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -129,45 +89,36 @@ export const NewsAndEvents = ({ locale }: { locale?: Locale }): JSX.Element => {
           </header>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 lg:gap-6 auto-rows-auto md:auto-rows-[350px]">
-          {articles[0] && (
-            <BentoCard
-              article={articles[0]}
-              index={0}
-              isLarge={true}
-              className="col-span-1 md:col-span-2 md:row-span-2"
-              t={t}
-              locale={currentLocale}
-            />
-          )}
-          {articles[1] && (
-            <BentoCard
-              article={articles[1]}
-              index={1}
-              className="col-span-1 row-span-1"
-              t={t}
-              locale={currentLocale}
-            />
-          )}
-          {articles[2] && (
-            <BentoCard
-              article={articles[2]}
-              index={2}
-              className="col-span-1 row-span-1"
-              t={t}
-              locale={currentLocale}
-            />
-          )}
-          {articles[3] && (
-            <BentoCard
-              article={articles[3]}
-              index={3}
-              className="col-span-1 md:col-span-2 lg:col-span-3 row-span-1"
-              t={t}
-              locale={currentLocale}
-            />
-          )}
-        </div>
+        {/* Loading Spinner */}
+        {loading && (
+          <div aria-busy="true" className="flex justify-center py-20">
+            <div className="w-9 h-9 border-2 border-slate-300 border-t-blue-600 rounded-full animate-spin" />
+          </div>
+        )}
+
+        {!loading && articles.length > 0 && (
+          <div className="flex flex-col gap-6 md:gap-8">
+            {articles[0] && (
+              <FeaturedCard
+                article={articles[0]}
+                locale={currentLocale}
+              />
+            )}
+
+            {articles.length > 1 && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {articles.slice(1, 4).map((article, idx) => (
+                  <ArticleCard
+                    key={article.id}
+                    article={article}
+                    locale={currentLocale}
+                    index={idx + 1}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
