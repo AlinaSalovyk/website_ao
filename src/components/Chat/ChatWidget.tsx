@@ -21,9 +21,9 @@ interface RateLimitState {
 }
 
 const WELCOME_UA =
-  "Вітаю! 👋 Я офіційний асистент кафедри. Я можу відповісти на ваші запитання про вступ, спеціальності, вартість навчання, необхідні документи та багато іншого. Чим можу допомогти?";
+  "Вітаю! 👋 Я офіційний асистент інституту. Я можу відповісти на ваші запитання про вступ, спеціальності, вартість навчання, необхідні документи та багато іншого. Чим можу допомогти?";
 const WELCOME_EN =
-  "Welcome! 👋 I'm the official department assistant. I can answer your questions about admission, specialties, tuition costs, required documents, and more. How can I help you?";
+  "Welcome! 👋 I'm the official institute assistant. I can answer your questions about admission, specialties, tuition costs, required documents, and more. How can I help you?";
 
 /**
  * Root floating chat widget mounted on every public page.
@@ -38,6 +38,7 @@ const WELCOME_EN =
  * - Suggestion chips (3 questions) before the first message
  * - New conversation reset (clears session + history)
  * - Feedback forwarded from {@link MessageBubble} to {@link submitFeedback}
+ * - AI disclaimer notice rendered in MessageInput ("Штучний інтелект може помилятися")
  *
  * @example
  * // In an Astro page:
@@ -333,7 +334,7 @@ export default function ChatWidget() {
             </div>
             <div>
               <div className="cb-header__title">
-                {language === "uk" ? "Асистент кафедри" : "Department Assistant"}
+                {language === "uk" ? "Асистент інституту" : "Institute Assistant"}
               </div>
               <div className="cb-header__subtitle">
                 <span className="cb-status-dot" aria-hidden="true" />

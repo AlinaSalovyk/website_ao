@@ -30,6 +30,15 @@
 }
 
 /* ── Floating Action Button ─────────────────────────────────── */
+body.lg-on .cb-fab,
+body.lg-on .cb-panel,
+.lg-on .cb-fab,
+.lg-on .cb-panel {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
 .cb-fab {
   position: fixed;
   bottom: 28px;
