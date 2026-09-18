@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { CursorEffects } from "@/components/effects/CursorEffects";
 import ChatWidget from "@/components/Chat/ChatWidget";
+import { Toaster } from "@/components/ui/sonner";
 import {
   DEFAULT_LOCALE,
   OG_LOCALES,
@@ -19,6 +20,7 @@ interface Props {
   locale?: Locale;
   jsonLdExtra?: Record<string, unknown>;
   noIndex?: boolean;
+  showChatWidget?: boolean;
 }
 
 const locale = (Astro.props.locale ?? DEFAULT_LOCALE) as Locale;
@@ -32,6 +34,7 @@ const {
   canonicalUrl,
   jsonLdExtra,
   noIndex = false,
+  showChatWidget = true,
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString()?.replace(/\/$/, "") ?? "";
@@ -163,7 +166,9 @@ const alternateUrl = toAbsoluteUrl(
     </div>
     <CursorEffects client:idle />
     <!-- AI Chat Assistant Widget (Global) -->
-    <ChatWidget client:load />
+    {showChatWidget && <ChatWidget client:load />}
+    <!-- Global Toast Notifications -->
+    <Toaster richColors position="top-right" client:load />
   </body>
 </html>
 

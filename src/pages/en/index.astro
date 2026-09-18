@@ -12,10 +12,28 @@ import { LazyIntroAnimation } from "@/components/effects/LazyIntroAnimation";
 import { getTranslations } from "@/i18n";
 import type { Locale } from "@/i18n";
 import { getDepartments } from "@/routes/departments/departments-programs";
+import { getSsrApiBase } from "@/lib/api-config";
+import { hasEnglishTranslation } from "@/lib/news-api";
 
 const locale: Locale = "en";
 const t = getTranslations(locale);
 const siteUrl = Astro.site?.toString()?.replace(/\/$/, "") ?? Astro.url.origin;
+
+const API_BASE = getSsrApiBase();
+let initialArticles: any[] = [];
+
+try {
+  const res = await fetch(`${API_BASE}/api/v1/news?locale=${locale}&status=published&limit=6`, {
+    headers: { Accept: "application/json" },
+  });
+  if (res.ok) {
+    const data = await res.json();
+    const fetched = data.articles ?? [];
+    initialArticles = fetched.filter((a: any) => hasEnglishTranslation(a));
+  }
+} catch (e) {
+  console.error("Failed to fetch EN index news SSR", e);
+}
 
 const coursesJsonLd = getDepartments(t).flatMap((dept) =>
   dept.programs.flatMap((level) =>
@@ -95,7 +113,7 @@ const organizationJsonLd = {
         </section>
         <InstituteLeadership client:visible locale={locale} />
         <InnovativeEducation client:visible locale={locale} />
-        <NewsAndEvents client:visible locale={locale} />
+        <NewsAndEvents client:visible locale={locale} initialArticles={initialArticles} />
         <Footer client:visible locale={locale} />
       </main>
     </div>

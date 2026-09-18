@@ -177,6 +177,9 @@ const articleJsonLd = {
     "@id": articleUrl,
   },
 };
+import { hasEnglishTranslation } from "@/lib/news-api";
+
+const hasEng = hasEnglishTranslation(article);
 ---
 
 <Layout
@@ -190,9 +193,11 @@ const articleJsonLd = {
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header
         client:load
+        variant="light"
         headerPosition="absolute"
         locale={locale}
         currentPath={Astro.url.pathname}
+        hasEnglishTranslation={hasEng}
       />
       <main id="main-content" class="w-full bg-slate-50 text-slate-900">
         <ArticlePage client:visible article={article} locale={locale} />

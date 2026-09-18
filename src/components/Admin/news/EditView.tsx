@@ -10,6 +10,7 @@ import { ArticleFormSidebar } from "./components/ArticleFormSidebar";
 import { ArticleAttachmentsManager } from "./components/ArticleAttachmentsManager";
 import { ArticleGalleryManager } from "./components/ArticleGalleryManager";
 
+import { fetchAdminNewsGallery } from "../services/news.api";
 import { ARTICLE_EDIT_GUIDE } from "./constants/guides";
 
 export const EditView = ({
@@ -23,14 +24,16 @@ export const EditView = ({
   categories: AdminNewsCategory[];
   tags: AdminNewsTag[];
   onBack: () => void;
-  onSaved: () => void;
+  onSaved: (savedId?: string | null) => void;
 }): JSX.Element => {
   const {
+    activeArticleId,
     form,
     setForm,
     activeLocale,
     setActiveLocale,
     fieldErrors,
+    clearFieldError,
     loading,
     saving,
     autoSaveStatus,
@@ -55,6 +58,28 @@ export const EditView = ({
   const [activeSectionTab, setActiveSectionTab] = useState<"main" | "media" | "files" | "seo" | "all">("main");
   const [managedGalleryCount, setManagedGalleryCount] = useState<number | null>(null);
 
+  // Automatically pre-fetch gallery count on page mount so tab badge shows accurate count immediately
+  useEffect(() => {
+    if (!activeArticleId || activeArticleId === "temp-draft") {
+      setManagedGalleryCount(0);
+      return;
+    }
+
+    if (currentArticle?.gallery_images && Array.isArray(currentArticle.gallery_images)) {
+      setManagedGalleryCount(currentArticle.gallery_images.length);
+    } else if (currentArticle?.gallery && Array.isArray(currentArticle.gallery)) {
+      setManagedGalleryCount(currentArticle.gallery.length);
+    }
+
+    fetchAdminNewsGallery(activeArticleId)
+      .then((items) => {
+        if (Array.isArray(items)) {
+          setManagedGalleryCount(items.length);
+        }
+      })
+      .catch(() => {});
+  }, [activeArticleId, currentArticle]);
+
   // If a field error occurs during save, switch to the section containing the error
   useEffect(() => {
     if (fieldErrors && Object.keys(fieldErrors).length > 0) {
@@ -66,23 +91,20 @@ export const EditView = ({
 
   if (loading) return <TabLoader />;
 
-  const galleryCount = managedGalleryCount !== null ? managedGalleryCount : ((form.gallery?.length || 0) + pendingPhotos.length);
+  const initialCount = currentArticle?.gallery_images?.length ?? currentArticle?.gallery?.length ?? (form.gallery?.length || 0);
+  const galleryCount = (managedGalleryCount !== null ? managedGalleryCount : initialCount) + pendingPhotos.length;
 
   return (
     <div className="flex flex-col gap-6 relative">
       {/* ── STICKY TOP ACTION HEADER ── */}
       <ArticleHeader
-        articleId={articleId}
+        articleId={activeArticleId}
         form={form}
         setForm={setForm}
-        activeSectionTab={activeSectionTab}
-        setActiveSectionTab={setActiveSectionTab}
         activeLocale={activeLocale}
         saving={saving}
         isDirty={isDirty}
         autoSaveStatus={autoSaveStatus}
-        galleryCount={galleryCount}
-        pendingFilesCount={pendingFiles.length}
         sessionId={sessionId}
         onBack={onBack}
         onSave={handleSave}
@@ -193,9 +215,6 @@ export const EditView = ({
                             }`}
                         >
                           {l.toUpperCase()}
-                          {l === "en" && form.status === "published" && !form.locales.en.title.trim() && (
-                            <span className="ml-1 text-red-500 font-bold" title="Англійська версія обов'язкова для публікації">*</span>
-                          )}
                         </button>
                       ))}
                     </div>
@@ -210,11 +229,12 @@ export const EditView = ({
                         locales: { ...f.locales, [activeLocale]: updated },
                       }))
                     }
-                    articleId={articleId ?? undefined}
+                    articleId={activeArticleId ?? undefined}
                     isSlugManuallyEdited={isSlugManuallyEdited}
                     setIsSlugManuallyEdited={setIsSlugManuallyEdited}
                     onAutoFill={() => handleAutoFillSEO(activeLocale)}
                     fieldErrors={fieldErrors}
+                    onClearFieldError={clearFieldError}
                     showSEO={activeSectionTab === "all"}
                   />
                 </GlassCard>
@@ -245,7 +265,7 @@ export const EditView = ({
 
                 {/* Photo Gallery Manager */}
                 <ArticleGalleryManager
-                  articleId={articleId}
+                  articleId={activeArticleId}
                   pendingPhotos={pendingPhotos}
                   onPendingPhotosChange={setPendingPhotos}
                   onGalleryCountChange={setManagedGalleryCount}
@@ -258,7 +278,7 @@ export const EditView = ({
             {(activeSectionTab === "files" || activeSectionTab === "all") && (
               <div id="section-files" className="scroll-mt-20">
                 <ArticleAttachmentsManager
-                  articleId={articleId}
+                  articleId={activeArticleId}
                   pendingFiles={pendingFiles}
                   onPendingFilesChange={setPendingFiles}
                   onAttachmentsChange={(atts) => setForm((f) => ({ ...f, attachments: atts }))}

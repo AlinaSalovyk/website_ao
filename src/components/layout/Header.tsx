@@ -6,12 +6,13 @@ import {
   type JSX,
   type ReactNode,
 } from "react";
-
-import { Logo } from "@/components/icons/Logo";
-import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import type { Locale } from "@/i18n";
-import { getLocalizedPath, getTranslations } from "@/i18n";
+import { getTranslations } from "@/i18n";
 import { Menu } from "@/routes/Menu/Menu";
+import { HeaderBrand } from "./header/HeaderBrand";
+import { DesktopNav } from "./header/DesktopNav";
+import { HeaderActions } from "./header/HeaderActions";
+import { getHeaderNavigation } from "./header/headerNavigation";
 
 interface HeaderProps {
   variant?: "default" | "light";
@@ -20,9 +21,10 @@ interface HeaderProps {
   logoSrc?: string;
   locale?: Locale;
   currentPath?: string;
+  hasEnglishTranslation?: boolean;
 }
 
-const SCROLL_THRESHOLD = 50;
+const SCROLL_THRESHOLD = 40;
 
 export const Header = ({
   variant = "default",
@@ -31,20 +33,16 @@ export const Header = ({
   logoSrc,
   locale = "uk",
   currentPath = "/",
+  hasEnglishTranslation,
 }: HeaderProps): JSX.Element => {
   const t = getTranslations(locale);
-  const resolvedLogoSrc =
-    logoSrc ??
-    (locale === "en"
-      ? "/images/logo/logo-icon-eng-transparent.webp"
-      : "/images/logo/logo-icon.webp");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrollState, setScrollState] = useState<"top" | "hidden" | "visible">(
-    "top",
+    "top"
   );
   const lastScrollY = useRef(0);
 
-  // Lock body scroll when menu is open
+  // Lock body scroll when drawer menu is open
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = "hidden";
@@ -64,8 +62,8 @@ export const Header = ({
       currentScrollY <= SCROLL_THRESHOLD
         ? "top"
         : currentScrollY > lastScrollY.current
-          ? "hidden"
-          : "visible";
+        ? "hidden"
+        : "visible";
 
     setScrollState((prev) => (prev === next ? prev : next));
     lastScrollY.current = currentScrollY;
@@ -73,96 +71,90 @@ export const Header = ({
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll, { passive: true });
-
     lastScrollY.current = window.scrollY;
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
 
   const isSticky = scrollState !== "top";
-  const isRelativeHeader = headerPosition === "relative";
+  const isLight = variant === "light";
 
-  const positionClass = isSticky
-    ? isRelativeHeader
-      ? `sticky top-0 left-0 ${scrollState === "visible" ? "translate-y-0" : "-translate-y-full"}`
-      : `fixed top-0 left-0 ${scrollState === "visible" ? "translate-y-0" : "-translate-y-full"}`
-    : headerPosition;
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetHash?: string
+  ) => {
+    if (targetHash && typeof window !== "undefined") {
+      const isHome =
+        window.location.pathname === "/" ||
+        window.location.pathname === "/en/";
+      if (isHome) {
+        const el = document.querySelector(targetHash);
+        if (el) {
+          e.preventDefault();
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }
+    }
+  };
 
-  const bgClass = isSticky
-    ? variant === "light"
-      ? "bg-pure-white/80 backdrop-blur-md shadow-sm border-b border-gray-200"
-      : "bg-layout-bg/80 backdrop-blur-md shadow-sm"
-    : variant === "light"
-      ? "border-b border-gray-200"
-      : "";
+  const navDropdowns = getHeaderNavigation(t, locale);
 
   return (
     <>
       {isMenuOpen && (
         <Menu onClose={() => setIsMenuOpen(false)} locale={locale} />
       )}
-      <header
-        className={`${positionClass} ${bgClass} w-full flex justify-between items-center px-4 md:px-9 py-5 z-50 transition-transform duration-300`}
+
+      {/* Floating Header Capsule Outer Container */}
+      <div
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 pointer-events-none ${
+          scrollState === "hidden" ? "-translate-y-full" : "translate-y-0"
+        } ${isSticky ? "pt-3 px-3 sm:px-6" : "pt-0 px-0"}`}
       >
-        <button
-          onClick={() => setIsMenuOpen(true)}
-          className={`rounded-xl border p-2 flex items-center justify-center transition-colors cursor-pointer ${variant === "light" ? "border-pure-black/80 text-pure-black hover:bg-pure-black/10" : "border-white/80 text-white hover:bg-white/10"}`}
-          aria-label={t.common.openMenu}
+        <header
+          className={`pointer-events-auto transition-all duration-300 mx-auto flex items-center justify-between ${
+            isSticky
+              ? `w-full max-w-6xl rounded-full py-3 px-5 md:px-7 shadow-xl border backdrop-blur-xl ${
+                  isLight
+                    ? "bg-white/90 border-slate-200/90 text-slate-900 shadow-slate-200/50"
+                    : "bg-slate-950/90 border-white/15 text-white shadow-slate-950/40"
+                }`
+              : `w-full px-4 sm:px-8 md:px-10 py-5 sm:py-6 ${
+                  headerPosition === "absolute" ? "absolute top-0 left-0" : "relative"
+                } ${
+                  isLight
+                    ? "bg-white/90 border-b border-slate-200/80 text-slate-900"
+                    : "bg-transparent text-white"
+                }`
+          }`}
         >
-          <svg
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M5 8H19M5 12H19M5 16H19"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+          {/* Brand & Logo */}
+          <HeaderBrand
+            isLight={isLight}
+            isSticky={isSticky}
+            onOpenMenu={() => setIsMenuOpen(true)}
+            customLogo={customLogo}
+            logoSrc={logoSrc}
+            locale={locale}
+          />
 
-        <div className="flex justify-center flex-1 md:flex-none">
-          <a
-            aria-label={t.common.homePage}
-            href={getLocalizedPath("/", locale)}
-            className="inline-block cursor-pointer opacity-90 hover:opacity-100 transition-opacity"
-          >
-            {customLogo ??
-              (resolvedLogoSrc ? (
-                <img
-                  src={resolvedLogoSrc}
-                  alt={t.common.logoAlt}
-                  loading="eager"
-                  decoding="async"
-                  fetchPriority="high"
-                  width={80}
-                  height={80}
-                />
-              ) : (
-                <Logo className="h-7 sm:h-9 md:h-10 w-auto" />
-              ))}
-          </a>
-        </div>
+          {/* Desktop Navigation Links */}
+          <DesktopNav
+            navDropdowns={navDropdowns}
+            isLight={isLight}
+            currentPath={currentPath}
+            onNavClick={handleNavClick}
+          />
 
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher
+          {/* Actions & CTA */}
+          <HeaderActions
+            isLight={isLight}
             locale={locale}
             currentPath={currentPath}
-            variant={variant}
+            hasEnglishTranslation={hasEnglishTranslation}
           />
-          <a
-            href={getLocalizedPath("/contacts", locale)}
-            className={`rounded-[20px] border px-3 md:px-5 py-2 uppercase text-[11px] tracking-normal md:tracking-[0.15em] font-medium transition-colors cursor-pointer ${variant === "light" ? "border-pure-black/80 text-pure-black hover:bg-pure-black/10" : "border-white/80 bg-transparent text-white hover:bg-white/10"}`}
-          >
-            {t.common.contacts}
-          </a>
-        </div>
-      </header>
+        </header>
+      </div>
     </>
   );
 };

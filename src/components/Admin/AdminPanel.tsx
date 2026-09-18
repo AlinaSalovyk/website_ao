@@ -12,6 +12,7 @@ import { fetchMe } from "./services/general.api";
 import type { AdminUser, Role } from "./types/api.types";
 import { LoginScreen } from "./LoginScreen";
 import { Sidebar, type Tab } from "./Sidebar";
+import type { NewsSubTab } from "./news/components/NewsSubNav";
 import { OverviewTab } from "./tabs/OverviewTab";
 import { DocumentsTab } from "./tabs/DocumentsTab";
 import { NewsTab } from "./tabs/NewsTab";
@@ -21,9 +22,12 @@ import { AuditTab } from "./tabs/AuditTab";
 import { AdminsTab } from "./tabs/AdminsTab";
 import { RefreshCw } from "lucide-react";
 import { getSavedTheme, applyTheme, listenToSystemTheme } from "./theme";
+import { ConfirmProvider } from "./context/ConfirmContext";
 
 export default function AdminPanel() {
   const [tab, setTab] = useState<Tab>("overview");
+  const [newsSubTab, setNewsSubTab] = useState<NewsSubTab>("all");
+  const [createNewsTrigger, setCreateNewsTrigger] = useState<number>(0);
   const [authed, setAuthed] = useState(false);
   const [ready, setReady] = useState(false);
   const [user, setUser] = useState<AdminUser | null>(null);
@@ -133,48 +137,61 @@ export default function AdminPanel() {
   const role: Role = user?.role || "super_admin";
 
   return (
-    <div className="flex min-h-screen bg-background font-[Roboto,system-ui,sans-serif] text-foreground antialiased transition-colors duration-200">
-      <Toaster
-        toastOptions={{
-          style: {
-            background: "var(--card)",
-            color: "var(--card-foreground)",
-            borderColor: "var(--border)",
-          },
-        }}
-      />
+    <ConfirmProvider>
+      <div className="flex min-h-screen bg-background font-[Roboto,system-ui,sans-serif] text-foreground antialiased transition-colors duration-200">
+        <Toaster
+          toastOptions={{
+            style: {
+              background: "var(--card)",
+              color: "var(--card-foreground)",
+              borderColor: "var(--border)",
+            },
+          }}
+        />
 
-      <Sidebar
-        active={tab}
-        onChange={setTab}
-        onLogout={handleLogout}
-        role={role}
-        userEmail={user?.email}
-      />
+        <Sidebar
+          active={tab}
+          onChange={setTab}
+          onLogout={handleLogout}
+          role={role}
+          userEmail={user?.email}
+          newsSubTab={newsSubTab}
+          onSelectNewsSubTab={(sub) => {
+            setTab("news");
+            setNewsSubTab(sub);
+          }}
+          onCreateArticle={() => {
+            setTab("news");
+            setCreateNewsTrigger((prev) => prev + 1);
+          }}
+        />
 
-      {/* Main content area */}
-      <main className="ml-[220px] flex-1 overflow-y-auto p-6 md:ml-[240px] md:p-8">
-        <div className="mx-auto max-w-[1400px]">
-          {/* Animated tab content transitions */}
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={tab}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-            >
-              {tab === "overview" && (role === "super_admin" || role === "chatbot_admin") && <OverviewTab />}
-              {tab === "documents" && (role === "super_admin" || role === "chatbot_admin") && <DocumentsTab />}
-              {tab === "news" && (role === "super_admin" || role === "news_editor") && <NewsTab />}
-              {tab === "queries" && (role === "super_admin" || role === "chatbot_admin") && <QueriesTab />}
-              {tab === "prompts" && (role === "super_admin" || role === "chatbot_admin") && <PromptsTab />}
-              {tab === "audit" && role === "super_admin" && <AuditTab />}
-              {tab === "admins" && role === "super_admin" && <AdminsTab currentUser={user} />}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </main>
-    </div>
+        {/* Main content area */}
+        <main className="ml-[220px] flex-1 overflow-y-auto p-6 md:ml-[240px] md:p-8">
+          <div className="mx-auto max-w-[1400px]">
+            {/* Animated tab content transitions */}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={tab}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25 }}
+              >
+                {tab === "overview" && (role === "super_admin" || role === "chatbot_admin") && <OverviewTab />}
+                {tab === "documents" && (role === "super_admin" || role === "chatbot_admin") && <DocumentsTab />}
+                {tab === "news" && (role === "super_admin" || role === "news_editor") && (
+                  <NewsTab newsSubTab={newsSubTab} createNewsTrigger={createNewsTrigger} />
+                )}
+                {tab === "queries" && (role === "super_admin" || role === "chatbot_admin") && <QueriesTab />}
+                {tab === "prompts" && (role === "super_admin" || role === "chatbot_admin") && <PromptsTab />}
+                {tab === "audit" && role === "super_admin" && <AuditTab />}
+                {tab === "admins" && role === "super_admin" && <AdminsTab currentUser={user} />}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </main>
+      </div>
+    </ConfirmProvider>
   );
 }

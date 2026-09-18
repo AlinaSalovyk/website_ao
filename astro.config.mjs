@@ -23,6 +23,7 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: {
       proxy: {
+        '/api': 'http://localhost:8280',
         '/news-images': 'http://localhost:8280',
         '/news-videos': 'http://localhost:8280',
       },

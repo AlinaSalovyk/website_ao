@@ -188,6 +188,13 @@ export const en: Translations = {
       weeklyBadge: "NEWS OF THE WEEK",
       readTime: "MIN READ",
       readMore: "Learn more",
+      fallbackCover: {
+        institute: "ITB INSTITUTE",
+        itb: "ITB",
+        official: "Official Publications",
+        actual: "Featured",
+        newsAndEvents: "News & Events",
+      },
     },
   },
 
@@ -220,6 +227,8 @@ export const en: Translations = {
     photoGallery: "Photo Gallery",
     videoMaterials: "Video Materials",
     relatedNews: "Related Articles",
+    latestArticles: "Latest Articles",
+    highlights: "Highlights",
   },
 
   institute: {
@@ -854,5 +863,14 @@ export const en: Translations = {
     streetAddress: "2 Seminarska St.",
     city: "Ostroh",
     parentOrgName: "National University of Ostroh Academy",
+  },
+
+  notFound: {
+    title: "404 — Page Not Found | Institute of IT and Business",
+    subtitle: "Page Not Found",
+    description: "The requested page does not exist or has been moved.",
+    ghostMessage: "Oops, looks like a ghost stole this page!",
+    back: "Back",
+    home: "To Home",
   },
 } as const;

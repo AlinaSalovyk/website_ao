@@ -761,5 +761,74 @@ func TestNewsRepo_GalleryImagesCRUD(t *testing.T) {
 	}
 }
 
+func TestNewsRepo_SoftDeletedArticleDoesNotBlockSlugReuse(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	// 1. Create article with slug
+	a1 := makeArticle("reuse-slug-uk", "reuse-slug-en")
+	if err := repo.Create(ctx, a1); err != nil {
+		t.Fatalf("Create a1: %v", err)
+	}
+
+	// 2. Soft delete a1
+	if err := repo.Delete(ctx, a1.ID); err != nil {
+		t.Fatalf("Delete a1: %v", err)
+	}
+
+	// 3. SlugExists should return false for deleted article's slug
+	exists, err := repo.SlugExists(ctx, domain.LangUk, "reuse-slug-uk", "")
+	if err != nil {
+		t.Fatalf("SlugExists check: %v", err)
+	}
+	if exists {
+		t.Errorf("expected SlugExists to be false for soft-deleted article's slug")
+	}
+
+	// 4. Create new article a2 with the same slug → must succeed
+	a2 := makeArticle("reuse-slug-uk", "reuse-slug-en")
+	if err := repo.Create(ctx, a2); err != nil {
+		t.Fatalf("Create a2 with reused slug failed: %v", err)
+	}
+}
+
+func TestNewsRepo_MultipleDraftsWithEmptySlugsSucceed(t *testing.T) {
+	repo, cleanup := openTestDB(t)
+	defer cleanup()
+	ctx := context.Background()
+
+	// Draft 1 with empty EN slug
+	d1 := &domain.NewsArticle{
+		Status:     domain.NewsStatusDraft,
+		CategoryID: "cat-news",
+		Author:     domain.NewsAuthor{Name: "Draft Author"},
+		CreatedBy:  "test@example.com",
+		Locales: map[domain.Language]domain.NewsLocale{
+			domain.LangUk: {Locale: domain.LangUk, Title: "Чернетка 1", Slug: "chernatka-1"},
+			domain.LangEn: {Locale: domain.LangEn, Title: "", Slug: ""},
+		},
+	}
+	if err := repo.Create(ctx, d1); err != nil {
+		t.Fatalf("Create draft 1 failed: %v", err)
+	}
+
+	// Draft 2 with empty EN slug → must succeed without UNIQUE constraint error
+	d2 := &domain.NewsArticle{
+		Status:     domain.NewsStatusDraft,
+		CategoryID: "cat-news",
+		Author:     domain.NewsAuthor{Name: "Draft Author"},
+		CreatedBy:  "test@example.com",
+		Locales: map[domain.Language]domain.NewsLocale{
+			domain.LangUk: {Locale: domain.LangUk, Title: "Чернетка 2", Slug: "chernatka-2"},
+			domain.LangEn: {Locale: domain.LangEn, Title: "", Slug: ""},
+		},
+	}
+	if err := repo.Create(ctx, d2); err != nil {
+		t.Fatalf("Create draft 2 failed: %v", err)
+	}
+}
+
+
 
 

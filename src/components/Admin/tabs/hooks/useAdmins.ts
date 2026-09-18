@@ -69,6 +69,11 @@ export function useAdmins() {
     const email = inviteEmail.trim().toLowerCase();
     if (!email) return;
 
+    if (!email.endsWith("@oa.edu.ua")) {
+      toast.error("Запрошення дозволені тільки для електронних адрес домену @oa.edu.ua");
+      return;
+    }
+
     setInviting(true);
     try {
       const res = await sendInvitation(email, inviteRole);

@@ -104,7 +104,9 @@ export function MessageInput({ value, onChange, onSubmit, isLoading, language }:
         </div>
       </div>
       <p className="cb-input-hint">
-        {language === "uk" ? "Enter — надіслати, Shift+Enter — новий рядок" : "Enter to send, Shift+Enter for new line"}
+        {language === "uk"
+          ? "Штучний інтелект може помилятися. Перевіряйте важливу інформацію."
+          : "AI can make mistakes. Verify important information."}
       </p>
     </div>
   );

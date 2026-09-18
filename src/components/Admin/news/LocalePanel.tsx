@@ -16,6 +16,7 @@ export const LocalePanel = ({
   setIsSlugManuallyEdited,
   onAutoFill,
   fieldErrors,
+  onClearFieldError,
   showSEO = true,
 }: {
   locale: "uk" | "en";
@@ -26,6 +27,7 @@ export const LocalePanel = ({
   setIsSlugManuallyEdited: React.Dispatch<React.SetStateAction<{ uk: boolean; en: boolean }>>;
   onAutoFill: () => void;
   fieldErrors?: Record<string, string>;
+  onClearFieldError?: (fieldKey: string) => void;
   showSEO?: boolean;
 }): JSX.Element => {
   const [slugChecking, setSlugChecking] = useState(false);
@@ -40,14 +42,22 @@ export const LocalePanel = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const updated = { ...value, [key]: e.target.value };
-    
+
+    // Clear stale error for this field as soon as user edits it
+    onClearFieldError?.(`${key}_${locale}`);
+    onClearFieldError?.(key);
+
     if (key === "slug") {
       setIsSlugManuallyEdited((prev) => ({ ...prev, [locale]: true }));
+      onClearFieldError?.(`slug_${locale}`);
+      onClearFieldError?.("slug");
     }
 
     // Auto-fill slug from title if not manually edited
     if (key === "title" && !isSlugManuallyEdited[locale]) {
       updated.slug = slugify(e.target.value);
+      onClearFieldError?.(`slug_${locale}`);
+      onClearFieldError?.("slug");
     }
     onChange(updated);
   };
@@ -59,12 +69,18 @@ export const LocalePanel = ({
     setSlugChecking(true);
     slugTimer.current = setTimeout(() => {
       checkAdminNewsSlug(locale, value.slug, articleId ?? "")
-        .then((res) => setSlugOk(res.available))
+        .then((res) => {
+          setSlugOk(res.available);
+          if (res.available) {
+            onClearFieldError?.(`slug_${locale}`);
+            onClearFieldError?.("slug");
+          }
+        })
         .catch(() => setSlugOk(null))
         .finally(() => setSlugChecking(false));
     }, 500);
     return () => { if (slugTimer.current) clearTimeout(slugTimer.current); };
-  }, [value.slug, locale, articleId]);
+  }, [value.slug, locale, articleId, onClearFieldError]);
 
   const inputCls =
     "w-full rounded-xl border border-input bg-card px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none transition shadow-sm";
@@ -86,7 +102,7 @@ export const LocalePanel = ({
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
         >
           <Sparkles size={14} />
-          <span>✨ Автозаповнити SEO та Slug</span>
+          <span>Автозаповнити SEO та Slug</span>
         </button>
       </div>
 
@@ -131,13 +147,13 @@ export const LocalePanel = ({
               )}
             </div>
           </div>
-          {slugErr ? (
+          {slugErr && slugOk !== true ? (
             <p className="mt-1.5 text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
-              <span>⚠</span> {slugErr}
+              <span>⚠</span> {slugErr.includes("already taken") || slugErr.includes("conflict") || slugErr.includes("існує") ? "Цей slug вже зайнятий — змініть заголовок або slug" : slugErr}
             </p>
           ) : slugOk === false ? (
             <p className="mt-1 text-[11px] text-destructive">
-              Цей slug вже зайнятий
+              Цей slug вже зайнятий — змініть заголовок або slug
             </p>
           ) : null}
         </div>
@@ -158,7 +174,7 @@ export const LocalePanel = ({
 
       <div data-field-error={`content_${locale}`} className={contentErr ? "has-error" : ""}>
         <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-          Зміст ({locale.toUpperCase()}) — Rich Text Editor *
+          Зміст ({locale.toUpperCase()}) *
         </label>
         <div className={contentErr ? "rounded-xl border-2 border-red-500/80 p-0.5" : ""}>
           <RichTextEditor
@@ -191,10 +207,10 @@ export const LocalePanel = ({
               <span>Автозаповнити SEO та Slug</span>
             </button>
           </div>
-          
+
           <div className="px-5 py-3 bg-indigo-500/5 border-b border-indigo-500/10">
             <p className="text-xs text-indigo-600 dark:text-indigo-400 font-medium">
-              💡 Автоматично заповнить лише порожні SEO-поля та Slug.
+              Автоматично заповнить лише порожні SEO-поля та Slug.
             </p>
           </div>
 
@@ -231,7 +247,7 @@ export const LocalePanel = ({
 
             <div className="mt-2 pt-5 border-t border-border/60">
               <h4 className="text-sm font-medium mb-3 text-foreground">Попередній перегляд у пошуку</h4>
-              
+
               <div className="p-4 bg-background border border-border/60 rounded-lg shadow-sm">
                 <div className="flex items-center gap-2 text-[12px] text-muted-foreground mb-1 break-all">
                   <span>{typeof window !== 'undefined' ? window.location.host : 'example.com'}{locale === 'uk' ? '/news/' : '/en/news/'}</span>

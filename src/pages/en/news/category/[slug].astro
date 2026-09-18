@@ -20,6 +20,7 @@ if (!slug) {
 }
 
 import { getSsrApiBase } from "@/lib/api-config";
+import { hasEnglishTranslation } from "@/lib/news-api";
 
 const API_BASE = getSsrApiBase();
 
@@ -63,8 +64,9 @@ try {
           articles: unknown[];
           total: number;
         };
-        initialArticles = data.articles ?? [];
-        initialTotal = data.total ?? 0;
+        const allArts = (data.articles ?? []) as any[];
+        initialArticles = allArts.filter((a: any) => hasEnglishTranslation(a));
+        initialTotal = data.total ?? initialArticles.length;
         
         const cc = articlesRes.headers.get("Cache-Control");
         if (cc) Astro.response.headers.set("Cache-Control", cc);

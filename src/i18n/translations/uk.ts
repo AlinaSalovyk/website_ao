@@ -183,6 +183,13 @@ export const uk = {
       weeklyBadge: "НОВИНА ТИЖНЯ",
       readTime: "MIN READ",
       readMore: "Дізнатися більше",
+      fallbackCover: {
+        institute: "ІНСТИТУТ ІТБ",
+        itb: "ІТБ",
+        official: "Офіційні публікації",
+        actual: "Актуально",
+        newsAndEvents: "Новини та Події",
+      },
     },
   },
 
@@ -215,6 +222,8 @@ export const uk = {
     photoGallery: "Фотогалерея",
     videoMaterials: "Відео матеріали",
     relatedNews: "Схожі матеріали",
+    latestArticles: "Останні матеріали",
+    highlights: "Важливе",
   },
 
   institute: {
@@ -851,6 +860,15 @@ export const uk = {
     streetAddress: "вул. Семінарська, 2",
     city: "Острог",
     parentOrgName: 'Національний університет "Острозька академія"',
+  },
+
+  notFound: {
+    title: "404 — Сторінку не знайдено | Інститут ІТ та бізнесу",
+    subtitle: "Сторінку не знайдено",
+    description: "Запитана сторінка не існує або була переміщена.",
+    ghostMessage: "Ой, схоже привид поцупив цю сторінку!",
+    back: "Назад",
+    home: "На головну",
   },
 } as const;
 

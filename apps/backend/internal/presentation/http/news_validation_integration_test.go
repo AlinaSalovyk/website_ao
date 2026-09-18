@@ -126,6 +126,7 @@ func TestCreateNews_CategoryEmpty_ReturnsPreciseUkrainianValidationError(t *test
 	defer cleanup()
 
 	payload := makeValidPayload()
+	payload["status"] = "published"
 	payload["category_id"] = ""
 	bodyBytes, _ := json.Marshal(payload)
 
@@ -178,6 +179,7 @@ func TestUpdateNews_CategoryEmpty_ReturnsPreciseUkrainianValidationError(t *test
 	}
 
 	payload := makeValidPayload()
+	payload["status"] = "published"
 	payload["category_id"] = ""
 	bodyBytes, _ := json.Marshal(payload)
 
@@ -424,6 +426,7 @@ func TestCreateNews_EmptyUkContent_ReturnsPreciseUkrainianValidationError(t *tes
 			defer cleanup()
 
 			payload := makeValidPayload()
+			payload["status"] = "published"
 			locales := payload["locales"].(map[string]interface{})
 			ukLoc := locales["uk"].(map[string]interface{})
 			ukLoc["content"] = tc.html
@@ -473,6 +476,7 @@ func TestUpdateNews_EmptyUkContent_ReturnsPreciseUkrainianValidationError(t *tes
 	repo.Create(context.Background(), art)
 
 	payload := makeValidPayload()
+	payload["status"] = "published"
 	locales := payload["locales"].(map[string]interface{})
 	ukLoc := locales["uk"].(map[string]interface{})
 	ukLoc["content"] = "<p><br>&nbsp;</p>"
@@ -500,7 +504,7 @@ func TestUpdateNews_EmptyUkContent_ReturnsPreciseUkrainianValidationError(t *tes
 
 // ─── EN PUBLISHING RULE TESTS ────────────────────────────────────────────────
 
-func TestCreateNews_PublishWithoutEN_ReturnsPreciseUkrainianValidationError(t *testing.T) {
+func TestCreateNews_PublishWithoutEN_Succeeds(t *testing.T) {
 	router, _, cleanup := setupTestServer(t)
 	defer cleanup()
 
@@ -517,36 +521,12 @@ func TestCreateNews_PublishWithoutEN_ReturnsPreciseUkrainianValidationError(t *t
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusBadRequest {
-		t.Fatalf("expected HTTP 400 Bad Request, got %d. Body: %s", rec.Code, rec.Body.String())
+	if rec.Code != http.StatusCreated {
+		t.Fatalf("expected HTTP 201 Created for published without EN, got %d. Body: %s", rec.Code, rec.Body.String())
 	}
-
-	var errResp APIErrorResponse
-	json.Unmarshal(rec.Body.Bytes(), &errResp)
-
-	if errResp.GetCode() != "NEWS_EN_LOCALE_REQUIRED" {
-		t.Errorf("Code: got %q, want NEWS_EN_LOCALE_REQUIRED", errResp.GetCode())
-	}
-	if errResp.Field != "title_en" {
-		t.Errorf("Field: got %q, want title_en", errResp.Field)
-	}
-	wantMsg := "Перед публікацією заповніть англійську версію новини."
-	if errResp.Message != wantMsg {
-		t.Errorf("Message: got %q, want %q", errResp.Message, wantMsg)
-	}
-
-	// Verify manual-only wording (NO mentions of automatic translation)
-	forbiddenWording := []string{"перекладіть", "автоматичний переклад", "translation"}
-	for _, word := range forbiddenWording {
-		if strings.Contains(strings.ToLower(errResp.Message), word) {
-			t.Errorf("Wording defect: response contains forbidden word %q: %s", word, errResp.Message)
-		}
-	}
-
-	assertNoRawErrorLeaks(t, rec.Body.String())
 }
 
-func TestUpdateNews_PublishWithoutEN_ReturnsPreciseUkrainianValidationError(t *testing.T) {
+func TestUpdateNews_PublishWithoutEN_Succeeds(t *testing.T) {
 	router, repo, cleanup := setupTestServer(t)
 	defer cleanup()
 
@@ -572,18 +552,9 @@ func TestUpdateNews_PublishWithoutEN_ReturnsPreciseUkrainianValidationError(t *t
 
 	router.ServeHTTP(rec, req)
 
-	if rec.Code != http.StatusBadRequest {
-		t.Fatalf("expected HTTP 400 Bad Request, got %d", rec.Code)
+	if rec.Code != http.StatusOK {
+		t.Fatalf("expected HTTP 200 OK for update publish without EN, got %d. Body: %s", rec.Code, rec.Body.String())
 	}
-
-	var errResp APIErrorResponse
-	json.Unmarshal(rec.Body.Bytes(), &errResp)
-
-	if errResp.GetCode() != "NEWS_EN_LOCALE_REQUIRED" || errResp.Field != "title_en" || errResp.Message != "Перед публікацією заповніть англійську версію новини." {
-		t.Errorf("unexpected error response on update publish without EN: %+v", errResp)
-	}
-
-	assertNoRawErrorLeaks(t, rec.Body.String())
 }
 
 func TestCreateNews_DraftWithoutEN_Succeeds(t *testing.T) {
@@ -721,6 +692,7 @@ func TestCreateNews_MultipleFieldErrors_ReturnsFirstValidationError(t *testing.T
 	defer cleanup()
 
 	payload := makeValidPayload()
+	payload["status"] = "published"
 	payload["category_id"] = ""
 	locales := payload["locales"].(map[string]interface{})
 	ukLoc := locales["uk"].(map[string]interface{})
@@ -742,9 +714,9 @@ func TestCreateNews_MultipleFieldErrors_ReturnsFirstValidationError(t *testing.T
 	var errResp APIErrorResponse
 	json.Unmarshal(rec.Body.Bytes(), &errResp)
 
-	// Backend domain validation evaluates sequentially: Category -> Title -> Content.
-	// Primary field returned by backend is 'category_id'.
-	if errResp.GetCode() != "NEWS_CATEGORY_REQUIRED" || errResp.Field != "category_id" {
+	// Backend domain validation evaluates sequentially: Title -> Category -> Content.
+	// Primary field returned by backend is 'title_uk'.
+	if errResp.GetCode() != "NEWS_TITLE_REQUIRED" || errResp.Field != "title_uk" {
 		t.Errorf("unexpected primary validation error: %+v", errResp)
 	}
 

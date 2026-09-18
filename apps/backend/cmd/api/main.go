@@ -273,6 +273,39 @@ func main() {
 		}
 	}()
 
+	// ─── News trash auto-purge (30-day retention) ─────────────────────────────
+	go func() {
+		const retentionDays = 30
+		purgeTicker := time.NewTicker(24 * time.Hour)
+		defer purgeTicker.Stop()
+		for {
+			select {
+			case <-serverCtx.Done():
+				return
+			case <-purgeTicker.C:
+				purgeCtx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+				keys, n, purgeErr := newsRepo.PurgeExpiredDeleted(purgeCtx, retentionDays)
+				if purgeErr != nil {
+					slog.Error("News trash purge failed", "error", purgeErr)
+					cancel()
+					continue
+				}
+				if n > 0 {
+					slog.Info("News trash purged", "articles", n, "media_keys", len(keys))
+				}
+				if newsStore != nil {
+					for _, key := range keys {
+						if delErr := newsStore.Delete(purgeCtx, key); delErr != nil {
+							slog.Warn("News purge: failed to delete media", "key", key, "error", delErr)
+						}
+					}
+				}
+				cancel()
+			}
+		}
+	}()
+
+
 	addr := fmt.Sprintf(":%d", cfg.Port)
 	srv := &http.Server{
 		Addr:         addr,

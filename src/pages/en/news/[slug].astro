@@ -98,8 +98,11 @@ try {
   return Astro.redirect("/en/news", 302);
 }
 
-if (!article) {
-  return Astro.redirect("/en/news", 302);
+import { hasEnglishTranslation } from "@/lib/news-api";
+
+if (!hasEnglishTranslation(article)) {
+  const ukSlug = article.locales?.["uk"]?.slug || article.id;
+  return Astro.redirect(`/news/${encodeURIComponent(ukSlug)}?untranslated=1`, 302);
 }
 
 const localePart = article.locales?.[locale] ?? article.locales?.["uk"];
@@ -173,9 +176,11 @@ const articleJsonLd = {
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header
         client:load
+        variant="light"
         headerPosition="absolute"
         locale={locale}
         currentPath={Astro.url.pathname}
+        hasEnglishTranslation={true}
       />
       <main id="main-content" class="w-full">
         <ArticlePage client:visible article={article} locale={locale} />

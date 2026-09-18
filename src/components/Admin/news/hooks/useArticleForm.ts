@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { emptyForm, type ArticleForm, slugify } from "../types";
 import {
@@ -15,6 +15,7 @@ import { usePreviewSync } from "@/lib/preview-sync";
 import { normalizeText, extractArticleSummary, computeAutoFillSEO } from "@/utils/seo";
 
 import { ApiError } from "../../services/client";
+import { notifyNewsStatsUpdated } from "./useNewsStats";
 
 function stripHTMLContent(s: string): string {
   if (!s) return "";
@@ -47,8 +48,9 @@ function scrollToFirstError(errors: Record<string, string>) {
 export function useArticleForm(
   articleId: string | null,
   categories: AdminNewsCategory[],
-  onSaved: () => void
+  onSaved?: (savedId?: string | null) => void
 ) {
+  const [activeArticleId, setActiveArticleId] = useState<string | null>(articleId);
   const [form, setForm] = useState<ArticleForm>(emptyForm());
   const [activeLocale, setActiveLocale] = useState<"uk" | "en">("uk");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -62,13 +64,18 @@ export function useArticleForm(
 
   const [sessionId] = useState(() => Math.random().toString(36).substring(2, 12));
 
+  // Sync prop articleId to internal activeArticleId state
+  useEffect(() => {
+    setActiveArticleId(articleId);
+  }, [articleId]);
+
   // SEO Assistant State
   const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState<{ uk: boolean; en: boolean }>({ uk: false, en: false });
 
   // Adapter to convert form state into a valid NewsArticle structure for Live Preview
   const previewData = {
     ...form,
-    id: articleId || "preview",
+    id: activeArticleId || "preview",
     image_url: form.image_url || currentArticle?.image_url || "",
     author: {
       name: form.author_name,
@@ -83,8 +90,9 @@ export function useArticleForm(
   // Sync draft to Live Preview
   usePreviewSync(sessionId, { type: "article", data: previewData }, true);
 
-  // Warn user before leaving page with unsaved changes
+  // Warn user before leaving page with unsaved changes & track global unsaved changes flag
   useEffect(() => {
+    (window as any).__admin_has_unsaved_changes = isDirty;
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (isDirty) {
         e.preventDefault();
@@ -92,12 +100,37 @@ export function useArticleForm(
       }
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      (window as any).__admin_has_unsaved_changes = false;
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, [isDirty]);
+
+  // Load saved local draft for new articles on mount
+  useEffect(() => {
+    if (!articleId) {
+      const saved = localStorage.getItem("admin_news_new_draft");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && typeof parsed === "object" && parsed.locales?.uk?.title) {
+            setForm(parsed);
+          }
+        } catch {}
+      }
+    }
+  }, [articleId]);
+
+  // Persist local draft for new articles on form changes
+  useEffect(() => {
+    if (!activeArticleId && isDirty) {
+      localStorage.setItem("admin_news_new_draft", JSON.stringify(form));
+    }
+  }, [form, activeArticleId, isDirty]);
 
   // Debounced Autosave for Drafts (1.5s delay)
   useEffect(() => {
-    if (!isDirty || loading || saving || !articleId) return;
+    if (!isDirty || loading || saving || !activeArticleId) return;
     setAutoSaveStatus("dirty");
 
     const timer = setTimeout(async () => {
@@ -121,7 +154,7 @@ export function useArticleForm(
             en: { ...form.locales.en, locale: "en" },
           } as Record<string, import("../../api").AdminNewsLocale>,
         };
-        await updateAdminNews(articleId, payload);
+        await updateAdminNews(activeArticleId, payload);
         setAutoSaveStatus("saved");
         setIsDirty(false);
       } catch {
@@ -130,7 +163,7 @@ export function useArticleForm(
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [form, isDirty, loading, saving, articleId, currentArticle]);
+  }, [form, isDirty, loading, saving, activeArticleId, currentArticle]);
 
   // Wrapped setForm state updater that marks form dirty & clears errors
   const updateForm: typeof setForm = (updater) => {
@@ -140,20 +173,20 @@ export function useArticleForm(
     setForm(updater);
   };
 
-  const clearFieldError = (fieldKey: string) => {
+  const clearFieldError = useCallback((fieldKey: string) => {
     setFieldErrors((prev) => {
       if (!prev[fieldKey]) return prev;
       const next = { ...prev };
       delete next[fieldKey];
       return next;
     });
-  };
+  }, []);
 
   // Load existing article
   useEffect(() => {
-    if (!articleId) return;
+    if (!activeArticleId) return;
     setLoading(true);
-    fetchAdminNewsById(articleId)
+    fetchAdminNewsById(activeArticleId)
       .then((a) => {
         setCurrentArticle(a);
         setForm({
@@ -197,7 +230,7 @@ export function useArticleForm(
       })
       .catch(() => toast.error("Не вдалося завантажити статтю"))
       .finally(() => setLoading(false));
-  }, [articleId]);
+  }, [activeArticleId]);
 
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
   const [pendingPhotos, setPendingPhotos] = useState<File[]>([]);
@@ -205,22 +238,17 @@ export function useArticleForm(
   const handleSave = async () => {
     const errs: Record<string, string> = {};
 
-    if (!form.category_id.trim()) {
-      errs.category_id = "Оберіть категорію новини.";
-    }
-
     if (!form.locales.uk.title.trim()) {
       errs.title_uk = "Введіть заголовок новини.";
     }
 
-    if (stripHTMLContent(form.locales.uk.content) === "") {
-      errs.content_uk = "Додайте текст новини.";
-    }
+    if (form.status === "published") {
+      if (!form.category_id.trim()) {
+        errs.category_id = "Перед публікацією оберіть категорію новини.";
+      }
 
-    if (form.status === "published" && (!form.locales.en?.title?.trim())) {
-      errs.title_en = "Перед публікацією заповніть англійську версію новини.";
-      if (!activeLocale || activeLocale !== "en") {
-        setActiveLocale("en");
+      if (stripHTMLContent(form.locales.uk.content) === "") {
+        errs.content_uk = "Перед публікацією додайте текст новини.";
       }
     }
 
@@ -254,13 +282,15 @@ export function useArticleForm(
         } as Record<string, import("../../api").AdminNewsLocale>,
       };
 
-      let savedArticleId = articleId;
-      if (articleId) {
-        await updateAdminNews(articleId, payload);
+      let savedArticleId = activeArticleId;
+      if (activeArticleId) {
+        await updateAdminNews(activeArticleId, payload);
         toast.success("Зміни успішно збережено");
       } else {
         const created = await createAdminNews(payload);
         savedArticleId = created.id;
+        setActiveArticleId(created.id);
+        setCurrentArticle(created);
         toast.success("Новину успішно створено");
       }
 
@@ -289,7 +319,9 @@ export function useArticleForm(
 
       setIsDirty(false);
       setAutoSaveStatus("saved");
-      onSaved();
+      localStorage.removeItem("admin_news_new_draft");
+      notifyNewsStatsUpdated();
+      onSaved?.(savedArticleId);
     } catch (err: unknown) {
       const newFieldErrors: Record<string, string> = {};
       let msg = "Не вдалося зберегти новину. Перевірте виділені поля.";
@@ -402,6 +434,7 @@ export function useArticleForm(
   };
 
   return {
+    activeArticleId,
     form, setForm: updateForm,
     activeLocale, setActiveLocale,
     fieldErrors, clearFieldError, setFieldErrors,
