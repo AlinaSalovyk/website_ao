@@ -78,6 +78,11 @@ func (h *AdminHandler) HandleCreateInvitation(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	if !strings.HasSuffix(req.Email, "@oa.edu.ua") {
+		jsonError(w, "validation_error", "Запрошення дозволені тільки для електронних адрес домену @oa.edu.ua", http.StatusBadRequest)
+		return
+	}
+
 	if req.Role != domain.RoleNewsEditor && req.Role != domain.RoleChatbotAdmin {
 		jsonError(w, "validation_error", "Запрошення ролі super_admin заборонено. Дозволено лише news_editor або chatbot_admin", http.StatusBadRequest)
 		return
