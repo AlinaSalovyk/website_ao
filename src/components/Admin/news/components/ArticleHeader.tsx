@@ -6,14 +6,10 @@ interface ArticleHeaderProps {
   articleId: string | null;
   form: ArticleForm;
   setForm: React.Dispatch<React.SetStateAction<ArticleForm>>;
-  activeSectionTab: "main" | "media" | "files" | "seo" | "all";
-  setActiveSectionTab: (tab: "main" | "media" | "files" | "seo" | "all") => void;
   activeLocale: "uk" | "en";
   saving: boolean;
   isDirty: boolean;
   autoSaveStatus: string;
-  galleryCount: number;
-  pendingFilesCount: number;
   sessionId: string;
   onBack: () => void;
   onSave: () => void;
@@ -24,14 +20,10 @@ export const ArticleHeader = ({
   articleId,
   form,
   setForm,
-  activeSectionTab,
-  setActiveSectionTab,
   activeLocale,
   saving,
   isDirty,
   autoSaveStatus,
-  galleryCount,
-  pendingFilesCount,
   sessionId,
   onBack,
   onSave,
@@ -63,56 +55,7 @@ export const ArticleHeader = ({
         </span>
       </div>
 
-      <div className="hidden md:flex items-center gap-1 p-1 bg-muted/60 rounded-xl border border-border/40 text-xs font-medium">
-        <button
-          type="button"
-          onClick={() => setActiveSectionTab("main")}
-          className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
-            activeSectionTab === "main" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Текст
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveSectionTab("media")}
-          className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-            activeSectionTab === "media" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Медіа
-          <span className="text-[10px] opacity-80 font-bold">({galleryCount})</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveSectionTab("files")}
-          className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer flex items-center gap-1 ${
-            activeSectionTab === "files" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          Файли
-          {pendingFilesCount > 0 && <span className="text-[10px] text-amber-500 font-bold">+{pendingFilesCount}</span>}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveSectionTab("seo")}
-          className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
-            activeSectionTab === "seo" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          SEO
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveSectionTab("all")}
-          className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
-            activeSectionTab === "all" ? "bg-card text-foreground font-bold shadow-xs" : "text-muted-foreground opacity-60 hover:opacity-100"
-          }`}
-          title="Показати всі секції підряд"
-        >
-          Все
-        </button>
-      </div>
+
 
       <div className="flex items-center gap-2">
         <button
