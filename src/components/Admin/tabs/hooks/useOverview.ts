@@ -25,11 +25,11 @@ export function useOverview() {
     setLoading(true);
     try {
       const [s, d, q, f, a] = await Promise.all([
-        fetchSummary(days),
-        fetchDaily(days),
-        fetchTopQueries(days, 10),
-        fetchFeedback(days),
-        fetchAudit(0, 5),
+        fetchSummary(days).catch(() => null),
+        fetchDaily(days).catch(() => []),
+        fetchTopQueries(days, 10).catch(() => []),
+        fetchFeedback(days).catch(() => null),
+        fetchAudit(0, 5).catch(() => null),
       ]);
       setSummary(s);
       setDaily(d);

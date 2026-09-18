@@ -43,9 +43,12 @@ export function InviteAdminModal({
               required
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
-              placeholder="new.admin@university.edu.ua"
+              placeholder="user@oa.edu.ua"
               className="w-full rounded-xl border border-input bg-background/50 px-4 py-2.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
             />
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              Дозволені тільки адреси з корпоративним доменом <span className="font-semibold text-foreground">@oa.edu.ua</span>
+            </p>
           </div>
 
           <div>
