@@ -490,6 +490,36 @@ var migrations = []migration{
 		CREATE INDEX IF NOT EXISTS idx_news_gallery_sort ON news_gallery_images(news_id, sort_order ASC, created_at ASC);
 		`,
 	},
+	{
+		Version:     23,
+		Description: "release slugs of soft-deleted news articles for reuse",
+		SQL: `
+		INSERT OR IGNORE INTO news_slug_history (id, article_id, locale, old_slug, replaced_at)
+		SELECT
+			lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || substr(lower(hex(randomblob(2))),2) || '-' || substr('89ab', abs(random()) % 4 + 1, 1) || substr(lower(hex(randomblob(2))),2) || '-' || lower(hex(randomblob(6))),
+			t.article_id,
+			t.locale,
+			t.slug,
+			CURRENT_TIMESTAMP
+		FROM news_translations t
+		JOIN news_articles a ON a.id = t.article_id
+		WHERE a.deleted_at IS NOT NULL AND t.slug != '' AND t.slug NOT LIKE '%-deleted-%';
+
+		UPDATE news_translations
+		SET slug = slug || '-deleted-' || CAST(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER) AS TEXT)
+		WHERE article_id IN (SELECT id FROM news_articles WHERE deleted_at IS NOT NULL)
+		  AND slug != '' AND slug NOT LIKE '%-deleted-%';
+		`,
+	},
+	{
+		Version:     24,
+		Description: "update empty news translation slugs to unique draft placeholders",
+		SQL: `
+		UPDATE news_translations
+		SET slug = 'draft-' || article_id || '-' || locale
+		WHERE slug = '' OR slug IS NULL;
+		`,
+	},
 }
 
 // runMigrations creates the schema_version table if absent, then iterates
