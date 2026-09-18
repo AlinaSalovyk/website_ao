@@ -8,6 +8,7 @@ import (
 func TestNewsArticle_Validate(t *testing.T) {
 	t.Run("missing category_id fails validation", func(t *testing.T) {
 		article := domain.NewsArticle{
+			Status:     domain.NewsStatusPublished,
 			CategoryID: "",
 			Locales: map[domain.Language]domain.NewsLocale{
 				domain.LangUk: {Title: "Заголовок новини", Content: "<p>Текст новини</p>"},
@@ -34,6 +35,7 @@ func TestNewsArticle_Validate(t *testing.T) {
 
 	t.Run("empty html content fails validation", func(t *testing.T) {
 		article := domain.NewsArticle{
+			Status:     domain.NewsStatusPublished,
 			CategoryID: "cat-123",
 			Locales: map[domain.Language]domain.NewsLocale{
 				domain.LangUk: {Title: "Заголовок", Content: "<p><br>&nbsp;</p>"},
@@ -45,7 +47,7 @@ func TestNewsArticle_Validate(t *testing.T) {
 		}
 	})
 
-	t.Run("published status without en title fails validation", func(t *testing.T) {
+	t.Run("published status without en title passes validation", func(t *testing.T) {
 		article := domain.NewsArticle{
 			Status:     domain.NewsStatusPublished,
 			CategoryID: "cat-123",
@@ -54,9 +56,8 @@ func TestNewsArticle_Validate(t *testing.T) {
 				domain.LangEn: {Title: "   ", Content: "<p>Content</p>"},
 			},
 		}
-		err := article.Validate()
-		if err != domain.ErrNewsEnLocaleRequiredForPublish {
-			t.Fatalf("expected ErrNewsEnLocaleRequiredForPublish, got: %v", err)
+		if err := article.Validate(); err != nil {
+			t.Fatalf("expected publishing without EN title to pass validation, got: %v", err)
 		}
 	})
 

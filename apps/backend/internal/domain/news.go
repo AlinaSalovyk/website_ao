@@ -210,23 +210,18 @@ func (a *NewsArticle) Validate() error {
 		return ErrNewsStatusInvalid
 	}
 
-	if strings.TrimSpace(a.CategoryID) == "" {
-		return ErrNewsCategoryRequired
-	}
-
 	ukLoc, hasUk := a.Locales[LangUk]
 	if !hasUk || strings.TrimSpace(ukLoc.Title) == "" {
 		return ErrNewsUkTitleRequired
 	}
 
-	if strings.TrimSpace(stripHTMLTags(ukLoc.Content)) == "" {
-		return ErrNewsUkContentRequired
-	}
-
 	if a.Status == NewsStatusPublished {
-		enLoc, hasEn := a.Locales[LangEn]
-		if !hasEn || strings.TrimSpace(enLoc.Title) == "" {
-			return ErrNewsEnLocaleRequiredForPublish
+		if strings.TrimSpace(a.CategoryID) == "" {
+			return ErrNewsCategoryRequired
+		}
+
+		if strings.TrimSpace(stripHTMLTags(ukLoc.Content)) == "" {
+			return ErrNewsUkContentRequired
 		}
 	}
 	return nil
