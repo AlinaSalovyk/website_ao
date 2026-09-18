@@ -3,10 +3,12 @@ import type { JSX } from "react";
 import type { NewsArticle } from "@/lib/news-api";
 import { categoryName } from "@/lib/news-api";
 import type { Locale } from "@/i18n";
+import { getTranslations } from "@/i18n";
+import { cn } from "@/lib/utils";
 
 interface NewsFallbackCoverProps {
   article: NewsArticle;
-  variant?: "hero" | "card" | "thumb";
+  variant?: "hero" | "card" | "thumb" | "bg";
   locale?: Locale;
   className?: string;
 }
@@ -42,6 +44,61 @@ export const NewsFallbackCover = ({
   const gradient = GRADIENTS[index % GRADIENTS.length];
   const IconComponent = ICONS[index % ICONS.length];
   const catName = article.category ? categoryName(article.category, locale) : "";
+  const t = getTranslations(locale);
+  const labels = t.home.news.fallbackCover;
+
+  if (variant === "bg") {
+    return (
+      <div
+        className={cn(
+          `absolute inset-0 w-full h-full bg-gradient-to-br ${gradient} overflow-hidden select-none`,
+          className
+        )}
+      >
+        {/* Ambient Glow & Radial Spot */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/30 rounded-full blur-3xl pointer-events-none -mr-24 -mt-24" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/25 rounded-full blur-2xl pointer-events-none -ml-20 -mb-20" />
+
+        {/* Decorative Grid Lines SVG */}
+        <svg
+          className="absolute inset-0 w-full h-full opacity-15 pointer-events-none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <pattern
+              id={`bg-grid-${seed}`}
+              width="28"
+              height="28"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 28 0 L 0 0 0 28"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1"
+                className="text-white"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill={`url(#bg-grid-${seed})`} />
+        </svg>
+
+        {/* Center Watermark & Emblem */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-80 group-hover:scale-105 transition-transform duration-700">
+          <div className="relative flex items-center justify-center">
+            <span className="text-7xl sm:text-8xl md:text-9xl font-serif font-black text-white/20 select-none tracking-tighter block leading-none drop-shadow-md">
+              NEWS
+            </span>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white shadow-2xl">
+                <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 text-white drop-shadow-sm" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (variant === "hero") {
     return (
@@ -64,7 +121,7 @@ export const NewsFallbackCover = ({
         <div className="relative z-10 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-white text-[11px] font-bold tracking-widest uppercase">
             <IconComponent className="w-3.5 h-3.5 text-blue-300" />
-            <span>ІНСТИТУТ ІТБ</span>
+            <span>{labels.institute}</span>
           </div>
 
           {catName && (
@@ -90,10 +147,10 @@ export const NewsFallbackCover = ({
 
         {/* Bottom Accent line */}
         <div className="relative z-10 flex items-center justify-between text-[11px] font-semibold text-slate-300/80 border-t border-white/10 pt-3">
-          <span className="tracking-wider uppercase">Офіційні публікації</span>
+          <span className="tracking-wider uppercase">{labels.official}</span>
           <span className="flex items-center gap-1.5 text-blue-300">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-            Актуально
+            {labels.actual}
           </span>
         </div>
       </div>
@@ -132,7 +189,7 @@ export const NewsFallbackCover = ({
       <div className="relative z-10 flex items-center justify-between">
         <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold tracking-widest uppercase">
           <IconComponent className="w-3 h-3 text-blue-300" />
-          <span>ІТБ</span>
+          <span>{labels.itb}</span>
         </div>
         {catName && (
           <span className="text-[10px] font-bold text-blue-200/90 tracking-wider uppercase">
@@ -150,7 +207,7 @@ export const NewsFallbackCover = ({
 
       {/* Footer Line */}
       <div className="relative z-10 flex items-center justify-between text-[10px] text-white/70 border-t border-white/10 pt-2 font-medium">
-        <span className="uppercase tracking-wider">Новини та Події</span>
+        <span className="uppercase tracking-wider">{labels.newsAndEvents}</span>
         <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
       </div>
     </div>
