@@ -1,4 +1,4 @@
-package domain
+﻿package domain
 
 import (
 	"context"
@@ -338,4 +338,9 @@ type NewsRepo interface {
 	UpdateGalleryImage(ctx context.Context, id string, altUK, altEN, captionUK, captionEN string, sortOrder int) error
 	DeleteGalleryImage(ctx context.Context, id string) error
 	ReorderGalleryImages(ctx context.Context, newsID string, imageIDs []string) error
+
+	// PurgeExpiredDeleted hard-deletes articles that have been in the trash for
+	// longer than retentionDays. Returns storage keys of media files that the
+	// caller must delete from MediaStorage, and the count of purged articles.
+	PurgeExpiredDeleted(ctx context.Context, retentionDays int) (storageKeys []string, purged int, err error)
 }
