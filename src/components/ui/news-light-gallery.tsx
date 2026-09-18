@@ -6,7 +6,6 @@ import lgThumbnail from "lightgallery/plugins/thumbnail";
 import lgFullscreen from "lightgallery/plugins/fullscreen";
 import lgRotate from "lightgallery/plugins/rotate";
 import lgAutoplay from "lightgallery/plugins/autoplay";
-import lgPager from "lightgallery/plugins/pager";
 
 // LightGallery Styles
 import "lightgallery/css/lightgallery.css";
@@ -15,7 +14,6 @@ import "lightgallery/css/lg-thumbnail.css";
 import "lightgallery/css/lg-fullscreen.css";
 import "lightgallery/css/lg-rotate.css";
 import "lightgallery/css/lg-autoplay.css";
-import "lightgallery/css/lg-pager.css";
 
 import { ImageIcon, Maximize2 } from "lucide-react";
 import { escapeHtml } from "@/lib/news-api";
@@ -48,6 +46,18 @@ export function NewsLightGallery({
   const onInit = useCallback((detail: { instance: LightGalleryInstance } | null) => {
     if (detail?.instance) {
       lightGalleryRef.current = detail.instance;
+    }
+  }, []);
+
+  const onBeforeOpen = useCallback(() => {
+    if (typeof document !== "undefined") {
+      document.body.classList.add("lg-on");
+    }
+  }, []);
+
+  const onBeforeClose = useCallback(() => {
+    if (typeof document !== "undefined") {
+      document.body.classList.remove("lg-on");
     }
   }, []);
 
@@ -89,7 +99,10 @@ export function NewsLightGallery({
       {/* Hidden LightGallery React Component instance */}
       <LightGallery
         onInit={onInit}
-        plugins={[lgZoom, lgThumbnail, lgFullscreen, lgRotate, lgAutoplay, lgPager]}
+        onBeforeOpen={onBeforeOpen}
+        onBeforeClose={onBeforeClose}
+        plugins={[lgZoom, lgThumbnail, lgFullscreen, lgRotate, lgAutoplay]}
+        pager={false}
         dynamic={true}
         dynamicEl={dynamicEl}
         elementClassNames="hidden"
