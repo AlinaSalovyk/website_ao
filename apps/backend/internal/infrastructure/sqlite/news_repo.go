@@ -35,6 +35,9 @@ func (r *NewsRepo) Create(ctx context.Context, article *domain.NewsArticle) erro
 	if article.ID == "" {
 		article.ID = uuid.New().String()
 	}
+	if article.CategoryID == "" {
+		article.CategoryID = "cat-news"
+	}
 	if article.PreviewToken == "" {
 		article.PreviewToken = uuid.New().String()
 	}
@@ -47,8 +50,11 @@ func (r *NewsRepo) Create(ctx context.Context, article *domain.NewsArticle) erro
 		article.PublishedAt = &now
 	}
 
-	// Pre-check slug uniqueness for both locales before opening the transaction.
+	// Pre-check slug uniqueness for non-empty slugs for both locales before opening the transaction.
 	for lang, loc := range article.Locales {
+		if strings.TrimSpace(loc.Slug) == "" {
+			continue
+		}
 		exists, err := r.SlugExists(ctx, lang, loc.Slug, "")
 		if err != nil {
 			return fmt.Errorf("news create: slug check: %w", err)
@@ -118,6 +124,9 @@ func (r *NewsRepo) Create(ctx context.Context, article *domain.NewsArticle) erro
 func (r *NewsRepo) Update(ctx context.Context, article *domain.NewsArticle) error {
 	now := time.Now().UTC()
 	article.UpdatedAt = now
+	if article.CategoryID == "" {
+		article.CategoryID = "cat-news"
+	}
 
 	// Load current slugs before overwriting (for slug history).
 	old, err := r.GetByID(ctx, article.ID)
@@ -135,8 +144,11 @@ func (r *NewsRepo) Update(ctx context.Context, article *domain.NewsArticle) erro
 		}
 	}
 
-	// Uniqueness check for changed slugs.
+	// Uniqueness check for changed non-empty slugs.
 	for lang, newLoc := range article.Locales {
+		if strings.TrimSpace(newLoc.Slug) == "" {
+			continue
+		}
 		oldLoc := old.Locales[lang]
 		if newLoc.Slug != oldLoc.Slug {
 			exists, err := r.SlugExists(ctx, lang, newLoc.Slug, article.ID)
@@ -191,7 +203,7 @@ func (r *NewsRepo) Update(ctx context.Context, article *domain.NewsArticle) erro
 	// Save slug history for changed slugs.
 	for lang, newLoc := range article.Locales {
 		oldLoc := old.Locales[lang]
-		if newLoc.Slug != oldLoc.Slug && oldLoc.Slug != "" {
+		if newLoc.Slug != oldLoc.Slug && oldLoc.Slug != "" && !strings.HasPrefix(oldLoc.Slug, "draft-") {
 			if err := insertSlugHistory(ctx, tx, article.ID, lang, oldLoc.Slug); err != nil {
 				return fmt.Errorf("news update: slug history: %w", err)
 			}
@@ -258,10 +270,19 @@ func (r *NewsRepo) SetStatus(ctx context.Context, id string, status domain.NewsS
 }
 
 // Delete performs a soft delete by setting deleted_at to UTC now.
+// It moves current slugs to news_slug_history and appends a -deleted suffix
+// to news_translations.slug so that the original slug is freed for reuse by active articles.
 func (r *NewsRepo) Delete(ctx context.Context, id string) error {
-	res, err := r.db.ExecContext(ctx,
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("news delete: begin tx: %w", err)
+	}
+	defer tx.Rollback() //nolint:errcheck
+
+	now := time.Now().UTC()
+	res, err := tx.ExecContext(ctx,
 		"UPDATE news_articles SET deleted_at=?, updated_at=? WHERE id=? AND deleted_at IS NULL",
-		time.Now().UTC(), time.Now().UTC(), id,
+		now, now, id,
 	)
 	if err != nil {
 		return fmt.Errorf("news delete: %w", err)
@@ -269,7 +290,35 @@ func (r *NewsRepo) Delete(ctx context.Context, id string) error {
 	if n, _ := res.RowsAffected(); n == 0 {
 		return domain.ErrNewsNotFound
 	}
-	return nil
+
+	// Archive current slugs into news_slug_history and rename translation slugs
+	rows, err := tx.QueryContext(ctx, "SELECT locale, slug FROM news_translations WHERE article_id=?", id)
+	if err == nil {
+		type locSlug struct{ locale, slug string }
+		var list []locSlug
+		for rows.Next() {
+			var l, s string
+			if err := rows.Scan(&l, &s); err == nil && s != "" {
+				list = append(list, locSlug{l, s})
+			}
+		}
+		rows.Close()
+
+		suffix := fmt.Sprintf("-deleted-%d", now.UnixNano())
+		for _, item := range list {
+			_, _ = tx.ExecContext(ctx,
+				"INSERT OR IGNORE INTO news_slug_history (id, article_id, locale, old_slug, replaced_at) VALUES (?,?,?,?,?)",
+				uuid.New().String(), id, item.locale, item.slug, now,
+			)
+			newSlug := item.slug + suffix
+			_, _ = tx.ExecContext(ctx,
+				"UPDATE news_translations SET slug=? WHERE article_id=? AND locale=?",
+				newSlug, id, item.locale,
+			)
+		}
+	}
+
+	return tx.Commit()
 }
 
 // Restore clears deleted_at.
@@ -450,6 +499,10 @@ func (r *NewsRepo) List(ctx context.Context, opts domain.NewsListOptions) ([]dom
 			where = append(where, "(a.publish_at IS NULL OR a.publish_at <= datetime('now'))")
 		}
 	}
+	if opts.Locale != "" {
+		where = append(where, "EXISTS (SELECT 1 FROM news_translations nt WHERE nt.article_id=a.id AND nt.locale=? AND TRIM(nt.title) != '')")
+		args = append(args, string(opts.Locale))
+	}
 	if opts.CategoryID != "" {
 		where = append(where, "a.category_id=?")
 		args = append(args, opts.CategoryID)
@@ -566,11 +619,18 @@ func (r *NewsRepo) GetAllPublishedSlugs(ctx context.Context) ([]domain.NewsSlugE
 	return entries, rows.Err()
 }
 
-// SlugExists reports whether the given locale+slug is taken by any article except excludeID.
+// SlugExists reports whether the given locale+slug is taken by any active (non-deleted) article except excludeID.
 func (r *NewsRepo) SlugExists(ctx context.Context, locale domain.Language, slug string, excludeID string) (bool, error) {
+	slug = strings.TrimSpace(slug)
+	if slug == "" || strings.HasPrefix(slug, "draft-") {
+		return false, nil
+	}
 	var count int
-	err := r.db.QueryRowContext(ctx,
-		"SELECT COUNT(*) FROM news_translations WHERE locale=? AND slug=? AND article_id!=?",
+	err := r.db.QueryRowContext(ctx, `
+		SELECT COUNT(*)
+		FROM news_translations t
+		JOIN news_articles a ON a.id = t.article_id
+		WHERE t.locale = ? AND t.slug = ? AND t.article_id != ? AND a.deleted_at IS NULL`,
 		string(locale), slug, excludeID,
 	).Scan(&count)
 	if err != nil {
@@ -1227,12 +1287,16 @@ func (r *NewsRepo) batchLoadTags(ctx context.Context, articles []domain.NewsArti
 // insertTranslations inserts the uk and en locale rows for an article in one transaction scope.
 func insertTranslations(ctx context.Context, tx *sql.Tx, articleID string, locales map[domain.Language]domain.NewsLocale) error {
 	for lang, loc := range locales {
+		slug := strings.TrimSpace(loc.Slug)
+		if slug == "" {
+			slug = fmt.Sprintf("draft-%s-%s", articleID, lang)
+		}
 		_, err := tx.ExecContext(ctx, `
 			INSERT INTO news_translations
 				(article_id, locale, title, slug, description, content, seo_title, seo_description)
 			VALUES (?,?,?,?,?,?,?,?)`,
 			articleID, string(lang),
-			loc.Title, strings.TrimSpace(loc.Slug), loc.Description, loc.Content,
+			loc.Title, slug, loc.Description, loc.Content,
 			loc.SEOTitle, loc.SEODescription,
 		)
 		if err != nil {
@@ -1619,3 +1683,108 @@ func (r *NewsRepo) batchLoadGalleryImages(ctx context.Context, articles []domain
 
 
 
+
+// PurgeExpiredDeleted hard-deletes news articles that were soft-deleted more than
+// retentionDays ago. Collects all associated storage keys (cover image, gallery
+// images, file attachments) before deletion so the caller can remove them from
+// MediaStorage. DB rows are removed in a single transaction; storage cleanup is
+// left to the caller to allow for partial retries.
+//
+// Returns the list of storage keys to remove from MediaStorage, and the count of
+// articles purged. Idempotent — safe to call repeatedly.
+func (r *NewsRepo) PurgeExpiredDeleted(ctx context.Context, retentionDays int) (storageKeys []string, purged int, err error) {
+	cutoff := time.Now().UTC().AddDate(0, 0, -retentionDays)
+
+	// 1. Find expired soft-deleted articles.
+	expRows, err := r.db.QueryContext(ctx,
+		`SELECT id, COALESCE(image_url,'') FROM news_articles WHERE deleted_at IS NOT NULL AND deleted_at < ?`,
+		cutoff,
+	)
+	if err != nil {
+		return nil, 0, fmt.Errorf("news purge: query expired: %w", err)
+	}
+	type expiredRow struct{ id, imageURL string }
+	var expired []expiredRow
+	for expRows.Next() {
+		var a expiredRow
+		if scanErr := expRows.Scan(&a.id, &a.imageURL); scanErr != nil {
+			expRows.Close()
+			return nil, 0, fmt.Errorf("news purge: scan: %w", scanErr)
+		}
+		expired = append(expired, a)
+	}
+	expRows.Close()
+	if rowErr := expRows.Err(); rowErr != nil {
+		return nil, 0, fmt.Errorf("news purge: rows: %w", rowErr)
+	}
+	if len(expired) == 0 {
+		return nil, 0, nil
+	}
+
+	ids := make([]string, len(expired))
+	for i, a := range expired {
+		ids[i] = a.id
+		if a.imageURL != "" {
+			storageKeys = append(storageKeys, a.imageURL)
+		}
+	}
+
+	ph := strings.Repeat("?,", len(ids))
+	ph = ph[:len(ph)-1]
+	iargs := make([]interface{}, len(ids))
+	for i, id := range ids { iargs[i] = id }
+
+	// 2. Collect gallery image storage keys.
+	gRows, gErr := r.db.QueryContext(ctx,
+		`SELECT COALESCE(image_url,'') FROM news_gallery_images WHERE news_id IN (`+ph+`)`, iargs...)
+	if gErr == nil {
+		for gRows.Next() {
+			var key string
+			if gRows.Scan(&key) == nil && key != "" {
+				storageKeys = append(storageKeys, key)
+			}
+		}
+		gRows.Close()
+	}
+
+	// 3. Collect attachment file storage keys.
+	aRows, aErr := r.db.QueryContext(ctx,
+		`SELECT COALESCE(file_url,'') FROM news_attachments WHERE news_id IN (`+ph+`)`, iargs...)
+	if aErr == nil {
+		for aRows.Next() {
+			var key string
+			if aRows.Scan(&key) == nil && key != "" {
+				storageKeys = append(storageKeys, key)
+			}
+		}
+		aRows.Close()
+	}
+
+	// 4. Hard-delete from all child tables, then the parent, in one transaction.
+	tx, txErr := r.db.BeginTx(ctx, nil)
+	if txErr != nil {
+		return storageKeys, 0, fmt.Errorf("news purge: begin tx: %w", txErr)
+	}
+	defer tx.Rollback() //nolint:errcheck
+
+	type tableCol struct{ tbl, col string }
+	for _, tc := range []tableCol{
+		{"news_gallery_images", "news_id"},
+		{"news_attachments", "news_id"},
+		{"news_article_tags", "article_id"},
+		{"news_translations", "article_id"},
+		{"news_slug_history", "article_id"},
+		{"news_articles", "id"},
+	} {
+		if _, delErr := tx.ExecContext(ctx,
+			`DELETE FROM `+tc.tbl+` WHERE `+tc.col+` IN (`+ph+`)`, iargs...); delErr != nil {
+			return storageKeys, 0, fmt.Errorf("news purge: delete %s: %w", tc.tbl, delErr)
+		}
+	}
+
+	if commitErr := tx.Commit(); commitErr != nil {
+		return storageKeys, 0, fmt.Errorf("news purge: commit: %w", commitErr)
+	}
+
+	return storageKeys, len(expired), nil
+}
