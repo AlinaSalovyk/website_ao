@@ -12,7 +12,7 @@ import {
   getFullImageUrl,
   type NewsArticle,
 } from "@/lib/news-api";
-import { NewsFallbackCover } from "./NewsFallbackCover";
+import { NewsFallbackCover } from "../cards/NewsFallbackCover";
 
 interface RelatedCardProps {
   article: NewsArticle;

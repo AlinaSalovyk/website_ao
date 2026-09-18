@@ -11,7 +11,7 @@ import {
   getFullImageUrl,
   type NewsArticle,
 } from "@/lib/news-api";
-import { NewsFallbackCover } from "./NewsFallbackCover";
+import { NewsFallbackCover } from "../cards/NewsFallbackCover";
 
 interface RelatedNewsSliderProps {
   articles: NewsArticle[];
@@ -266,4 +266,3 @@ export function RelatedNewsSlider({ articles, locale }: RelatedNewsSliderProps) 
     </div>
   );
 }
-
