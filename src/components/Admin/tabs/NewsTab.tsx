@@ -22,6 +22,7 @@ import {
 import { AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { useConfirm } from "../context/ConfirmContext";
 
 import {
   deleteAdminNews,
@@ -50,11 +51,19 @@ import { CategoriesList } from "../news/CategoriesList";
 import type { ArticleForm } from "../news/types";
 import { EditView } from "../news/EditView";
 import type { View } from "../news/types";
+import type { NewsSubTab } from "../news/components/NewsSubNav";
 import { NEWS_LIST_GUIDE } from "../news/constants/guides";
+import { notifyNewsStatsUpdated } from "../news/hooks/useNewsStats";
 
 // ─── Main NewsTab ─────────────────────────────────────────────────────────────
 
-export function NewsTab() {
+interface NewsTabProps {
+  newsSubTab?: NewsSubTab;
+  createNewsTrigger?: number;
+}
+
+export function NewsTab({ newsSubTab, createNewsTrigger }: NewsTabProps = {}) {
+  const confirm = useConfirm();
   const [activeTab, setActiveTab] = useState<"articles" | "categories">("articles");
   const [view, setView] = useState<View>("list");
   const [editId, setEditId] = useState<string | null>(null);
@@ -85,6 +94,33 @@ export function NewsTab() {
     }, 350);
     return () => { if (searchTimer.current) clearTimeout(searchTimer.current); };
   }, [search]);
+
+  // Sync sub-navigation tab from Sidebar
+  useEffect(() => {
+    if (!newsSubTab) return;
+    if (newsSubTab === "all") {
+      setActiveTab("articles");
+      setStatusFilter("");
+      setView("list");
+    } else if (newsSubTab === "drafts") {
+      setActiveTab("articles");
+      setStatusFilter("draft");
+      setView("list");
+    } else if (newsSubTab === "categories") {
+      setActiveTab("categories");
+      setView("list");
+    }
+  }, [newsSubTab]);
+
+  // Sync quick action create article trigger from Sidebar
+  const prevCreateTrigger = useRef(createNewsTrigger);
+  useEffect(() => {
+    if (createNewsTrigger && createNewsTrigger !== prevCreateTrigger.current) {
+      prevCreateTrigger.current = createNewsTrigger;
+      setEditId(null);
+      setView("edit");
+    }
+  }, [createNewsTrigger]);
 
   const loadList = useCallback(async () => {
     setLoading(true);
@@ -141,10 +177,19 @@ export function NewsTab() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Видалити статтю? Її можна буде відновити.")) return;
+    const ok = await confirm({
+      title: "Видалити новину?",
+      description: "Ви впевнені, що хочете видалити цю новину? Її можна буде відновити з кошика пізніше.",
+      confirmText: "Видалити",
+      cancelText: "Скасувати",
+      variant: "danger",
+    });
+    if (!ok) return;
+
     try {
       await deleteAdminNews(id);
       toast.success("Статтю видалено");
+      notifyNewsStatsUpdated();
       loadList();
     } catch {
       toast.error("Помилка видалення");
@@ -155,6 +200,7 @@ export function NewsTab() {
     try {
       await restoreAdminNews(id);
       toast.success("Статтю відновлено");
+      notifyNewsStatsUpdated();
       loadList();
     } catch {
       toast.error("Помилка відновлення");
@@ -166,6 +212,7 @@ export function NewsTab() {
     try {
       await setAdminNewsStatus(id, next);
       toast.success(next === "published" ? "Опубліковано" : "Переведено в чернетку");
+      notifyNewsStatsUpdated();
       loadList();
     } catch {
       toast.error("Помилка зміни статусу");
@@ -190,7 +237,11 @@ export function NewsTab() {
         categories={categories}
         tags={tags}
         onBack={() => { setView("list"); setEditId(null); }}
-        onSaved={() => { setView("list"); setEditId(null); }}
+        onSaved={(savedId) => {
+          if (savedId) setEditId(savedId);
+          notifyNewsStatsUpdated();
+          loadList();
+        }}
       />
     );
   }
