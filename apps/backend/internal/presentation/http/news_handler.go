@@ -249,14 +249,19 @@ func (h *NewsHandler) autoGenerateSlugs(ctx context.Context, article *domain.New
 	locales := article.Locales
 	updated := make(map[domain.Language]domain.NewsLocale, len(locales))
 	for lang, loc := range locales {
-		if loc.Slug == "" && loc.Title != "" {
-			slug, err := slugify.Unique(ctx, loc.Title, excludeID, func(ctx context.Context, s, ex string) (bool, error) {
-				return h.repo.SlugExists(ctx, lang, s, ex)
-			})
-			if err != nil {
-				return err
+		loc.Slug = strings.TrimSpace(loc.Slug)
+		if loc.Slug == "" {
+			if loc.Title != "" {
+				slug, err := slugify.Unique(ctx, loc.Title, excludeID, func(ctx context.Context, s, ex string) (bool, error) {
+					return h.repo.SlugExists(ctx, lang, s, ex)
+				})
+				if err != nil {
+					return err
+				}
+				loc.Slug = slug
+			} else {
+				loc.Slug = fmt.Sprintf("draft-%s-%s", article.ID, lang)
 			}
-			loc.Slug = slug
 		}
 		updated[lang] = loc
 	}

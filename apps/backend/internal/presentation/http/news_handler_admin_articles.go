@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 
 	"university-chatbot/backend/internal/domain"
 )
@@ -127,6 +128,10 @@ func (h *NewsHandler) HandleCreate(w http.ResponseWriter, r *http.Request) {
 
 	adminEmail := AdminEmailFromCtx(r.Context())
 	article.CreatedBy = adminEmail
+
+	if article.ID == "" {
+		article.ID = uuid.New().String()
+	}
 
 	// Auto-generate slugs for any locale that has a title but no slug.
 	if err := h.autoGenerateSlugs(r.Context(), &article, ""); err != nil {
