@@ -24,6 +24,8 @@ let initialArticles: unknown[] = [];
 let initialTotal = 0;
 let initialCategories: unknown[] = [];
 
+import { hasEnglishTranslation } from "@/lib/news-api";
+
 try {
   const [articlesRes, categoriesRes] = await Promise.all([
     fetch(
@@ -37,11 +39,12 @@ try {
 
   if (articlesRes.ok) {
     const data = (await articlesRes.json()) as {
-      articles: unknown[];
+      articles: any[];
       total: number;
     };
-    initialArticles = data.articles ?? [];
-    initialTotal = data.total ?? 0;
+    const allArts = data.articles ?? [];
+    initialArticles = allArts.filter((a: any) => hasEnglishTranslation(a));
+    initialTotal = data.total ?? initialArticles.length;
 
     const cc = articlesRes.headers.get("Cache-Control");
     if (cc) Astro.response.headers.set("Cache-Control", cc);
@@ -65,6 +68,7 @@ try {
     <div class="flex w-full relative flex-col items-start min-h-screen">
       <Header
         client:load
+        variant="light"
         headerPosition="absolute"
         locale={locale}
         currentPath={Astro.url.pathname}
