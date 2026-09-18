@@ -175,6 +175,7 @@ export interface AdminNewsArticle {
   image_url: string;
   cover_position?: string;
   gallery?: string[];
+  gallery_images?: import("@/lib/news-api").NewsGalleryImage[];
   video_url?: string;
   attachments?: AdminNewsAttachment[];
   is_pinned: boolean;
