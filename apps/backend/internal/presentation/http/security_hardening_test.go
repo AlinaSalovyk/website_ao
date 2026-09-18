@@ -456,7 +456,7 @@ func TestSecurity_InvitationDeliveryConsistencyAndResend(t *testing.T) {
 	mockMailerFail := &trackingMailer{
 		shouldFail: true,
 		dbCheckOnSend: func() bool {
-			inv, err := invRepo.GetPendingByEmail(context.Background(), "invitee.fail@example.com")
+			inv, err := invRepo.GetPendingByEmail(context.Background(), "invitee.fail@oa.edu.ua")
 			return err == nil && inv != nil && inv.DeliveryStatus == domain.DeliveryStatusPending
 		},
 	}
@@ -479,7 +479,7 @@ func TestSecurity_InvitationDeliveryConsistencyAndResend(t *testing.T) {
 	})
 	routerFail.Post("/admin/invitations", handlerFail.HandleCreateInvitation)
 
-	reqBodyFail := `{"email":"invitee.fail@example.com","role":"news_editor"}`
+	reqBodyFail := `{"email":"invitee.fail@oa.edu.ua","role":"news_editor"}`
 	reqFail := httptest.NewRequest("POST", "/admin/invitations", strings.NewReader(reqBodyFail))
 	reqFail.Header.Set("Content-Type", "application/json")
 	rrFail := httptest.NewRecorder()
@@ -494,7 +494,7 @@ func TestSecurity_InvitationDeliveryConsistencyAndResend(t *testing.T) {
 	}
 
 	// Verify invitation remains persisted in DB with status delivery_failed and LastSentAt == nil
-	failedInv, err := invRepo.GetPendingByEmail(context.Background(), "invitee.fail@example.com")
+	failedInv, err := invRepo.GetPendingByEmail(context.Background(), "invitee.fail@oa.edu.ua")
 	if err != nil || failedInv == nil {
 		t.Fatalf("Expected invitation to remain persisted in DB after SMTP failure, got err: %v", err)
 	}
@@ -512,7 +512,7 @@ func TestSecurity_InvitationDeliveryConsistencyAndResend(t *testing.T) {
 	mockMailerSuccess := &trackingMailer{
 		shouldFail: false,
 		dbCheckOnSend: func() bool {
-			inv, err := invRepo.GetPendingByEmail(context.Background(), "invitee.success@example.com")
+			inv, err := invRepo.GetPendingByEmail(context.Background(), "invitee.success@oa.edu.ua")
 			return err == nil && inv != nil && inv.DeliveryStatus == domain.DeliveryStatusPending && inv.LastSentAt == nil
 		},
 	}
@@ -536,7 +536,7 @@ func TestSecurity_InvitationDeliveryConsistencyAndResend(t *testing.T) {
 	routerSuccess.Post("/admin/invitations", handlerSuccess.HandleCreateInvitation)
 	routerSuccess.Post("/admin/invitations/{id}/resend", handlerSuccess.HandleResendInvitation)
 
-	reqBodySuccess := `{"email":"invitee.success@example.com","role":"news_editor"}`
+	reqBodySuccess := `{"email":"invitee.success@oa.edu.ua","role":"news_editor"}`
 	reqSuccess := httptest.NewRequest("POST", "/admin/invitations", strings.NewReader(reqBodySuccess))
 	reqSuccess.Header.Set("Content-Type", "application/json")
 	rrSuccess := httptest.NewRecorder()
@@ -546,7 +546,7 @@ func TestSecurity_InvitationDeliveryConsistencyAndResend(t *testing.T) {
 		t.Fatalf("Expected HTTP 201 on create success, got %d. Body: %s", rrSuccess.Code, rrSuccess.Body.String())
 	}
 
-	successInv, err := invRepo.GetPendingByEmail(context.Background(), "invitee.success@example.com")
+	successInv, err := invRepo.GetPendingByEmail(context.Background(), "invitee.success@oa.edu.ua")
 	if err != nil || successInv == nil {
 		t.Fatalf("Expected created invitation in DB, got err: %v", err)
 	}

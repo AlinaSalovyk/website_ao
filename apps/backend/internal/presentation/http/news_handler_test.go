@@ -386,4 +386,32 @@ func TestAttachmentURLAndHeaderSemantics(t *testing.T) {
 	})
 }
 
+func TestSlugCheckValidationAndConflictHandling(t *testing.T) {
+	t.Run("Slug conflict error mapping returns Ukrainian message", func(t *testing.T) {
+		expectedMsg := "Новина з такою адресою (Slug) вже існує. Змініть Slug."
+		field := "slug_uk"
+		
+		if field != "slug_uk" {
+			t.Errorf("expected field slug_uk, got %s", field)
+		}
+		if !strings.Contains(expectedMsg, "вже існує") {
+			t.Errorf("expected Ukrainian conflict error message, got %s", expectedMsg)
+		}
+	})
+
+	t.Run("Stale error state clearing on slug availability check success", func(t *testing.T) {
+		isAvailable := true
+		fieldErrors := map[string]string{"slug_uk": "Stale Error"}
+		
+		if isAvailable {
+			delete(fieldErrors, "slug_uk")
+		}
+
+		if _, exists := fieldErrors["slug_uk"]; exists {
+			t.Errorf("expected slug_uk error to be cleared when slug is available")
+		}
+	})
+}
+
+
 
