@@ -342,7 +342,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           type="button"
           onClick={() => setIsVideoModalOpen(true)}
           className="p-1.5 rounded-lg transition-colors hover:bg-red-500/10 text-red-500 hover:text-red-600 cursor-pointer flex items-center gap-1 text-xs font-medium"
-          title="Вставити відео (Файл або YouTube)"
+          title="Вставити відео (YouTube / Vimeo)"
         >
           <Film size={15} />
           <span>Відео</span>
