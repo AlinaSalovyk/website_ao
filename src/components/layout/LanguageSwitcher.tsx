@@ -1,3 +1,4 @@
+import { toast } from "sonner";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,12 +17,14 @@ interface LanguageSwitcherProps {
   locale: Locale;
   currentPath: string;
   variant?: "default" | "light";
+  hasEnglishTranslation?: boolean;
 }
 
 export function LanguageSwitcher({
   locale,
   currentPath,
   variant = "default",
+  hasEnglishTranslation = true,
 }: LanguageSwitcherProps) {
   let effectivePath = currentPath;
   if (
@@ -38,10 +41,19 @@ export function LanguageSwitcher({
   const hoverBg =
     variant === "light" ? "hover:bg-pure-black/10" : "hover:bg-white/10";
 
+  const handleLanguageClick = (
+    _e: React.MouseEvent<HTMLAnchorElement>,
+    _targetLoc: Locale
+  ) => {
+    // Navigation proceeds to target locale URL.
+    // If article is untranslated, SSR handles redirect to ?untranslated=1
+    // displaying the English notice banner with OK dismiss button.
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        className={`rounded-xl border p-2 px-3 flex items-center gap-1.5 text-[11px] tracking-[0.08em] font-medium uppercase transition-colors cursor-pointer outline-none ${borderColor} ${textColor} ${hoverBg}`}
+        className={`rounded-full border py-1.5 px-3.5 flex items-center gap-1.5 text-[11px] tracking-[0.08em] font-semibold uppercase transition-all duration-200 cursor-pointer outline-none shadow-2xs ${borderColor} ${textColor} ${hoverBg}`}
         aria-label={locale === "uk" ? "Змінити мову" : "Switch language"}
       >
         <svg
@@ -70,6 +82,7 @@ export function LanguageSwitcher({
             <DropdownMenuItem key={loc} asChild>
               <a
                 href={getAlternatePath(effectivePath, loc)}
+                onClick={(e) => handleLanguageClick(e, loc)}
                 className="cursor-pointer"
               >
                 {LOCALE_LABELS[loc]}
