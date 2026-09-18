@@ -229,6 +229,17 @@ export async function fetchNewsCategories(): Promise<NewsCategory[]> {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /**
+ * Check if a news article has a valid English translation (non-empty title in locales.en).
+ */
+export function hasEnglishTranslation(
+  article: NewsArticle | null | undefined
+): boolean {
+  if (!article || !article.locales) return false;
+  const en = article.locales["en"];
+  return Boolean(en && en.title && en.title.trim().length > 0);
+}
+
+/**
  * Format a UTC ISO date string into a localised short date.
  * Matches the existing formatArticleDate behaviour.
  */

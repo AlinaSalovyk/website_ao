@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Locale } from "@/i18n";
-import { fetchNewsCategories, fetchNewsList, type NewsArticle, type NewsCategory } from "@/lib/news-api";
+import { fetchNewsCategories, fetchNewsList, hasEnglishTranslation, type NewsArticle, type NewsCategory } from "@/lib/news-api";
 
 interface UseNewsListProps {
   locale: Locale;
@@ -101,7 +101,11 @@ export function useNewsList({
         page,
         limit,
       });
-      setArticles(data.articles ?? []);
+      let fetchedArts = data.articles ?? [];
+      if (locale === "en") {
+        fetchedArts = fetchedArts.filter((a) => hasEnglishTranslation(a));
+      }
+      setArticles(fetchedArts);
       setTotal(data.total ?? 0);
     } catch {
       // silently degrade
