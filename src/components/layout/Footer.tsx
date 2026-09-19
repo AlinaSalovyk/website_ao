@@ -20,36 +20,88 @@ interface FooterProps {
 
 const useGooeyParticles = (
   containerRef: React.RefObject<HTMLDivElement | null>,
-  count: number = 60,
 ) => {
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < count; i++) {
-      const span = document.createElement("span");
-      span.classList.add("gooey-particle");
-      const size = 2 + Math.random() * 5;
-      const distance = 8 + Math.random() * 12;
-      const position = Math.random() * 100;
-      const time = 3 + Math.random() * 4;
-      const delay = -1 * (Math.random() * 10);
-      span.style.setProperty("--dim", `${size}rem`);
-      span.style.setProperty("--uplift", `${distance}rem`);
-      span.style.setProperty("--pos-x", `${position}%`);
-      span.style.setProperty("--dur", `${time}s`);
-      span.style.setProperty("--delay", `${delay}s`);
-      fragment.appendChild(span);
-    }
-    container.appendChild(fragment);
+    const generateParticles = () => {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
 
+      // Responsive particle density based on screen width
+      const width = typeof window !== "undefined" ? window.innerWidth : 1280;
+      let count = 35; // Mobile default (lightweight, clean)
+      if (width >= 1920) {
+        count = 90; // Ultra-wide 2K/4K (rich, dense, lively)
+      } else if (width >= 1440) {
+        count = 80; // Large Desktop
+      } else if (width >= 1024) {
+        count = 65; // Laptop / Desktop
+      } else if (width >= 768) {
+        count = 50; // Tablet
+      }
+
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < count; i++) {
+        const span = document.createElement("span");
+        span.classList.add("gooey-particle");
+        // Quantize subpixel parameters to clean steps to eliminate subpixel rounding jitter
+        const size = (1.8 + Math.floor(Math.random() * 8) * 0.4).toFixed(1);
+        const distance = Math.round(8 + Math.random() * 12);
+        const position = (Math.round((Math.random() * 100) * 10) / 10).toFixed(1);
+        const time = (3.5 + Math.round(Math.random() * 45) / 10).toFixed(1);
+        const delay = (-1 * (Math.round(Math.random() * 100) / 10)).toFixed(1);
+        span.style.setProperty("--dim", `${size}rem`);
+        span.style.setProperty("--uplift", `${distance}rem`);
+        span.style.setProperty("--pos-x", `${position}%`);
+        span.style.setProperty("--dur", `${time}s`);
+        span.style.setProperty("--delay", `${delay}s`);
+        fragment.appendChild(span);
+      }
+      container.appendChild(fragment);
+    };
+
+    generateParticles();
+
+    let currentBucket =
+      window.innerWidth >= 1920
+        ? "wide"
+        : window.innerWidth >= 1440
+        ? "desktop-large"
+        : window.innerWidth >= 1024
+        ? "desktop"
+        : window.innerWidth >= 768
+        ? "tablet"
+        : "mobile";
+
+    const handleResize = () => {
+      const w = window.innerWidth;
+      const newBucket =
+        w >= 1920
+          ? "wide"
+          : w >= 1440
+          ? "desktop-large"
+          : w >= 1024
+          ? "desktop"
+          : w >= 768
+          ? "tablet"
+          : "mobile";
+      if (newBucket !== currentBucket) {
+        currentBucket = newBucket;
+        generateParticles();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
     return () => {
+      window.removeEventListener("resize", handleResize);
       while (container.firstChild) {
         container.removeChild(container.firstChild);
       }
     };
-  }, [containerRef, count]);
+  }, [containerRef]);
 };
 
 export const Footer = ({
@@ -103,7 +155,7 @@ export const Footer = ({
 
   const particleContainerRef = useRef<HTMLDivElement>(null);
 
-  useGooeyParticles(particleContainerRef, 60);
+  useGooeyParticles(particleContainerRef);
 
   return (
     <div
@@ -111,7 +163,7 @@ export const Footer = ({
       style={{ overflowX: "clip", overflowY: "visible" }}
     >
       {/* Matches gooey height so the transition is flush without a black stripe gap */}
-      <div className="w-full pt-[5rem] md:pt-[6rem] relative">
+      <div className="w-full pt-[5rem] md:pt-[6rem] relative isolate">
         <footer
           className="w-full relative flex flex-col items-center pt-16 md:pt-24 pb-6"
           style={
@@ -122,15 +174,31 @@ export const Footer = ({
             } as React.CSSProperties
           }
         >
-          {/* Gooey Liquid Top Animation */}
+          {/* Solid 100% stable base liquid top band */}
           <div
-            className="absolute top-0 w-[120%] left-[-10%] h-[5rem] md:h-[6rem] z-0 pointer-events-none"
+            className="absolute top-0 w-[120%] left-[-10%] h-[3rem] md:h-[3.5rem] -z-10 pointer-events-none"
             style={{
-              filter: "url('#liquid-effect')",
-              transform: "translateY(-98%)",
+              transform: "translate3d(0, -99%, 0)",
               background: "var(--footer-color)",
             }}
+          />
+
+          {/* Gooey Liquid Top Animation */}
+          <div
+            className="absolute top-0 w-[120%] left-[-10%] h-[5rem] md:h-[6rem] -z-10 pointer-events-none"
+            style={{
+              filter: "url('#liquid-effect')",
+              WebkitFilter: "url('#liquid-effect')",
+              transform: "translate3d(0, -98%, 0)",
+              willChange: "transform, filter",
+            }}
           >
+            {/* Filtered Base Liquid Strip — enables organic metaball bridge formation from the liquid surface */}
+            <div
+              className="absolute bottom-0 w-full h-[3rem] md:h-[3.5rem] pointer-events-none"
+              style={{ background: "var(--footer-color)" }}
+            />
+
             <div
               ref={particleContainerRef}
               className="w-full h-full relative"
@@ -138,26 +206,31 @@ export const Footer = ({
           </div>
 
           <svg
-            style={{
-              position: "absolute",
-              width: 0,
-              height: 0,
-              overflow: "hidden",
-            }}
+            className="absolute -z-50 pointer-events-none opacity-0 invisible"
+            width="0"
+            height="0"
+            aria-hidden="true"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
           >
             <defs>
-              <filter id="liquid-effect">
+              <filter
+                id="liquid-effect"
+                x="-20%"
+                y="-50%"
+                width="140%"
+                height="250%"
+                colorInterpolationFilters="sRGB"
+              >
                 <feGaussianBlur
                   in="SourceGraphic"
-                  stdDeviation="7"
+                  stdDeviation="6"
                   result="blur"
                 />
                 <feColorMatrix
                   in="blur"
                   mode="matrix"
-                  values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+                  values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 16 -6"
                   result="liquid"
                 />
               </filter>
