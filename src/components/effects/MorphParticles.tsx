@@ -196,12 +196,7 @@ export const MorphParticles = ({
     particleSize = 1.5,
     resolution = 2,
 }: MorphParticlesProps) => {
-    const [mounted, setMounted] = useState(false);
     const [geometryData, setGeometryData] = useState<any>(null);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     useEffect(() => {
         let isMounted = true;
@@ -308,8 +303,6 @@ export const MorphParticles = ({
 
         return () => { isMounted = false; };
     }, [images, resolution]);
-
-    if (!mounted) return null;
 
     return (
         <div className="absolute inset-0 w-full h-full pointer-events-none z-[50]">
