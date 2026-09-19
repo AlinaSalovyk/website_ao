@@ -558,6 +558,8 @@ export const uk = {
       nextImage: "Наступне зображення",
       goToImage: "Перейти до зображення",
       goToVideo: "Перейти до відео",
+      playSlideshow: "Запустити слайдшоу",
+      pauseSlideshow: "Зупинити слайдшоу",
     },
   },
 

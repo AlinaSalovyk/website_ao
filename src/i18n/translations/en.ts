@@ -559,6 +559,8 @@ export const en: Translations = {
       nextImage: "Next image",
       goToImage: "Go to image",
       goToVideo: "Go to video",
+      playSlideshow: "Start slideshow",
+      pauseSlideshow: "Pause slideshow",
     },
   },
 

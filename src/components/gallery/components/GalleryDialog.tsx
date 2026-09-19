@@ -4,6 +4,8 @@ import {
   ChevronRight,
   Maximize,
   Minimize,
+  Pause,
+  Play,
   X,
   ZoomIn,
   ZoomOut,
@@ -15,25 +17,18 @@ import { VideoUnavailableIcon } from "@/components/gallery/components/VideoUnava
 import {
   useFullscreen,
   useKeyboardNavigation,
+  useMediaGestures,
+  useSlideshow,
 } from "@/components/gallery/hooks";
-import type { GalleryItem } from "@/components/gallery/types";
+import type { GalleryDialogProps } from "@/components/gallery/types";
 import {
   Dialog,
   DialogClose,
   DialogOverlay,
   DialogPortal,
 } from "@/components/ui/dialog";
-import type { Locale } from "@/i18n";
 import { getTranslations } from "@/i18n";
 import { cn } from "@/lib/utils";
-
-type GalleryDialogProps = {
-  items: GalleryItem[];
-  open: boolean;
-  initialIndex: number;
-  onOpenChange: (open: boolean) => void;
-  locale?: Locale;
-};
 
 export function GalleryDialog({
   items,
@@ -44,38 +39,30 @@ export function GalleryDialog({
 }: GalleryDialogProps): JSX.Element {
   const t = getTranslations(locale);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [isZoomed, setIsZoomed] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [videoErrors, setVideoErrors] = useState<Set<string>>(new Set());
   const [thumbErrors, setThumbErrors] = useState<Set<string>>(new Set());
   const contentRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
 
-  const { isFullscreen, toggle: toggleFullscreen } = useFullscreen(contentRef);
+  const {
+    isFullscreen,
+    isSupported: isFullscreenSupported,
+    toggle: toggleFullscreen,
+  } = useFullscreen(contentRef);
 
-  /* Reset state when dialog opens */
-  useEffect(() => {
-    if (open) {
-      setCurrentIndex(initialIndex);
-      setIsZoomed(false);
-    }
-  }, [open, initialIndex]);
-
-  /* Scroll active thumbnail into view */
-  useEffect(() => {
-    const activeThumb = thumbsRef.current?.children[currentIndex] as
-      | HTMLElement
-      | undefined;
-    activeThumb?.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center",
-    });
-  }, [currentIndex]);
+  const currentItem = items[currentIndex];
+  const isVideo = currentItem?.type === "video";
+  // Only for image galleries, so the timer never cuts a video short
+  const canSlideshow =
+    items.length > 1 && items.every((item) => item.type !== "video");
 
   const goTo = useCallback(
     (direction: "prev" | "next") => {
-      setIsZoomed(false);
       videoRef.current?.pause();
       setCurrentIndex((prev) =>
         direction === "prev"
@@ -92,11 +79,56 @@ export function GalleryDialog({
 
   const goPrev = useCallback(() => goTo("prev"), [goTo]);
   const goNext = useCallback(() => goTo("next"), [goTo]);
+  const stopSlideshow = useCallback(() => setIsPlaying(false), []);
+
+  const {
+    isZoomed,
+    isDragging,
+    mediaStyle,
+    toggleZoom,
+    resetView,
+    stageHandlers,
+  } = useMediaGestures({
+    stageRef,
+    mediaRef: imageRef,
+    zoomEnabled: !isVideo,
+    resetKey: currentIndex,
+    onSwipe: goTo,
+    onSwipeDown: () => onOpenChange(false),
+    onZoom: stopSlideshow,
+  });
+
+  /* Reset state when dialog opens or closes */
+  useEffect(() => {
+    if (open) setCurrentIndex(initialIndex);
+    resetView();
+    setIsPlaying(false);
+  }, [open, initialIndex, resetView]);
+
+  /* Scroll active thumbnail into view */
+  useEffect(() => {
+    const activeThumb = thumbsRef.current?.children[currentIndex] as
+      | HTMLElement
+      | undefined;
+    activeThumb?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
+  }, [currentIndex]);
 
   useKeyboardNavigation(open, goPrev, goNext);
+  useSlideshow(open && isPlaying, currentIndex, goNext, progressRef);
 
-  const currentItem = items[currentIndex];
-  const isVideo = currentItem?.type === "video";
+  const toggleSlideshow = () => {
+    if (!isPlaying) resetView();
+    setIsPlaying((playing) => !playing);
+  };
+
+  const mediaClassName = cn(
+    "max-h-full max-w-full select-none object-contain",
+    !isDragging && "transition-transform duration-300",
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -117,6 +149,16 @@ export function GalleryDialog({
             {currentItem?.alt}
           </DialogPrimitive.Description>
 
+          {/* Slideshow progress */}
+          {isPlaying && (
+            <div
+              ref={progressRef}
+              aria-hidden="true"
+              className="absolute inset-x-0 top-0 z-20 h-0.5 origin-left bg-destructive"
+              style={{ transform: "scaleX(0)" }}
+            />
+          )}
+
           {/* Toolbar */}
           <div className="relative z-10 flex items-center justify-between px-4 py-3">
             <span className="select-none text-sm text-white/70">
@@ -124,24 +166,43 @@ export function GalleryDialog({
             </span>
 
             <div className="flex items-center gap-1">
-              <ToolbarButton
-                onClick={toggleFullscreen}
-                label={
-                  isFullscreen
-                    ? t.galleryUI.dialog.exitFullscreen
-                    : t.galleryUI.dialog.fullscreen
-                }
-              >
-                {isFullscreen ? (
-                  <Minimize className="size-5" />
-                ) : (
-                  <Maximize className="size-5" />
-                )}
-              </ToolbarButton>
+              {canSlideshow && (
+                <ToolbarButton
+                  onClick={toggleSlideshow}
+                  label={
+                    isPlaying
+                      ? t.galleryUI.dialog.pauseSlideshow
+                      : t.galleryUI.dialog.playSlideshow
+                  }
+                >
+                  {isPlaying ? (
+                    <Pause className="size-5" />
+                  ) : (
+                    <Play className="size-5" />
+                  )}
+                </ToolbarButton>
+              )}
+
+              {isFullscreenSupported && (
+                <ToolbarButton
+                  onClick={toggleFullscreen}
+                  label={
+                    isFullscreen
+                      ? t.galleryUI.dialog.exitFullscreen
+                      : t.galleryUI.dialog.fullscreen
+                  }
+                >
+                  {isFullscreen ? (
+                    <Minimize className="size-5" />
+                  ) : (
+                    <Maximize className="size-5" />
+                  )}
+                </ToolbarButton>
+              )}
 
               {!isVideo && (
                 <ToolbarButton
-                  onClick={() => setIsZoomed((z) => !z)}
+                  onClick={() => toggleZoom()}
                   label={
                     isZoomed
                       ? t.galleryUI.dialog.zoomOut
@@ -179,7 +240,14 @@ export function GalleryDialog({
               <ChevronLeft className="size-7" />
             </button>
 
-            <div className="flex h-full w-full items-center justify-center px-12 md:px-16">
+            <div
+              ref={stageRef}
+              className={cn(
+                "flex h-full w-full touch-none items-center justify-center px-12 md:px-16",
+                isZoomed && (isDragging ? "cursor-grabbing" : "cursor-grab"),
+              )}
+              {...stageHandlers}
+            >
               {isVideo ? (
                 currentItem?.id && videoErrors.has(currentItem.id) ? (
                   <div className="flex flex-col items-center justify-center gap-3 text-white/60">
@@ -196,7 +264,8 @@ export function GalleryDialog({
                     controls
                     autoPlay
                     playsInline
-                    className="max-h-full max-w-full select-none object-contain"
+                    className={mediaClassName}
+                    style={mediaStyle}
                     onError={() => {
                       if (currentItem?.id) {
                         setVideoErrors((prev) =>
@@ -208,12 +277,12 @@ export function GalleryDialog({
                 )
               ) : (
                 <img
+                  ref={imageRef}
+                  key={currentItem?.id}
                   src={currentItem?.src}
                   alt={currentItem?.alt}
-                  className={cn(
-                    "max-h-full max-w-full select-none object-contain transition-transform duration-300",
-                    isZoomed && "scale-150",
-                  )}
+                  className={mediaClassName}
+                  style={mediaStyle}
                   draggable={false}
                 />
               )}
@@ -231,7 +300,9 @@ export function GalleryDialog({
 
           {/* Caption */}
           <div className="bg-gradient-to-t from-black/60 to-transparent px-5 py-3 text-center">
-            <p className="text-sm text-white/90">{currentItem?.alt}</p>
+            <p className="text-sm text-white/90">
+              {currentItem?.caption || currentItem?.alt}
+            </p>
           </div>
 
           {/* Thumbnails */}
@@ -248,7 +319,6 @@ export function GalleryDialog({
                   onClick={() => {
                     videoRef.current?.pause();
                     setCurrentIndex(index);
-                    setIsZoomed(false);
                   }}
                   aria-label={`${item.type === "video" ? t.galleryUI.dialog.goToVideo : t.galleryUI.dialog.goToImage} ${index + 1}`}
                   className={cn(
@@ -277,7 +347,7 @@ export function GalleryDialog({
                     )
                   ) : (
                     <img
-                      src={item.src}
+                      src={item.thumbnailSrc ?? item.src}
                       alt=""
                       role="presentation"
                       aria-hidden="true"
