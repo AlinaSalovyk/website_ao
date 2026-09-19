@@ -49,7 +49,13 @@ const useGooeyParticles = (
         span.classList.add("gooey-particle");
         // Quantize subpixel parameters to clean steps to eliminate subpixel rounding jitter
         const size = (1.8 + Math.floor(Math.random() * 8) * 0.4).toFixed(1);
-        const distance = Math.round(8 + Math.random() * 12);
+        const [distMin, distMax] =
+          width >= 1920 ? [8, 10]        // Ultra-wide — full range 
+            : width >= 1440 ? [8, 13]      // Large Desktop
+              : width >= 1024 ? [2, 2]      // Laptop / Desktop
+                : width >= 768 ? [8, 10]       // Tablet 
+                  : [2, 4];                       // Mobile 
+        const distance = parseFloat((distMin + Math.random() * (distMax - distMin)).toFixed(1));
         const position = (Math.round((Math.random() * 100) * 10) / 10).toFixed(1);
         const time = (3.5 + Math.round(Math.random() * 45) / 10).toFixed(1);
         const delay = (-1 * (Math.round(Math.random() * 100) / 10)).toFixed(1);
@@ -58,6 +64,7 @@ const useGooeyParticles = (
         span.style.setProperty("--pos-x", `${position}%`);
         span.style.setProperty("--dur", `${time}s`);
         span.style.setProperty("--delay", `${delay}s`);
+        span.style.bottom = "3rem";
         fragment.appendChild(span);
       }
       container.appendChild(fragment);
@@ -69,12 +76,12 @@ const useGooeyParticles = (
       window.innerWidth >= 1920
         ? "wide"
         : window.innerWidth >= 1440
-        ? "desktop-large"
-        : window.innerWidth >= 1024
-        ? "desktop"
-        : window.innerWidth >= 768
-        ? "tablet"
-        : "mobile";
+          ? "desktop-large"
+          : window.innerWidth >= 1024
+            ? "desktop"
+            : window.innerWidth >= 768
+              ? "tablet"
+              : "mobile";
 
     const handleResize = () => {
       const w = window.innerWidth;
@@ -82,12 +89,12 @@ const useGooeyParticles = (
         w >= 1920
           ? "wide"
           : w >= 1440
-          ? "desktop-large"
-          : w >= 1024
-          ? "desktop"
-          : w >= 768
-          ? "tablet"
-          : "mobile";
+            ? "desktop-large"
+            : w >= 1024
+              ? "desktop"
+              : w >= 768
+                ? "tablet"
+                : "mobile";
       if (newBucket !== currentBucket) {
         currentBucket = newBucket;
         generateParticles();
@@ -159,11 +166,10 @@ export const Footer = ({
 
   return (
     <div
-      className="w-full relative bg-transparent"
+      className="w-full relative z-0 bg-transparent"
       style={{ overflowX: "clip", overflowY: "visible" }}
     >
-      {/* Matches gooey height so the transition is flush without a black stripe gap */}
-      <div className="w-full pt-[5rem] md:pt-[6rem] relative isolate">
+      <div className="w-full pt-[5rem] md:pt-[6rem] relative">
         <footer
           className="w-full relative flex flex-col items-center pt-16 md:pt-24 pb-6"
           style={
@@ -174,31 +180,19 @@ export const Footer = ({
             } as React.CSSProperties
           }
         >
-          {/* Solid 100% stable base liquid top band */}
+          {/* Gooey Liquid Top Animation & Solid Blue Surface */}
           <div
-            className="absolute top-0 w-[120%] left-[-10%] h-[3rem] md:h-[3.5rem] -z-10 pointer-events-none"
-            style={{
-              transform: "translate3d(0, -99%, 0)",
-              background: "var(--footer-color)",
-            }}
-          />
-
-          {/* Gooey Liquid Top Animation */}
-          <div
-            className="absolute top-0 w-[120%] left-[-10%] h-[5rem] md:h-[6rem] -z-10 pointer-events-none"
+            className="absolute top-0 w-[120%] left-[-10%] h-[5.2rem] md:h-[6.2rem] pointer-events-none"
             style={{
               filter: "url('#liquid-effect')",
               WebkitFilter: "url('#liquid-effect')",
-              transform: "translate3d(0, -98%, 0)",
-              willChange: "transform, filter",
+              transform: "translateY(-98%)",
+              background: "var(--footer-color, #0e52ff)",
+              zIndex: 0,
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
             }}
           >
-            {/* Filtered Base Liquid Strip — enables organic metaball bridge formation from the liquid surface */}
-            <div
-              className="absolute bottom-0 w-full h-[3rem] md:h-[3.5rem] pointer-events-none"
-              style={{ background: "var(--footer-color)" }}
-            />
-
             <div
               ref={particleContainerRef}
               className="w-full h-full relative"
@@ -206,7 +200,7 @@ export const Footer = ({
           </div>
 
           <svg
-            className="absolute -z-50 pointer-events-none opacity-0 invisible"
+            className="absolute pointer-events-none opacity-0 invisible"
             width="0"
             height="0"
             aria-hidden="true"
@@ -380,7 +374,7 @@ export const Footer = ({
                     {footerSocials.map((icon, index) => {
                       const linkHref =
                         footerSocialLinkByAlt[
-                          icon.alt as keyof typeof footerSocialLinkByAlt
+                        icon.alt as keyof typeof footerSocialLinkByAlt
                         ] || "#";
                       const isExternal = linkHref.startsWith("http");
 

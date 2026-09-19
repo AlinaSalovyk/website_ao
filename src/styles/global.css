@@ -346,30 +346,32 @@
   100% { opacity: 1; transform: translateY(0) rotateX(0deg); filter: blur(0); }
 }
 
-/* Gooey footer particle float-up (GPU-accelerated transform without top layout reflow) */
+/* Gooey footer particle float-up — 2D transforms intentional:
+   translate3d/scale3d inside SVG filter cause Firefox/Safari to switch
+   2D↔3D rendering contexts every frame → flickering. 2D is stable everywhere. */
 @keyframes gooey-float-up {
   0% {
-    transform: translate3d(0, 40px, 0) scale3d(0.5, 0.5, 1);
+    transform: translateY(40px) scale(0.5, 0.5);
     opacity: 1;
   }
   15% {
-    transform: translate3d(0, 5px, 0) scale3d(0.85, 1.15, 1);
+    transform: translateY(5px) scale(0.85, 1.15);
     opacity: 1;
   }
   32% {
-    transform: translate3d(0, -35px, 0) scale3d(0.75, 1.25, 1);
+    transform: translateY(-35px) scale(0.75, 1.25);
     opacity: 1;
   }
   48% {
-    transform: translate3d(0, -75px, 0) scale3d(1, 1, 1);
+    transform: translateY(-75px) scale(1, 1);
     opacity: 1;
   }
   80% {
-    transform: translate3d(0, calc(-75px - (var(--uplift) * 0.7)), 0) scale3d(0.85, 0.85, 1);
+    transform: translateY(calc(-75px - (var(--uplift) * 0.7))) scale(0.85, 0.85);
     opacity: 1;
   }
   100% {
-    transform: translate3d(0, calc(-75px - var(--uplift)), 0) scale3d(0, 0, 1);
+    transform: translateY(calc(-75px - var(--uplift))) scale(0, 0);
     opacity: 0;
   }
 }
@@ -470,11 +472,13 @@
   width: var(--dim, 3rem);
   height: var(--dim, 3rem);
   margin-left: calc(-0.5 * var(--dim, 3rem));
-  transform: translate3d(0, 40px, 0) scale3d(0.5, 0.5, 1);
+  transform: translateY(40px) scale(0.5, 0.5); /* 2D — stable with SVG filter in Firefox/Safari */
   transform-origin: center center;
   animation: gooey-float-up var(--dur, 4s) linear infinite;
   animation-delay: var(--delay, 0s);
-  will-change: transform;
+  will-change: auto;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 /* Parallax scroll helper */
@@ -686,4 +690,4 @@ body.intro-active #site-wrapper {
   li::marker {
     color: #60a5fa !important;
   }
-}
+}
