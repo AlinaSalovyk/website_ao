@@ -124,9 +124,14 @@ export const ImageShapeParticles = ({
   sectionRef,
   boundsRef,
 }: ImageShapeParticlesProps) => {
+  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: -1000, y: -1000 });
   const scrollRef = useRef(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [geometryData, setGeometryData] = useState<{
     positions: Float32Array;
@@ -293,6 +298,8 @@ export const ImageShapeParticles = ({
       window.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <div ref={containerRef} className={`relative w-full h-full ${className}`}>
