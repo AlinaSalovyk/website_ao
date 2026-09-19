@@ -19,7 +19,7 @@ export const ArticleBody = ({
   const cleanContent = resolveHtmlMediaUrls(localeContent);
 
   return (
-    <ScrollReveal variant="fade-up">
+    <ScrollReveal variant="fade-up" disabled={true}>
       {cleanContent ? (
         <div
           className="prose article-content prose-slate max-w-none text-slate-800"

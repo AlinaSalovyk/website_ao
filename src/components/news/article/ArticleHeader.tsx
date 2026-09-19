@@ -27,7 +27,7 @@ export const ArticleHeader = ({
 
   return (
     <header className="flex flex-col gap-6 mb-8 md:mb-12">
-      <ScrollReveal variant="fade-up">
+      <ScrollReveal variant="fade-up" disabled={true}>
         <div className="flex flex-wrap items-center gap-3 mb-4">
           {article.category && (
             <span className="px-3 py-1 rounded-full bg-blue-50 border border-blue-200/80 text-blue-700 text-xs font-bold tracking-wider uppercase">
