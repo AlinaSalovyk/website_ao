@@ -9,7 +9,7 @@
 // ─── Security Helpers ──────────────────────────────────────────────────────────
 
 /**
- * Safely escapes HTML special characters to prevent XSS vulnerability in LightGallery subHtml
+ * Safely escapes HTML special characters to prevent XSS when building HTML strings
  */
 export function escapeHtml(str: string): string {
   if (!str) return "";
