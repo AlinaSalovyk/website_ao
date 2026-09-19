@@ -183,7 +183,7 @@ const articleJsonLd = {
         hasEnglishTranslation={true}
       />
       <main id="main-content" class="w-full">
-        <ArticlePage client:visible article={article} locale={locale} />
+        <ArticlePage client:load article={article} locale={locale} />
       </main>
       <Footer client:visible locale={locale} />
     </div>

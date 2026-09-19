@@ -10,17 +10,19 @@ export interface ScrollRevealOptions {
   rootMargin?: string;
   once?: boolean;
   delay?: number;
+  disabled?: boolean;
 }
 
 export const useScrollReveal = (options: ScrollRevealOptions = {}) => {
   const {
-    threshold = 0.15,
-    rootMargin = "0px 0px -60px 0px",
+    threshold = 0,
+    rootMargin = "0px 0px 100px 0px",
     once = true,
     delay = 0,
+    disabled = false,
   } = options;
   const ref = useRef<HTMLDivElement>(null);
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [isRevealed, setIsRevealed] = useState(disabled);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const handleIntersect = useCallback(
@@ -42,8 +44,39 @@ export const useScrollReveal = (options: ScrollRevealOptions = {}) => {
   );
 
   useEffect(() => {
+    if (disabled) {
+      setIsRevealed(true);
+      return;
+    }
+
     const el = ref.current;
     if (!el) return;
+
+    // Fallback if IntersectionObserver is not supported or reduced motion is preferred
+    if (
+      typeof window === "undefined" ||
+      !("IntersectionObserver" in window) ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      setIsRevealed(true);
+      return;
+    }
+
+    // Check if element is already in or near viewport on mount
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    if (rect.top <= vh + 100 && rect.bottom >= -100) {
+      if (delay > 0) {
+        timerRef.current = setTimeout(() => setIsRevealed(true), delay);
+      } else {
+        setIsRevealed(true);
+      }
+      if (once) {
+        // Already revealed on mount, no need to observe
+        return () => clearTimeout(timerRef.current);
+      }
+    }
+
     const observer = new IntersectionObserver(handleIntersect, {
       threshold,
       rootMargin,
@@ -53,7 +86,7 @@ export const useScrollReveal = (options: ScrollRevealOptions = {}) => {
       clearTimeout(timerRef.current);
       observer.disconnect();
     };
-  }, [handleIntersect, threshold, rootMargin]);
+  }, [disabled, handleIntersect, threshold, rootMargin, delay, once]);
 
-  return { ref, isRevealed };
+  return { ref, isRevealed: disabled || isRevealed };
 };

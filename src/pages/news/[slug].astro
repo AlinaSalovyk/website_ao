@@ -200,7 +200,7 @@ const hasEng = hasEnglishTranslation(article);
         hasEnglishTranslation={hasEng}
       />
       <main id="main-content" class="w-full bg-slate-50 text-slate-900">
-        <ArticlePage client:visible article={article} locale={locale} />
+        <ArticlePage client:load article={article} locale={locale} />
         <Footer client:visible locale={locale} />
       </main>
     </div>

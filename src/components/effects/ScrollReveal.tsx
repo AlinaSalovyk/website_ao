@@ -24,6 +24,7 @@ interface ScrollRevealProps extends ScrollRevealOptions {
   duration?: number;
   className?: string;
   as?: keyof JSX.IntrinsicElements;
+  disabled?: boolean;
 }
 
 const VARIANT_STYLES: Record<
@@ -75,14 +76,20 @@ export const ScrollReveal = ({
   threshold,
   rootMargin,
   once = true,
+  disabled = false,
 }: ScrollRevealProps): JSX.Element => {
   const { ref, isRevealed } = useScrollReveal({
     threshold,
     rootMargin,
     once,
     delay,
+    disabled,
   });
   const styles = VARIANT_STYLES[variant];
+
+  if (disabled) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <div
