@@ -8,7 +8,8 @@ import {
   type NewsArticle,
   type NewsGalleryImage,
 } from "@/lib/news-api";
-import { NewsLightGallery, type LightGalleryItem } from "@/components/ui/news-light-gallery";
+import type { GalleryItem } from "@/components/gallery";
+import { NewsGalleryGrid } from "@/components/news/article/NewsGalleryGrid";
 
 interface NewsPhotoGalleryProps {
   article: NewsArticle;
@@ -28,7 +29,7 @@ export function NewsPhotoGallery({
   const titleUK = articleTitle(article, "uk") || "Фотографія новини";
   const titleEN = articleTitle(article, "en") || titleUK || "News photo";
 
-  let galleryItems: LightGalleryItem[] = [];
+  let galleryItems: GalleryItem[] = [];
 
   // 1. Primary: Structured v22 gallery images table records
   if (images && images.length > 0) {
@@ -45,17 +46,14 @@ export function NewsPhotoGallery({
       }
 
       const rawSrc = img.url || `/api/v1/news/${img.news_id || article.id}/gallery/${img.id}/file`;
-      const fullSrc = getFullImageUrl(rawSrc);
 
       return {
         id: img.id,
-        src: fullSrc,
-        thumbnailSrc: img.thumbnail_url ? getFullImageUrl(img.thumbnail_url) : fullSrc,
-        largeSrc: img.large_url ? getFullImageUrl(img.large_url) : fullSrc,
+        src: getFullImageUrl(img.large_url || rawSrc),
+        thumbnailSrc: getFullImageUrl(img.thumbnail_url || rawSrc),
         alt,
-        caption,
-        width: img.width,
-        height: img.height,
+        caption: caption || undefined,
+        type: "image",
       };
     });
   } 
@@ -69,9 +67,8 @@ export function NewsPhotoGallery({
           id: `gallery-legacy-${idx}`,
           src: fullSrc,
           thumbnailSrc: fullSrc,
-          largeSrc: fullSrc,
           alt: `${locale === "en" ? titleEN : titleUK} - ${idx + 1}`,
-          caption: "",
+          type: "image",
         };
       });
   }
@@ -88,7 +85,7 @@ export function NewsPhotoGallery({
         <span>{t.newsPage.photoGallery}</span>
       </div>
 
-      <NewsLightGallery items={galleryItems} locale={locale} />
+      <NewsGalleryGrid items={galleryItems} locale={locale} />
     </div>
   );
 }

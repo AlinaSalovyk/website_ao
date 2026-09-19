@@ -83,7 +83,7 @@ describe("News Photo Gallery Helpers", () => {
   });
 });
 
-describe("LightGallery Security & Sanitization", () => {
+describe("HTML Escaping & Sanitization", () => {
   it("escapes malicious HTML tags in captions to prevent XSS", () => {
     assert.strictEqual(
       escapeHtml("<script>alert('xss')</script>"),

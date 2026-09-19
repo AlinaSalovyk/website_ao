@@ -220,6 +220,9 @@ export const uk = {
     downloadDocumentAria: "Завантажити документ",
     authorLabel: "Автор",
     photoGallery: "Фотогалерея",
+    galleryFullscreen: "На весь екран",
+    galleryViewPhoto: "Переглянути",
+    galleryMorePhotos: "Більше фото",
     videoMaterials: "Відео матеріали",
     relatedNews: "Схожі матеріали",
     latestArticles: "Останні матеріали",
@@ -558,6 +561,8 @@ export const uk = {
       nextImage: "Наступне зображення",
       goToImage: "Перейти до зображення",
       goToVideo: "Перейти до відео",
+      playSlideshow: "Запустити слайдшоу",
+      pauseSlideshow: "Зупинити слайдшоу",
     },
   },
 

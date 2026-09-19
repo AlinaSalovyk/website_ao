@@ -20,6 +20,7 @@ export * from "./article/ArticleBody";
 export * from "./article/ArticleVideoSection";
 export * from "./article/ArticleAttachmentsSection";
 export * from "./article/ArticleTagsSection";
+export * from "./article/NewsGalleryGrid";
 export * from "./article/NewsPhotoGallery";
 export * from "./article/RelatedCard";
 export * from "./article/RelatedNewsSlider";
