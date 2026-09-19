@@ -476,9 +476,6 @@
   transform-origin: center center;
   animation: gooey-float-up var(--dur, 4s) linear infinite;
   animation-delay: var(--delay, 0s);
-  will-change: auto;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
 }
 
 /* Parallax scroll helper */

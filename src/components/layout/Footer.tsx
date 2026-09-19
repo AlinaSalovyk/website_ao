@@ -189,6 +189,7 @@ export const Footer = ({
               transform: "translateY(-98%)",
               background: "var(--footer-color, #0e52ff)",
               zIndex: 0,
+              overflow: "visible",
               backfaceVisibility: "hidden",
               WebkitBackfaceVisibility: "hidden",
             }}
@@ -196,11 +197,12 @@ export const Footer = ({
             <div
               ref={particleContainerRef}
               className="w-full h-full relative"
+              style={{ overflow: "visible" }}
             />
           </div>
 
           <svg
-            className="absolute pointer-events-none opacity-0 invisible"
+            className="absolute pointer-events-none opacity-0 w-0 h-0 overflow-hidden"
             width="0"
             height="0"
             aria-hidden="true"
@@ -211,9 +213,9 @@ export const Footer = ({
               <filter
                 id="liquid-effect"
                 x="-20%"
-                y="-50%"
+                y="-300%"
                 width="140%"
-                height="250%"
+                height="500%"
                 colorInterpolationFilters="sRGB"
               >
                 <feGaussianBlur
