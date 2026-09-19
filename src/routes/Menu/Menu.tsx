@@ -1,6 +1,6 @@
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { XIcon } from "lucide-react";
-import type { JSX } from "react";
+import type { JSX, ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,72 @@ interface MenuProps {
   onClose: () => void;
   locale?: Locale;
 }
+
+interface MenuSectionProps {
+  title: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  contentClassName?: string;
+  children: ReactNode;
+}
+
+const MenuSection = ({
+  title,
+  open,
+  onOpenChange,
+  contentClassName,
+  children,
+}: MenuSectionProps): JSX.Element => (
+  <Collapsible.Root
+    open={open}
+    onOpenChange={onOpenChange}
+    className="flex flex-col items-start w-full"
+  >
+    <div className="flex flex-col items-start gap-1 w-full">
+      <Collapsible.Trigger asChild>
+        <Button
+          variant="ghost"
+          className="h-auto p-0 hover:bg-transparent justify-between gap-4 w-full whitespace-normal text-left cursor-pointer"
+        >
+          <span className="min-w-0 break-words text-pure-white text-2xl leading-8 font-normal">
+            {title}
+          </span>
+          <div className="grid place-items-center w-5 h-5 shrink-0">
+            <div className="w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
+            <div
+              className={cn(
+                "w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
+                open ? "rotate-0" : "-rotate-90",
+              )}
+            />
+          </div>
+        </Button>
+      </Collapsible.Trigger>
+      <Separator className="w-full h-px bg-menu-separator" />
+    </div>
+
+    <Collapsible.Content
+      className={cn("flex flex-col items-start w-full", contentClassName)}
+    >
+      {children}
+    </Collapsible.Content>
+  </Collapsible.Root>
+);
+
+const MenuSubLink = ({
+  href,
+  label,
+}: {
+  href: string;
+  label: string;
+}): JSX.Element => (
+  <a
+    href={href}
+    className="block w-full min-w-0 py-2 text-pure-white text-sm leading-6 font-normal break-words hover:opacity-80 transition-opacity"
+  >
+    {label}
+  </a>
+);
 
 export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
   const t = getTranslations(locale);
@@ -37,6 +103,24 @@ export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
       image: "/images/EducationalPrograms/PostgraduateStudies.webp",
       anchor: "postgraduate",
     },
+  ];
+
+  const departmentLinks = [
+    {
+      label: t.departments.it,
+      href: lp("/information-technologies-and-data-analytics"),
+    },
+    { label: t.departments.finance, href: lp("/finance-and-business") },
+    { label: t.departments.management, href: lp("/management-and-marketing") },
+    {
+      label: t.departments.math,
+      href: lp("/mathematics-and-intelligent-computing"),
+    },
+  ];
+
+  const laboratoryLinks = [
+    { label: t.laboratories.robotics, href: lp("/laboratory") },
+    { label: t.laboratories.vr, href: lp("/laboratory-vr") },
   ];
 
   const simpleMenuItems = [
@@ -170,7 +254,7 @@ export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
         role="dialog"
         aria-modal="true"
         aria-label={t.menuAriaLabel}
-        className="flex flex-col h-screen items-start p-6 bg-layout-bg border-r border-solid border-menu-border fixed left-0 top-0 bottom-0 z-[100] overflow-y-auto w-full max-w-[480px] animate-slide-in-left"
+        className="flex flex-col h-dvh items-start p-4 sm:p-6 bg-layout-bg border-r border-solid border-menu-border fixed left-0 top-0 bottom-0 z-[100] overflow-y-auto overflow-x-hidden w-full max-w-[480px] animate-slide-in-left"
       >
         <div className="inline-flex pb-4 flex-col items-start">
           <Button
@@ -185,16 +269,16 @@ export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
 
         <div className="flex flex-col items-start justify-between flex-1 self-stretch w-full">
           <nav className="flex flex-col items-start self-stretch w-full">
-            <div className="flex flex-col max-w-[470.67px] items-start justify-center gap-2.5 py-2 w-full">
+            <div className="flex flex-col items-start justify-center gap-2.5 py-2 w-full">
               {simpleMenuItems.map((item) => (
                 <div
                   key={item.href}
-                  className="inline-flex flex-col items-start gap-1 w-full"
+                  className="flex flex-col items-start gap-1 w-full"
                 >
                   <a
                     href={item.href}
                     onClick={onClose}
-                    className="h-auto p-0 justify-start w-full cursor-pointer hover:opacity-80 transition-opacity"
+                    className="block h-auto p-0 w-full min-w-0 break-words cursor-pointer hover:opacity-80 transition-opacity"
                   >
                     <span className="text-white text-2xl leading-8 font-normal">
                       {item.label}
@@ -204,212 +288,68 @@ export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
                 </div>
               ))}
 
-              <Collapsible.Root
+              <MenuSection
+                title={t.nav.educationalPrograms}
                 open={isProgramsOpen}
                 onOpenChange={setIsProgramsOpen}
-                className="flex flex-col items-start w-full"
               >
-                <div className="inline-flex flex-col items-start gap-1 w-full">
-                  <Collapsible.Trigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="h-auto p-0 hover:bg-transparent justify-between w-full cursor-pointer"
-                    >
-                      <span className="text-pure-white text-2xl leading-8 font-normal">
-                        {t.nav.educationalPrograms}
+                {educationalPrograms.map((program) => (
+                  <a
+                    key={program.anchor}
+                    href={`${lp("/")}#${program.anchor}`}
+                    onClick={onClose}
+                    className="h-auto w-full flex items-center gap-3 px-0 py-2 hover:bg-pure-white/5 justify-start cursor-pointer rounded-sm transition-colors"
+                  >
+                    <div className="flex flex-col w-10 h-10 items-start justify-center rounded overflow-hidden flex-shrink-0">
+                      <div
+                        className="w-10 h-10 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${program.image})` }}
+                      />
+                    </div>
+
+                    <div className="flex min-w-0 flex-col items-start justify-center">
+                      <span className="font-medium text-pure-white text-sm leading-[18px] break-words">
+                        {program.title}
                       </span>
-                      <div className="grid place-items-center w-5 h-5">
-                        <div className="w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
-                        <div
-                          className={cn(
-                            "w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
-                            isProgramsOpen ? "rotate-0" : "-rotate-90",
-                          )}
-                        />
-                      </div>
-                    </Button>
-                  </Collapsible.Trigger>
-                  <Separator className="w-full h-px bg-menu-separator" />
-                </div>
+                      <span className="font-normal text-news-gray text-xs leading-[18.3px] break-words">
+                        {program.description}
+                      </span>
+                    </div>
+                  </a>
+                ))}
+              </MenuSection>
 
-                <Collapsible.Content className="flex flex-col items-start w-full">
-                  <div className="flex flex-col items-start w-full">
-                    {educationalPrograms.map((program) => (
-                      <a
-                        key={program.anchor}
-                        href={`${lp("/")}#${program.anchor}`}
-                        onClick={onClose}
-                        className="h-auto max-w-[470.67px] w-full flex items-center gap-3 px-0 py-2 hover:bg-pure-white/5 justify-start cursor-pointer rounded-sm transition-colors"
-                      >
-                        <div className="flex flex-col w-10 h-10 items-start justify-center rounded overflow-hidden flex-shrink-0">
-                          <div
-                            className="w-10 h-10 bg-cover bg-center"
-                            style={{ backgroundImage: `url(${program.image})` }}
-                          />
-                        </div>
-
-                        <div className="inline-flex flex-col items-start justify-center">
-                          <div className="inline-flex flex-col items-start">
-                            <span className="font-medium text-pure-white text-sm leading-[18px]">
-                              {program.title}
-                            </span>
-                          </div>
-
-                          <div className="inline-flex flex-col items-start">
-                            <span className="font-normal text-news-gray text-xs leading-[18.3px]">
-                              {program.description}
-                            </span>
-                          </div>
-                        </div>
-                      </a>
-                    ))}
-                  </div>
-                </Collapsible.Content>
-              </Collapsible.Root>
-
-              <Collapsible.Root
+              <MenuSection
+                title={t.nav.departments}
                 open={isDepartmentsOpen}
                 onOpenChange={setIsDepartmentsOpen}
-                className="flex flex-col items-start w-full"
+                contentClassName="pl-4"
               >
-                <div className="inline-flex flex-col items-start gap-1 w-full">
-                  <Collapsible.Trigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="h-auto p-0 hover:bg-transparent justify-between w-full cursor-pointer"
-                    >
-                      <span className="text-pure-white text-2xl leading-8 font-normal">
-                        {t.nav.departments}
-                      </span>
-                      <div className="grid place-items-center w-5 h-5">
-                        <div className="w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
-                        <div
-                          className={cn(
-                            "w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
-                            isDepartmentsOpen ? "rotate-0" : "-rotate-90",
-                          )}
-                        />
-                      </div>
-                    </Button>
-                  </Collapsible.Trigger>
-                  <Separator className="w-full h-px bg-menu-separator" />
-                </div>
-                <Collapsible.Content className="flex flex-col items-start w-full pl-4">
-                  <Button
-                    variant="ghost"
-                    className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
-                    asChild
-                  >
-                    <a
-                      href={lp("/information-technologies-and-data-analytics")}
-                      className="text-pure-white text-lg leading-6 font-normal"
-                    >
-                      {t.departments.it}
-                    </a>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
-                    asChild
-                  >
-                    <a
-                      href={lp("/finance-and-business")}
-                      className="text-pure-white text-lg leading-6 font-normal"
-                    >
-                      {t.departments.finance}
-                    </a>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
-                    asChild
-                  >
-                    <a
-                      href={lp("/management-and-marketing")}
-                      className="text-pure-white text-lg leading-6 font-normal"
-                    >
-                      {t.departments.management}
-                    </a>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
-                    asChild
-                  >
-                    <a
-                      href={lp("/mathematics-and-intelligent-computing")}
-                      className="text-pure-white text-lg leading-6 font-normal"
-                    >
-                      {t.departments.math}
-                    </a>
-                  </Button>
-                </Collapsible.Content>
-              </Collapsible.Root>
+                {departmentLinks.map((link) => (
+                  <MenuSubLink key={link.href} {...link} />
+                ))}
+              </MenuSection>
 
-              <Collapsible.Root
+              <MenuSection
+                title={t.nav.laboratories}
                 open={isLaboratoriesOpen}
                 onOpenChange={setIsLaboratoriesOpen}
-                className="flex flex-col items-start w-full"
+                contentClassName="pl-4"
               >
-                <div className="inline-flex flex-col items-start gap-1 w-full">
-                  <Collapsible.Trigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="h-auto p-0 hover:bg-transparent justify-between w-full cursor-pointer"
-                    >
-                      <span className="text-pure-white text-2xl leading-8 font-normal">
-                        {t.nav.laboratories}
-                      </span>
-                      <div className="grid place-items-center w-5 h-5">
-                        <div className="w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]" />
-                        <div
-                          className={cn(
-                            "w-5 h-[1px] bg-white transition-transform duration-300 [grid-area:1/1]",
-                            isLaboratoriesOpen ? "rotate-0" : "-rotate-90",
-                          )}
-                        />
-                      </div>
-                    </Button>
-                  </Collapsible.Trigger>
-                  <Separator className="w-full h-px bg-menu-separator" />
-                </div>
-                <Collapsible.Content className="flex flex-col items-start w-full pl-4">
-                  <Button
-                    variant="ghost"
-                    className="h-auto p-0 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
-                    asChild
-                  >
-                    <a
-                      href={lp("/laboratory")}
-                      className="text-pure-white text-lg leading-6 font-normal"
-                    >
-                      {t.laboratories.robotics}
-                    </a>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="h-auto p-0 px-1 hover:bg-transparent justify-start w-full py-2 cursor-pointer"
-                    asChild
-                  >
-                    <a
-                      href={lp("/laboratory-vr")}
-                      className="block w-full min-w-0 text-pure-white text-lg leading-6 font-normal !whitespace-normal break-words text-left"
-                    >
-                      {t.laboratories.vr}
-                    </a>
-                  </Button>
-                </Collapsible.Content>
-              </Collapsible.Root>
+                {laboratoryLinks.map((link) => (
+                  <MenuSubLink key={link.href} {...link} />
+                ))}
+              </MenuSection>
 
               {bottomSimpleMenuItems.map((item) => (
                 <div
                   key={item.href}
-                  className="inline-flex flex-col items-start gap-1 w-full"
+                  className="flex flex-col items-start gap-1 w-full"
                 >
                   <a
                     href={item.href}
                     onClick={onClose}
-                    className="h-auto p-0 justify-start w-full cursor-pointer hover:opacity-80 transition-opacity"
+                    className="block h-auto p-0 w-full min-w-0 break-words cursor-pointer hover:opacity-80 transition-opacity"
                   >
                     <span className="text-white text-2xl leading-8 font-normal">
                       {item.label}
@@ -421,7 +361,7 @@ export const Menu = ({ onClose, locale = "uk" }: MenuProps): JSX.Element => {
             </div>
           </nav>
 
-          <footer className="flex min-h-[94.38px] justify-end mt-auto flex-1 self-stretch w-full flex-col items-start">
+          <footer className="flex min-h-[94.38px] justify-end mt-auto pt-6 flex-1 self-stretch w-full flex-col items-start">
             <div className="grid grid-cols-2 gap-2 self-stretch w-full">
               <div className="flex flex-col items-start gap-2">
                 {footerLinksLeft.map((link) => (
