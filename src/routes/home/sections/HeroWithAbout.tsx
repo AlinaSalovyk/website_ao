@@ -11,22 +11,29 @@ const ParticleCanvas = lazy(() =>
   })),
 );
 
+const ImageShapeParticles = lazy(() =>
+  import("@/components/effects/ImageShapeParticles").then((m) => ({
+    default: m.ImageShapeParticles,
+  })),
+);
+
 export const HeroWithAbout = ({ locale }: { locale?: Locale }): JSX.Element => {
   const t = getTranslations(locale);
 
   const tags = t.home.hero.tags;
   const ctaLine = t.home.hero.ctaLine;
   const titleLines = [t.home.hero.titleLine];
-  const shapeRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const shapeBoundsRef = useRef<HTMLDivElement>(null);
 
   /* Parallax effect on the 3D chrome shape — moves slower on scroll */
   useEffect(() => {
     let rafId = 0;
     const handleScroll = () => {
       rafId = requestAnimationFrame(() => {
-        if (shapeRef.current) {
+        if (shapeBoundsRef.current) {
           const scrollY = window.scrollY;
-          shapeRef.current.style.transform = `translate(-25%, 0) translateY(${scrollY * 0.15}px)`;
+          shapeBoundsRef.current.style.transform = `translate(-25%, 0) translateY(${scrollY * 0.15}px)`;
         }
       });
     };
@@ -41,12 +48,12 @@ export const HeroWithAbout = ({ locale }: { locale?: Locale }): JSX.Element => {
   let wordIndex = 0;
 
   return (
-    <section className="relative w-full overflow-hidden">
+    <section ref={sectionRef} className="relative w-full overflow-hidden">
       {/* Background Gradient */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-hero-gradient" />
 
-      {/* Interactive Particle Canvas */}
-      <div className="absolute inset-0 pointer-events-none z-[2]">
+      {/* Interactive Constellation Particle Canvas */}
+      <div className="absolute inset-0 pointer-events-none z-[1] opacity-0 animate-fade-in [--animation-delay:400ms]">
         <Suspense fallback={null}>
           <ParticleCanvas
             particleColor="rgba(100, 160, 255, 0.5)"
@@ -58,29 +65,24 @@ export const HeroWithAbout = ({ locale }: { locale?: Locale }): JSX.Element => {
         </Suspense>
       </div>
 
-      {/* 3D Chrome Shape — with parallax effect */}
-      <div
-        ref={shapeRef}
-        className="absolute -top-0 left-1/2 -translate-x-1/4 w-[400px] md:w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms] parallax-slow"
-        style={{
-          maskImage: "linear-gradient(to bottom, black 60%, transparent 90%)",
-          WebkitMaskImage:
-            "linear-gradient(to bottom, black 10%, transparent 90%)",
-        }}
-      >
-        <img
-          className="w-full h-full object-contain"
-          alt="Element black chrome"
-          src="/images/Home/3d-black-chrome-shape.webp"
-          width={800}
-          height={834}
-          fetchPriority="high"
-          decoding="async"
-          style={{
-            filter: "hue-rotate(-20deg) brightness(1.55) saturate(2.0)",
-          }}
-        />
+      {/* Three.js Image Shape Particles Layer */}
+      <div className="absolute inset-0 pointer-events-none z-[2] opacity-0 animate-fade-in [--animation-delay:400ms]">
+        <Suspense fallback={null}>
+          <ImageShapeParticles
+            imageUrl="/images/Home/3d-black-chrome-shape.webp"
+            particleSize={1.5}
+            resolution={6}
+            sectionRef={sectionRef}
+            boundsRef={shapeBoundsRef}
+          />
+        </Suspense>
       </div>
+
+      {/* 3D Chrome Shape Bounds — used for particles positioning & parallax */}
+      <div
+        ref={shapeBoundsRef}
+        className="absolute -top-0 left-1/2 -translate-x-1/4 w-[400px] md:w-[600px] xl:w-[900px] 2xl:w-[1250px] h-[400px] md:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms] parallax-slow"
+      />
 
       {/* Hero Title — stagger-animated words */}
       <div className="relative min-h-[400px] md:min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end items-center pb-0 lg:pb-2 z-10">

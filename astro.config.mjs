@@ -32,7 +32,7 @@ export default defineConfig({
       noExternal: ['motion'],
     },
     optimizeDeps: {
-      include: ['motion', 'motion/react'],
+      include: ['motion', 'motion/react', 'three', '@react-three/fiber'],
     },
   },
   i18n: {
