@@ -1,18 +1,28 @@
-import { lazy, Suspense, type JSX } from "react";
+import { lazy, Suspense, useRef, type JSX } from "react";
 
 const ParticleCanvas = lazy(() =>
   import("@/components/effects/ParticleCanvas").then((m) => ({
     default: m.ParticleCanvas,
   })),
 );
+
+const ImageShapeParticles = lazy(() =>
+  import("@/components/effects/ImageShapeParticles").then((m) => ({
+    default: m.ImageShapeParticles,
+  })),
+);
+
 import { InnovationsBadge } from "@/components/ui/InnovationsBadge";
 import type { Locale } from "@/i18n";
 import { getTranslations } from "@/i18n";
 
 export const Hero = ({ locale }: { locale?: Locale }): JSX.Element => {
   const t = getTranslations(locale);
+  const sectionRef = useRef<HTMLElement>(null);
+  const shapeBoundsRef = useRef<HTMLDivElement>(null);
+
   return (
-    <section className="relative w-full overflow-hidden">
+    <section ref={sectionRef} className="relative w-full overflow-hidden">
       {/* Background Gradients & Images */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-0 animate-fade-in [--animation-delay:0ms] bg-black" />
 
@@ -29,27 +39,23 @@ export const Hero = ({ locale }: { locale?: Locale }): JSX.Element => {
         </Suspense>
       </div>
 
-      <div
-        className="absolute -top-0 left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-auto xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
-        style={{
-          maskImage: "linear-gradient(to bottom, black 60%, transparent 90%)",
-          WebkitMaskImage:
-            "linear-gradient(to bottom, black 10%, transparent 90%)",
-        }}
-      >
-        <img
-          className="w-full h-full object-contain"
-          alt=""
-          role="presentation"
-          aria-hidden="true"
-          src="/images/Home/3d-black-chrome-shape.webp"
-          style={{ filter: "hue-rotate(-30deg) brightness(1.2) saturate(2.0)" }}
-          decoding="async"
-          fetchPriority="high"
-          width={800}
-          height={834}
-        />
+      {/* Three.js Image Shape Particles Layer */}
+      <div className="absolute inset-0 pointer-events-none z-[3]">
+        <Suspense fallback={null}>
+          <ImageShapeParticles
+            imageUrl="/images/Home/3d-black-chrome-shape.webp"
+            particleSize={1.5}
+            resolution={6}
+            sectionRef={sectionRef}
+            boundsRef={shapeBoundsRef}
+          />
+        </Suspense>
       </div>
+
+      <div
+        ref={shapeBoundsRef}
+        className="absolute -top-0 left-1/2 -translate-x-1/4 w-[600px] xl:w-[900px] 2xl:w-[1250px] h-[400px] xl:h-[600px] 2xl:h-[780px] pointer-events-none opacity-0 animate-fade-in [--animation-delay:400ms]"
+      />
 
       {/* Hero Title */}
       <div className="relative min-h-[500px] lg:min-h-[calc(100vh-80px)] max-w-7xl 2xl:max-w-screen-2xl mx-auto px-4 md:px-9 flex flex-col justify-end pb-4 lg:pb-6 z-10 translate-y-0 animate-fade-in opacity-0 [--animation-delay:200ms] mt-16 lg:mt-24">
